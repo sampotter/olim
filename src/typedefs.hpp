@@ -4,3 +4,8 @@
 using speed_func = double(*)(double, double);
 
 #endif // __TYPEDEFS_HPP__
+
+// Local Variables:
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:

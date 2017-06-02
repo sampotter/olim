@@ -37,26 +37,7 @@ void fast_marcher::add_boundary_node(size_t i, size_t j) {
 }
 
 void fast_marcher::update_neighbors(size_t i, size_t j) {
-	static int offsets[4][2] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
-	size_t a, b;
-
-	// Change all 'far' neighbors to 'trial'
-	node * n = nullptr;
-	for (int k = 0; k < 4; ++k) {
-		a = i + offsets[k][0], b = j + offsets[k][1];
-		if (valid_index(a, b) && this->operator()(a, b).is_far()) {
-			n = &_nodes[_width*a + b];
-			n->set_trial();
-			_heap.insert(n);
-		}
-	}
-
-	for (int k = 0; k < 4; ++k) {
-		a = i + offsets[k][0], b = j + offsets[k][1];
-		if (valid_index(a, b) && !this->operator()(a, b).is_valid()) {
-			update_node_value(a, b);
-		}
-	}
+	update_neighbors_impl(i, j);
 }
 
 void fast_marcher::run() {
@@ -111,4 +92,8 @@ double fast_marcher::F(size_t i, size_t j) const {
 
 void fast_marcher::adjust_heap_entry(node* n) {
 	_heap.adjust_entry(n);
+}
+
+void fast_marcher::insert_into_heap(node* n) {
+	_heap.insert(n);
 }

@@ -27,9 +27,11 @@ protected:
     double F(double x, double y) const;
     double F(size_t i, size_t j) const;
     void adjust_heap_entry(node* n);
+    void insert_into_heap(node* n);
 	
 private:
     virtual void update_node_value_impl(size_t i, size_t j) = 0;
+    virtual void update_neighbors_impl(size_t i, size_t j) = 0;
 
 	node* _nodes;
 	heap _heap;

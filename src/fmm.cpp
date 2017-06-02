@@ -1,6 +1,8 @@
 #include "mex.h"
 
-#include "fast_marcher.hpp"
+#include <string>
+
+#include "fmm_mex.hpp"
 
 typedef double (*speed_func)(double, double);
 
@@ -65,6 +67,26 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
 	}
 
 	/**
+	 * If it was passed, grab the string specifying the marcher to
+	 * use.
+	 */
+	marcher_type type = marcher_type::basic;
+	if (nrhs >= 4) {
+		if (!mxIsClass(prhs[3], "char") || mxGetM(prhs[3]) != 1) {
+			mexErrMsgTxt("Fourth argument must be a string.");
+		}
+		std::string str;
+		str.reserve(mxGetN(prhs[3]));
+		mxChar* chars = mxGetChars(prhs[3]);
+		memcpy(&str[0], chars, mxGetN(prhs[3]));
+		if (str == "basic") {
+			type = marcher_type::basic;
+		} else {
+			mexErrMsgTxt("Invalid marcher type.");
+		}
+	}
+
+	/**
 	 * Setup input arguments on our end.
 	 */
 	size_t M = mxGetM(prhs[0]);
@@ -82,7 +104,7 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
 	plhs[0] = mxCreateDoubleMatrix(M, N, mxREAL);
 	double * out = mxGetPr(plhs[0]);
 
-	fmm_mex(out, in, M, N, h, F);
+	fmm_mex(out, in, M, N, h, F, type);
 
 	if (nrhs >= 3) {
 		mxDestroyArray(user_speed_func_plhs[0]);

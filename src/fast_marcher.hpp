@@ -3,13 +3,12 @@
 
 #include "heap.hpp"
 #include "node.hpp"
-
-using speed_func = double(*)(double, double);
+#include "typedefs.hpp"
 
 struct fast_marcher
 {
 	fast_marcher(size_t height, size_t width, double h, speed_func F);
-	~fast_marcher();
+	virtual ~fast_marcher();
 
 	node & operator()(size_t i, size_t j);
 	node const & operator()(size_t i, size_t j) const;
@@ -18,14 +17,21 @@ struct fast_marcher
 	void run();
 	double get_value(size_t i, size_t j) const;
     
-private:
+protected:
 	void update_node_value(size_t i, size_t j);
 	void update_neighbors(size_t i, size_t j);
 	int get_far_neighbors(size_t i, size_t j, node** nb) const;
 	void get_valid_neighbors(size_t i, size_t j, node** nb) const;
 	bool valid_index(size_t i, size_t j) const;
 	node* get_next_node();
+    double get_h() const;
+    double F(double x, double y) const;
+    double F(size_t i, size_t j) const;
+    void adjust_heap_entry(node* n);
 	
+private:
+    virtual void update_node_value_impl(size_t i, size_t j) = 0;
+
 	node* _nodes;
 	heap _heap;
 	double _h;
@@ -33,10 +39,6 @@ private:
 	size_t _height;
 	size_t _width;
 };
-
-extern "C"
-void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
-			 speed_func F);
 
 #endif // __FAST_MARCHER_HPP__
 

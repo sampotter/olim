@@ -1,4 +1,4 @@
-#include "fast_marcher.hpp"
+#include "basic_marcher.hpp"
 
 #include <cstdio>
 
@@ -12,7 +12,7 @@ int main() {
 	size_t height = 20;
 	size_t width = 20;
 
-	fast_marcher m(height, width, 1, F);
+	basic_marcher m(height, width, 1, F);
 	m.add_boundary_node(0, 0);
 	m.add_boundary_node(19, 10);
 	m.add_boundary_node(10, 15);

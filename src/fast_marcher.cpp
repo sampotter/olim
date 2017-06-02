@@ -1,20 +1,16 @@
 #include "fast_marcher.hpp"
 
-#include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <iostream>
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
 	_nodes {new node[height*width]},
-	_heap {static_cast<size_t>(log(height*width))}, // whatever
+	_heap {static_cast<size_t>(std::log(height*width))}, // whatever
 	_h {h},
 	_F {F},
 	_height {height},
 	_width {width}
 {
-	std::cout << _h << std::endl;
-	
 	for (size_t i = 0; i < _height; ++i) {
 		for (size_t j = 0; j < _width; ++j) {
 			this->operator()(i, j).set_i(i);
@@ -77,31 +73,7 @@ double fast_marcher::get_value(size_t i, size_t j) const {
 }
 
 void fast_marcher::update_node_value(size_t i, size_t j) {
-	node* n = nullptr;
-	node* nb[4] = {nullptr, nullptr, nullptr, nullptr}; // NESW
-	get_valid_neighbors(i, j, nb);
-	double rhs = _h/_F(_h*i, _h*j);
-	double T = std::numeric_limits<double>::infinity();
-	double tmp = 0, T1 = 0, T2 = 0, disc = 0;
-
-	for (int k = 0, k1 = 1; k < 4; ++k, k1 = (k1 + 1) % 4) {
-		if (nb[k] != nullptr && nb[k1] != nullptr) {
-			T1 = nb[k]->get_value();
-			T2 = nb[k1]->get_value();
-			disc = 2*pow(rhs, 2) - pow(T1 - T2, 2);
-			if (disc <= 0) continue;
-			tmp = (T1 + T2 + std::sqrt(disc))/2;
-			if (tmp >= T1 && tmp >= T2) T = std::min(T, tmp);
-		} else if (nb[k] != nullptr || nb[k1] != nullptr) {
-			n = nb[k] != nullptr ? nb[k] : nb[k1];
-			T = std::min(T, n->get_value() + rhs);
-		}
-	}
-
-	n = &_nodes[i*_width + j];
-	assert(n->is_trial());
-	n->set_value(T);
-	_heap.adjust_entry(n);
+	update_node_value_impl(i, j);
 }
 
 void fast_marcher::get_valid_neighbors(size_t i, size_t j, node ** nb) const {
@@ -151,23 +123,18 @@ node* fast_marcher::get_next_node() {
 	return elt;
 }
 
-void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
-			 speed_func F) {
-	fast_marcher g(M, N, h, F);
-	
-	for (size_t i = 0; i < M; ++i) {
-		for (size_t j = 0; j < N; ++j) {
-			if (in[N*i + j]) {
-				g.add_boundary_node(i, j);
-			}
-		}
-	}
+double fast_marcher::get_h() const {
+	return _h;
+}
 
-	g.run();
+double fast_marcher::F(double x, double y) const {
+	return _F(x, y);
+}
 
-	for (size_t i = 0; i < M; ++i) {
-		for (size_t j = 0; j < N; ++j) {
-			out[M*i + j] = g.get_value(i, j);
-		}
-	}
+double fast_marcher::F(size_t i, size_t j) const {
+	return _F(_h*i, _h*j);
+}
+
+void fast_marcher::adjust_heap_entry(node* n) {
+	_heap.adjust_entry(n);
 }

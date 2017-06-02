@@ -75,14 +75,11 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
     if (!mxIsClass(prhs[3], "char") || mxGetM(prhs[3]) != 1) {
       mexErrMsgTxt("Fourth argument must be a string.");
     }
-    std::string str;
-    str.reserve(mxGetN(prhs[3]));
-    mxChar* chars = mxGetChars(prhs[3]);
-    memcpy(&str[0], chars, mxGetN(prhs[3]));
+    std::string str {mxArrayToString(prhs[3])};
     if (str == "basic") {
       type = marcher_type::basic;
     } else {
-      mexErrMsgTxt("Invalid marcher type.");
+      mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
     }
   }
 

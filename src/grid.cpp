@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-grid2d::grid2d(size_t height, size_t width, double h, speed_func F):
+fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
 	_nodes {new node[height*width]},
 	_heap {static_cast<size_t>(log(height*width))}, // whatever
 	_h {h},
@@ -23,24 +23,24 @@ grid2d::grid2d(size_t height, size_t width, double h, speed_func F):
 	}
 }
 
-grid2d::~grid2d() {
+fast_marcher::~fast_marcher() {
 	delete[] _nodes;
 }
 
-node & grid2d::operator()(size_t i, size_t j) {
+node & fast_marcher::operator()(size_t i, size_t j) {
 	return _nodes[_width*i + j];
 }
 
-node const & grid2d::operator()(size_t i, size_t j) const {
+node const & fast_marcher::operator()(size_t i, size_t j) const {
 	return _nodes[_width*i + j];
 }
 
-void grid2d::add_boundary_node(size_t i, size_t j) {
+void fast_marcher::add_boundary_node(size_t i, size_t j) {
 	this->operator()(i, j) = node::make_boundary_node(i, j);
 	update_neighbors(i, j);
 }
 
-void grid2d::update_neighbors(size_t i, size_t j) {
+void fast_marcher::update_neighbors(size_t i, size_t j) {
 	static int offsets[4][2] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
 	size_t a, b;
 
@@ -63,7 +63,7 @@ void grid2d::update_neighbors(size_t i, size_t j) {
 	}
 }
 
-void grid2d::run() {
+void fast_marcher::run() {
 	node* n = nullptr;
 	while (!_heap.empty()) {
 		n = get_next_node();
@@ -72,11 +72,11 @@ void grid2d::run() {
 	}
 }
 
-double grid2d::get_value(size_t i, size_t j) const {
+double fast_marcher::get_value(size_t i, size_t j) const {
 	return this->operator()(i, j).get_value();
 }
 
-void grid2d::update_node_value(size_t i, size_t j) {
+void fast_marcher::update_node_value(size_t i, size_t j) {
 	node* n = nullptr;
 	node* nb[4] = {nullptr, nullptr, nullptr, nullptr}; // NESW
 	get_valid_neighbors(i, j, nb);
@@ -104,7 +104,7 @@ void grid2d::update_node_value(size_t i, size_t j) {
 	_heap.adjust_entry(n);
 }
 
-void grid2d::get_valid_neighbors(size_t i, size_t j, node ** nb) const {
+void fast_marcher::get_valid_neighbors(size_t i, size_t j, node ** nb) const {
 	auto const is_good = [this] (size_t a, size_t b) {
 		return valid_index(a, b) && this->operator()(a, b).is_valid();
 	};
@@ -115,7 +115,7 @@ void grid2d::get_valid_neighbors(size_t i, size_t j, node ** nb) const {
 	if (is_good(i, j - 1)) nb[3] = &_nodes[_width*i + j - 1];
 }
 
-int grid2d::get_far_neighbors(size_t i, size_t j, node ** nb) const {
+int fast_marcher::get_far_neighbors(size_t i, size_t j, node ** nb) const {
 	int nnb = 0;
 
 	auto const is_good = [this] (size_t a, size_t b) {
@@ -141,11 +141,11 @@ int grid2d::get_far_neighbors(size_t i, size_t j, node ** nb) const {
 	return nnb;
 }
 
-bool grid2d::valid_index(size_t i, size_t j) const {
+bool fast_marcher::valid_index(size_t i, size_t j) const {
 	return i < _height && j < _width;
 }
 
-node* grid2d::get_next_node() {
+node* fast_marcher::get_next_node() {
 	auto const elt = _heap.front();
 	_heap.pop_front();
 	return elt;
@@ -153,7 +153,7 @@ node* grid2d::get_next_node() {
 
 void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
 			 speed_func F) {
-	grid2d g(M, N, h, F);
+	fast_marcher g(M, N, h, F);
 	
 	for (size_t i = 0; i < M; ++i) {
 		for (size_t j = 0; j < N; ++j) {

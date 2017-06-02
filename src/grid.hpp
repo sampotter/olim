@@ -6,10 +6,10 @@
 
 using speed_func = double(*)(double, double);
 
-struct grid2d
+struct fast_marcher
 {
-	grid2d(size_t height, size_t width, double h, speed_func F);
-	~grid2d();
+	fast_marcher(size_t height, size_t width, double h, speed_func F);
+	~fast_marcher();
 
 	node & operator()(size_t i, size_t j);
 	node const & operator()(size_t i, size_t j) const;
@@ -17,6 +17,7 @@ struct grid2d
 	void add_boundary_node(size_t i, size_t j);
 	void run();
 	double get_value(size_t i, size_t j) const;
+    
 private:
 	void update_node_value(size_t i, size_t j);
 	void update_neighbors(size_t i, size_t j);

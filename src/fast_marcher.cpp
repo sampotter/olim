@@ -57,17 +57,6 @@ void fast_marcher::update_node_value(size_t i, size_t j) {
   update_node_value_impl(i, j);
 }
 
-void fast_marcher::get_valid_neighbors(size_t i, size_t j, node ** nb) const {
-  auto const is_good = [this] (size_t a, size_t b) {
-    return valid_index(a, b) && this->operator()(a, b).is_valid();
-  };
-  if (is_good(i - 1, j)) nb[0] = &_nodes[_width*(i - 1) + j]; // north ...
-  if (is_good(i, j + 1)) nb[1] = &_nodes[_width*i + j + 1]; // east ...
-  if (is_good(i + 1, j)) nb[2] = &_nodes[_width*(i + 1) + j]; // south ...
-  if (is_good(i, j - 1)) nb[3] = &_nodes[_width*i + j - 1]; // west (order is
-  // important!)
-}
-
 bool fast_marcher::valid_index(size_t i, size_t j) const {
   return i < _height && j < _width;
 }

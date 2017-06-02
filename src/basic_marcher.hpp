@@ -9,6 +9,7 @@ struct basic_marcher: public fast_marcher
 private:
   virtual void update_node_value_impl(size_t i, size_t j);
   virtual void update_neighbors_impl(size_t i, size_t j);
+  virtual void get_valid_neighbors(size_t i, size_t j, node ** nb);
 };
 
 #endif // __BASIC_MARCHER_HPP__

@@ -20,7 +20,6 @@ struct fast_marcher
 protected:
   void update_node_value(size_t i, size_t j);
   void update_neighbors(size_t i, size_t j);
-  void get_valid_neighbors(size_t i, size_t j, node** nb) const;
   bool valid_index(size_t i, size_t j) const;
   node* get_next_node();
   double get_h() const;
@@ -32,6 +31,7 @@ protected:
 private:
   virtual void update_node_value_impl(size_t i, size_t j) = 0;
   virtual void update_neighbors_impl(size_t i, size_t j) = 0;
+  virtual void get_valid_neighbors(size_t i, size_t j, node ** nb) = 0;
 
   node* _nodes;
   heap _heap;

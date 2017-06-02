@@ -55,6 +55,16 @@ void basic_marcher::update_neighbors_impl(size_t i, size_t j) {
   }
 }
 
+void basic_marcher::get_valid_neighbors(size_t i, size_t j, node ** nb) {
+  auto const is_good = [this] (size_t a, size_t b) {
+    return valid_index(a, b) && this->operator()(a, b).is_valid();
+  };
+  if (is_good(i - 1, j)) nb[0] = &this->operator()(i - 1, j); // north ...
+  if (is_good(i, j + 1)) nb[1] = &this->operator()(i, j + 1); // east ...
+  if (is_good(i + 1, j)) nb[2] = &this->operator()(i + 1, j); // south ...
+  if (is_good(i, j - 1)) nb[3] = &this->operator()(i, j - 1); // west ...
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

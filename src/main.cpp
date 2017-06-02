@@ -1,4 +1,4 @@
-#include "grid.hpp"
+#include "fast_marcher.hpp"
 
 #include <cstdio>
 

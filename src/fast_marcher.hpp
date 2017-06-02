@@ -1,5 +1,5 @@
-#ifndef __GRID_HPP__
-#define __GRID_HPP__
+#ifndef __FAST_MARCHER_HPP__
+#define __FAST_MARCHER_HPP__
 
 #include "heap.hpp"
 #include "node.hpp"
@@ -38,7 +38,7 @@ extern "C"
 void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
 			 speed_func F);
 
-#endif // __GRID_HPP__
+#endif // __FAST_MARCHER_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

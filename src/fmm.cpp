@@ -1,6 +1,6 @@
 #include "mex.h"
 
-#include "grid.hpp"
+#include "fast_marcher.hpp"
 
 typedef double (*speed_func)(double, double);
 

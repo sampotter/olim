@@ -5,3 +5,5 @@
   - [ ] Implement 8-point update
 * Testing
   - Figure out whether user-defined speed function works
+* Implementation
+  - Make sure to reset the cache (in fast_marcher::F) when necessary

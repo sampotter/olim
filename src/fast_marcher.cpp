@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <vector>
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
   _nodes {new node[height*width]},
@@ -76,7 +77,13 @@ double fast_marcher::F(double x, double y) const {
 }
 
 double fast_marcher::F(size_t i, size_t j) const {
-  return _F(_h*i, _h*j);
+  // Use -1 to indicate that the cache value has not been set
+  static std::vector<double> cache(_width*_height, -1);
+  size_t k = _width*i + j;
+  if (cache[k] < 0) {
+    cache[k] = _F(_h*i, _h*j);
+  }
+  return cache[k];
 }
 
 void fast_marcher::adjust_heap_entry(node* n) {

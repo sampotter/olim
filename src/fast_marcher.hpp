@@ -23,7 +23,6 @@ protected:
   bool valid_index(size_t i, size_t j) const;
   node* get_next_node();
   double get_h() const;
-  double F(double x, double y) const;
   double F(size_t i, size_t j) const;
   void adjust_heap_entry(node* n);
   void insert_into_heap(node* n);
@@ -32,6 +31,7 @@ private:
   virtual void update_node_value_impl(size_t i, size_t j) = 0;
   virtual void update_neighbors_impl(size_t i, size_t j) = 0;
   virtual void get_valid_neighbors(size_t i, size_t j, node ** nb) = 0;
+  double F(double x, double y) const;
 
   node* _nodes;
   heap _heap;

@@ -1,15 +1,13 @@
 #ifndef __BASIC_MARCHER_HPP__
 #define __BASIC_MARCHER_HPP__
 
-#include "fast_marcher.hpp"
+#include "neumann_marcher.hpp"
 
-struct basic_marcher: public fast_marcher
+struct basic_marcher: public neumann_marcher
 {
-  using fast_marcher::fast_marcher;
+  using neumann_marcher::neumann_marcher;
 private:
   virtual void update_node_value_impl(size_t i, size_t j);
-  virtual void update_neighbors_impl(size_t i, size_t j);
-  virtual void get_valid_neighbors(size_t i, size_t j, node ** nb);
 };
 
 #endif // __BASIC_MARCHER_HPP__

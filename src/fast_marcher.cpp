@@ -34,11 +34,18 @@ node const & fast_marcher::operator()(size_t i, size_t j) const {
 
 void fast_marcher::add_boundary_node(size_t i, size_t j) {
   this->operator()(i, j) = node::make_boundary_node(i, j);
-  update_neighbors(i, j);
+  stage_neighbors(i, j);
 }
 
-void fast_marcher::update_neighbors(size_t i, size_t j) {
-  update_neighbors_impl(i, j);
+void fast_marcher::stage_neighbors(size_t i, size_t j) {
+  stage_neighbors_impl(i, j);
+}
+
+void fast_marcher::stage_neighbor(size_t i, size_t j) {
+  if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
+    this->operator()(i, j).set_trial();
+    insert_into_heap(&this->operator()(i, j));
+  }
 }
 
 void fast_marcher::run() {
@@ -46,7 +53,7 @@ void fast_marcher::run() {
   while (!_heap.empty()) {
     n = get_next_node();
     n->set_valid();
-    update_neighbors(n->get_i(), n->get_j());
+    stage_neighbors(n->get_i(), n->get_j());
   }
 }
 
@@ -58,8 +65,12 @@ void fast_marcher::update_node_value(size_t i, size_t j) {
   update_node_value_impl(i, j);
 }
 
-bool fast_marcher::valid_index(size_t i, size_t j) const {
+bool fast_marcher::in_bounds(size_t i, size_t j) const {
   return i < _height && j < _width;
+}
+
+bool fast_marcher::is_valid(size_t i, size_t j) const {
+  return in_bounds(i, j) && this->operator()(i, j).is_valid();
 }
 
 node* fast_marcher::get_next_node() {

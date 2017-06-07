@@ -1,5 +1,4 @@
 * Learning
-  - [ ] Dummy
   - [ ] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update
   - [ ] Implement 8-point update

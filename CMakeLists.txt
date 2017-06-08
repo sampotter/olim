@@ -14,8 +14,6 @@ add_library (fmm
   src/node.cpp
   src/olim8pt_marcher.cpp)
 
-add_executable (main src/main.cpp)
-target_link_libraries (main fmm)
 
 add_custom_command (
   TARGET fmm

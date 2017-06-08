@@ -4,6 +4,23 @@
 #include <cmath>
 #include <vector>
 
+static double default_speed_func(double x, double y) {
+  (void) x;
+  (void) y;
+  return 1.0;
+}
+
+fast_marcher::fast_marcher(size_t height, size_t width, double h):
+  _nodes {new node[height*width]},
+  _heap {static_cast<size_t>(std::log(height*width))}, // whatever
+  _h {h},
+  _F {default_speed_func},
+  _height {height},
+  _width {width}
+{
+  init();
+}
+
 fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
   _nodes {new node[height*width]},
   _heap {static_cast<size_t>(std::log(height*width))}, // whatever
@@ -12,6 +29,10 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
   _height {height},
   _width {width}
 {
+  init();
+}
+
+void fast_marcher::init() {
   for (size_t i = 0; i < _height; ++i) {
     for (size_t j = 0; j < _width; ++j) {
       this->operator()(i, j).set_i(i);

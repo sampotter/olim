@@ -14,8 +14,13 @@ add_library (fmm
   src/node.cpp
   src/olim8pt_marcher.cpp)
 
+add_executable (basic_marcher.test src/basic_marcher.test.cpp)
+target_link_libraries (basic_marcher.test fmm)
+add_test (basic_marcher basic_marcher.test)
 
 add_custom_command (
   TARGET fmm
   POST_BUILD
   COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/run_mex.sh" ${CMAKE_CURRENT_SOURCE_DIR})
+
+enable_testing ()

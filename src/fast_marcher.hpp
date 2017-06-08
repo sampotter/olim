@@ -7,6 +7,7 @@
 
 struct fast_marcher
 {
+  fast_marcher(size_t height, size_t width, double h = 1.0);
   fast_marcher(size_t height, size_t width, double h, speed_func F);
   virtual ~fast_marcher();
 
@@ -18,6 +19,7 @@ struct fast_marcher
   double get_value(size_t i, size_t j) const;
     
 protected:
+  void init();
   void update_node_value(size_t i, size_t j);
   void stage_neighbors(size_t i, size_t j);
   void stage_neighbor(size_t i, size_t j);

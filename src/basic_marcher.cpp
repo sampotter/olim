@@ -29,7 +29,7 @@ void basic_marcher::update_node_value_impl(size_t i, size_t j) {
   n = &this->operator()(i, j);
   assert(n->is_trial());
   n->set_value(T);
-  adjust_heap_entry(n);
+  adjust_heap_entry(n); // TODO: move this out one level
 }
 
 // Local Variables:

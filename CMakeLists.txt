@@ -21,6 +21,8 @@ add_test (basic_marcher basic_marcher.test)
 add_custom_command (
   TARGET fmm
   POST_BUILD
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/run_mex.sh" ${CMAKE_CURRENT_SOURCE_DIR})
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/run_mex.sh"
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_BUILD_TYPE})
 
 enable_testing ()

@@ -15,3 +15,6 @@ release:
 test:
 	cd $(DEBUG_DIR); ctest
 	cd $(RELEASE_DIR); ctest
+
+clean:
+	rm -rf $(BUILD_DIR)

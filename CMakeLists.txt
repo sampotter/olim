@@ -18,6 +18,10 @@ add_executable (basic_marcher.test src/basic_marcher.test.cpp)
 target_link_libraries (basic_marcher.test fmm)
 add_test (basic_marcher basic_marcher.test)
 
+add_executable (olim8pt_marcher.test src/olim8pt_marcher.test.cpp)
+target_link_libraries (olim8pt_marcher.test fmm)
+add_test (olim8pt_marcher olim8pt_marcher.test)
+
 add_custom_command (
   TARGET fmm
   POST_BUILD

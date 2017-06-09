@@ -9,14 +9,14 @@ BOOST_AUTO_TEST_CASE (trivial_case_works) {
   m.add_boundary_node(0, 0);
   m.run();
   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-};
+}
 
 BOOST_AUTO_TEST_CASE (adjacent_update_works) {
   basic_marcher m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 1), 0.5);
-};
+  BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
+}
 
 // Local Variables:
 // indent-tabs-mode: nil

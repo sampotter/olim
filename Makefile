@@ -13,8 +13,8 @@ release:
 	cd $(RELEASE_DIR); cmake -DCMAKE_BUILD_TYPE=Release ../..; make
 
 test:
-	cd $(DEBUG_DIR); ctest
-	cd $(RELEASE_DIR); ctest
+	cd $(DEBUG_DIR); ctest -V
+	cd $(RELEASE_DIR); ctest -V
 
 clean:
 	rm -rf $(BUILD_DIR)

@@ -19,13 +19,13 @@ void moore_marcher::stage_neighbors_impl(size_t i, size_t j) {
 
 void moore_marcher::get_valid_neighbors(size_t i, size_t j, node ** nb) {
   if (is_valid(i - 1, j)) nb[0] = &this->operator()(i - 1, j);         // N
-  if (is_valid(i - 1, j + 1)) nb[0] = &this->operator()(i - 1, j + 1); // NE
-  if (is_valid(i, j + 1)) nb[0] = &this->operator()(i, j + 1);         // E
-  if (is_valid(i + 1, j + 1)) nb[0] = &this->operator()(i + 1, j + 1); // SE
-  if (is_valid(i + 1, j)) nb[0] = &this->operator()(i + 1, j);         // S
-  if (is_valid(i + 1, j - 1)) nb[0] = &this->operator()(i + 1, j - 1); // SW
-  if (is_valid(i, j - 1)) nb[0] = &this->operator()(i, j - 1);         // W
-  if (is_valid(i - 1, j - 1)) nb[0] = &this->operator()(i - 1, j - 1); // NW
+  if (is_valid(i - 1, j + 1)) nb[1] = &this->operator()(i - 1, j + 1); // NE
+  if (is_valid(i, j + 1)) nb[2] = &this->operator()(i, j + 1);         // E
+  if (is_valid(i + 1, j + 1)) nb[3] = &this->operator()(i + 1, j + 1); // SE
+  if (is_valid(i + 1, j)) nb[4] = &this->operator()(i + 1, j);         // S
+  if (is_valid(i + 1, j - 1)) nb[5] = &this->operator()(i + 1, j - 1); // SW
+  if (is_valid(i, j - 1)) nb[6] = &this->operator()(i, j - 1);         // W
+  if (is_valid(i - 1, j - 1)) nb[7] = &this->operator()(i - 1, j - 1); // NW
 }
 
 // Local Variables:

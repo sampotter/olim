@@ -46,19 +46,23 @@ fast_marcher::~fast_marcher() {
 }
 
 node & fast_marcher::operator()(size_t i, size_t j) {
+  assert(in_bounds(i, j));
   return _nodes[_width*i + j];
 }
 
 node const & fast_marcher::operator()(size_t i, size_t j) const {
+  assert(in_bounds(i, j));
   return _nodes[_width*i + j];
 }
 
 void fast_marcher::add_boundary_node(size_t i, size_t j) {
+  assert(in_bounds(i, j));
   this->operator()(i, j) = node::make_boundary_node(i, j);
   stage_neighbors(i, j);
 }
 
 void fast_marcher::stage_neighbors(size_t i, size_t j) {
+  assert(in_bounds(i, j));
   stage_neighbors_impl(i, j);
 }
 
@@ -79,10 +83,12 @@ void fast_marcher::run() {
 }
 
 double fast_marcher::get_value(size_t i, size_t j) const {
+  assert(in_bounds(i, j));
   return this->operator()(i, j).get_value();
 }
 
 void fast_marcher::update_node_value(size_t i, size_t j) {
+  assert(in_bounds(i, j));
   update_node_value_impl(i, j);
 }
 
@@ -111,6 +117,7 @@ double fast_marcher::F(double x, double y) const {
 double fast_marcher::F(size_t i, size_t j) const {
   // Use -1 to indicate that the cache value has not been set
   static std::vector<double> cache(_width*_height, -1);
+  assert(in_bounds(i, j));
   size_t k = _width*i + j;
   if (cache[k] < 0) {
     cache[k] = _F(_h*i, _h*j);

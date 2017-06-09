@@ -13,15 +13,15 @@ void basic_marcher::update_node_value_impl(size_t i, size_t j) {
   double tmp = 0, T1 = 0, T2 = 0, disc = 0;
 
   for (int k = 0, k1 = 1; k < 4; ++k, k1 = (k1 + 1) % 4) {
-    if (!nb[k] && !nb[k1]) {
+    if (nb[k] && nb[k1]) {
       T1 = nb[k]->get_value();
       T2 = nb[k1]->get_value();
       disc = 2*std::pow(rhs, 2) - std::pow(T1 - T2, 2);
       if (disc <= 0) continue;
       tmp = (T1 + T2 + std::sqrt(disc))/2;
       if (tmp >= T1 && tmp >= T2) T = std::min(T, tmp);
-    } else if (!nb[k] || !nb[k1]) {
-      n = !nb[k] ? nb[k] : nb[k1];
+    } else if (nb[k] || nb[k1]) {
+      n = nb[k] ? nb[k] : nb[k1];
       T = std::min(T, n->get_value() + rhs);
     }
   }

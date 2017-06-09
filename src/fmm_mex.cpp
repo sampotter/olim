@@ -3,12 +3,15 @@
 #include <memory>
 
 #include "basic_marcher.hpp"
+#include "olim8pt_marcher.hpp"
 
 void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
 			 speed_func F, marcher_type type) {
   std::unique_ptr<fast_marcher> m;
   if (type == marcher_type::basic) {
     m = std::make_unique<basic_marcher>(M, N, h, F);
+  } else if (type == marcher_type::olim8pt) {
+    m = std::make_unique<olim8pt_marcher>(M, N, h, F);
   }
 	
   for (size_t i = 0; i < M; ++i) {

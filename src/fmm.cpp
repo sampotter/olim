@@ -78,6 +78,8 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
     std::string str {mxArrayToString(prhs[3])};
     if (str == "basic") {
       type = marcher_type::basic;
+    } else if (str == "olim8pt") {
+      type = marcher_type::olim8pt;
     } else {
       mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
     }

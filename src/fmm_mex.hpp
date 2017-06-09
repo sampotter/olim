@@ -6,7 +6,8 @@
 #include "typedefs.hpp"
 
 enum class marcher_type {
-  basic
+  basic,
+  olim8pt
 };
 
 extern "C"

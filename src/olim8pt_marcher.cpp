@@ -87,7 +87,7 @@ double olim8pt_marcher::solve2pt_diagonal(double u0, double u1, double sh)
   if (alpha > std::sqrt(2)/2) {
     return std::numeric_limits<double>::infinity();
   }
-  double lam = alpha/(1 - alpha*alpha);
+  double lam = alpha/std::sqrt(1 - alpha*alpha);
   assert(0 <= lam && lam <= 1);
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(lam*lam + 1);
 }

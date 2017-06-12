@@ -59,6 +59,10 @@ double olim8pt_marcher::get_alpha(double u0, double u1, double sh) const {
 double olim8pt_marcher::solve2pt_adjacent(double u0, double u1, double sh)
   const
 {
+  assert(u0 >= 0);
+  assert(u1 >= 0);
+  assert(!std::isinf(u0));
+  assert(!std::isinf(u1));
   double alpha = get_alpha(u0, u1, sh);
   if (alpha > std::sqrt(2)/2) {
     return std::numeric_limits<double>::infinity();
@@ -66,7 +70,8 @@ double olim8pt_marcher::solve2pt_adjacent(double u0, double u1, double sh)
   double rad = sqrt(3)*alpha/sqrt(alpha*alpha + 2);
   double lam1 = (1 + rad)/2;
   double lam2 = (1 - rad)/2;
-  assert(lam1 == lam2 || (0 < lam1 && lam1 < 1) != (0 < lam2 && lam2 < 1));
+  assert(std::fabs(1 - lam1 - lam2) < 1e-15 ||
+         (0 < lam1 && lam1 < 1) != (0 < lam2 && lam2 < 1));
   double lam = 0 < lam1 && lam1 < 1 ? lam1 : lam2;
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2*lam*(1 - lam) + 1);
 }
@@ -74,6 +79,10 @@ double olim8pt_marcher::solve2pt_adjacent(double u0, double u1, double sh)
 double olim8pt_marcher::solve2pt_diagonal(double u0, double u1, double sh)
   const
 {
+  assert(u0 >= 0);
+  assert(u1 >= 0);
+  assert(!std::isinf(u0));
+  assert(!std::isinf(u1));
   double alpha = get_alpha(u0, u1, sh);
   if (alpha > std::sqrt(2)/2) {
     return std::numeric_limits<double>::infinity();

@@ -14,6 +14,7 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h):
   _nodes {new node[height*width]},
   _heap {static_cast<size_t>(std::max(8.0, std::log(height*width)))}, // whatever
   _h {h},
+  _F_cache(width*height, -1),
   _F {default_speed_func},
   _height {height},
   _width {width}
@@ -25,6 +26,7 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
   _nodes {new node[height*width]},
   _heap {static_cast<size_t>(std::log(height*width))}, // whatever
   _h {h},
+  _F_cache(width*height, -1),
   _F {F},
   _height {height},
   _width {width}
@@ -114,15 +116,15 @@ double fast_marcher::F(double x, double y) const {
   return _F(x, y);
 }
 
-double fast_marcher::F(size_t i, size_t j) const {
+double fast_marcher::F(size_t i, size_t j) {
   // Use -1 to indicate that the cache value has not been set
-  static std::vector<double> cache(_width*_height, -1);
   assert(in_bounds(i, j));
   size_t k = _width*i + j;
-  if (cache[k] < 0) {
-    cache[k] = _F(_h*i, _h*j);
+  assert(k < _F_cache.size());
+  if (_F_cache[k] < 0) {
+    _F_cache[k] = _F(_h*i, _h*j);
   }
-  return cache[k];
+  return _F_cache[k];
 }
 
 void fast_marcher::adjust_heap_entry(node* n) {

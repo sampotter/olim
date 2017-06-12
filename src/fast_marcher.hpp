@@ -28,7 +28,7 @@ protected:
   bool is_valid(size_t i, size_t j) const;
   node* get_next_node();
   double get_h() const;
-  double F(size_t i, size_t j) const;
+  double F(size_t i, size_t j);
   void adjust_heap_entry(node* n);
   void insert_into_heap(node* n);
 	
@@ -40,6 +40,7 @@ private:
   node* _nodes;
   heap _heap;
   double _h;
+  std::vector<double> _F_cache;
   speed_func _F;
   size_t _height;
   size_t _width;

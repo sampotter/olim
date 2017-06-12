@@ -5,6 +5,8 @@
 #include "node.hpp"
 #include "typedefs.hpp"
 
+#include <vector>
+
 struct fast_marcher
 {
   fast_marcher(size_t height, size_t width, double h = 1.0);

@@ -57,6 +57,7 @@ void heap::pop_front() {
 void heap::insert(node* n) {
   if (_size == _capacity) grow();
   n->set_heap_pos(_size);
+  assert(_size < _capacity);
   _data[_size++] = n;
   adjust_entry(n);
 }

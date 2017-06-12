@@ -52,6 +52,18 @@ BOOST_AUTO_TEST_CASE (run_on_full_neighborhood) {
   m.run();
 }
 
+BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
+  olim8pt_marcher m {3, 2, 1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
+  BOOST_CHECK_EQUAL(m.get_value(0, 1), 1.0);
+  BOOST_CHECK_EQUAL(m.get_value(1, 0), 1.0);
+  BOOST_CHECK_EQUAL(m.get_value(1, 1), std::sqrt(2.0));
+  BOOST_CHECK_EQUAL(m.get_value(2, 0), 2.0);
+  BOOST_CHECK_EQUAL(m.get_value(2, 1), 2.324393283497550);
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

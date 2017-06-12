@@ -4,20 +4,20 @@
 
 #include "olim8pt_marcher.hpp"
 
-// BOOST_AUTO_TEST_CASE (trivial_case_works) {
-//   olim8pt_marcher m {1, 1};
-//   m.add_boundary_node(0, 0);
-//   m.run();
-//   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-// };
+BOOST_AUTO_TEST_CASE (trivial_case_works) {
+  olim8pt_marcher m {1, 1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
+};
 
-// BOOST_AUTO_TEST_CASE (adjacent_update_works) {
-//   olim8pt_marcher m {2, 1, 0.5};
-//   m.add_boundary_node(0, 0);
-//   m.run();
-//   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-//   BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
-// };
+BOOST_AUTO_TEST_CASE (adjacent_update_works) {
+  olim8pt_marcher m {2, 1, 0.5};
+  m.add_boundary_node(0, 0);
+  m.run();
+  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
+  BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
+};
 
 BOOST_AUTO_TEST_CASE (slightly_more_involved) {
   olim8pt_marcher m {2, 2, 1};

@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
   BOOST_CHECK_EQUAL(m.get_value(1, 0), 1.0);
   BOOST_CHECK_EQUAL(m.get_value(1, 1), std::sqrt(2.0));
   BOOST_CHECK_EQUAL(m.get_value(2, 0), 2.0);
-  BOOST_CHECK_EQUAL(m.get_value(2, 1), 2.324393283497550);
+  BOOST_CHECK_EQUAL(m.get_value(2, 1), 2.3243932834975496);
 }
 
 // Local Variables:

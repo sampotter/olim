@@ -12,7 +12,7 @@ static double default_speed_func(double x, double y) {
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h):
   _nodes {new node[height*width]},
-  _heap {static_cast<size_t>(std::log(height*width))}, // whatever
+  _heap {static_cast<size_t>(std::max(8.0, std::log(height*width)))}, // whatever
   _h {h},
   _F {default_speed_func},
   _height {height},

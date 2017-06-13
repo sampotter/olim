@@ -1,18 +1,18 @@
-#define BOOST_TEST_MODULE olim8pt_marcher
+#define BOOST_TEST_MODULE olim_8pt_rhr
 
 #include <boost/test/included/unit_test.hpp>
 
-#include "olim8pt_marcher.hpp"
+#include "olim_8pt_rhr.hpp"
 
 BOOST_AUTO_TEST_CASE (trivial_case_works) {
-  olim8pt_marcher m {1, 1};
+  olim_8pt_rhr m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
 };
 
 BOOST_AUTO_TEST_CASE (adjacent_update_works) {
-  olim8pt_marcher m {2, 1, 0.5};
+  olim_8pt_rhr m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE (adjacent_update_works) {
 };
 
 BOOST_AUTO_TEST_CASE (slightly_more_involved) {
-  olim8pt_marcher m {2, 2, 1};
+  olim_8pt_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);
   m.add_boundary_node(1, 0);
   m.run();
@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE (slightly_more_involved) {
 }
 
 BOOST_AUTO_TEST_CASE (slightly_more_involved_2) {
-  olim8pt_marcher m {2, 2, 1};
+  olim_8pt_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE (slightly_more_involved_2) {
 }
 
 BOOST_AUTO_TEST_CASE (run_on_full_neighborhood) {
-  olim8pt_marcher m {3, 3, 1};
+  olim_8pt_rhr m {3, 3, 1};
   m.add_boundary_node(0, 0);
   m.add_boundary_node(0, 1);
   m.add_boundary_node(0, 2);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE (run_on_full_neighborhood) {
 }
 
 BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
-  olim8pt_marcher m {3, 2, 1};
+  olim_8pt_rhr m {3, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
   BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);

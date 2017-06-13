@@ -1,10 +1,10 @@
-#include "olim8pt_marcher.hpp"
+#include "olim_8pt_rhr.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-void olim8pt_marcher::update_node_value_impl(size_t i, size_t j) {
+void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j) {
   node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   node *x = 0x0, *x0 = 0x0, *x1 = 0x0;
   get_valid_neighbors(i, j, nb);
@@ -52,11 +52,11 @@ void olim8pt_marcher::update_node_value_impl(size_t i, size_t j) {
   }
 }
 
-double olim8pt_marcher::get_alpha(double u0, double u1, double sh) const {
+double olim_8pt_rhr::get_alpha(double u0, double u1, double sh) const {
   return std::fabs(u0 - u1)/sh;
 }
 
-double olim8pt_marcher::solve2pt_adjacent(double u0, double u1, double sh)
+double olim_8pt_rhr::solve2pt_adjacent(double u0, double u1, double sh)
   const
 {
   assert(u0 >= 0);
@@ -76,7 +76,7 @@ double olim8pt_marcher::solve2pt_adjacent(double u0, double u1, double sh)
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2*lam*(1 - lam) + 1);
 }
 
-double olim8pt_marcher::solve2pt_diagonal(double u0, double u1, double sh)
+double olim_8pt_rhr::solve2pt_diagonal(double u0, double u1, double sh)
   const
 {
   assert(u0 >= 0);

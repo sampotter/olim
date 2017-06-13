@@ -12,15 +12,15 @@ add_library (fmm
   src/moore_marcher.cpp
   src/neumann_marcher.cpp
   src/node.cpp
-  src/olim8pt_marcher.cpp)
+  src/olim_8pt_rhr.cpp)
 
 add_executable (basic_marcher.test src/basic_marcher.test.cpp)
 target_link_libraries (basic_marcher.test fmm)
 add_test (basic_marcher basic_marcher.test)
 
-add_executable (olim8pt_marcher.test src/olim8pt_marcher.test.cpp)
-target_link_libraries (olim8pt_marcher.test fmm)
-add_test (olim8pt_marcher olim8pt_marcher.test)
+add_executable (olim_8pt_rhr.test src/olim_8pt_rhr.test.cpp)
+target_link_libraries (olim_8pt_rhr.test fmm)
+add_test (olim_8pt_rhr olim_8pt_rhr.test)
 
 add_custom_command (
   TARGET fmm

@@ -1,9 +1,9 @@
-#ifndef __OLIM8PT_MARCHER_HPP__
-#define __OLIM8PT_MARCHER_HPP__
+#ifndef __OLIM_8PT_RHR_HPP__
+#define __OLIM_8PT_RHR_HPP__
 
 #include "moore_marcher.hpp"
 
-struct olim8pt_marcher: public moore_marcher
+struct olim_8pt_rhr: public moore_marcher
 {
   using moore_marcher::moore_marcher;
 private:
@@ -13,7 +13,7 @@ private:
   double solve2pt_diagonal(double u0, double u1, double sh) const;
 };
 
-#endif // __OLIM8PT_MARCHER_HPP__
+#endif // __OLIM_8PT_RHR_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

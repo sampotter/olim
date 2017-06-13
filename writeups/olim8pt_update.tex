@@ -1,0 +1,83 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{fullpage}
+\usepackage{graphicx}
+
+\theoremstyle{definition}
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{computing-l.eps}
+  \caption{Computing $l$ for each type of triangular update using $\lambda$ and the grid spacing $h$.}
+  \label{fig:computing-l}
+\end{figure}
+
+In this document we will quickly derive the rule for each two-point
+triangular update in the eight-point ordered line integral method
+(OLIM) for solving $||\nabla u|| = s$. We denote each triangle's
+vertices $\hat{x}, x_0$, and $x_1$, where $\hat{x}$ is the vertex
+corresponding to the node whose value is to be updated. Then, with
+$\hat{u} = u(\hat{x}), u_0 = u(x_0)$, and $u_1 = u(x_1)$, the general
+update solves the following minimization problem, where $u$ is assumed
+to be linear in the update triangle:
+\begin{align*}
+  \hat{u} := \min_{0 \leq \lambda \leq 1} \left\{ u_\lambda + \hat{s} ||\hat{x} - x_\lambda||\right\},
+\end{align*}
+where $\hat{s} = s(\hat{x})$, $x_\lambda = (1 - \lambda) x_0 + \lambda x_1$, and
+$u_\lambda = u(x_\lambda) = (1 - \lambda)u_0 + \lambda u_1$.
+
+There are two types of two-point updates, which we refer to as
+``adjacent'' and ``diagonal'' updates. In adjacent updates, both $x_0$
+and $x_1$ are directly adjacent to $\hat{x}$; in diagonal updates,
+exactly one of $x_0$ or $x_1$ is diagonally adjacent to $\hat{x}$. In
+what follows, we let $\alpha = |u_1 - u_0|/(\hat{s} h)$.
+
+\begin{lemma}
+  For the diagonal update, the minimizing $\lambda^*$ is given by
+  $\lambda^* = \alpha/\sqrt{1 - \alpha^2}$.
+\end{lemma}
+
+\begin{proof}
+  Since $u$ is assumed to be linear in the update triangle, we have
+  $\hat{u} = (1 - \lambda) u_0 + \lambda u_1 + \hat{s} ||\hat{x} -
+  x_\lambda||$. From Figure~\ref{fig:computing-l}, it's clear that
+  $l = ||\hat{x} - x_\lambda|| = h \sqrt{\lambda^2 + 1}$. Then:
+  \begin{align*}
+    0 = \frac{d \hat{u}}{d \lambda} = -u_0 + u_1 + \frac{\hat{s} h \lambda}{\sqrt{\lambda^2 + 1}} \implies \alpha^2 = \frac{\lambda^2}{\lambda^2 + 1} \implies \lambda = \frac{\alpha}{\sqrt{1 - \alpha^2}}.
+  \end{align*}
+  In the last step, we have chosen $\lambda$ to be the positive root
+  of the radical, since $\lambda$ is a convex coefficient and a
+  negative value would be nonsensical.
+\end{proof}
+
+\begin{lemma}
+  For the adjacent update, $\lambda^*$ satisfies:
+  \begin{align*}
+    \lambda^* = \frac{1}{2} \pm \frac{\sqrt{3} \alpha}{2 \sqrt{\alpha^2 + 2}}.
+  \end{align*}
+\end{lemma}
+
+\begin{proof}
+  The previous proof goes through essentially as before, but with the
+  modification that the value $l = ||\hat{x} - x_\lambda||$ is instead
+  given by $l = h \sqrt{\lambda^2 + (1 - \lambda)^2}$.
+\end{proof}
+
+We note that if $x_0$ and $x_1$ are swapped in the diagonal update,
+the value for $\lambda^*$ changes, and is \emph{slightly} more
+expensive to compute. It is possible to compute all eight diagonal
+updates using Lemma 1, but care must be taken to ensure that the nodes
+neighboring $\hat{x}$ are labeled properly.
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -3,3 +3,8 @@ GPATH
 GRTAGS
 GTAGS
 compile_commands.json
+*.pdf
+*.log
+*.aux
+*.eps
+auto

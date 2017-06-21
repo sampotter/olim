@@ -1,8 +1,32 @@
+* Tasks
+  - [ ] Test different speed functions using Maria's analytic solutions
+  - [ ] Make up a couple neat analytic solutions
+  - [ ] Compare speed of my implementation with Maria's implementation
+  - [ ] Implement midpoint method with 1oe speed function value
+  - [ ] Implement a basic rootfinder for midpoint rule updates
+	- Use values of speed functions from analytic solutions as test cases
+  - [ ] Derive updates for midpoint rule
+	- [ ] Diagonal
+	- [ ] Adjacent
+  - [ ] Try more complicated root finders
+	- [ ] Hybrid method
+	- [ ] Secant method
+	- [ ] Bairstow's method
+  - [ ] Other quadrature rules
+	- [ ] Trapezoid
+	- [ ] Simpson's
+	- [ ] Others?
+  - [ ] Make error/CPU time plots for comparison
+  - [ ] See if it's possible to just solve the quartics involed in the
+    midpoint rule OLIM exactly
+  - [ ] Lookup table optimization for OLIM
+  - [ ] Add a more robust initialization method for curves, etc.
 * Learning
-  - [ ] Reimplement 1oe fast marching method in C++ using Maria's
+  - [X] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update
-  - [ ] Implement 8-point update
-* Testing
-  - Figure out whether user-defined speed function works
+  - [X] Implement 8-point update
 * Implementation
-  - Make sure to reset the cache (in fast_marcher::F) when necessary
+  - [ ] Make sure to reset the cache (in fast_marcher::F) when necessary
+  - [ ] Add "keyword argument" style to MEX function
+  - [ ] Python wrapper
+  - [ ] Julia wrapper

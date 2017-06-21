@@ -6,21 +6,132 @@
 
 typedef double (*speed_func)(double, double);
 
-double default_speed_func(double x, double y) {
+static double defaultSpeedFunc(double x, double y) {
   (void) x;
   (void) y;
   return 1;
 }
 
-static mxArray* user_speed_func_plhs[1] = {NULL};
-static mxArray* user_speed_func_prhs[3] = {NULL, NULL, NULL};
+static mxArray* userFuncPlhs[1] = {NULL};
+static mxArray* userFuncPrhs[3] = {NULL, NULL, NULL};
+static double* userFuncArgs = NULL;
 
-double user_speed_func(double x, double y) {
-  if (!mexCallMATLAB(1, user_speed_func_plhs, 3, user_speed_func_prhs,
-                     "feval")) {
+static void setScalar(mxArray * arg, double value) {
+  double * pr = mxGetPr(arg);
+  *pr = value;
+}
+
+static double userSpeedFunc(double x, double y) {
+  setScalar(userFuncPrhs[1], x);
+  setScalar(userFuncPrhs[2], y);
+  if (!mexCallMATLAB(1, userFuncPlhs, 3, userFuncPrhs, "feval")) {
     // TODO: error handling
   }
-  return mxGetScalar(user_speed_func_plhs[0]);
+  return mxGetScalar(userFuncPlhs[0]);
+}
+
+static double userSlownessFunc(double x, double y) {
+  setScalar(userFuncPrhs[1], x);
+  setScalar(userFuncPrhs[2], y);
+  if (!mexCallMATLAB(1, userFuncPlhs, 3, userFuncPrhs, "feval")) {
+    // TODO: error handling
+  }
+  return 1.0/mxGetScalar(userFuncPlhs[0]);
+}
+
+static double parseH(mxArray const * arg) {
+  if (!mxIsClass(arg, "double") || mxGetM(arg) > 1 || mxGetN(arg) > 1) {
+    mexErrMsgTxt("Argument containing h must be a double scalar.");
+  }
+  return mxGetScalar(arg);
+}
+
+static void initUserFunc(mxArray const * arg) {
+  userFuncPlhs[0] = mxCreateDoubleScalar(0);
+  userFuncPrhs[0] = const_cast<mxArray *>(arg);
+  userFuncPrhs[1] = mxCreateDoubleScalar(0);
+  userFuncPrhs[2] = mxCreateDoubleScalar(0);
+  userFuncArgs = static_cast<double *>(mxCalloc(2, sizeof(double)));
+}
+
+static void cleanupUserFunc() {
+  mxDestroyArray(userFuncPlhs[0]);
+  mxDestroyArray(userFuncPrhs[1]);
+  mxDestroyArray(userFuncPrhs[2]);
+  mxFree(userFuncArgs);
+}
+
+static speed_func parseSpeedFunc(mxArray const * arg) {
+  if (!mxIsClass(arg, "function_handle")) {
+    mexErrMsgTxt("Speed function argument is not a function handle.");
+  }
+  initUserFunc(arg);
+  return userSpeedFunc;
+}
+
+static speed_func parseSlownessFunc(mxArray const * arg) {
+  if (!mxIsClass(arg, "function_handle")) {
+    mexErrMsgTxt("Slowness function argument is not a function handle.");
+  }
+  initUserFunc(arg);
+  return userSlownessFunc;
+}
+
+static marcher_type parseMarcherType(mxArray const * arg) {
+  if (!mxIsClass(arg, "char") || mxGetM(arg) != 1) {
+    mexErrMsgTxt("Argument containing method must be a string.");
+  }
+  std::string str {mxArrayToString(arg)};
+  marcher_type type;
+  if (str == "basic") {
+    type = marcher_type::basic;
+  } else if (str == "olim8pt") {
+    type = marcher_type::olim8pt;
+  } else {
+    mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
+  }
+  return type;
+}
+
+static void
+parseKeywordArguments(int nlhs, mxArray * plhs[],
+                      int nrhs, mxArray const * prhs[],
+                      marcher_type & type, double & h, speed_func & F) {
+  if (nrhs % 2 == 0) {
+    mexErrMsgTxt("Keyword arguments must be passed in pairs.");
+  }
+  for (int i = 1; i < nrhs; i += 2) {
+    if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
+      mexErrMsgTxt("Keywords must be strings.");
+    }
+    std::string keyword {mxArrayToString(prhs[i])};
+    if (keyword == "Speed") {
+      F = parseSpeedFunc(prhs[i + 1]);
+    } else if (keyword == "Slowness") {
+      F = parseSlownessFunc(prhs[i + 1]);
+    } else if (keyword == "h") {
+      h = parseH(prhs[i + 1]);
+    } else if (keyword == "Method") {
+      type = parseMarcherType(prhs[i + 1]);
+    } else {
+      mexErrMsgTxt(("Invalid keyword: " + keyword).c_str());
+    }
+  }
+}
+
+static void
+parseRegularArguments(int nlhs, mxArray * plhs[],
+                      int nrhs, mxArray const * prhs[],
+                      marcher_type & type, double & h, speed_func & F) {
+  if (nrhs >= 2) {
+    h = parseH(prhs[1]);
+  }
+  if (nrhs >= 3) {
+    F = parseSpeedFunc(prhs[2]);
+  }
+  if (nrhs >= 4) {
+    type = parseMarcherType(prhs[3]);
+  }
 }
 
 /**
@@ -29,60 +140,26 @@ double user_speed_func(double x, double y) {
  * nrhs -- number of inputs (expected: >=1)
  * prhs -- inputs: a logical matrix (the boundary points), a double
  *         (the uniform grid spacing), a function handle (the slowness
- *         function)
+ *         function), a string (which method to use)
  */
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
   /**
-   * Check to make sure the right number of arguments was passed.
+   * Ensure the correct number of outputs.
    */
-  if (nlhs != 1) {
-    mexErrMsgTxt("One output required.");
-  }
-  if (nrhs < 1) {
-    mexErrMsgTxt("At least one input required.");
+  if (nlhs > 1) {
+    mexErrMsgTxt("Too many outputs.");
   }
 
   /**
-   * Make sure the second argument is a double scalar, if it was
-   * passed.
-   */
-  if (nrhs >= 2 && (!mxIsClass(prhs[1], "double") || mxGetM(prhs[1]) > 1 ||
-                    mxGetN(prhs[1]) > 1)) {
-    mexErrMsgTxt("Second argument is not a double scalar.");
-  }
-
-  /**
-   * If passed, make sure the third argument is a function handle
-   * and do related MEX initialization for user_speed_func.
-   */
-  if (nrhs >= 3) {
-    if (!mxIsClass(prhs[2], "function_handle")) {
-      mexErrMsgTxt("Third argument is not a function handle.");
-    }
-
-    user_speed_func_plhs[0] = mxCreateDoubleScalar(0);
-    user_speed_func_prhs[0] = (mxArray *) prhs[2];
-    user_speed_func_prhs[1] = mxCreateDoubleScalar(0);
-    user_speed_func_prhs[2] = mxCreateDoubleScalar(0);
-  }
-
-  /**
-   * If it was passed, grab the string specifying the marcher to
-   * use.
+   * Setup arguments from passed parameters.
    */
   marcher_type type = marcher_type::basic;
-  if (nrhs >= 4) {
-    if (!mxIsClass(prhs[3], "char") || mxGetM(prhs[3]) != 1) {
-      mexErrMsgTxt("Fourth argument must be a string.");
-    }
-    std::string str {mxArrayToString(prhs[3])};
-    if (str == "basic") {
-      type = marcher_type::basic;
-    } else if (str == "olim8pt") {
-      type = marcher_type::olim8pt;
-    } else {
-      mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
-    }
+  double h = 1;
+  speed_func F = defaultSpeedFunc;
+  if (nrhs >= 2 && mxIsClass(prhs[1], "char") && mxGetM(prhs[1]) == 1) {
+    parseKeywordArguments(nlhs, plhs, nrhs, prhs, type, h, F);
+  } else {
+    parseRegularArguments(nlhs, plhs, nrhs, prhs, type, h, F);
   }
 
   /**
@@ -90,13 +167,13 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
    */
   size_t M = mxGetM(prhs[0]);
   size_t N = mxGetN(prhs[0]);
+  
   mxLogical * logicals = mxGetLogicals(prhs[0]);
   bool * in = (bool *) calloc(M*N, sizeof(bool));
-  for (int i = 0; i < M*N; ++i) in[i] = logicals[i];
-	
-  double h = nrhs >= 2 ? mxGetScalar(prhs[1]) : 1;
-  speed_func F = nrhs >= 3 ? user_speed_func : default_speed_func;
-	
+  for (int i = 0; i < M*N; ++i) {
+    in[i] = logicals[i];
+  }
+
   /**
    * Initialize output and get pointer.
    */
@@ -105,10 +182,8 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
 
   fmm_mex(out, in, M, N, h, F, type);
 
-  if (nrhs >= 3) {
-    mxDestroyArray(user_speed_func_plhs[0]);
-    mxDestroyArray(user_speed_func_prhs[1]);
-    mxDestroyArray(user_speed_func_prhs[2]);
+  if (F != defaultSpeedFunc) {
+    cleanupUserFunc();
   }
 }
 

@@ -1,6 +1,8 @@
 * Tasks
-  - [ ] Test different speed functions using Maria's analytic solutions
+  - [X] Test different speed functions using Maria's analytic solutions
   - [ ] Make up a couple neat analytic solutions
+  - [ ] Make it possible to use a matrix instead of a speed or slowness function
+  - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
   - [ ] Implement midpoint method with 1oe speed function value
   - [ ] Implement a basic rootfinder for midpoint rule updates

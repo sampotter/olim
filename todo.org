@@ -2,6 +2,7 @@
   - [X] Test different speed functions using Maria's analytic solutions
   - [ ] Make up a couple neat analytic solutions
   - [ ] Make it possible to use a matrix instead of a speed or slowness function
+  - [ ] Make it possible to specify the origin to translate the speed function
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
   - [ ] Implement midpoint method with 1oe speed function value

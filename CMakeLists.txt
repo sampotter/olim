@@ -13,6 +13,7 @@ add_library (fmm
   src/neumann_marcher.cpp
   src/node.cpp
   src/olim_8pt_rhr.cpp
+  src/olim_8pt_util.cpp
   src/speed_funcs.cpp)
 
 add_executable (basic_marcher.test src/basic_marcher.test.cpp)

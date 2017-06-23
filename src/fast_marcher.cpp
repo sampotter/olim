@@ -123,6 +123,10 @@ double fast_marcher::F(double x, double y) const {
   return _F(x, y);
 }
 
+double fast_marcher::S(double x, double y) const {
+  return 1.0/_F(x, y);
+}
+
 double fast_marcher::F(size_t i, size_t j) {
   // Use -1 to indicate that the cache value has not been set
   assert(in_bounds(i, j));

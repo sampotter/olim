@@ -31,13 +31,14 @@ protected:
   node* get_next_node();
   double get_h() const;
   double F(size_t i, size_t j);
+  double F(double x, double y) const;
+  double S(double x, double y) const;
   void adjust_heap_entry(node* n);
   void insert_into_heap(node* n);
 	
 private:
   virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
   virtual void stage_neighbors_impl(size_t i, size_t j) = 0;
-  double F(double x, double y) const;
 
   node* _nodes;
   heap _heap;

@@ -91,7 +91,14 @@ double fast_marcher::get_value(size_t i, size_t j) const {
 
 void fast_marcher::update_node_value(size_t i, size_t j) {
   assert(in_bounds(i, j));
-  update_node_value_impl(i, j);
+  double T = std::numeric_limits<double>::infinity();
+  update_node_value_impl(i, j, T);
+  node* n = &this->operator()(i, j);
+  assert(n->is_trial());
+  if (T <= n->get_value()) {
+    n->set_value(T);
+    adjust_heap_entry(n);
+  }
 }
 
 bool fast_marcher::in_bounds(size_t i, size_t j) const {

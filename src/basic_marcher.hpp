@@ -7,7 +7,7 @@ struct basic_marcher: public neumann_marcher
 {
   using neumann_marcher::neumann_marcher;
 private:
-  virtual void update_node_value_impl(size_t i, size_t j);
+  virtual void update_node_value_impl(size_t i, size_t j, double & T);
 };
 
 #endif // __BASIC_MARCHER_HPP__

@@ -4,14 +4,11 @@
 #include <cassert>
 #include <cmath>
 
-void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j) {
+void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
   node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  node *x = 0x0, *x0 = 0x0, *x1 = 0x0;
+  node *x0 = 0x0, *x1 = 0x0;
   get_valid_neighbors(i, j, nb);
-  double T = std::numeric_limits<double>::infinity();
   double sh = get_h()/F(i, j);
-
-  // TODO: cache alphas?
 
   for (int k = 0; k < 8; k += 2) {
     if ((x0 = nb[k]) && !nb[(k + 6) % 8] && !nb[(k + 7) % 8] &&
@@ -40,15 +37,6 @@ void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j) {
     if ((x0 = nb[k]) && (x1 = nb[(k + 2) % 8])) {
       T = std::min(T, solve2pt_adjacent(x0->get_value(), x1->get_value(), sh));
     }
-  }
-
-  // TODO: move this out one level
-
-  x = &this->operator()(i, j);
-  assert(x->is_trial());
-  if (T <= x->get_value()) {
-    x->set_value(T);
-    adjust_heap_entry(x);
   }
 }
 

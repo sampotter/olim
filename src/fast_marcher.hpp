@@ -35,7 +35,7 @@ protected:
   void insert_into_heap(node* n);
 	
 private:
-  virtual void update_node_value_impl(size_t i, size_t j) = 0;
+  virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
   virtual void stage_neighbors_impl(size_t i, size_t j) = 0;
   double F(double x, double y) const;
 

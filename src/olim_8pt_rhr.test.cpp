@@ -19,6 +19,31 @@ BOOST_AUTO_TEST_CASE (adjacent_update_works) {
   BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
 };
 
+BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
+  olim_8pt_rhr m {3, 3, 1};
+  m.add_boundary_node(1, 1);
+  m.run();
+  double gt[] = {
+    std::sqrt(2),
+    1,
+    std::sqrt(2),
+    1,
+    0,
+    1,
+    std::sqrt(2),
+    1,
+    std::sqrt(2)
+  };
+  int k = 0;
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      BOOST_TEST(
+        gt[k++] == m.get_value(i, j),
+        boost::test_tools::tolerance(1e-15));
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE (slightly_more_involved) {
   olim_8pt_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);

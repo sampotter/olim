@@ -34,12 +34,12 @@ void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
    */
   for (int k = 0; k < 8; k += 2) {
     if ((x0 = nb[k]) && (x1 = nb[k + 1])) {
-      T = std::min(T, solve2pt_diagonal(x0->get_value(), x1->get_value(), s, h));
+      T = std::min(T, rhr_diag(x0->get_value(), x1->get_value(), s, h));
     }
   }
   for (int k = 1; k < 8; k += 2) {
     if ((x0 = nb[(k + 1) % 8]) && (x1 = nb[k])) {
-      T = std::min(T, solve2pt_diagonal(x0->get_value(), x1->get_value(), s, h));
+      T = std::min(T, rhr_diag(x0->get_value(), x1->get_value(), s, h));
     }
   }
 
@@ -48,7 +48,7 @@ void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
    */
   for (int k = 0; k < 8; k += 2) {
     if ((x0 = nb[k]) && (x1 = nb[(k + 2) % 8])) {
-      T = std::min(T, solve2pt_adjacent(x0->get_value(), x1->get_value(), s, h));
+      T = std::min(T, rhr_adj(x0->get_value(), x1->get_value(), s, h));
     }
   }
 }

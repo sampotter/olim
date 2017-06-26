@@ -4,11 +4,11 @@
 #include <cmath>
 #include <limits>
 
-double solve2pt_adjacent(double u0, double u1, double s_est, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(!std::isinf(u0));
   assert(!std::isinf(u1));
+double rhr_adj(double u0, double u1, double s_est, double h) {
   
   double c = s_est*std::fabs(u0 - u1)/h;
   if (c > std::sqrt(2)/2) {
@@ -23,11 +23,11 @@ double solve2pt_adjacent(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(2*lam*(1 - lam) + 1);
 }
 
-double solve2pt_diagonal(double u0, double u1, double s_est, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(!std::isinf(u0));
   assert(!std::isinf(u1));
+double rhr_diag(double u0, double u1, double s_est, double h) {
   
   double c = s_est*std::fabs(u0 - u1)/h;
   if (c > std::sqrt(2)/2) {

@@ -40,7 +40,7 @@ void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
       u0 = x0->get_value();
       u1 = x1->get_value();
       s_est = get_s_est(s, x + h*di[k], y + h*dj[k], h*di[k + 1], h*dj[k + 1]);
-      T = std::min(T, solve2pt_diagonal(u0, u1, s_est, h));
+      T = std::min(T, rhr_diag(u0, u1, s_est, h));
     }
   }
   for (int k = 1; k < 8; k += 2) {
@@ -48,7 +48,7 @@ void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
       u0 = x0->get_value();
       u1 = x1->get_value();
       s_est = get_s_est(s, x + h*di[k + 1], y + h*dj[k + 1], h*di[k], h*dj[k]);
-      T = std::min(T, solve2pt_diagonal(u0, u1, s_est, h));
+      T = std::min(T, rhr_diag(u0, u1, s_est, h));
     }
   }
 
@@ -60,7 +60,7 @@ void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
       u0 = x0->get_value();
       u1 = x1->get_value();
       s_est = get_s_est(s, x + h*di[k], y + h*dj[k], h*di[k + 2], h*dj[k + 2]);
-      T = std::min(T, solve2pt_adjacent(u0, u1, s_est, h));
+      T = std::min(T, rhr_adj(u0, u1, s_est, h));
     }
   }
 }

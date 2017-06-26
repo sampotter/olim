@@ -8,7 +8,7 @@ void basic_marcher::update_node_value_impl(size_t i, size_t j, double & T) {
   node* n = 0x0;
   node* nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
-  double sh = get_h()/F(i, j);
+  double sh = get_h()*S(i, j);
   double tmp = 0, T1 = 0, T2 = 0, disc = 0;
   for (int k = 0, k1 = 1; k < 4; ++k, k1 = (k1 + 1) % 4) {
     if (nb[k] && nb[k1]) {

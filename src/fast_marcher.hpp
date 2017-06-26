@@ -7,10 +7,19 @@
 
 #include <vector>
 
+double default_speed_func(double x, double y) {
+  (void) x;
+  (void) y;
+  return 1.0;
+}
+
 struct fast_marcher
 {
   fast_marcher(size_t height, size_t width, double h = 1.0);
-  fast_marcher(size_t height, size_t width, double h, speed_func F);
+  fast_marcher(size_t height, size_t width, double h, speed_func S,
+               double x0 = 0.0, double y0 = 0.0);
+  fast_marcher(size_t height, size_t width, double h,
+               double const * const S_values);
   virtual ~fast_marcher();
 
   node & operator()(size_t i, size_t j);
@@ -30,11 +39,9 @@ protected:
   bool is_valid(size_t i, size_t j) const;
   node* get_next_node();
   double get_h() const;
-  double F(size_t i, size_t j);
-  double F(double x, double y) const;
-  double S(double x, double y) const;
-  void adjust_heap_entry(node* n);
-  void insert_into_heap(node* n);
+  double S(size_t i, size_t j);
+  void adjust_heap_entry(node * n);
+  void insert_into_heap(node * n);
 	
 private:
   virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
@@ -43,8 +50,9 @@ private:
   node* _nodes;
   heap _heap;
   double _h;
-  std::vector<double> _F_cache;
-  speed_func _F;
+  std::vector<double> _S_cache;
+  speed_func _S {default_speed_func};
+  double _x0 {0}, _y0 {0};
   size_t _height;
   size_t _width;
 };

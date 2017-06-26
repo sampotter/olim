@@ -30,15 +30,6 @@ static double userSpeedFunc(double x, double y) {
   return mxGetScalar(userFuncPlhs[0]);
 }
 
-static double userSlownessFunc(double x, double y) {
-  setScalar(userFuncPrhs[1], x);
-  setScalar(userFuncPrhs[2], y);
-  if (!mexCallMATLAB(1, userFuncPlhs, 3, userFuncPrhs, "feval")) {
-    // TODO: error handling
-  }
-  return 1.0/mxGetScalar(userFuncPlhs[0]);
-}
-
 static double parseH(mxArray const * arg) {
   if (!mxIsClass(arg, "double") || mxGetM(arg) > 1 || mxGetN(arg) > 1) {
     mexErrMsgTxt("Argument containing h must be a double scalar.");
@@ -67,14 +58,6 @@ static speed_func parseSpeedFunc(mxArray const * arg) {
   }
   initUserFunc(arg);
   return userSpeedFunc;
-}
-
-static speed_func parseSlownessFunc(mxArray const * arg) {
-  if (!mxIsClass(arg, "function_handle")) {
-    mexErrMsgTxt("Slowness function argument is not a function handle.");
-  }
-  initUserFunc(arg);
-  return userSlownessFunc;
 }
 
 static marcher_type parseMarcherType(mxArray const * arg) {
@@ -107,8 +90,6 @@ parseKeywordArguments(int nlhs, mxArray * plhs[],
     std::string keyword {mxArrayToString(prhs[i])};
     if (keyword == "Speed") {
       F = parseSpeedFunc(prhs[i + 1]);
-    } else if (keyword == "Slowness") {
-      F = parseSlownessFunc(prhs[i + 1]);
     } else if (keyword == "h") {
       h = parseH(prhs[i + 1]);
     } else if (keyword == "Method") {
@@ -139,7 +120,7 @@ parseRegularArguments(int nlhs, mxArray * plhs[],
  * plhs -- outputs: a double matrix
  * nrhs -- number of inputs (expected: >=1)
  * prhs -- inputs: a logical matrix (the boundary points), a double
- *         (the uniform grid spacing), a function handle (the slowness
+ *         (the uniform grid spacing), a function handle (the speed
  *         function), a string (which method to use)
  */
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {

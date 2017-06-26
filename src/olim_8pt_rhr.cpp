@@ -7,8 +7,9 @@
 #include "olim_8pt_util.hpp"
 
 void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
-  node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  node *x0 = 0x0, *x1 = 0x0;
+  node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+  node * x0 = 0x0;
+  node * x1 = 0x0;
   get_valid_neighbors(i, j, nb);
   double s = S(i, j), h = get_h();
 
@@ -25,7 +26,7 @@ void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
   }
   for (int k = 1; k < 8; k += 2) { // diagonal
     if ((x0 = nb[k]) && !nb[(k + 7) % 8] && !nb[(k + 1) % 8]) {
-      T = std::min(T, x0->get_value() + s*h*sqrt(2));
+      T = std::min(T, x0->get_value() + s*h*std::sqrt(2));
     }
   }
 

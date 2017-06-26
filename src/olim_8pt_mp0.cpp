@@ -7,8 +7,9 @@
 void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
   static int di[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
   static int dj[8] = {0, 1, 1, 1, 0, -1, -1, -1};
-  node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  node *x0 = 0x0, *x1 = 0x0;
+  node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+  node * x0 = 0x0;
+  node * x1 = 0x0;
   get_valid_neighbors(i, j, nb);
   double h = get_h(), x = h*i, y = h*j, u0, u1;
   double s = S(x, y), s_est;
@@ -66,7 +67,7 @@ void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
 }
 
 double olim_8pt_mp0::get_s_est(double s, double x0, double y0, double x1,
-                               double y1) const {
+                               double y1) {
   return (s + (S(x0, y0) + S(x1, y1))/2)/2;
 }
 

@@ -4,30 +4,42 @@
 #include <cmath>
 #include <vector>
 
-static double default_speed_func(double x, double y) {
-  (void) x;
-  (void) y;
-  return 1.0;
+static size_t initial_heap_size(double height, double width) {
+  return static_cast<size_t>(std::max(8.0, std::log(height*width)));
 }
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h):
   _nodes {new node[height*width]},
-  _heap {static_cast<size_t>(std::max(8.0, std::log(height*width)))}, // whatever
+  _heap {initial_heap_size(height, width)},
   _h {h},
-  _F_cache(width*height, -1),
-  _F {default_speed_func},
+  _S_cache(width*height, -1),
   _height {height},
   _width {width}
 {
   init();
 }
 
-fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func F):
+fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func S,
+                           double x0, double y0):
   _nodes {new node[height*width]},
-  _heap {static_cast<size_t>(std::log(height*width))}, // whatever
+  _heap {initial_heap_size(height, width)},
   _h {h},
-  _F_cache(width*height, -1),
-  _F {F},
+  _S_cache(width*height, -1),
+  _S {S},
+  _x0 {x0},
+  _y0 {y0},
+  _height {height},
+  _width {width}
+{
+  init();
+}
+
+fast_marcher::fast_marcher(size_t height, size_t width, double h,
+                           double const * const S_values):
+  _nodes {new node[height*width]},
+  _heap {initial_heap_size(height, width)},
+  _h {h},
+  _S_cache(S_values, S_values + width*height),
   _height {height},
   _width {width}
 {
@@ -119,23 +131,14 @@ double fast_marcher::get_h() const {
   return _h;
 }
 
-double fast_marcher::F(double x, double y) const {
-  return _F(x, y);
-}
-
-double fast_marcher::S(double x, double y) const {
-  return 1.0/_F(x, y);
-}
-
-double fast_marcher::F(size_t i, size_t j) {
-  // Use -1 to indicate that the cache value has not been set
+double fast_marcher::S(size_t i, size_t j) {
   assert(in_bounds(i, j));
   size_t k = _width*i + j;
-  assert(k < _F_cache.size());
-  if (_F_cache[k] < 0) {
-    _F_cache[k] = _F(_h*i, _h*j);
+  assert(k < _S_cache.size());
+  if (_S_cache[k] < 0) {
+    _S_cache[k] = _S(_h*i - _x0, _h*j - _y0);
   }
-  return _F_cache[k];
+  return _S_cache[k];
 }
 
 void fast_marcher::adjust_heap_entry(node* n) {

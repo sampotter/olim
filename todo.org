@@ -1,8 +1,9 @@
 * Tasks
   - [X] Test different speed functions using Maria's analytic solutions
-  - [ ] Make up a couple neat analytic solutions
-  - [ ] Make it possible to use a matrix instead of a speed or slowness function
+  - [X] Make up a couple neat analytic solutions
+  - [ ] Add padding around the boundary to avoid complicating index calculations
   - [ ] Make it possible to specify the origin to translate the speed function
+  - [ ] Make it possible to use a matrix instead of a speed or slowness function
   - [ ] Test mp methods using exact speed function solns
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
@@ -34,7 +35,8 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
-  - [ ] Make sure to reset the cache (in fast_marcher::F) when necessary
-  - [ ] Add "keyword argument" style to MEX function
+  - [ ] fix "speed_func F" conflict (should be speed_func S or
+    slowness_func F (the former is better))
+  - [X] Add "keyword argument" style to MEX function
   - [ ] Python wrapper
   - [ ] Julia wrapper

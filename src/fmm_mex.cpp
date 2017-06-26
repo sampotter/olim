@@ -6,12 +6,12 @@
 #include "olim_8pt_rhr.hpp"
 
 void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
-			 speed_func F, marcher_type type) {
+			 speed_func S, marcher_type type) {
   std::unique_ptr<fast_marcher> m;
   if (type == marcher_type::basic) {
-    m = std::make_unique<basic_marcher>(M, N, h, F);
+    m = std::make_unique<basic_marcher>(M, N, h, S);
   } else if (type == marcher_type::olim8pt) {
-    m = std::make_unique<olim_8pt_rhr>(M, N, h, F);
+    m = std::make_unique<olim_8pt_rhr>(M, N, h, S);
   }
 	
   for (size_t i = 0; i < M; ++i) {

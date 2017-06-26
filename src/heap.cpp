@@ -19,20 +19,20 @@ static size_t get_parent(size_t pos) {
 }
 
 heap::heap(size_t capacity):
-  _data {new node*[capacity]},
+  _data {new node *[capacity]},
   _capacity {capacity} {}
 
 heap::~heap() { delete[] _data; }
 
-node* & heap::front() {
+node *& heap::front() {
   assert(_size > 0);
-  // assert(has_heap_property());
+  assert(has_heap_property());
   return _data[0];
 }
 
-node* const & heap::front() const {
+node * const & heap::front() const {
   assert(_size > 0);
-  // assert(has_heap_property());
+  assert(has_heap_property());
   return _data[0];
 }
 
@@ -40,7 +40,7 @@ bool heap::empty() const {
   return _size == 0;
 }
 
-node** heap::data() const {
+node ** heap::data() const {
   return _data;
 }
 
@@ -54,7 +54,7 @@ void heap::pop_front() {
   heapify(0);
 }
 
-void heap::insert(node* n) {
+void heap::insert(node * n) {
   if (_size == _capacity) grow();
   n->set_heap_pos(_size);
   assert(_size < _capacity);
@@ -62,7 +62,7 @@ void heap::insert(node* n) {
   adjust_entry(n);
 }
 
-void heap::adjust_entry(node* n) {
+void heap::adjust_entry(node * n) {
   size_t pos = n->get_heap_pos();
   assert(_data[pos] == n);
   assert(pos < _size);
@@ -72,7 +72,7 @@ void heap::adjust_entry(node* n) {
     pos = parent;
     parent = get_parent(pos);
   }
-  // assert(has_heap_property());
+  assert(has_heap_property());
 }
 
 void heap::print() const {
@@ -93,8 +93,8 @@ void heap::print() const {
 
 void heap::grow() {
   _capacity *= 2;
-  node** tmp = new node*[_capacity];
-  memcpy(tmp, _data, _size*sizeof(node*));
+  node ** tmp = new node *[_capacity];
+  memcpy(tmp, _data, _size*sizeof(node *));
   delete[] _data;
   _data = tmp;
 }
@@ -117,7 +117,7 @@ void heap::heapify(size_t pos) {
     }
   };
   rec(pos);
-  // assert(has_heap_property());
+  assert(has_heap_property());
 }
 
 bool heap::has_heap_property() const {

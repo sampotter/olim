@@ -4,11 +4,19 @@
 #include <cmath>
 #include <limits>
 
+static void check_params(double u0, double u1, double h) {
+  (void) u0;
+  (void) u1;
+  (void) h;
+  assert(h > 0);
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(!std::isinf(u0));
   assert(!std::isinf(u1));
+}
+
 double rhr_adj(double u0, double u1, double s_est, double h) {
+  check_params(u0, u1, h);
   
   double c = s_est*std::fabs(u0 - u1)/h;
   if (c > std::sqrt(2)/2) {
@@ -23,11 +31,9 @@ double rhr_adj(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(2*lam*(1 - lam) + 1);
 }
 
-  assert(u0 >= 0);
-  assert(u1 >= 0);
-  assert(!std::isinf(u0));
-  assert(!std::isinf(u1));
 double rhr_diag(double u0, double u1, double s_est, double h) {
+  check_params(u0, u1, h);
+  assert(s_est >= 0);
   
   double c = s_est*std::fabs(u0 - u1)/h;
   if (c > std::sqrt(2)/2) {

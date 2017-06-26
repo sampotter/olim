@@ -30,13 +30,20 @@
   - [ ] For methods that degenerate when s = 1, come up with a way to
     issue a warning
 	- [ ] Maybe when s0 = s1 we can just use the rhr update?
+  - [ ] Boundary conditions
+	- [ ] "Normal BCs"?
+	- [ ] Periodic BCs
 * Learning
   - [X] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
-  - [ ] fix "speed_func F" conflict (should be speed_func S or
+  - [X] fix "speed_func F" conflict (should be speed_func S or
     slowness_func F (the former is better))
   - [X] Add "keyword argument" style to MEX function
   - [ ] Python wrapper
   - [ ] Julia wrapper
+  - [ ] Adding padding for BCs seemed to fix issue---but we didn't
+    have to explicitly avoid updating boundary cells. Is this because
+    there are no problems if we don't add any boundary points to the
+    padding?

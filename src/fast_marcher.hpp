@@ -7,11 +7,7 @@
 
 #include <vector>
 
-double default_speed_func(double x, double y) {
-  (void) x;
-  (void) y;
-  return 1.0;
-}
+double default_speed_func(double x, double y);
 
 struct fast_marcher
 {

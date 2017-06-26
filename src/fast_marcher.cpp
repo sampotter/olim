@@ -4,6 +4,12 @@
 #include <cmath>
 #include <vector>
 
+double default_speed_func(double x, double y) {
+  (void) x;
+  (void) y;
+  return 1.0;
+}
+
 static size_t initial_heap_size(double height, double width) {
   return static_cast<size_t>(std::max(8.0, std::log(height*width)));
 }

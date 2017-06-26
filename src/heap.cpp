@@ -26,13 +26,11 @@ heap::~heap() { delete[] _data; }
 
 node *& heap::front() {
   assert(_size > 0);
-  assert(has_heap_property());
   return _data[0];
 }
 
 node * const & heap::front() const {
   assert(_size > 0);
-  assert(has_heap_property());
   return _data[0];
 }
 
@@ -72,7 +70,6 @@ void heap::adjust_entry(node * n) {
     pos = parent;
     parent = get_parent(pos);
   }
-  assert(has_heap_property());
 }
 
 void heap::print() const {
@@ -117,27 +114,6 @@ void heap::heapify(size_t pos) {
     }
   };
   rec(pos);
-  assert(has_heap_property());
-}
-
-bool heap::has_heap_property() const {
-  if (empty()) {
-    return true;
-  }
-  std::function<bool(size_t)> const rec = [&] (size_t pos) {
-    bool has_prop = true;
-    size_t const l = get_left(pos), r = get_right(pos);
-    if (l < _size) {
-      has_prop &= get_value(pos) <= get_value(l);
-      has_prop &= rec(l);
-    }
-    if (r < _size) {
-      has_prop &= get_value(pos) <= get_value(r);
-      has_prop &= rec(r);
-    }
-    return has_prop;
-  };
-return rec(0);
 }
 
 void heap::swap(size_t pos1, size_t pos2) {

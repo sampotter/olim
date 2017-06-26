@@ -22,14 +22,13 @@ struct fast_marcher
                double const * const S_values);
   virtual ~fast_marcher();
 
-  node & operator()(size_t i, size_t j);
-  node const & operator()(size_t i, size_t j) const;
-
   void add_boundary_node(size_t i, size_t j);
   void run();
   double get_value(size_t i, size_t j) const;
     
 protected:
+  node & operator()(size_t i, size_t j);
+  node const & operator()(size_t i, size_t j) const;
   void init();
   void update_node_value(size_t i, size_t j);
   void stage_neighbors(size_t i, size_t j);

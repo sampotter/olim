@@ -106,6 +106,34 @@ BOOST_AUTO_TEST_CASE (origin_test) {
   }
 }
 
+BOOST_AUTO_TEST_CASE (sf1_single_row_test) {
+  size_t N = 1001;
+  double h = 1.0/N;
+  olim_8pt_rhr m {1, N, h, sf1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (size_t j = N - 10; j < N; ++j) {
+    double U = m.get_value(0, j);
+    double u = sf1_soln(h*j, 0);
+    BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+  }
+}
+
+BOOST_AUTO_TEST_CASE (sf1_test) {
+  size_t M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim_8pt_rhr m {M, N, h, sf1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (size_t i = M - 3; i < M; ++i) {
+    for (size_t j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = sf1_soln(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

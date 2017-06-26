@@ -21,13 +21,13 @@ void olim_8pt_mp1::update_node_value_impl(size_t i, size_t j, double & T) {
   for (int k = 0; k < 8; k += 2) {
     if ((x0 = nb[k]) && !nb[(k + 6) % 8] && !nb[(k + 7) % 8] &&
         !nb[(k + 1) % 8] && !nb[(k + 2) % 8]) {
-      sbar0 = (s + S(x + h*di[k], x + h*dj[k]))/2;
+      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
       T = std::min(T, x0->get_value() + h*sbar0);
     }
   }
   for (int k = 1; k < 8; k += 2) {
     if ((x0 = nb[k]) && !nb[(k + 7) % 8] && !nb[(k + 1) % 8]) {
-      sbar0 = (s + S(x + h*di[k], x + h*dj[k]))/2;
+      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
       T = std::min(T, x0->get_value() + h*sbar0*std::sqrt(2));
     }
   }
@@ -35,22 +35,22 @@ void olim_8pt_mp1::update_node_value_impl(size_t i, size_t j, double & T) {
   /**
    * Next, do the diagonal triangle updates.
    */
-  for (int k = 0; k < 8; k += 2) {
-    if ((x0 = nb[k]) && (x1 = nb[k + 1])) {
+  for (int k = 0, l = k + 1; k < 8; k += 2, l = k + 1) {
+    if ((x0 = nb[k]) && (x1 = nb[l])) {
       u0 = x0->get_value();
       u1 = x1->get_value();
-      sbar0 = (s + S(x + h*di[k], x + h*dj[k]))/2;
-      sbar1 = (s + S(x + h*di[k + 1], x + h*dj[k + 1]))/2;
+      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
+      sbar1 = (s + S(i + di[l], j + dj[l]))/2;
       T = std::min(T, sbar0 == sbar1 ? rhr_diag(u0, u1, sbar0, h) :
                    mp1_diag(u0, u1, sbar0, sbar1, h));
     }
   }
-  for (int k = 1; k < 8; k += 2) {
-    if ((x0 = nb[(k + 1) % 8]) && (x1 = nb[k])) {
+  for (int k = 1, l = k + 1; k < 8; k += 2, l = (k + 1) % 8) {
+    if ((x0 = nb[l]) && (x1 = nb[k])) {
       u0 = x0->get_value();
       u1 = x1->get_value();
-      sbar0 = (s + S(x + h*di[k + 1], x + h*dj[k + 1]))/2;
-      sbar1 = (s + S(x + h*di[k], x + h*dj[k]))/2;
+      sbar0 = (s + S(i + di[l], j + dj[l]))/2;
+      sbar1 = (s + S(i + di[k], j + dj[k]))/2;
       T = std::min(T, sbar0 == sbar1 ? rhr_diag(u0, u1, sbar0, h) :
                    mp1_diag(u0, u1, sbar0, sbar1, h));
     }
@@ -59,12 +59,12 @@ void olim_8pt_mp1::update_node_value_impl(size_t i, size_t j, double & T) {
   /**
    * Finally, do the adjacent triangle updates.
    */
-  for (int k = 0; k < 8; k += 2) {
-    if ((x0 = nb[k]) && (x1 = nb[(k + 2) % 8])) {
+  for (int k = 0, l = k + 2; k < 8; k += 2, l = (k + 2) % 8) {
+    if ((x0 = nb[k]) && (x1 = nb[l])) {
       u0 = x0->get_value();
       u1 = x1->get_value();
-      sbar0 = (s + S(x + h*di[k], x + h*dj[k]))/2;
-      sbar1 = (s + S(x + h*di[k + 2], x + h*dj[k + 2]))/2;
+      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
+      sbar1 = (s + S(i + di[l], j + dj[l]))/2;
       T = std::min(T, sbar0 == sbar1 ? rhr_adj(u0, u1, sbar0, h) :
                    mp1_adj(u0, u1, sbar0, sbar1, h));
     }

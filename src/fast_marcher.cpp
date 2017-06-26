@@ -10,15 +10,19 @@ double default_speed_func(double x, double y) {
   return 1.0;
 }
 
+static size_t get_num_nodes(size_t height, size_t width) {
+  return (height + 2)*(width + 2);
+}
+
 static size_t initial_heap_size(double height, double width) {
   return static_cast<size_t>(std::max(8.0, std::log(height*width)));
 }
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h):
-  _nodes {new node[height*width]},
-  _heap {initial_heap_size(height, width)},
+  _nodes {new node[get_num_nodes(height, width)]},
+  _heap {initial_heap_size(height + 2, width + 2)},
   _h {h},
-  _S_cache(width*height, -1),
+  _S_cache(get_num_nodes(height, width), -1),
   _height {height},
   _width {width}
 {
@@ -27,10 +31,10 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h):
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func S,
                            double x0, double y0):
-  _nodes {new node[height*width]},
+  _nodes {new node[get_num_nodes(height, width)]},
   _heap {initial_heap_size(height, width)},
   _h {h},
-  _S_cache(width*height, -1),
+  _S_cache(get_num_nodes(height, width), -1),
   _S {S},
   _x0 {x0},
   _y0 {y0},
@@ -42,10 +46,10 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h, speed_func S,
 
 fast_marcher::fast_marcher(size_t height, size_t width, double h,
                            double const * const S_values):
-  _nodes {new node[height*width]},
+  _nodes {new node[get_num_nodes(height, width)]},
   _heap {initial_heap_size(height, width)},
   _h {h},
-  _S_cache(S_values, S_values + width*height),
+  _S_cache(S_values, S_values + get_num_nodes(height, width)),
   _height {height},
   _width {width}
 {
@@ -53,8 +57,8 @@ fast_marcher::fast_marcher(size_t height, size_t width, double h,
 }
 
 void fast_marcher::init() {
-  for (size_t i = 0; i < _height; ++i) {
-    for (size_t j = 0; j < _width; ++j) {
+  for (size_t i = 0; i < _height + 2; ++i) {
+    for (size_t j = 0; j < _width + 2; ++j) {
       this->operator()(i, j).set_i(i);
       this->operator()(i, j).set_j(j);
     }
@@ -67,18 +71,19 @@ fast_marcher::~fast_marcher() {
 
 node & fast_marcher::operator()(size_t i, size_t j) {
   assert(in_bounds(i, j));
-  return _nodes[_width*i + j];
+  return _nodes[get_linear_index(i, j)];
 }
 
 node const & fast_marcher::operator()(size_t i, size_t j) const {
   assert(in_bounds(i, j));
-  return _nodes[_width*i + j];
+  return _nodes[get_linear_index(i, j)];
 }
 
 void fast_marcher::add_boundary_node(size_t i, size_t j) {
-  assert(in_bounds(i, j));
-  this->operator()(i, j) = node::make_boundary_node(i, j);
-  stage_neighbors(i, j);
+  size_t i_ = i + 1, j_ = j + 1;
+  assert(in_bounds(i_, j_));
+  this->operator()(i_, j_) = node::make_boundary_node(i_, j_);
+  stage_neighbors(i_, j_);
 }
 
 void fast_marcher::stage_neighbors(size_t i, size_t j) {
@@ -103,8 +108,9 @@ void fast_marcher::run() {
 }
 
 double fast_marcher::get_value(size_t i, size_t j) const {
-  assert(in_bounds(i, j));
-  return this->operator()(i, j).get_value();
+  size_t i_ = i + 1, j_ = j + 1;
+  assert(in_bounds(i_, j_));
+  return this->operator()(i_, j_).get_value();
 }
 
 void fast_marcher::update_node_value(size_t i, size_t j) {
@@ -120,7 +126,7 @@ void fast_marcher::update_node_value(size_t i, size_t j) {
 }
 
 bool fast_marcher::in_bounds(size_t i, size_t j) const {
-  return i < _height && j < _width;
+  return i < _height + 2 && j < _width + 2;
 }
 
 bool fast_marcher::is_valid(size_t i, size_t j) const {
@@ -139,7 +145,7 @@ double fast_marcher::get_h() const {
 
 double fast_marcher::S(size_t i, size_t j) {
   assert(in_bounds(i, j));
-  size_t k = _width*i + j;
+  size_t k = get_linear_index(i, j);
   assert(k < _S_cache.size());
   if (_S_cache[k] < 0) {
     _S_cache[k] = _S(_h*i - _x0, _h*j - _y0);
@@ -153,6 +159,10 @@ void fast_marcher::adjust_heap_entry(node* n) {
 
 void fast_marcher::insert_into_heap(node* n) {
   _heap.insert(n);
+}
+
+size_t fast_marcher::get_linear_index(size_t i, size_t j) const {
+  return (_width + 2)*i + j;
 }
 
 // Local Variables:

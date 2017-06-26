@@ -41,6 +41,7 @@ protected:
 private:
   virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
   virtual void stage_neighbors_impl(size_t i, size_t j) = 0;
+  size_t get_linear_index(size_t i, size_t k) const;
 
   node* _nodes;
   heap _heap;

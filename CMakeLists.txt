@@ -4,6 +4,8 @@ cmake_minimum_required (VERSION 3.0)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
+find_package (gsl)
+
 add_library (fmm
   src/basic_marcher.cpp
   src/fast_marcher.cpp
@@ -13,14 +15,19 @@ add_library (fmm
   src/neumann_marcher.cpp
   src/node.cpp
   src/olim_8pt_mp0.cpp
+  src/olim_8pt_mp1.cpp
   src/olim_8pt_rhr.cpp
   src/olim_8pt_util.cpp
   src/speed_funcs.cpp)
 
+target_link_libraries (fmm ${GSL_LIBRARIES})
+
 set (tests
   basic_marcher
   olim_8pt_mp0
-  olim_8pt_rhr)
+  olim_8pt_mp1
+  olim_8pt_rhr
+  olim_8pt_util)
 
 foreach (test ${tests})
   add_executable (${test}.test src/${test}.test.cpp)

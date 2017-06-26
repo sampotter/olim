@@ -1,6 +1,9 @@
 #ifndef __SPEED_FUNCS_HPP__
 #define __SPEED_FUNCS_HPP__
 
+double default_speed_func(double x, double y);
+double default_speed_func_soln(double x, double y);
+
 double sf1(double x, double y);
 double sf1_soln(double x, double y);
 

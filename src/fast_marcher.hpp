@@ -3,11 +3,10 @@
 
 #include "heap.hpp"
 #include "node.hpp"
+#include "speed_funcs.hpp"
 #include "typedefs.hpp"
 
 #include <vector>
-
-double default_speed_func(double x, double y);
 
 struct fast_marcher
 {

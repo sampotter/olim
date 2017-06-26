@@ -2,6 +2,16 @@
 
 #include <cmath>
 
+double default_speed_func(double x, double y) {
+  (void) x;
+  (void) y;
+  return 1.0;
+}
+
+double default_speed_func_soln(double x, double y) {
+  return std::sqrt(x*x + y*y);
+}
+
 double sf1(double x, double y) {
   double a = (x + y)/2;
   double b = std::cos(a);

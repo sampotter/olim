@@ -4,12 +4,6 @@
 #include <cmath>
 #include <vector>
 
-double default_speed_func(double x, double y) {
-  (void) x;
-  (void) y;
-  return 1.0;
-}
-
 static size_t get_num_nodes(size_t height, size_t width) {
   return (height + 2)*(width + 2);
 }

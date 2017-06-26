@@ -7,11 +7,7 @@
 
 #include <vector>
 
-double default_speed_func(double x, double y) {
-  (void) x;
-  (void) y;
-  return 1.0;
-}
+double default_speed_func(double x, double y);
 
 struct fast_marcher
 {
@@ -22,14 +18,13 @@ struct fast_marcher
                double const * const S_values);
   virtual ~fast_marcher();
 
-  node & operator()(size_t i, size_t j);
-  node const & operator()(size_t i, size_t j) const;
-
   void add_boundary_node(size_t i, size_t j);
   void run();
   double get_value(size_t i, size_t j) const;
     
 protected:
+  node & operator()(size_t i, size_t j);
+  node const & operator()(size_t i, size_t j) const;
   void init();
   void update_node_value(size_t i, size_t j);
   void stage_neighbors(size_t i, size_t j);
@@ -46,6 +41,7 @@ protected:
 private:
   virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
   virtual void stage_neighbors_impl(size_t i, size_t j) = 0;
+  size_t get_linear_index(size_t i, size_t k) const;
 
   node* _nodes;
   heap _heap;

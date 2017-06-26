@@ -3,14 +3,16 @@
   - [ ] Make up a couple neat analytic solutions
   - [ ] Make it possible to use a matrix instead of a speed or slowness function
   - [ ] Make it possible to specify the origin to translate the speed function
+  - [ ] Test mp methods using exact speed function solns
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
-  - [ ] Implement midpoint method with 1oe speed function value
-  - [ ] Implement a basic rootfinder for midpoint rule updates
+  - [X] Implement midpoint method with 1oe speed function value
+  - [X] Implement a basic rootfinder for midpoint rule updates (just
+    using GSL for now)
 	- Use values of speed functions from analytic solutions as test cases
-  - [ ] Derive updates for midpoint rule
-	- [ ] Diagonal
-	- [ ] Adjacent
+  - [X] Derive updates for midpoint rule
+	- [X] Diagonal
+	- [X] Adjacent
   - [ ] Try more complicated root finders
 	- [ ] Hybrid method
 	- [ ] Secant method
@@ -24,6 +26,9 @@
     midpoint rule OLIM exactly
   - [ ] Lookup table optimization for OLIM
   - [ ] Add a more robust initialization method for curves, etc.
+  - [ ] For methods that degenerate when s = 1, come up with a way to
+    issue a warning
+	- [ ] Maybe when s0 = s1 we can just use the rhr update?
 * Learning
   - [X] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update

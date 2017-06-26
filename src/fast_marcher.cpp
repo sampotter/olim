@@ -148,7 +148,7 @@ double fast_marcher::S(size_t i, size_t j) {
   size_t k = get_linear_index(i, j);
   assert(k < _S_cache.size());
   if (_S_cache[k] < 0) {
-    _S_cache[k] = _S(_h*i - _x0, _h*j - _y0);
+    _S_cache[k] = _S(_h*(j + 1) - _x0, _h*(i + 1) - _y0);
   }
   return _S_cache[k];
 }

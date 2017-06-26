@@ -4,6 +4,8 @@
 
 #include "olim_8pt_rhr.hpp"
 
+#include "speed_funcs.hpp"
+
 BOOST_AUTO_TEST_CASE (trivial_case_works) {
   olim_8pt_rhr m {1, 1};
   m.add_boundary_node(0, 0);
@@ -87,6 +89,21 @@ BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
   BOOST_CHECK_EQUAL(m.get_value(1, 1), std::sqrt(2.0));
   BOOST_CHECK_EQUAL(m.get_value(2, 0), 2.0);
   BOOST_CHECK_EQUAL(m.get_value(2, 1), 2.3243932834975496);
+}
+
+BOOST_AUTO_TEST_CASE (origin_test) {
+  size_t M = 5, N = 5;
+  double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
+  olim_8pt_rhr m {M, N, h, default_speed_func, x0, y0};
+  m.add_boundary_node(2, 2);
+  m.run();
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      BOOST_TEST(
+        m.get_value(i, j) == default_speed_func_soln(h*j - x0, h*i - y0),
+        boost::test_tools::tolerance(4e-2));
+    }
+  }
 }
 
 // Local Variables:

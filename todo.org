@@ -1,9 +1,13 @@
 * Tasks
   - [X] Test different speed functions using Maria's analytic solutions
-  - [X] Make up a couple neat analytic solutions
-  - [ ] Add padding around the boundary to avoid complicating index calculations
-  - [ ] Make it possible to specify the origin to translate the speed function
+  - [ ] Make up a couple neat analytic solutions
+	- [ ] Asymmetric one
+	- [ ] Cosine + abs one
+  - [X] Add padding around the boundary to avoid complicating index calculations
+  - [X] Make it possible to specify the origin to translate the speed function
   - [ ] Make it possible to use a matrix instead of a speed or slowness function
+  - [ ] Add 'centered' keyword to center speed func
+  - [ ] Add (x0, y0) argument to MEX function
   - [ ] Test mp methods using exact speed function solns
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
@@ -47,3 +51,4 @@
     have to explicitly avoid updating boundary cells. Is this because
     there are no problems if we don't add any boundary points to the
     padding?
+  - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)

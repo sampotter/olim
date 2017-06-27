@@ -64,19 +64,31 @@ double mp1_adj(double u0, double u1, double sbar0, double sbar1, double h) {
     16*sbar0_times_dsbar - 24*dsbar_sq,
     16*dsbar_sq
   };
-  printf("mp1_adj: {");
-  for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
-  printf("%g}\n", a[4]);
+  // printf("mp1_adj: {");
+  // for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
+  // printf("%g}\n", a[4]);
 
   double z[8];
   gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
   gsl_poly_complex_solve(a, 5, w, z);
   gsl_poly_complex_workspace_free(w);
-  printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
-  for (int i = 0; i < 5; i++) {
-    printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
+  // printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
+  // for (int i = 0; i < 5; i++) {
+  //   printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
+  // }
+
+  double lam = -1;
+  for (int i = 0; i < 4; ++i) {
+    if (z[2*i + 1] != 0) continue;
+    lam = z[2*i];
+    if (0 <= lam && lam <= 1) break;
   }
-  return 0;
+  if (0 <= lam && lam <= 1) {
+    return (1 - lam)*u0 + lam*u1 +
+      h*((1 - lam)*sbar0 + lam*sbar1)*std::sqrt(2*lam*lam - 2*lam + 1);
+  } else {
+    return rhr_adj(u0, u1, (sbar0 + sbar1)/2, h);
+  }
 }
 
 double mp1_diag(double u0, double u1, double sbar0, double sbar1, double h) {
@@ -93,19 +105,31 @@ double mp1_diag(double u0, double u1, double sbar0, double sbar1, double h) {
     4*sbar0*dsbar,
     4*dsbar
   };
-  printf("mp1_diag: {");
-  for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
-  printf("%g}\n", a[4]);
+  // printf("mp1_diag: {");
+  // for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
+  // printf("%g}\n", a[4]);
 
   double z[8];
   gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
   gsl_poly_complex_solve(a, 5, w, z);
   gsl_poly_complex_workspace_free(w);
-  printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
-  for (int i = 0; i < 5; i++) {
-    printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
+  // printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
+  // for (int i = 0; i < 5; i++) {
+  //   printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
+  // }
+
+  double lam = -1;
+  for (int i = 0; i < 4; ++i) {
+    if (z[2*i + 1] != 0) continue;
+    lam = z[2*i];
+    if (0 <= lam && lam <= 1) break;
   }
-  return 0;
+  if (0 <= lam && lam <= 1) {
+    return (1 - lam)*u0 + lam*u1 +
+      h*((1 - lam)*sbar0 + lam*sbar1)*std::sqrt(1 + lam*lam);
+  } else {
+    return rhr_diag(u0, u1, (sbar0 + sbar1)/2, h);
+  }
 }
 
 // Local Variables:

@@ -44,6 +44,51 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
   }
 }
 
+BOOST_AUTO_TEST_CASE (origin_test) {
+  size_t M = 5, N = 5;
+  double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
+  olim_8pt_mp0 m {M, N, h, default_speed_func, x0, y0};
+  m.add_boundary_node(2, 2);
+  m.run();
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      BOOST_TEST(
+        m.get_value(i, j) == default_speed_func_soln(h*j - x0, h*i - y0),
+        boost::test_tools::tolerance(4e-2));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (sf1_single_row_test) {
+  size_t N = 1001;
+  double h = 1.0/N;
+  olim_8pt_mp0 m {1, N, h, sf1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (size_t j = N - 10; j < N; ++j) {
+    double U = m.get_value(0, j);
+    double u = sf1_soln(h*j, 0);
+    printf("%g\n", fabs(u - U)/fabs(u));
+    BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+  }
+}
+
+BOOST_AUTO_TEST_CASE (sf1_test) {
+  size_t M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim_8pt_mp0 m {M, N, h, sf1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (size_t i = M - 3; i < M; ++i) {
+    for (size_t j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = sf1_soln(h*j, h*i);
+      printf("%g\n", fabs(u - U)/fabs(u));
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

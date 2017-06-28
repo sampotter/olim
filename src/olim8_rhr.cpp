@@ -1,12 +1,12 @@
-#include "olim_8pt_rhr.hpp"
+#include "olim8_rhr.hpp"
 
 #include <algorithm>
 #include <cassert>
 #include <cmath>
 
-#include "olim_8pt_util.hpp"
+#include "olim8_util.hpp"
 
-void olim_8pt_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
+void olim8_rhr::update_node_value_impl(size_t i, size_t j, double & T) {
   node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   node * x0 = 0x0;
   node * x1 = 0x0;

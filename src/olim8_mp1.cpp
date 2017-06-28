@@ -1,10 +1,10 @@
-#include "olim_8pt_mp1.hpp"
+#include "olim8_mp1.hpp"
 
 #include <cmath>
 
-#include "olim_8pt_util.hpp"
+#include "olim8_util.hpp"
 
-void olim_8pt_mp1::update_node_value_impl(size_t i, size_t j, double & T) {
+void olim8_mp1::update_node_value_impl(size_t i, size_t j, double & T) {
   static int di[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
   static int dj[8] = {0, 1, 1, 1, 0, -1, -1, -1};
   node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

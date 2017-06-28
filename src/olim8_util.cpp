@@ -1,4 +1,4 @@
-#include "olim_8pt_util.hpp"
+#include "olim8_util.hpp"
 
 #include <cassert>
 #include <cmath>

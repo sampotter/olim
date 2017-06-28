@@ -14,20 +14,20 @@ add_library (fmm
   src/moore_marcher.cpp
   src/neumann_marcher.cpp
   src/node.cpp
-  src/olim_8pt_mp0.cpp
-  src/olim_8pt_mp1.cpp
-  src/olim_8pt_rhr.cpp
-  src/olim_8pt_util.cpp
+  src/olim8_mp0.cpp
+  src/olim8_mp1.cpp
+  src/olim8_rhr.cpp
+  src/olim8_util.cpp
   src/speed_funcs.cpp)
 
 target_link_libraries (fmm ${GSL_LIBRARIES})
 
 set (tests
   basic_marcher
-  olim_8pt_mp0
-  olim_8pt_mp1
-  olim_8pt_rhr
-  olim_8pt_util)
+  olim8_mp0
+  olim8_mp1
+  olim8_rhr
+  olim8_util)
 
 foreach (test ${tests})
   add_executable (${test}.test src/${test}.test.cpp)

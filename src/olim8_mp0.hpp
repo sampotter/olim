@@ -1,9 +1,9 @@
-#ifndef __OLIM_8PT_MP0_HPP__
-#define __OLIM_8PT_MP0_HPP__
+#ifndef __OLIM8_MP0_HPP__
+#define __OLIM8_MP0_HPP__
 
 #include "moore_marcher.hpp"
 
-struct olim_8pt_mp0: public moore_marcher
+struct olim8_mp0: public moore_marcher
 {
   using moore_marcher::moore_marcher;
 private:
@@ -11,7 +11,7 @@ private:
   double get_s_est(double s, size_t i0, size_t j0, size_t i1, size_t j1);
 };
 
-#endif // __OLIM_8PT_RHR_HPP__
+#endif // __OLIM8_RHR_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

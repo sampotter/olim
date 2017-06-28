@@ -1,16 +1,17 @@
-#ifndef __OLIM_8PT_MP1_HPP__
-#define __OLIM_8PT_MP1_HPP__
+#ifndef __OLIM8_RHR_HPP__
+#define __OLIM8_RHR_HPP__
 
 #include "moore_marcher.hpp"
 
-struct olim_8pt_mp1: public moore_marcher
+struct olim8_rhr: public moore_marcher
 {
   using moore_marcher::moore_marcher;
 private:
   virtual void update_node_value_impl(size_t i, size_t j, double & T);
+  double get_alpha(double u0, double u1, double sh) const;
 };
 
-#endif // __OLIM_8PT_RHR_HPP__
+#endif // __OLIM8_RHR_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

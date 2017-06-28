@@ -7,9 +7,9 @@
 
 enum class marcher_type {
   basic,
-  olim_8pt_mp0,
-  olim_8pt_mp1,
-  olim_8pt_rhr
+  olim8_mp0,
+  olim8_mp1,
+  olim8_rhr
 };
 
 extern "C"

@@ -1,10 +1,10 @@
-#include "olim_8pt_mp0.hpp"
+#include "olim8_mp0.hpp"
 
 #include <cmath>
 
-#include "olim_8pt_util.hpp"
+#include "olim8_util.hpp"
 
-void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
+void olim8_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
   static int di[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
   static int dj[8] = {0, 1, 1, 1, 0, -1, -1, -1};
   node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
@@ -65,7 +65,7 @@ void olim_8pt_mp0::update_node_value_impl(size_t i, size_t j, double & T) {
   }
 }
 
-double olim_8pt_mp0::get_s_est(double s, size_t i0, size_t j0, size_t i1,
+double olim8_mp0::get_s_est(double s, size_t i0, size_t j0, size_t i1,
                                size_t j1) {
   return (s + (S(i0, j0) + S(i1, j1))/2)/2;
 }

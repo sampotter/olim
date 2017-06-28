@@ -62,12 +62,12 @@ static marcher_type parseMarcherType(mxArray const * arg) {
   marcher_type type;
   if (str == "basic") {
     type = marcher_type::basic;
-  } else if (str == "olim_8pt_mp0") {
-    type = marcher_type::olim_8pt_mp0;
-  } else if (str == "olim_8pt_mp1") {
-    type = marcher_type::olim_8pt_mp1;
-  } else if (str == "olim_8pt_rhr") {
-    type = marcher_type::olim_8pt_rhr;
+  } else if (str == "olim8_mp0") {
+    type = marcher_type::olim8_mp0;
+  } else if (str == "olim8_mp1") {
+    type = marcher_type::olim8_mp1;
+  } else if (str == "olim8_rhr") {
+    type = marcher_type::olim8_rhr;
   } else {
     mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
   }

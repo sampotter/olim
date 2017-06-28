@@ -5,6 +5,7 @@
 	- [X] Cosine + abs one
   - [X] Add padding around the boundary to avoid complicating index calculations
   - [X] Make it possible to specify the origin to translate the speed function
+  - [ ] olim_8pt -> olim8
   - [ ] Make it possible to use a matrix instead of a speed or slowness function
   - [ ] Add 'centered' keyword to center speed func
   - [ ] Add (x0, y0) argument to MEX function
@@ -12,6 +13,7 @@
   - [ ] Get mp1 working
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
+  - [ ] Figure out how to add docstring for MEX function
   - [X] Implement midpoint method with 1oe speed function value
   - [X] Implement a basic rootfinder for midpoint rule updates (just
     using GSL for now)

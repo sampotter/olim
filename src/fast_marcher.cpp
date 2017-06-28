@@ -93,7 +93,7 @@ void fast_marcher::stage_neighbor(size_t i, size_t j) {
 }
 
 void fast_marcher::run() {
-  node* n = nullptr;
+  node * n = nullptr;
   while (!_heap.empty()) {
     n = get_next_node();
     n->set_valid();
@@ -111,7 +111,7 @@ void fast_marcher::update_node_value(size_t i, size_t j) {
   assert(in_bounds(i, j));
   double T = std::numeric_limits<double>::infinity();
   update_node_value_impl(i, j, T);
-  node* n = &this->operator()(i, j);
+  node * n = &this->operator()(i, j);
   assert(n->is_trial());
   if (T <= n->get_value()) {
     n->set_value(T);

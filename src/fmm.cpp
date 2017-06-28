@@ -22,7 +22,7 @@ static double parseH(mxArray const * arg) {
   return mxGetScalar(arg);
 }
 
-static void parseSpeedFunc(mxArray * arg, mxArray *& pvalues, double h, int M,
+static void parseSpeedFunc(mxArray const * arg, mxArray *& pvalues, double h, int M,
                            int N) {
   if (!mxIsClass(arg, "function_handle")) {
     mexErrMsgTxt("Speed function argument must be a function.");
@@ -44,7 +44,7 @@ static void parseSpeedFunc(mxArray * arg, mxArray *& pvalues, double h, int M,
   }
 
   mxArray * plhs[] = {nullptr};
-  mxArray * prhs[] = {arg, X, Y};
+  mxArray * prhs[] = {const_cast<mxArray *>(arg), X, Y};
   mxArray * except = mexCallMATLABWithTrap(1, plhs, 3, prhs, "feval");
   assert(except == nullptr);
   mxDestroyArray(pvalues);
@@ -96,7 +96,7 @@ parseKeywordArguments(int nlhs, mxArray * plhs[],
       continue;
     }
     if (keyword == "Speed") {
-      parseSpeedFunc(const_cast<mxArray *>(prhs[i + 1]), pvalues, h, M, N);
+      parseSpeedFunc(prhs[i + 1], pvalues, h, M, N);
     } else if (keyword == "Method") {
       type = parseMarcherType(prhs[i + 1]);
     } else {
@@ -114,7 +114,7 @@ parseRegularArguments(int nlhs, mxArray * plhs[],
     h = parseH(prhs[1]);
   }
   if (nrhs >= 3) {
-    parseSpeedFunc(const_cast<mxArray *>(prhs[2]), pvalues, h, M, N);
+    parseSpeedFunc(prhs[2], pvalues, h, M, N);
   }
   if (nrhs >= 4) {
     type = parseMarcherType(prhs[3]);

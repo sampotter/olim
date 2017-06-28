@@ -15,15 +15,15 @@ static mxArray * getDefaultPvaluesMatrix(int M, int N) {
   return pvalues;
 }
 
-static double parseH(mxArray const * arg) {
+static double parseScalar(mxArray const * arg, const char * errMsgTxt) {
   if (!mxIsClass(arg, "double") || mxGetM(arg) > 1 || mxGetN(arg) > 1) {
-    mexErrMsgTxt("Argument containing h must be a double scalar.");
+    mexErrMsgTxt(errMsgTxt);
   }
   return mxGetScalar(arg);
 }
 
-static void parseSpeedFunc(mxArray const * arg, mxArray *& pvalues, double h, int M,
-                           int N) {
+static void parseSpeedFunc(mxArray const * arg, mxArray *& pvalues, double h,
+                           double x0, double y0, int M, int N) {
   if (!mxIsClass(arg, "function_handle")) {
     mexErrMsgTxt("Speed function argument must be a function.");
   }
@@ -36,9 +36,9 @@ static void parseSpeedFunc(mxArray const * arg, mxArray *& pvalues, double h, in
 
   int k = 0;
   for (int i = -1; i <= M; ++i) {
-    double y = h*i;
+    double y = h*i - y0;
     for (int j = -1; j <= N; ++j) {
-      Xpr[k] = h*j;
+      Xpr[k] = h*j - x0;
       Ypr[k++] = y;
     }
   }
@@ -82,25 +82,41 @@ parseKeywordArguments(int nlhs, mxArray * plhs[],
   if (nrhs % 2 == 0) {
     mexErrMsgTxt("Keyword arguments must be passed in pairs.");
   }
-  // Need to parse h first to use later
-  for (int i = 1; i < nrhs; i += 2) {
-    if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
-      mexErrMsgTxt("Keywords must be strings.");
-    }
-    if (std::string {mxArrayToString(prhs[i])} == "h") {
-      h = parseH(prhs[i + 1]);
-    }
-  }
+
+  /*
+   * Need to parse h, x0, and y0 before parsing speed func keyword
+   */
+  double x0 = 0, y0 = 0;
   for (int i = 1; i < nrhs; i += 2) {
     if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
       mexErrMsgTxt("Keywords must be strings.");
     }
     std::string keyword {mxArrayToString(prhs[i])};
     if (keyword == "h") {
+      h = parseScalar(
+        prhs[i + 1], "Keyword argument 'h' requires a scalar parameter.");
+    } else if (keyword == "x0") {
+      x0 = parseScalar(
+        prhs[i + 1], "Keyword argument 'x0' requires a scalar parameter.");
+    } else if (keyword == "y0") {
+      y0 = parseScalar(
+        prhs[i + 1], "Keyword argument 'y0' requires a scalar parameter.");
+    }
+  }
+
+  /*
+   * Parse the rest of the argument with h, x0, and y0 available
+   */
+  for (int i = 1; i < nrhs; i += 2) {
+    if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
+      mexErrMsgTxt("Keywords must be strings.");
+    }
+    std::string keyword {mxArrayToString(prhs[i])};
+    if (keyword == "h" || keyword == "x0" || keyword == "y0") {
       continue;
     }
     if (keyword == "Speed") {
-      parseSpeedFunc(prhs[i + 1], pvalues, h, M, N);
+      parseSpeedFunc(prhs[i + 1], pvalues, h, x0, y0, M, N);
     } else if (keyword == "Method") {
       type = parseMarcherType(prhs[i + 1]);
     } else {
@@ -115,10 +131,11 @@ parseRegularArguments(int nlhs, mxArray * plhs[],
                       marcher_type & type, double & h, mxArray *& pvalues,
                       int M, int N) {
   if (nrhs >= 2) {
-    h = parseH(prhs[1]);
+    h = parseScalar(
+      prhs[1], "Second argument 'h' requires a scalar parameter.");
   }
   if (nrhs >= 3) {
-    parseSpeedFunc(prhs[2], pvalues, h, M, N);
+    parseSpeedFunc(prhs[2], pvalues, h, 0, 0, M, N);
   }
   if (nrhs >= 4) {
     type = parseMarcherType(prhs[3]);

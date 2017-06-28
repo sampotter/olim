@@ -53,3 +53,4 @@
     there are no problems if we don't add any boundary points to the
     padding?
   - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)
+  - [ ] Make sure to clean everything up in MATLAB

@@ -14,19 +14,17 @@ void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
     m = std::make_unique<olim_8pt_rhr>(M, N, h, S);
   }
 	
-  for (size_t i = 0; i < M; ++i) {
+  for (size_t i = 0, k = 0; i < M; ++i) {
     for (size_t j = 0; j < N; ++j) {
-      if (in[N*i + j]) {
-        m->add_boundary_node(i, j);
-      }
+      if (in[k++]) m->add_boundary_node(i, j);
     }
   }
 
   m->run();
 
-  for (size_t i = 0; i < M; ++i) {
+  for (size_t i = 0, k = 0; i < M; ++i) {
     for (size_t j = 0; j < N; ++j) {
-      out[M*i + j] = m->get_value(i, j);
+      out[k++] = m->get_value(i, j);
     }
   }
 }

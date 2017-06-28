@@ -1,33 +1,18 @@
 #include "mex.h"
 
+#include <cassert>
 #include <string>
 
 #include "fmm_mex.hpp"
 
-typedef double (*speed_func)(double, double);
-
-static double defaultSpeedFunc(double x, double y) {
-  (void) x;
-  (void) y;
-  return 1;
-}
-
-static mxArray* userFuncPlhs[1] = {NULL};
-static mxArray* userFuncPrhs[3] = {NULL, NULL, NULL};
-static double* userFuncArgs = NULL;
-
-static void setScalar(mxArray * arg, double value) {
-  double * pr = mxGetPr(arg);
-  *pr = value;
-}
-
-static double userSpeedFunc(double x, double y) {
-  setScalar(userFuncPrhs[1], x);
-  setScalar(userFuncPrhs[2], y);
-  if (!mexCallMATLAB(1, userFuncPlhs, 3, userFuncPrhs, "feval")) {
-    // TODO: error handling
+static mxArray * getDefaultPvaluesMatrix(int M, int N) {
+  mxArray * pvalues = mxCreateDoubleMatrix(M + 2, N + 2, mxREAL);
+  double * pv = mxGetPr(pvalues);
+  int nelts = (M + 2)*(N + 2);
+  for (int i = 0; i < nelts; ++i) {
+    pv[i] = 1;
   }
-  return mxGetScalar(userFuncPlhs[0]);
+  return pvalues;
 }
 
 static double parseH(mxArray const * arg) {
@@ -37,27 +22,36 @@ static double parseH(mxArray const * arg) {
   return mxGetScalar(arg);
 }
 
-static void initUserFunc(mxArray const * arg) {
-  userFuncPlhs[0] = mxCreateDoubleScalar(0);
-  userFuncPrhs[0] = const_cast<mxArray *>(arg);
-  userFuncPrhs[1] = mxCreateDoubleScalar(0);
-  userFuncPrhs[2] = mxCreateDoubleScalar(0);
-  userFuncArgs = static_cast<double *>(mxCalloc(2, sizeof(double)));
-}
-
-static void cleanupUserFunc() {
-  mxDestroyArray(userFuncPlhs[0]);
-  mxDestroyArray(userFuncPrhs[1]);
-  mxDestroyArray(userFuncPrhs[2]);
-  mxFree(userFuncArgs);
-}
-
-static speed_func parseSpeedFunc(mxArray const * arg) {
+static void parseSpeedFunc(mxArray * arg, mxArray *& pvalues, double h, int M,
+                           int N) {
   if (!mxIsClass(arg, "function_handle")) {
-    mexErrMsgTxt("Speed function argument is not a function handle.");
+    mexErrMsgTxt("Speed function argument must be a function.");
   }
-  initUserFunc(arg);
-  return userSpeedFunc;
+
+  mxArray * X = mxCreateDoubleMatrix(M + 2, N + 2, mxREAL);
+  mxArray * Y = mxCreateDoubleMatrix(M + 2, N + 2, mxREAL);
+
+  double * Xpr = mxGetPr(X);
+  double * Ypr = mxGetPr(Y);
+
+  int k = 0;
+  for (int i = -1; i <= M; ++i) {
+    double y = h*i;
+    for (int j = -1; j <= N; ++j) {
+      Xpr[k] = h*j;
+      Ypr[k++] = y;
+    }
+  }
+
+  mxArray * plhs[] = {nullptr};
+  mxArray * prhs[] = {arg, X, Y};
+  mxArray * except = mexCallMATLABWithTrap(1, plhs, 3, prhs, "feval");
+  assert(except == nullptr);
+  mxDestroyArray(pvalues);
+  pvalues = plhs[0];
+
+  mxDestroyArray(X);
+  mxDestroyArray(Y);
 }
 
 static marcher_type parseMarcherType(mxArray const * arg) {
@@ -79,19 +73,30 @@ static marcher_type parseMarcherType(mxArray const * arg) {
 static void
 parseKeywordArguments(int nlhs, mxArray * plhs[],
                       int nrhs, mxArray const * prhs[],
-                      marcher_type & type, double & h, speed_func & F) {
+                      marcher_type & type, double & h, mxArray *& pvalues,
+                      int M, int N) {
   if (nrhs % 2 == 0) {
     mexErrMsgTxt("Keyword arguments must be passed in pairs.");
+  }
+  // Need to parse h first to use later
+  for (int i = 1; i < nrhs; i += 2) {
+    if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
+      mexErrMsgTxt("Keywords must be strings.");
+    }
+    if (std::string {mxArrayToString(prhs[i])} == "h") {
+      h = parseH(prhs[i + 1]);
+    }
   }
   for (int i = 1; i < nrhs; i += 2) {
     if (!mxIsClass(prhs[i], "char") || mxGetM(prhs[i]) != 1) {
       mexErrMsgTxt("Keywords must be strings.");
     }
     std::string keyword {mxArrayToString(prhs[i])};
+    if (keyword == "h") {
+      continue;
+    }
     if (keyword == "Speed") {
-      F = parseSpeedFunc(prhs[i + 1]);
-    } else if (keyword == "h") {
-      h = parseH(prhs[i + 1]);
+      parseSpeedFunc(const_cast<mxArray *>(prhs[i + 1]), pvalues, h, M, N);
     } else if (keyword == "Method") {
       type = parseMarcherType(prhs[i + 1]);
     } else {
@@ -103,12 +108,13 @@ parseKeywordArguments(int nlhs, mxArray * plhs[],
 static void
 parseRegularArguments(int nlhs, mxArray * plhs[],
                       int nrhs, mxArray const * prhs[],
-                      marcher_type & type, double & h, speed_func & F) {
+                      marcher_type & type, double & h, mxArray *& pvalues,
+                      int M, int N) {
   if (nrhs >= 2) {
     h = parseH(prhs[1]);
   }
   if (nrhs >= 3) {
-    F = parseSpeedFunc(prhs[2]);
+    parseSpeedFunc(const_cast<mxArray *>(prhs[2]), pvalues, h, M, N);
   }
   if (nrhs >= 4) {
     type = parseMarcherType(prhs[3]);
@@ -120,8 +126,8 @@ parseRegularArguments(int nlhs, mxArray * plhs[],
  * plhs -- outputs: a double matrix
  * nrhs -- number of inputs (expected: >=1)
  * prhs -- inputs: a logical matrix (the boundary points), a double
- *         (the uniform grid spacing), a function handle (the speed
- *         function), a string (which method to use)
+ *         (the uniform grid spacing), a function handle or matrix (the
+ *         speed function), a string (which method to use)
  */
 void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
   /**
@@ -132,23 +138,27 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
   }
 
   /**
-   * Setup arguments from passed parameters.
+   * Get the height (M) and width (N) of the input boundary matrix.
+   */
+  int M = mxGetM(prhs[0]);
+  int N = mxGetN(prhs[0]);
+
+  /**
+   * Set up arguments from passed parameters.
    */
   marcher_type type = marcher_type::basic;
   double h = 1;
-  speed_func F = defaultSpeedFunc;
+  mxArray * pvalues = getDefaultPvaluesMatrix(M, N);
+
   if (nrhs >= 2 && mxIsClass(prhs[1], "char") && mxGetM(prhs[1]) == 1) {
-    parseKeywordArguments(nlhs, plhs, nrhs, prhs, type, h, F);
+    parseKeywordArguments(nlhs, plhs, nrhs, prhs, type, h, pvalues, M, N);
   } else {
-    parseRegularArguments(nlhs, plhs, nrhs, prhs, type, h, F);
+    parseRegularArguments(nlhs, plhs, nrhs, prhs, type, h, pvalues, M, N);
   }
 
   /**
-   * Setup input arguments on our end.
+   * Set up input arguments on our end.
    */
-  size_t M = mxGetM(prhs[0]);
-  size_t N = mxGetN(prhs[0]);
-  
   mxLogical * logicals = mxGetLogicals(prhs[0]);
   bool * in = (bool *) calloc(M*N, sizeof(bool));
   for (int i = 0; i < M*N; ++i) {
@@ -161,11 +171,12 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
   plhs[0] = mxCreateDoubleMatrix(M, N, mxREAL);
   double * out = mxGetPr(plhs[0]);
 
-  fmm_mex(out, in, M, N, h, F, type);
+  fmm_mex(out, in, M, N, h, mxGetPr(pvalues), type);
 
-  if (F != defaultSpeedFunc) {
-    cleanupUserFunc();
-  }
+  /**
+   * Clean up.
+   */
+  mxDestroyArray(pvalues);
 }
 
 // Local Variables:

@@ -6,7 +6,7 @@
 #include "olim_8pt_rhr.hpp"
 
 void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
-			 speed_func S, marcher_type type) {
+			 double * S, marcher_type type) {
   std::unique_ptr<fast_marcher> m;
   if (type == marcher_type::basic) {
     m = std::make_unique<basic_marcher>(M, N, h, S);

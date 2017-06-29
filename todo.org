@@ -6,13 +6,10 @@
   - [X] Add padding around the boundary to avoid complicating index calculations
   - [X] Make it possible to specify the origin to translate the speed function
   - [X] olim_8pt -> olim8
-  - [ ] Make it possible to use a matrix instead of a speed or slowness function
   - [ ] Add 'centered' keyword to center speed func
   - [X] Add (x0, y0) argument to MEX function
   - [X] Test mp methods using exact speed function solns
-  - [ ] Simplify MEX:
-	- [ ] parameter struct
-	- [ ] use a map for keyword parsing
+  - [ ] Simplify MEX using parameter struct
   - [ ] Get mp1 working
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
@@ -59,3 +56,11 @@
     padding?
   - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)
   - [ ] Make sure to clean everything up in MATLAB
+  - [ ] When you pass something like @(x, y) 1, MATLAB crashes. This
+    is because MATLAB doesn't automatically broadcast the 1 to a
+    matrix. Need to handle this case and do error checking when the
+    matrix that is returned is the incorrect size.
+  - [ ] Check and see what happens when a function handle that isn't
+    vectorized is passed...
+  - [ ] Make the MEX function able to take a double matrix for the
+    boundary matrix

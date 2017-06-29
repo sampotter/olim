@@ -9,7 +9,9 @@
   - [ ] Add 'centered' keyword to center speed func
   - [X] Add (x0, y0) argument to MEX function
   - [X] Test mp methods using exact speed function solns
-  - [ ] Simplify MEX using parameter struct
+  - [X] Simplify MEX:
+	- [X] parameter struct
+	- [X] use a map for keyword parsing
   - [ ] Get mp1 working
   - [ ] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation

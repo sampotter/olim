@@ -69,3 +69,4 @@
     vectorized is passed...
   - [ ] Make the MEX function able to take a double matrix for the
     boundary matrix
+  - [ ] Use numeric_limits to check all static casts

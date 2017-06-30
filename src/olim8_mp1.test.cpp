@@ -23,17 +23,8 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
   olim8_mp1 m {3, 3, 1};
   m.add_boundary_node(1, 1);
   m.run();
-  double gt[] = {
-    std::sqrt(2),
-    1,
-    std::sqrt(2),
-    1,
-    0,
-    1,
-    std::sqrt(2),
-    1,
-    std::sqrt(2)
-  };
+  double root2 = std::sqrt(2);
+  double gt[] = {root2, 1, root2, 1, 0, 1, root2, 1, root2};
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
@@ -59,35 +50,19 @@ BOOST_AUTO_TEST_CASE (origin_test) {
   }
 }
 
-BOOST_AUTO_TEST_CASE (sf1_single_row_test) {
+BOOST_AUTO_TEST_CASE (s1_single_row_test) {
   size_t N = 1001;
-  double h = 1.0/N;
-  olim8_mp1 m {1, N, h, sf1};
+  double h = 1.0/(N - 1);
+  olim8_mp1 m {1, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
   for (size_t j = N - 10; j < N; ++j) {
     double U = m.get_value(0, j);
-    double u = sf1_soln(h*j, 0);
+    double u = f1(h*j, 0);
     printf("U = %g, u = %g (err: %g)\n", U, u, fabs(u - U)/fabs(u));
     // BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
   }
 }
-
-// BOOST_AUTO_TEST_CASE (sf1_test) {
-//   size_t M = 101, N = M;
-//   double h = 1.0/(M - 1);
-//   olim8_mp1 m {M, N, h, sf1};
-//   m.add_boundary_node(0, 0);
-//   m.run();
-//   for (size_t i = M - 3; i < M; ++i) {
-//     for (size_t j = N - 3; j < N; ++j) {
-//       double U = m.get_value(i, j);
-//       double u = sf1_soln(h*j, h*i);
-//       printf("%g\n", fabs(u - U)/fabs(u));
-//       BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
-//     }
-//   }
-// }
 
 // Local Variables:
 // indent-tabs-mode: nil

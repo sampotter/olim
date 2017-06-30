@@ -12,29 +12,58 @@ double default_speed_func_soln(double x, double y) {
   return std::sqrt(x*x + y*y);
 }
 
-double sf1(double x, double y) {
+double s1(double x, double y) {
   return 1 - std::sin(std::sqrt(x*x + y*y));
 }
 
-double sf1_soln(double x, double y) {
-  double r = std::sqrt(x*x + y*y);
-  return std::cos(r) + r - 1;
+double f1(double x, double y) {
+  return std::cos(std::sqrt(x*x + y*y)) + std::sqrt(x*x + y*y) - 1;
 }
 
-double sf2(double x, double y) {
-  double x2 = x*x, y2 = y*y;
-  double denom = std::pow(x2 + y2, 4.5);
-  double sum = x + y;
-  double diff = x - y;
-  double x4 = x2*x2, y4 = y2*y2;
-  double vx = -4*x*y2*sum*diff*(x4 - 11*x2*y2 + 2*y4)/denom;
-  double vy = 4*x2*y*sum*diff*(2*x4 - 11*x2*y2 + y4)/denom;
-  return std::sqrt(vx*vx + vy*vy);
+double s2(double x, double y) {
+  return std::fabs(x + y);
 }
 
-double sf2_soln(double x, double y) {
-  double x2 = x*x, y2 = y*y;
-  return 4*x2*y2*std::pow(x2 + y2, 2)/std::pow(x2 - y2, 3.5) + 1;
+double f2(double x, double y) {
+  return (x + y)*(x + y)/(2*std::sqrt(2));
+}
+
+double s3(double x, double y) {
+  return std::sqrt(x*x + y*y);
+}
+
+double f3(double x, double y) {
+  return (x*x + y*y)/2;
+}
+
+double s4(double x, double y) {
+  double x_sq = x*x;
+  double y_sq = y*y;
+  return 2*std::sqrt(
+    std::pow(x_sq - y_sq, 2)*(x_sq*x_sq + 14*x_sq*y_sq + y_sq*y_sq)/
+    std::pow(x_sq + y_sq, 3));
+}
+
+double f4(double x, double y) {
+  double x_sq = x*x;
+  double y_sq = y*y;
+  return -3*x_sq + y_sq + 4*x_sq*x_sq/(x_sq + y_sq);
+}
+
+double s5(double x, double y) {
+  return std::sqrt(std::pow(x, 18) + std::pow(y, 18));
+}
+
+double f5(double x, double y) {
+  return (std::pow(x, 10) + std::pow(y, 10))/10;
+}
+
+double s6(double x, double y) {
+  return 4*std::sqrt(std::pow(x - y, 2)*std::pow(x + y, 2)*(x*x + y*y));
+}
+
+double f6(double x, double y) {
+  return std::pow(x*x - y*y, 2);
 }
 
 // Local Variables:

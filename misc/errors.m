@@ -25,9 +25,8 @@ s = s2;
 f = f2;
 
 k = 1;
-Ms = 2*ceil(logspace(1, 3, 10)/2);
+Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
 for M = Ms
-    M = M + 1;
     fprintf('M = %d\n', M);
     B = zeros(M, 'logical');
     B((M + 1)/2, (M + 1)/2) = 1;

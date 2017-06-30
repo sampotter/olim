@@ -7,8 +7,8 @@ struct olim8_mp0: public moore_marcher
 {
   using moore_marcher::moore_marcher;
 private:
-  virtual void update_node_value_impl(size_t i, size_t j, double & T);
-  double get_s_est(double s, size_t i0, size_t j0, size_t i1, size_t j1);
+  virtual void update_node_value_impl(int i, int j, double & T);
+  double get_s_est(double s, int i0, int j0, int i1, int j1);
 };
 
 #endif // __OLIM8_RHR_HPP__

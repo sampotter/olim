@@ -21,10 +21,10 @@ struct heap
   void print() const;
 private:
   void grow();
-  void heapify(size_t pos);
+  void heapify(int pos);
   bool has_heap_property() const;
-  void swap(size_t pos1, size_t pos2);
-  double get_value(size_t pos) const;
+  void swap(int pos1, int pos2);
+  double get_value(int pos) const;
 	
   node ** _data {nullptr};
   size_t _size {0};

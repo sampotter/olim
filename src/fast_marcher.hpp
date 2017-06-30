@@ -10,37 +10,37 @@
 
 struct fast_marcher
 {
-  fast_marcher(size_t height, size_t width, double h = 1.0);
-  fast_marcher(size_t height, size_t width, double h, speed_func S,
+  fast_marcher(int height, int width, double h = 1.0);
+  fast_marcher(int height, int width, double h, speed_func S,
                double x0 = 0.0, double y0 = 0.0);
-  fast_marcher(size_t height, size_t width, double h,
+  fast_marcher(int height, int width, double h,
                double const * const S_values);
   virtual ~fast_marcher();
 
-  void add_boundary_node(size_t i, size_t j);
+  void add_boundary_node(int i, int j);
   void run();
-  double get_value(size_t i, size_t j) const;
+  double get_value(int i, int j) const;
     
 protected:
-  node & operator()(size_t i, size_t j);
-  node const & operator()(size_t i, size_t j) const;
+  node & operator()(int i, int j);
+  node const & operator()(int i, int j) const;
   void init();
-  void update_node_value(size_t i, size_t j);
-  void stage_neighbors(size_t i, size_t j);
-  void stage_neighbor(size_t i, size_t j);
-  virtual void get_valid_neighbors(size_t i, size_t j, node ** nb) = 0;
-  bool in_bounds(size_t i, size_t j) const;
-  bool is_valid(size_t i, size_t j) const;
+  void update_node_value(int i, int j);
+  void stage_neighbors(int i, int j);
+  void stage_neighbor(int i, int j);
+  virtual void get_valid_neighbors(int i, int j, node ** nb) = 0;
+  bool in_bounds(int i, int j) const;
+  bool is_valid(int i, int j) const;
   node* get_next_node();
   double get_h() const;
-  double S(size_t i, size_t j);
+  double S(int i, int j);
   void adjust_heap_entry(node * n);
   void insert_into_heap(node * n);
 	
 private:
-  virtual void update_node_value_impl(size_t i, size_t j, double & T) = 0;
-  virtual void stage_neighbors_impl(size_t i, size_t j) = 0;
-  size_t get_linear_index(size_t i, size_t k) const;
+  virtual void update_node_value_impl(int i, int j, double & T) = 0;
+  virtual void stage_neighbors_impl(int i, int j) = 0;
+  int get_linear_index(int i, int k) const;
 
   node* _nodes;
   heap _heap;
@@ -48,8 +48,8 @@ private:
   std::vector<double> _S_cache;
   speed_func _S {default_speed_func};
   double _x0 {0}, _y0 {0};
-  size_t _height;
-  size_t _width;
+  int _height;
+  int _width;
 };
 
 #endif // __FAST_MARCHER_HPP__

@@ -13,7 +13,7 @@ enum class marcher_type {
 };
 
 extern "C"
-void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
+void fmm_mex(double * out, bool * in, int M, int N, double h,
 			 double * pvalues, marcher_type type);
 
 #endif // __FMM_MEX_HPP__

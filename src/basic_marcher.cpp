@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-void basic_marcher::update_node_value_impl(size_t i, size_t j, double & T) {
+void basic_marcher::update_node_value_impl(int i, int j, double & T) {
   node* n = 0x0;
   node* nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);

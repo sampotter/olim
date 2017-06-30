@@ -7,7 +7,7 @@
 #include "olim8_mp1.hpp"
 #include "olim8_rhr.hpp"
 
-void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
+void fmm_mex(double * out, bool * in, int M, int N, double h,
 			 double * S, marcher_type type) {
   std::unique_ptr<fast_marcher> m;
   if (type == marcher_type::basic) {
@@ -20,16 +20,16 @@ void fmm_mex(double * out, bool * in, size_t M, size_t N, double h,
     m = std::make_unique<olim8_rhr>(M, N, h, S);
   }
 	
-  for (size_t i = 0, k = 0; i < M; ++i) {
-    for (size_t j = 0; j < N; ++j) {
+  for (int i = 0, k = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
       if (in[k++]) m->add_boundary_node(i, j);
     }
   }
 
   m->run();
 
-  for (size_t i = 0, k = 0; i < M; ++i) {
-    for (size_t j = 0; j < N; ++j) {
+  for (int i = 0, k = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
       out[k++] = m->get_value(i, j);
     }
   }

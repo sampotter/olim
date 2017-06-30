@@ -6,19 +6,19 @@
 enum class state {valid, trial, far};
 
 struct node {
-  static node make_boundary_node(size_t i, size_t j);
+  static node make_boundary_node(int i, int j);
 
   double get_value() const;
   void set_value(double value);
 
-  size_t get_i() const;
-  void set_i(size_t i);
+  int get_i() const;
+  void set_i(int i);
 	
-  size_t get_j() const;
-  void set_j(size_t j);
+  int get_j() const;
+  void set_j(int j);
 
-  size_t get_heap_pos() const;
-  void set_heap_pos(size_t pos);
+  int get_heap_pos() const;
+  void set_heap_pos(int pos);
 
   bool is_valid() const;
   bool is_trial() const;
@@ -29,9 +29,9 @@ struct node {
 private:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};
-  size_t _i;
-  size_t _j;
-  size_t _heap_pos;
+  int _i;
+  int _j;
+  int _heap_pos;
 };
 
 #endif // __NODE_HPP__

@@ -6,9 +6,9 @@
 struct neumann_marcher: public fast_marcher {
   using fast_marcher::fast_marcher;
 protected:
-  virtual void get_valid_neighbors(size_t i, size_t j, node** nb);
+  virtual void get_valid_neighbors(int i, int j, node** nb);
 private:
-  virtual void stage_neighbors_impl(size_t i, size_t j);
+  virtual void stage_neighbors_impl(int i, int j);
 };
 
 #endif // __NEUMANN_MARCHER_HPP__

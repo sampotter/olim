@@ -7,7 +7,7 @@ struct olim8_rhr: public moore_marcher
 {
   using moore_marcher::moore_marcher;
 private:
-  virtual void update_node_value_impl(size_t i, size_t j, double & T);
+  virtual void update_node_value_impl(int i, int j, double & T);
   double get_alpha(double u0, double u1, double sh) const;
 };
 

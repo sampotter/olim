@@ -67,14 +67,14 @@ static void parseSpeedFunc(mxArray const * arg, parameters & p) {
     mexErrMsgTxt("Speed function argument must be a function.");
   }
 
-  mxArray * X = mxCreateDoubleMatrix(p.M + 2, p.N + 2, mxREAL);
-  mxArray * Y = mxCreateDoubleMatrix(p.M + 2, p.N + 2, mxREAL);
+  mxArray * X = mxCreateDoubleMatrix(p.M, p.N, mxREAL);
+  mxArray * Y = mxCreateDoubleMatrix(p.M, p.N, mxREAL);
 
   double * Xpr = mxGetPr(X), * Ypr = mxGetPr(Y);
   int k = 0;
-  for (int i = -1; i <= p.M; ++i) {
+  for (int i = 0; i < p.M; ++i) {
     double y = p.h*i - p.y0;
-    for (int j = -1; j <= p.N; ++j) {
+    for (int j = 0; j < p.N; ++j) {
       Xpr[k] = p.h*j - p.x0;
       Ypr[k++] = y;
     }

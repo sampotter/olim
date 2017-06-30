@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
 }
 
 BOOST_AUTO_TEST_CASE (origin_test) {
-  size_t M = 5, N = 5;
+  int M = 5, N = 5;
   double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
   olim8_mp1 m {M, N, h, default_speed_func, x0, y0};
   m.add_boundary_node(2, 2);
@@ -51,12 +51,12 @@ BOOST_AUTO_TEST_CASE (origin_test) {
 }
 
 BOOST_AUTO_TEST_CASE (s1_single_row_test) {
-  size_t N = 1001;
+  int N = 1001;
   double h = 1.0/(N - 1);
   olim8_mp1 m {1, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
-  for (size_t j = N - 10; j < N; ++j) {
+  for (int j = N - 10; j < N; ++j) {
     double U = m.get_value(0, j);
     double u = f1(h*j, 0);
     printf("U = %g, u = %g (err: %g)\n", U, u, fabs(u - U)/fabs(u));

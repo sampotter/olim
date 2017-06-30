@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
 }
 
 BOOST_AUTO_TEST_CASE (origin_test) {
-  size_t M = 5, N = 5;
+  int M = 5, N = 5;
   double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
   olim8_rhr m {M, N, h, default_speed_func, x0, y0};
   m.add_boundary_node(2, 2);
@@ -107,31 +107,56 @@ BOOST_AUTO_TEST_CASE (origin_test) {
 }
 
 BOOST_AUTO_TEST_CASE (s1_single_row_test) {
-  size_t N = 1001;
+  int N = 1001;
   double h = 1.0/(N - 1);
   olim8_rhr m {1, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
-  for (size_t j = N - 10; j < N; ++j) {
+  double maxerr = 0;
+  for (int j = 0; j < N; ++j) {
     double U = m.get_value(0, j);
     double u = f1(h*j, 0);
-    BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+    maxerr = std::max(maxerr, std::fabs(U - u)/std::fabs(u));
   }
+  std::cout << maxerr << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE (s1_test) {
-  size_t M = 101, N = M;
+BOOST_AUTO_TEST_CASE (s1_test1) {
+  int M = 1001, N = M;
   double h = 1.0/(M - 1);
   olim8_rhr m {M, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
-  for (size_t i = M - 3; i < M; ++i) {
-    for (size_t j = N - 3; j < N; ++j) {
+  double maxerr = 0;
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
       double U = m.get_value(i, j);
       double u = f1(h*j, h*i);
-      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+      if (u != 0) {
+        maxerr = std::max(maxerr, std::fabs(U - u)/std::fabs(u));
+      }
     }
   }
+  std::cout << maxerr << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE (s1_test2) {
+  int M = 201, N = M;
+  double h = 2.0/(M - 1);
+  olim8_rhr m {M, N, h, s1};
+  m.add_boundary_node(100, 100);
+  m.run();
+  double maxerr = 0;
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f1(h*j, h*i);
+      if (u != 0) {
+        maxerr = std::max(maxerr, std::fabs(U - u)/std::fabs(u));
+      }
+    }
+  }
+  std::cout << maxerr << std::endl;
 }
 
 // Local Variables:

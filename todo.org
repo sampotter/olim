@@ -70,3 +70,4 @@
   - [ ] Make the MEX function able to take a double matrix for the
     boundary matrix
   - [ ] Use numeric_limits to check all static casts
+  - [ ] Look into using C++ heap stuff instead of my own...

@@ -8,8 +8,7 @@ void olim8_mp1::update_node_value_impl(int i, int j, double & T) {
   node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   node *x0 = 0x0, *x1 = 0x0;
   get_valid_neighbors(i, j, nb);
-  double h = get_h(), x = h*i, y = h*j, u0, u1;
-  double s = S(x, y), sbar0, sbar1;
+  double h = get_h(), s = S(i, j), u0, u1, sbar0, sbar1;
 
   /*
    * First, do the adjacent and diagonal single point updates (and

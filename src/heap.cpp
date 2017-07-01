@@ -76,7 +76,7 @@ void heap::print() const {
   std::cout << std::endl << "HEAP:" << std::endl;;
   int level = 0;
   int i0 = 0, i1 = 1ul << level;
-  while (i0 < _size) {
+  while (i0 < static_cast<int>(_size)) {
     std::cout << level << ":";
     for (int i = i0; i < std::min(static_cast<int>(_size), i1); ++i) {
       std::cout << " " << get_value(i);
@@ -100,12 +100,12 @@ void heap::heapify(int pos) {
   std::function<void(int)> const rec = [&] (int pos) {
     int l = get_left(pos), r = get_right(pos);
     int smallest;
-    if (l < _size && get_value(l) < get_value(pos)) {
+    if (l < static_cast<int>(_size) && get_value(l) < get_value(pos)) {
       smallest = l;
     } else {
       smallest = pos;
     }
-    if (r < _size && get_value(r) < get_value(smallest)) {
+    if (r < static_cast<int>(_size) && get_value(r) < get_value(smallest)) {
       smallest = r;
     }
     if (smallest != pos) {

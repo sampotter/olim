@@ -59,8 +59,97 @@ BOOST_AUTO_TEST_CASE (s1_single_row_test) {
   for (int j = N - 10; j < N; ++j) {
     double U = m.get_value(0, j);
     double u = f1(h*j, 0);
-    printf("U = %g, u = %g (err: %g)\n", U, u, fabs(u - U)/fabs(u));
-    // BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+    BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s1_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f1(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s2_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s2};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f2(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s3_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s3};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f3(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s4_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s4};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f4(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s5_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s5};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f5(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE (s6_test) {
+  int M = 101, N = M;
+  double h = 1.0/(M - 1);
+  olim8_mp1 m {M, N, h, s6};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = M - 3; i < M; ++i) {
+    for (int j = N - 3; j < N; ++j) {
+      double U = m.get_value(i, j);
+      double u = f6(h*j, h*i);
+      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+    }
   }
 }
 

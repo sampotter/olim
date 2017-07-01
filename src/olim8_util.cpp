@@ -1,5 +1,6 @@
 #include "olim8_util.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -47,89 +48,68 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 
-double mp1_adj(double u0, double u1, double sbar0, double sbar1, double h) {
-  check_params(u0, u1, h);
-  assert(sbar0 >= 0);
-  assert(sbar1 >= 0);
-
-  double alpha_sq = std::pow((u0 - u1)/h, 2);
-  double dsbar = sbar1 - sbar0;
-  double dsbar_sq = dsbar*dsbar;
-  double sbar0_sq = sbar0*sbar0;
-  double sbar0_times_dsbar = sbar0*dsbar;
-  double a[] = {
-    sbar0_sq - alpha_sq - 2*sbar0_times_dsbar,
-    -4*sbar0_sq + 2*alpha_sq + 10*sbar0_times_dsbar - 6*dsbar_sq,
-    4*sbar0_sq - 2*alpha_sq - 20*sbar0_times_dsbar + 17*dsbar_sq,
-    16*sbar0_times_dsbar - 24*dsbar_sq,
-    16*dsbar_sq
-  };
-  // printf("mp1_adj: {");
-  // for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
-  // printf("%g}\n", a[4]);
-
+double mp1_solve(double * a, double u0, double u1, double s0, double s1,
+                 double h) {
+  /**
+   * Solve quartic
+   */
   double z[8];
   gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
   gsl_poly_complex_solve(a, 5, w, z);
   gsl_poly_complex_workspace_free(w);
-  // printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
-  // for (int i = 0; i < 5; i++) {
-  //   printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
-  // }
 
-  double lam = -1;
+  /**
+   * Extract a reasonable (i.e. nonnegative) value from the real
+   * roots---return inf otherwise.
+   */
+  double lam = -1, uhat = std::numeric_limits<double>::infinity();
   for (int i = 0; i < 4; ++i) {
-    if (z[2*i + 1] != 0) continue;
+    if (z[2*i + 1] != 0) {
+      continue;
+    }
     lam = z[2*i];
-    if (0 <= lam && lam <= 1) break;
+    if (0 <= lam && lam <= 1) {
+      double val = (1 - lam)*u0 + lam*u1 +
+        h*((1 - lam)*s0 + lam*s1)*std::sqrt(2*lam*lam - 2*lam + 1);
+      if (val >= 0) {
+        uhat = std::min(uhat, val);
+      }
+    }
   }
-  if (0 <= lam && lam <= 1) {
-    return (1 - lam)*u0 + lam*u1 +
-      h*((1 - lam)*sbar0 + lam*sbar1)*std::sqrt(2*lam*lam - 2*lam + 1);
-  } else {
-    return rhr_adj(u0, u1, (sbar0 + sbar1)/2, h);
-  }
+  return uhat;
 }
 
-double mp1_diag(double u0, double u1, double sbar0, double sbar1, double h) {
+double mp1_adj(double u0, double u1, double s0, double s1, double h) {
   check_params(u0, u1, h);
-  assert(sbar0 >= 0);
-  assert(sbar1 >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double alpha_sq = std::pow((u0 - u1)/h, 2);
-  double dsbar = sbar1 - sbar0;
+  double s0_sq = s0*s0;
+  double ds = s1 - s0;
+  double ds_sq = ds*ds;
   double a[] = {
-    dsbar - alpha_sq,
-    2*sbar0*dsbar,
-    4*dsbar + sbar0*sbar0 - alpha_sq,
-    4*sbar0*dsbar,
-    4*dsbar
+    s0_sq - alpha_sq - 2*s0*ds + ds_sq,
+    -4*s0_sq + 2*alpha_sq + 10*s0*ds - 6*ds_sq,
+    4*s0_sq - 2*alpha_sq - 20*s0*ds + 17*ds_sq,
+    16*s0*ds - 24*ds_sq,
+    16*ds_sq
   };
-  // printf("mp1_diag: {");
-  // for (int i = 0; i < 4; ++i) printf("%g, ", a[i]);
-  // printf("%g}\n", a[4]);
 
-  double z[8];
-  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
-  gsl_poly_complex_solve(a, 5, w, z);
-  gsl_poly_complex_workspace_free(w);
-  // printf("ROOTS (u0 = %g, u1 = %g, sbar0 = %g, sbar1 = %g):\n", u0, u1, sbar0, sbar1);
-  // for (int i = 0; i < 5; i++) {
-  //   printf("z%d = %+.18f %+.18f\n", i, z[2*i], z[2*i + 1]);
-  // }
+  return mp1_solve(a, u0, u1, s0, s1, h);
+}
 
-  double lam = -1;
-  for (int i = 0; i < 4; ++i) {
-    if (z[2*i + 1] != 0) continue;
-    lam = z[2*i];
-    if (0 <= lam && lam <= 1) break;
-  }
-  if (0 <= lam && lam <= 1) {
-    return (1 - lam)*u0 + lam*u1 +
-      h*((1 - lam)*sbar0 + lam*sbar1)*std::sqrt(1 + lam*lam);
-  } else {
-    return rhr_diag(u0, u1, (sbar0 + sbar1)/2, h);
-  }
+double mp1_diag(double u0, double u1, double s0, double s1, double h) {
+  check_params(u0, u1, h);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
+
+  double alpha_sq = std::pow((u0 - u1)/h, 2);
+  double ds = s1 - s0;
+  double ds_sq = ds*ds;
+  double a[] = {ds_sq - alpha_sq, 2*s0*ds, s0*s0 + 4*ds_sq, 4*s0*ds, 4*ds_sq};
+
+  return mp1_solve(a, u0, u1, s0, s1, h);
 }
 
 // Local Variables:

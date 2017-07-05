@@ -50,6 +50,7 @@ void heap::pop_front() {
   swap(0, _size - 1);
   --_size;
   heapify(0);
+  assert(has_heap_prop());
 }
 
 void heap::insert(node * n) {
@@ -58,6 +59,7 @@ void heap::insert(node * n) {
   assert(_size < _capacity);
   _data[_size++] = n;
   adjust_entry(n);
+  assert(has_heap_prop());
 }
 
 void heap::adjust_entry(node * n) {
@@ -70,6 +72,7 @@ void heap::adjust_entry(node * n) {
     pos = parent;
     parent = get_parent(pos);
   }
+  assert(has_heap_prop());
 }
 
 void heap::print() const {
@@ -94,6 +97,7 @@ void heap::grow() {
   memcpy(tmp, _data, _size*sizeof(node *));
   delete[] _data;
   _data = tmp;
+  assert(has_heap_prop());
 }
 
 void heap::heapify(int pos) {
@@ -114,6 +118,7 @@ void heap::heapify(int pos) {
     }
   };
   rec(pos);
+  assert(has_heap_prop());
 }
 
 void heap::swap(int pos1, int pos2) {
@@ -124,6 +129,20 @@ void heap::swap(int pos1, int pos2) {
 
 double heap::get_value(int pos) const {
 	return _data[pos]->get_value();
+}
+
+bool heap::has_heap_prop() const {
+  return has_heap_prop_impl(0);
+}
+
+bool heap::has_heap_prop_impl(int pos) const {
+  double val = _data[pos]->get_value();
+  int l = get_left(pos), r = get_right(pos);
+  return
+    (static_cast<size_t>(l) < size() ? val <= _data[l]->get_value() &&
+     has_heap_prop_impl(l) : true) &&
+    (static_cast<size_t>(r) < size() ? val <= _data[r]->get_value() &&
+     has_heap_prop_impl(r) : true);
 }
 
 // Local Variables:

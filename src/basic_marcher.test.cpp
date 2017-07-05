@@ -70,6 +70,14 @@ BOOST_AUTO_TEST_CASE (masha_s_values_are_correct) {
   }
 }
 
+BOOST_AUTO_TEST_CASE (rectangular_domain_works) {
+  double h = 0.1, x0 = 1, y0 = 1;
+  basic_marcher m {11, 21, h, default_speed_func, x0, y0};
+  m.add_boundary_node(5, 10);
+  m.run();
+  BOOST_TEST(m.get_value(0, 0) == 1.17825, boost::test_tools::tolerance(1e-5));
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

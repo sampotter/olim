@@ -28,8 +28,8 @@ void fmm_mex(double * out, bool * in, int M, int N, double h,
 
   m->run();
 
-  for (int i = 0, k = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
+  for (int j = 0, k = 0; j < N; ++j) {
+    for (int i = 0; i < M; ++i) {
       out[k++] = m->get_value(i, j);
     }
   }

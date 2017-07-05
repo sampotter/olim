@@ -44,6 +44,32 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
   }
 }
 
+BOOST_AUTO_TEST_CASE (masha_s_values_are_correct) {
+  double gt[] = {
+    0.02939463262323,
+    0.01540058973304,
+    0.02037282789484,
+    0.01089789836732,
+    2.030579675453e-07,
+    0.01070992017687,
+    0.02286521936613,
+    0.01465429342172,
+    0.02703978500521,
+  };
+
+  basic_marcher m {21, 21, 0.1, s7, 1, 1};
+  m.add_boundary_node(10, 10);
+  m.run();
+
+  int k = 0;
+  auto const tol = boost::test_tools::tolerance(1e-4);
+  for (int i = 9; i <= 11; ++i) {
+    for (int j = 9; j <= 11; ++j) {
+      BOOST_TEST(gt[k++] == m.get_value(i, j), tol);
+    }
+  }
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

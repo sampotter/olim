@@ -66,6 +66,18 @@ double f6(double x, double y) {
   return std::pow(x*x - y*y, 2);
 }
 
+double s7(double x, double y) {
+  x = x - 0.900367222589747;
+  double aux0 = (x + y)/2, aux1 = x + std::cos(aux0), aux2 = std::sin(aux0)/2;
+  double dx = aux1*(1 - aux2), dy = y - aux1*aux2/2;
+  return std::sqrt(dx*dx + dy*dy);
+}
+
+double f7(double x, double y) {
+  x = x - 0.900367222589747;
+  return (y*y + std::pow(x + cos((x + y)/2), 2))/2;
+}
+
 // Local Variables:
 // indent-tabs-mode: nil
 // c-basic-offset: 2

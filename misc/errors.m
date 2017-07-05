@@ -21,10 +21,13 @@ f5 = @(x, y) (x.^10 + y.^10)/10;
 s6 = @(x, y) 4*sqrt((x - y).^2.*(x + y).^2.*(x.^2 + y.^2));
 f6 = @(x, y) (x.^2 - y.^2).^2;
 
-S = {s1 s2 s3 s4 s5 s6};
-F = {f1 f2 f3 f4 f5 f6};
+s7 = @(x, y) masha_s(x, y);
+f7 = @(x, y) masha_f(x, y);
 
-n = 6;
+S = {s1 s2 s3 s4 s5 s6 s7};
+F = {f1 f2 f3 f4 f5 f6 f7};
+
+n = 7;
 s = S{n};
 f = F{n};
 

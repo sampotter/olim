@@ -22,6 +22,10 @@ double f5(double x, double y);
 double s6(double x, double y);
 double f6(double x, double y);
 
+// Masha's speed function
+double s7(double x, double y);
+double f7(double x, double y);
+
 #endif // __SPEED_FUNCS_HPP__
 
 // Local Variables:

@@ -5,7 +5,6 @@
 #include <cmath>
 
 void basic_marcher::update_node_value_impl(int i, int j, double & T) {
-  node* n = 0x0;
   node* nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
   double sh = get_h()*S(i, j);
@@ -19,8 +18,7 @@ void basic_marcher::update_node_value_impl(int i, int j, double & T) {
       tmp = (T1 + T2 + std::sqrt(disc))/2;
       if (tmp >= T1 && tmp >= T2) T = std::min(T, tmp);
     } else if (nb[k] || nb[k1]) {
-      n = nb[k] ? nb[k] : nb[k1];
-      T = std::min(T, n->get_value() + sh);
+      T = std::min(T, (nb[k] ? nb[k] : nb[k1])->get_value() + sh);
     }
   }
 }

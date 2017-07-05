@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 
-static size_t initial_heap_size(double height, double width) {
+static size_t initial_heap_size(int height, int width) {
   return static_cast<size_t>(std::max(8.0, std::log(height*width)));
 }
 

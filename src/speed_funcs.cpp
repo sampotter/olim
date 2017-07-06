@@ -69,7 +69,7 @@ double f6(double x, double y) {
 double s7(double x, double y) {
   x = x - 0.900367222589747;
   double aux0 = (x + y)/2, aux1 = x + std::cos(aux0), aux2 = std::sin(aux0)/2;
-  double dx = aux1*(1 - aux2), dy = y - aux1*aux2/2;
+  double dx = aux1*(1 - aux2), dy = y - aux1*aux2;
   return std::sqrt(dx*dx + dy*dy);
 }
 

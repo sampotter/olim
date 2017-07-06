@@ -1,7 +1,9 @@
 * Tasks
+  - [ ] Make it possible to specify boundary using sparse matrix of
+    bools or doubles
   - [X] Test different speed functions using Maria's analytic solutions
-  - [-] Make up a couple neat analytic solutions
-	- [ ] Asymmetric one
+  - [X] Make up a couple neat analytic solutions
+	- [X] Asymmetric one
 	- [X] Cosine + abs one
   - [X] Add padding around the boundary to avoid complicating index calculations
   - [X] Make it possible to specify the origin to translate the speed function

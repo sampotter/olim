@@ -17,7 +17,7 @@ struct fast_marcher
                double const * const S_values);
   virtual ~fast_marcher();
 
-  void add_boundary_node(int i, int j);
+  void add_boundary_node(int i, int j, double value = 0.0);
   void run();
   double get_value(int i, int j) const;
     

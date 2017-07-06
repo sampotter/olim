@@ -69,9 +69,10 @@ node const & fast_marcher::operator()(int i, int j) const {
   return _nodes[get_linear_index(i, j)];
 }
 
-void fast_marcher::add_boundary_node(int i, int j) {
+void fast_marcher::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
-  this->operator()(i, j) = node::make_boundary_node(i, j);
+  assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
+  this->operator()(i, j) = node::make_boundary_node(i, j, value);
   stage_neighbors(i, j);
 }
 

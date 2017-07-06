@@ -24,10 +24,17 @@ f6 = @(x, y) (x.^2 - y.^2).^2;
 s7 = @(x, y) masha_s(x, y);
 f7 = @(x, y) masha_f(x, y);
 
-S = {s1 s2 s3 s4 s5 s6 s7};
-F = {f1 f2 f3 f4 f5 f6 f7};
+s8 = @(x, y) (1 + sqrt(x.^2 + y.^2)).^-2;
+f8 = @(x, y) 1 - 1./(1 + sqrt(x.^2 + y.^2));
 
-n = 7;
+a = 10;
+s9 = @(x, y) 2.*a.*sqrt(exp(-2.*a.*(x.^2 + y.^2)).*(x.^2 + y.^2));
+f9 = @(x, y) 1 - 1./exp(a.*(x.^2 + y.^2));
+
+S = {s1 s2 s3 s4 s5 s6 s7 s8 s9};
+F = {f1 f2 f3 f4 f5 f6 f7 f8 f9};
+
+n = 9;
 s = S{n};
 f = F{n};
 

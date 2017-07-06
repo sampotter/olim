@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE (masha_s_values_are_correct) {
   };
 
   basic_marcher m {21, 21, 0.1, s7, 1, 1};
-  m.add_boundary_node(10, 10);
+  m.add_boundary_node(10, 10, 2.030579675453e-07);
   m.run();
 
   int k = 0;
@@ -66,6 +66,38 @@ BOOST_AUTO_TEST_CASE (masha_s_values_are_correct) {
   for (int i = 9; i <= 11; ++i) {
     for (int j = 9; j <= 11; ++j) {
       BOOST_TEST(gt[k++] == m.get_value(i, j), tol);
+    }
+  }
+
+  for (int i = 0; i < 21; ++i) {
+    for (int j = 0; j < 21; ++j) {
+      std::cout << m.get_value(i, j) << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE (masha_small_test) {
+  double gt[] = {
+    0.02939463262323,
+    0.01540058973304,
+    0.02037282789484,
+    0.01089789836732,
+    2.030579675453e-07,
+    0.01070992017687,
+    0.02286521936613,
+    0.01465429342172,
+    0.02703978500521,
+  };
+  double h = 0.1, x0 = 0.1, y0 = 0.1;
+  basic_marcher m {3, 3, h, s7, x0, y0};
+  m.add_boundary_node(1, 1, 2.030579675453e-07);
+  m.run();
+  for (int i = 0, k = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      BOOST_TEST(m.get_value(i, j) == gt[k++],
+                 boost::test_tools::tolerance(1e-5));
     }
   }
 }

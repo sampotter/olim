@@ -17,8 +17,8 @@ void basic_marcher::update_node_value_impl(int i, int j, double & T) {
       if (disc <= 0) continue;
       tmp = (T1 + T2 + std::sqrt(disc))/2;
       if (tmp >= T1 && tmp >= T2) T = std::min(T, tmp);
-    } else if (nb[k] || nb[k1]) {
-      T = std::min(T, (nb[k] ? nb[k] : nb[k1])->get_value() + sh);
+    } else if (nb[k]) {
+      T = std::min(T, nb[k]->get_value() + sh);
     }
   }
 }

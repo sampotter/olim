@@ -11,7 +11,7 @@ f2 = @(x, y) ((x + y).^2)/(2*sqrt(2));
 s3 = @(x, y) sqrt(x.^2 + y.^2);
 f3 = @(x, y) (x.^2 + y.^2)/2;
 
-% Breaks olim8_mp0 and mp1?
+% Breaks olim8_mp0 and mp1? (because of singularity at origin)
 s4 = @(x, y) 2*sqrt((x.^2 - y.^2).^2.*(x.^4 + 14.*x.^2.*y.^2 + y.^4)./((x.^2 + y.^2).^3));
 f4 = @(x, y) -3*x.^2 + y.^2 + 4*x.^4./(x.^2 + y.^2);
 
@@ -39,7 +39,8 @@ s = S{n};
 f = F{n};
 
 k = 1;
-Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
+Ms = 2*ceil(logspace(1, 3, 20)/2) + 1;
+% Ms = (2.^(6:12)) + 1;
 for M = Ms
     fprintf('M = %d\n', M);
     B = zeros(M, 'logical');

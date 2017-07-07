@@ -9,10 +9,6 @@ node node::make_boundary_node(int i, int j, double value) {
   return n;
 }
 
-double node::get_value() const {
-  return _value;
-}
-
 void node::set_value(double value) {
   _value = value;
 }

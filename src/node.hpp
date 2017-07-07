@@ -8,7 +8,9 @@ enum class state {valid, trial, far};
 struct node {
   static node make_boundary_node(int i, int j, double value = 0.0);
 
-  double get_value() const;
+  inline double get_value() const {
+    return _value;
+  }
   void set_value(double value);
 
   int get_i() const;

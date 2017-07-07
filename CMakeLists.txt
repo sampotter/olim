@@ -24,6 +24,7 @@ target_link_libraries (fmm ${GSL_LIBRARIES})
 
 set (tests
   basic_marcher
+  heap
   olim8_mp0
   olim8_mp1
   olim8_rhr

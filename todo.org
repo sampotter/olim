@@ -1,10 +1,31 @@
-* Tasks
+* Smart mesh
+  - [ ] Add solution info structure and visualize output
+  - [ ] Look at Masha's program and plots
+  - [ ] Try to figure out how smart grid works
+  - Things to consider longer term:
+    - [ ] Smart mesh refinement (Masha calls this "predictive
+      meshing")
+    - [ ] Recursive application of mesh refinement (i.e., if we can
+      successfully refine once, is it possible to start with a very
+      coarse grid and continually refine---is it possible this
+      would save time?)
+    - [ ] Actual predictive meshing (i.e., is there a way to avoid
+      two passes?)
+* General
+  - [ ] Figure out source of error in marchers
+    - [ ] Make radial error plots, compare with Masha's
   - [ ] Make it possible to specify boundary using sparse matrix of
     bools or doubles
+  - [ ] 3D marchers:
+    - [ ] Basic
+     - [ ] OLIM4
+     - [ ] OLIM8 RHR
+     - [ ] OLIM8 MP0
+     - [ ] OLIM8 MP1
   - [X] Test different speed functions using Maria's analytic solutions
   - [X] Make up a couple neat analytic solutions
-	- [X] Asymmetric one
-	- [X] Cosine + abs one
+    - [X] Asymmetric one
+    - [X] Cosine + abs one
   - [X] Add padding around the boundary to avoid complicating index calculations
   - [X] Make it possible to specify the origin to translate the speed function
   - [X] olim_8pt -> olim8
@@ -12,27 +33,27 @@
   - [X] Add (x0, y0) argument to MEX function
   - [X] Test mp methods using exact speed function solns
   - [X] Simplify MEX:
-	- [X] parameter struct
-	- [X] use a map for keyword parsing
-  - [ ] Get mp1 working
+    - [X] parameter struct
+    - [X] use a map for keyword parsing
+  - [X] Get mp1 working
   - [X] Add framework to check errors from different analytic solutions
   - [ ] Compare speed of my implementation with Maria's implementation
   - [ ] Figure out how to add docstring for MEX function
   - [X] Implement midpoint method with 1oe speed function value
   - [X] Implement a basic rootfinder for midpoint rule updates (just
     using GSL for now)
-	- Use values of speed functions from analytic solutions as test cases
+    - Use values of speed functions from analytic solutions as test cases
   - [X] Derive updates for midpoint rule
-	- [X] Diagonal
-	- [X] Adjacent
+    - [X] Diagonal
+    - [X] Adjacent
   - [ ] Try more complicated root finders
-	- [ ] Hybrid method
-	- [ ] Secant method
-	- [ ] Bairstow's method
+    - [ ] Hybrid method
+    - [ ] Secant method
+    - [ ] Bairstow's method
   - [ ] Other quadrature rules
-	- [ ] Trapezoid
-	- [ ] Simpson's
-	- [ ] Others?
+    - [ ] Trapezoid
+    - [ ] Simpson's
+    - [ ] Others?
   - [X] Make error/CPU time plots for comparison
   - [ ] See if it's possible to just solve the quartics involed in the
     midpoint rule OLIM exactly (although using GSL to solve the
@@ -41,10 +62,11 @@
   - [ ] Add a more robust initialization method for curves, etc.
   - [ ] For methods that degenerate when s = 1, come up with a way to
     issue a warning
-	- [ ] Maybe when s0 = s1 we can just use the rhr update?
+    - [ ] Maybe when s0 = s1 we can just use the rhr update?
+    - This may not be worth it
   - [ ] Boundary conditions
-	- [ ] "Normal BCs"?
-	- [ ] Periodic BCs
+    - [ ] "Normal BCs"?
+    - [ ] Periodic BCs
 * Learning
   - [X] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update
@@ -68,8 +90,14 @@
     matrix. Need to handle this case and do error checking when the
     matrix that is returned is the incorrect size.
   - [ ] Check and see what happens when a function handle that isn't
-    vectorized is passed...
+    vectorized is passed
   - [ ] Make the MEX function able to take a double matrix for the
     boundary matrix
   - [ ] Use numeric_limits to check all static casts
-  - [ ] Look into using C++ heap stuff instead of my own...
+  - [ ] Look into using C++ heap stuff instead of my own
+  - [ ] Probably need to use multiple inheritance to simplify class
+    hierarchy
+
+# Local Variables:
+# indent-tabs-mode: nil
+# End:

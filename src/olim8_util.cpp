@@ -48,37 +48,6 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 
-double mp1_solve(double * a, double u0, double u1, double s0, double s1,
-                 double h) {
-  /**
-   * Solve quartic
-   */
-  double z[8];
-  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
-  gsl_poly_complex_solve(a, 5, w, z);
-  gsl_poly_complex_workspace_free(w);
-
-  /**
-   * Extract a reasonable (i.e. nonnegative) value from the real
-   * roots---return inf otherwise.
-   */
-  double lam = -1, uhat = std::numeric_limits<double>::infinity();
-  for (int i = 0; i < 4; ++i) {
-    if (z[2*i + 1] != 0) {
-      continue;
-    }
-    lam = z[2*i];
-    if (0 <= lam && lam <= 1) {
-      double val = (1 - lam)*u0 + lam*u1 +
-        h*((1 - lam)*s0 + lam*s1)*std::sqrt(2*lam*lam - 2*lam + 1);
-      if (val >= 0) {
-        uhat = std::min(uhat, val);
-      }
-    }
-  }
-  return uhat;
-}
-
 double mp1_adj(double u0, double u1, double s0, double s1, double h) {
   check_params(u0, u1, h);
   assert(s0 >= 0);
@@ -96,7 +65,25 @@ double mp1_adj(double u0, double u1, double s0, double s1, double h) {
     16*ds_sq
   };
 
-  return mp1_solve(a, u0, u1, s0, s1, h);
+  double lam = -1;  double z[8];
+  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
+  gsl_poly_complex_solve(a, 5, w, z);
+  gsl_poly_complex_workspace_free(w);
+
+  for (int i = 0; i < 4; ++i) {
+    if (z[2*i + 1] != 0 || z[2*i] < 0 || z[2*i] > 1) {
+      continue;
+    }
+    lam = z[2*i];
+    double lhs = (u0 - u1)*std::sqrt(1 - 2*lam + 2*lam*lam)/h;
+    double rhs = -s0*(4*lam*lam - 5*lam + 2) + s1*(4*lam*lam - 3*lam + 1);
+    if (std::fabs(lhs - rhs)/std::fabs(lhs) < 1e-6) {
+      break;
+    }
+  }
+  return lam == -1 ?
+    std::numeric_limits<double>::infinity() :
+    (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1);
 }
 
 double mp1_diag(double u0, double u1, double s0, double s1, double h) {
@@ -104,12 +91,36 @@ double mp1_diag(double u0, double u1, double s0, double s1, double h) {
   assert(s0 >= 0);
   assert(s1 >= 0);
 
-  double alpha_sq = std::pow((u0 - u1)/h, 2);
+  double alpha = std::fabs((u0 - u1)/h);
   double ds = s1 - s0;
-  double ds_sq = ds*ds;
-  double a[] = {ds_sq - alpha_sq, 2*s0*ds, s0*s0 + 4*ds_sq, 4*s0*ds, 4*ds_sq};
+  double a[] = {
+    (ds - alpha)*(ds + alpha),
+    2*s0*ds,
+    4*ds*ds + (s0 - alpha)*(s0 + alpha),
+    4*s0*ds,
+    4*ds*ds
+  };
 
-  return mp1_solve(a, u0, u1, s0, s1, h);
+  double z[8];
+  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
+  gsl_poly_complex_solve(a, 5, w, z);
+  gsl_poly_complex_workspace_free(w);
+
+  double lam = -1;
+  for (int i = 0; i < 4; ++i) {
+    if (z[2*i + 1] != 0 || z[2*i] < 0 || z[2*i] > 1) {
+      continue;
+    }
+    lam = z[2*i];
+    double lhs = (u0 - u1)*std::sqrt(lam*lam + 1)/h;
+    double rhs = s1 + 2*s1*lam*lam - s0*(1 - lam + 2*lam*lam);
+    if (std::fabs(lhs - rhs)/std::fabs(lhs) < 1e-6) {
+      break;
+    }
+  }
+  return lam == -1 ?
+    std::numeric_limits<double>::infinity() :
+    (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1);
 }
 
 // Local Variables:

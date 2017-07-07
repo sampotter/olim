@@ -34,13 +34,13 @@ f9 = @(x, y) 1 - 1./exp(a.*(x.^2 + y.^2));
 S = {s1 s2 s3 s4 s5 s6 s7 s8 s9};
 F = {f1 f2 f3 f4 f5 f6 f7 f8 f9};
 
-n = 9;
+n = 1;
 s = S{n};
 f = F{n};
 
 k = 1;
-Ms = 2*ceil(logspace(1, 3, 20)/2) + 1;
-% Ms = (2.^(6:12)) + 1;
+% Ms = 2*ceil(logspace(1, 3, 11)/2) + 1;
+Ms = (2.^(3:7)) + 1;
 for M = Ms
     fprintf('M = %d\n', M);
     B = zeros(M, 'logical');
@@ -71,6 +71,8 @@ for M = Ms
 end
 
 figure;
+set(gcf, 'Name', 'Relative Error', 'NumberTitle', 'off');
+
 subplot(1, 2, 1);
 loglog(Ms, E_basic_inf); hold on;
 loglog(Ms, E_olim8_rhr_inf); hold on;
@@ -93,8 +95,9 @@ xlim([min(Ms), max(Ms)]);
 legend('basic', 'olim8\_rhr', 'olim8\_mp0', 'olim8\_mp1');
 
 figure;
+set(gcf, 'Name', 'Analytic Solution', 'NumberTitle', 'off');
+
 imagesc(u);
-title('analytic solution');
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
 set(gca, 'YTick', [1 M/2 M]);
@@ -102,9 +105,10 @@ set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
 figure;
+set(gcf, 'Name', 'Pointwise Error', 'NumberTitle', 'off');
 
 subplot(2, 2, 1); 
-imagesc(U_basic); 
+imagesc(U_basic - u);
 title('basic'); 
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
@@ -113,7 +117,7 @@ set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
 subplot(2, 2, 2); 
-imagesc(U_olim8_rhr); 
+imagesc(U_olim8_rhr - u);
 title('olim8\_rhr'); 
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
@@ -122,7 +126,7 @@ set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
 subplot(2, 2, 3); 
-imagesc(U_olim8_mp0); 
+imagesc(U_olim8_mp0 - u);
 title('olim8\_mp0'); 
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
@@ -131,7 +135,7 @@ set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
 subplot(2, 2, 4); 
-imagesc(U_olim8_mp1); 
+imagesc(U_olim8_mp1 - u);
 title('olim8\_mp1'); 
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);

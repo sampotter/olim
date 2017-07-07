@@ -22,6 +22,7 @@ struct heap
 private:
   void grow();
   void heapify(int pos);
+  void heapify_impl(int pos);
   bool has_heap_prop() const;
   bool has_heap_prop_impl(int pos) const;
   void swap(int pos1, int pos2);

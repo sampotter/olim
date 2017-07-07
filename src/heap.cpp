@@ -3,8 +3,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
-#include <functional>
 #include <iostream>
+
+#define VALUE(pos) (_data[pos]->get_value())
 
 static int get_left(int pos) {
   return 2*pos + 1;
@@ -67,7 +68,7 @@ void heap::adjust_entry(node * n) {
   assert(_data[pos] == n);
   assert(pos < static_cast<int>(_size));
   int parent = get_parent(pos);
-  while (pos > 0 && get_value(parent) > get_value(pos)) {
+  while (pos > 0 && VALUE(parent) > VALUE(pos)) {
     swap(parent, pos);
     pos = parent;
     parent = get_parent(pos);
@@ -82,7 +83,7 @@ void heap::print() const {
   while (i0 < static_cast<int>(_size)) {
     std::cout << level << ":";
     for (int i = i0; i < std::min(static_cast<int>(_size), i1); ++i) {
-      std::cout << " " << get_value(i);
+      std::cout << " " << VALUE(i);
     }
     std::cout << std::endl;
     i0 = i1;
@@ -101,25 +102,25 @@ void heap::grow() {
 }
 
 void heap::heapify(int pos) {
-  std::function<void(int)> const rec = [&] (int pos) {
-    int l = get_left(pos), r = get_right(pos);
-    int smallest;
-    if (l < static_cast<int>(_size) && get_value(l) < get_value(pos)) {
-      smallest = l;
-    } else {
-      smallest = pos;
-    }
-    if (r < static_cast<int>(_size) && get_value(r) < get_value(smallest)) {
-      smallest = r;
-    }
-    if (smallest != pos) {
-      swap(pos, smallest);
-      rec(smallest);
-    }
-  };
-  rec(pos);
+  heapify_impl(pos);
   assert(has_heap_prop());
 }
+
+void heap::heapify_impl(int pos) {
+  int l = get_left(pos), r = get_right(pos), minpos;
+  if (l < static_cast<int>(_size) && VALUE(l) < VALUE(pos)) {
+    minpos = l;
+  } else {
+    minpos = pos;
+  }
+  if (r < static_cast<int>(_size) && VALUE(r) < VALUE(minpos)) {
+    minpos = r;
+  }
+  if (minpos != pos) {
+    swap(pos, minpos);
+    heapify_impl(minpos);
+  }
+ }
 
 void heap::swap(int pos1, int pos2) {
 	std::swap(_data[pos1], _data[pos2]);
@@ -136,12 +137,12 @@ bool heap::has_heap_prop() const {
 }
 
 bool heap::has_heap_prop_impl(int pos) const {
-  double val = _data[pos]->get_value();
+  double val = VALUE(pos);
   int l = get_left(pos), r = get_right(pos);
   return
-    (static_cast<size_t>(l) < size() ? val <= _data[l]->get_value() &&
+    (static_cast<size_t>(l) < size() ? val <= VALUE(l) &&
      has_heap_prop_impl(l) : true) &&
-    (static_cast<size_t>(r) < size() ? val <= _data[r]->get_value() &&
+    (static_cast<size_t>(r) < size() ? val <= VALUE(r) &&
      has_heap_prop_impl(r) : true);
 }
 

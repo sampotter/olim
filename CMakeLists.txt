@@ -35,6 +35,9 @@ foreach (test ${tests})
   add_test (${test} ${test}.test)
 endforeach ()
 
+add_executable (basic_marcher.speed src/basic_marcher.speed.cpp)
+target_link_libraries (basic_marcher.speed fmm)
+
 add_custom_command (
   TARGET fmm
   POST_BUILD

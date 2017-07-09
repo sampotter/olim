@@ -61,12 +61,12 @@ fast_marcher::~fast_marcher() {
 
 node & fast_marcher::operator()(int i, int j) {
   assert(in_bounds(i, j));
-  return _nodes[get_linear_index(i, j)];
+  return _nodes[_width*i + j];
 }
 
 node const & fast_marcher::operator()(int i, int j) const {
   assert(in_bounds(i, j));
-  return _nodes[get_linear_index(i, j)];
+  return _nodes[_width*i + j];
 }
 
 void fast_marcher::add_boundary_node(int i, int j, double value) {
@@ -134,7 +134,7 @@ double fast_marcher::get_h() const {
 
 double fast_marcher::S(int i, int j) {
   assert(in_bounds(i, j));
-  int k = get_linear_index(i, j);
+  int k = _width*i + j;
   assert(k < static_cast<int>(_S_cache.size()));
   if (_S_cache[k] < 0) {
     _S_cache[k] = _S(_h*j - _x0, _h*i - _y0);
@@ -148,10 +148,6 @@ void fast_marcher::adjust_heap_entry(node* n) {
 
 void fast_marcher::insert_into_heap(node* n) {
   _heap.insert(n);
-}
-
-int fast_marcher::get_linear_index(int i, int j) const {
-  return _width*i + j;
 }
 
 // Local Variables:

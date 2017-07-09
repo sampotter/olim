@@ -40,7 +40,6 @@ protected:
 private:
   virtual void update_node_value_impl(int i, int j, double & T) = 0;
   virtual void stage_neighbors_impl(int i, int j) = 0;
-  int get_linear_index(int i, int k) const;
 
   node* _nodes;
   heap _heap;

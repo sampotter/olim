@@ -11,23 +11,58 @@ struct node {
   inline double get_value() const {
     return _value;
   }
-  void set_value(double value);
 
-  int get_i() const;
-  void set_i(int i);
+  inline void set_value(double value) {
+    _value = value;
+  }
+
+  inline int get_i() const {
+    return _i;
+  }
+
+  inline void set_i(int i) {
+    _i = i;
+  }
 	
-  int get_j() const;
-  void set_j(int j);
+  inline int get_j() const {
+    return _j;
+  }
 
-  int get_heap_pos() const;
-  void set_heap_pos(int pos);
+  inline void set_j(int j) {
+    _j = j;
+  }
 
-  bool is_valid() const;
-  bool is_trial() const;
-  bool is_far() const;
-  void set_valid();
-  void set_trial();
-  void set_far();
+  inline int get_heap_pos() const {
+    return _heap_pos;
+  }
+
+  inline void set_heap_pos(int pos) {
+    _heap_pos = pos;
+  }
+
+  inline bool is_valid() const {
+    return _state == state::valid;
+  }
+
+  inline bool is_trial() const {
+    return _state == state::trial;
+  }
+
+  inline bool is_far() const {
+    return _state == state::far;
+  }
+
+  inline void set_valid() {
+    _state = state::valid;
+  }
+
+  inline void set_trial() {
+    _state = state::trial;
+  }
+
+  inline void set_far() {
+    _state = state::far;
+  }
 private:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};

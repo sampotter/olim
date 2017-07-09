@@ -5,7 +5,7 @@
 #include <cmath>
 
 void basic_marcher::update_node_value_impl(int i, int j, double & T) {
-  node* nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
+  node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
   double sh = get_h()*S(i, j);
   double T1 = 0, T2 = 0, disc = 0;

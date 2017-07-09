@@ -50,7 +50,7 @@ size_t heap::size() const {
 void heap::pop_front() {
   swap(0, _size - 1);
   --_size;
-  heapify(0);
+  sink(0);
   assert(has_heap_prop());
 }
 
@@ -59,19 +59,38 @@ void heap::insert(node * n) {
   n->set_heap_pos(_size);
   assert(_size < _capacity);
   _data[_size++] = n;
-  adjust_entry(n);
+  swim(n);
   assert(has_heap_prop());
 }
 
-void heap::adjust_entry(node * n) {
-  int pos = n->get_heap_pos();
-  assert(_data[pos] == n);
+void heap::swim(node * n) {
+  assert(_data[n->get_heap_pos()] == n);
+  swim(n->get_heap_pos());
+}
+
+void heap::swim(int pos) {
   assert(pos < static_cast<int>(_size));
   int parent = get_parent(pos);
   while (pos > 0 && VALUE(parent) > VALUE(pos)) {
     swap(parent, pos);
     pos = parent;
     parent = get_parent(pos);
+  }
+  assert(has_heap_prop());
+}
+
+void heap::sink(int pos) {
+  assert(pos < static_cast<int>(_size));
+  int ch = get_left(pos), n = static_cast<size_t>(size());
+  while (ch < n) {
+    if (ch + 1 < n && VALUE(ch) > VALUE(ch + 1)) {
+      ++ch;
+    }
+    if (VALUE(pos) > VALUE(ch)) {
+      swap(pos, ch);
+    }
+    pos = ch;
+    ch = get_left(pos);
   }
   assert(has_heap_prop());
 }
@@ -101,35 +120,10 @@ void heap::grow() {
   assert(has_heap_prop());
 }
 
-void heap::heapify(int pos) {
-  heapify_impl(pos);
-  assert(has_heap_prop());
-}
-
-void heap::heapify_impl(int pos) {
-  int l = get_left(pos), r = get_right(pos), minpos;
-  if (l < static_cast<int>(_size) && VALUE(l) < VALUE(pos)) {
-    minpos = l;
-  } else {
-    minpos = pos;
-  }
-  if (r < static_cast<int>(_size) && VALUE(r) < VALUE(minpos)) {
-    minpos = r;
-  }
-  if (minpos != pos) {
-    swap(pos, minpos);
-    heapify_impl(minpos);
-  }
- }
-
 void heap::swap(int pos1, int pos2) {
 	std::swap(_data[pos1], _data[pos2]);
 	_data[pos1]->set_heap_pos(pos1);
 	_data[pos2]->set_heap_pos(pos2);
-}
-
-double heap::get_value(int pos) const {
-	return _data[pos]->get_value();
 }
 
 bool heap::has_heap_prop() const {

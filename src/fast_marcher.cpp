@@ -143,7 +143,7 @@ double fast_marcher::S(int i, int j) {
 }
 
 void fast_marcher::adjust_heap_entry(node* n) {
-  _heap.adjust_entry(n);
+  _heap.swim(n);
 }
 
 void fast_marcher::insert_into_heap(node* n) {

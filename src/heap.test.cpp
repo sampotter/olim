@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE (insert_works) {
   h.pop_front();
 }
 
-BOOST_AUTO_TEST_CASE (adjust_entry_works) {
+BOOST_AUTO_TEST_CASE (swim_works) {
   heap h {16};
   node n[] = {
     node::make_boundary_node(0, 0, 1),
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE (adjust_entry_works) {
   h.insert(&n[1]);
   h.insert(&n[2]);
   n[2].set_value(0);
-  h.adjust_entry(&n[2]);
+  h.swim(&n[2]);
   node * front = h.front();
   BOOST_TEST(front == &n[2]);
   BOOST_TEST(front->get_value() == 0);

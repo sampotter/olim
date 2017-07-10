@@ -6,7 +6,8 @@ s1 = @(x, y) 1 - sin(sqrt(x.^2 + y.^2));
 
 ntrials = 10;
 mnum = 1;
-Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
+% Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
+Ms = 2.^(3:9) + 1;
 methods = {'basic', 'olim4_rhr', 'olim4_rhr_lut', 'olim4_mp0', ...
            'olim8_rhr', 'olim8_mp0', 'olim8_mp1'};
 T = inf(length(Ms), length(methods));
@@ -30,9 +31,15 @@ for k = 1:length(methods)
 end
 
 figure;
+set(gcf, 'Name', 'Method CPU Times', 'NumberTitle', 'off');
 for k = 1:length(methods)
     loglog(Ms, T(:, k));
     hold on;
 end
 legend('basic', 'olim4\_rhr', 'olim4\_lut\_rhr', 'olim4\_mp0', ...
        'olim8\_rhr', 'olim8\_mp0', 'olim8\_mp1');
+
+figure;
+set(gcf, 'Name', 'LUT Speedup', 'NumberTitle', 'off');
+loglog(Ms, T(:, 2)./T(:, 3));
+legend('olim4\_rhr');

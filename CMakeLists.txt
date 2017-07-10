@@ -16,6 +16,7 @@ add_library (fmm
   src/node.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
+  src/olim4_rhr_lut.cpp
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
@@ -27,6 +28,7 @@ target_link_libraries (fmm ${GSL_LIBRARIES})
 set (tests
   basic_marcher
   heap
+  olim4_rhr_lut
   olim8_mp0
   olim8_mp1
   olim8_rhr

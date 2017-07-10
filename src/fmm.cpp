@@ -106,6 +106,7 @@ static marcher_type parseMarcherType(mxArray const * arg) {
   if (str == "basic") type = marcher_type::basic;
   else if (str == "olim4_mp0") type = marcher_type::olim4_mp0;
   else if (str == "olim4_rhr") type = marcher_type::olim4_rhr;
+  else if (str == "olim4_rhr_lut") type = marcher_type::olim4_rhr_lut;
   else if (str == "olim8_mp0") type = marcher_type::olim8_mp0;
   else if (str == "olim8_mp1") type = marcher_type::olim8_mp1;
   else if (str == "olim8_rhr") type = marcher_type::olim8_rhr;

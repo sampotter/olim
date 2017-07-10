@@ -9,6 +9,7 @@ enum class marcher_type {
   basic,
   olim4_mp0,
   olim4_rhr,
+  olim4_rhr_lut,
   olim8_mp0,
   olim8_mp1,
   olim8_rhr

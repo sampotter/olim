@@ -115,7 +115,7 @@ void fast_marcher::update_node_value(int i, int j) {
 }
 
 bool fast_marcher::in_bounds(int i, int j) const {
-  return 0 <= i && i < _height && 0 <= j && j < _width;
+  return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
 
 bool fast_marcher::is_valid(int i, int j) const {

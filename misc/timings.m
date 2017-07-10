@@ -7,10 +7,10 @@ s1 = @(x, y) 1 - sin(sqrt(x.^2 + y.^2));
 ntrials = 10;
 mnum = 1;
 Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
-methods = {'basic', 'olim8_rhr', 'olim8_mp0', 'olim8_mp1'};
+methods = {'basic', 'olim4_rhr', 'olim8_rhr', 'olim8_mp0', 'olim8_mp1'};
 T = inf(length(Ms), length(methods));
-for method = methods
-    method = method{1};
+for k = 1:length(methods)
+    method = methods{k};
     fprintf('method = %s\n', method);
     k = 1;
     for M = Ms
@@ -29,8 +29,8 @@ for method = methods
 end
 
 figure;
-loglog(Ms, T(:, 1)); hold on;
-loglog(Ms, T(:, 2));
-loglog(Ms, T(:, 3));
-loglog(Ms, T(:, 4));
-legend('basic', 'olim8\_rhr', 'olim8\_mp0', 'olim8\_mp1');
+for k = 1:length(methods)
+    loglog(Ms, T(:, k));
+    hold on;
+end
+legend('basic', 'olim4\_rhr', 'olim8\_rhr', 'olim8\_mp0', 'olim8\_mp1');

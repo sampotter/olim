@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "olim8_util.hpp"
+#include "olim_util.hpp"
 
 void olim8_mp0::update_node_value_impl(int i, int j, double & T) {
   node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

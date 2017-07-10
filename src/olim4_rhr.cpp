@@ -1,6 +1,6 @@
 #include "olim4_rhr.hpp"
 
-#include "olim8_util.hpp"
+#include "olim_util.hpp"
 
 void olim4_rhr::update_node_value_impl(int i, int j, double & T) {
   node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW

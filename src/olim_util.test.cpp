@@ -1,10 +1,10 @@
-#define BOOST_TEST_MODULE olim8_util
+#define BOOST_TEST_MODULE olim_util
 
 #include <boost/test/included/unit_test.hpp>
 
 #include <iostream>
 
-#include "olim8_util.hpp"
+#include "olim_util.hpp"
 #include "speed_funcs.hpp"
 
 BOOST_AUTO_TEST_CASE (figuring_it_out) {

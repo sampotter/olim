@@ -14,13 +14,13 @@ add_library (fmm
   src/moore_marcher.cpp
   src/neumann_marcher.cpp
   src/node.cpp
+  src/olim_util.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
   src/olim4_rhr_lut.cpp
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
-  src/olim8_util.cpp
   src/speed_funcs.cpp)
 
 target_link_libraries (fmm ${GSL_LIBRARIES})
@@ -28,11 +28,11 @@ target_link_libraries (fmm ${GSL_LIBRARIES})
 set (tests
   basic_marcher
   heap
+  olim_util
   olim4_rhr_lut
   olim8_mp0
   olim8_mp1
-  olim8_rhr
-  olim8_util)
+  olim8_rhr)
 
 foreach (test ${tests})
   add_executable (${test}.test src/${test}.test.cpp)

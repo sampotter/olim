@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include "olim8_util.hpp"
+#include "olim_util.hpp"
 
 constexpr int NB_W = 1;
 constexpr int NB_S = 2;

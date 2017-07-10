@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "basic_marcher.hpp"
+#include "olim4_mp0.hpp"
 #include "olim4_rhr.hpp"
 #include "olim8_mp0.hpp"
 #include "olim8_mp1.hpp"
@@ -13,6 +14,8 @@ void fmm_mex(double * out, bool * in, int M, int N, double h,
   std::unique_ptr<fast_marcher> m;
   if (type == marcher_type::basic) {
     m = std::make_unique<basic_marcher>(M, N, h, S);
+  } else if (type == marcher_type::olim4_mp0) {
+    m = std::make_unique<olim4_mp0>(M, N, h, S);
   } else if (type == marcher_type::olim4_rhr) {
     m = std::make_unique<olim4_rhr>(M, N, h, S);
   } else if (type == marcher_type::olim8_mp0) {

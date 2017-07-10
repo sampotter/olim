@@ -1,15 +1,18 @@
 #include "neumann_marcher.hpp"
 
-void neumann_marcher::stage_neighbors_impl(int i, int j) {
-  static int offsets[4][2] = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
+// neighbor order: N, E, S, W (clockwise from north)
 
+int neumann_marcher::di[] = {-1, 0, 1, 0};
+int neumann_marcher::dj[] = {0, 1, 0, -1};
+
+void neumann_marcher::stage_neighbors_impl(int i, int j) {
   for (int k = 0; k < 4; ++k) {
-    stage_neighbor(i + offsets[k][0], j + offsets[k][1]);
+    stage_neighbor(i + di[k], j + dj[k]);
   }
 
   int a, b;
   for (int k = 0; k < 4; ++k) {
-    a = i + offsets[k][0], b = j + offsets[k][1];
+    a = i + di[k], b = j + dj[k];
     if (in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
       update_node_value(a, b);
     }
@@ -17,10 +20,16 @@ void neumann_marcher::stage_neighbors_impl(int i, int j) {
 }
 
 void neumann_marcher::get_valid_neighbors(int i, int j, node ** nb) {
-  if (is_valid(i - 1, j)) nb[0] = &this->operator()(i - 1, j); // N
-  if (is_valid(i, j + 1)) nb[1] = &this->operator()(i, j + 1); // E
-  if (is_valid(i + 1, j)) nb[2] = &this->operator()(i + 1, j); // S
-  if (is_valid(i, j - 1)) nb[3] = &this->operator()(i, j - 1); // W
+  // if (is_valid(i - 1, j)) nb[0] = &this->operator()(i - 1, j); // N
+  // if (is_valid(i, j + 1)) nb[1] = &this->operator()(i, j + 1); // E
+  // if (is_valid(i + 1, j)) nb[2] = &this->operator()(i + 1, j); // S
+  // if (is_valid(i, j - 1)) nb[3] = &this->operator()(i, j - 1); // W
+  for (int k = 0; k < 4; ++k) {
+    int a = i + di[k], b = j + dj[k];
+    if (is_valid(a, b)) {
+      nb[k] = &this->operator()(a, b);
+    }
+  }
 }
 
 // Local Variables:

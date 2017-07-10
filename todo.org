@@ -72,32 +72,28 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
-  - [ ] olim8_util -> olim_util
-  - [ ] Consolidate di/dj/offsets in moore_marcher tree into a single
+  - [X] olim8_util -> olim_util
+  - [X] Consolidate di/dj/offsets in moore_marcher tree into a single
     static variable in moore_marcher
   - [X] fix "speed_func F" conflict (should be speed_func S or
     slowness_func F (the former is better))
   - [X] Add "keyword argument" style to MEX function
   - [ ] Python wrapper
   - [ ] Julia wrapper
-  - [ ] Adding padding for BCs seemed to fix issue---but we didn't
-    have to explicitly avoid updating boundary cells. Is this because
-    there are no problems if we don't add any boundary points to the
-    padding?
-  - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)
+  - [ ] Improve tests
+    - [ ] Fix failing tests
+    - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)
   - [ ] Make sure to clean everything up in MATLAB
   - [ ] When you pass something like @(x, y) 1, MATLAB crashes. This
     is because MATLAB doesn't automatically broadcast the 1 to a
     matrix. Need to handle this case and do error checking when the
-    matrix that is returned is the incorrect size.
-  - [ ] Check and see what happens when a function handle that isn't
-    vectorized is passed
+    matrix that is returned is the incorrect size. (i.e. handle
+    function handles that aren't vectorized)
+  - [ ] Make sure a regular function (not a handle) can be passed
   - [ ] Make the MEX function able to take a double matrix for the
     boundary matrix
   - [ ] Use numeric_limits to check all static casts
-  - [ ] Look into using C++ heap stuff instead of my own
-  - [ ] Probably need to use multiple inheritance to simplify class
-    hierarchy
+  - [ ] Use multiple inheritance to simplify class hierarchy
 
 # Local Variables:
 # indent-tabs-mode: nil

@@ -43,6 +43,9 @@ endforeach ()
 add_executable (basic_marcher.speed src/basic_marcher.speed.cpp)
 target_link_libraries (basic_marcher.speed fmm)
 
+add_executable (olim4_rhr_lut.speed src/olim4_rhr_lut.speed.cpp)
+target_link_libraries (olim4_rhr_lut.speed fmm)
+
 add_custom_command (
   TARGET fmm
   POST_BUILD

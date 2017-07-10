@@ -26,4 +26,3 @@ void olim4_rhr::update_node_value_impl(int i, int j, double & T) {
 // indent-tabs-mode: nil
 // c-basic-offset: 2
 // End:
-

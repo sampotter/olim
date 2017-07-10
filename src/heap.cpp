@@ -80,7 +80,6 @@ void heap::swim(int pos) {
 }
 
 void heap::sink(int pos) {
-  assert(pos < static_cast<int>(_size));
   int ch = get_left(pos), n = static_cast<size_t>(size());
   while (ch < n) {
     if (ch + 1 < n && VALUE(ch) > VALUE(ch + 1)) {

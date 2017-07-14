@@ -4,6 +4,8 @@
 double default_speed_func(double x, double y);
 double default_speed_func_soln(double x, double y);
 
+double default_speed_func_3d(double x, double y, double z);
+
 double s1(double x, double y);
 double f1(double x, double y);
 

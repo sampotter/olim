@@ -41,8 +41,8 @@ private:
   virtual void update_node_value_impl(int i, int j, double & T) = 0;
   virtual void stage_neighbors_impl(int i, int j) = 0;
 
-  heap _heap;
   node * _nodes;
+  heap<node> _heap;
   double _h;
   std::vector<double> _S_cache;
   speed_func _S {default_speed_func};

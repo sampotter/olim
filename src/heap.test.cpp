@@ -3,14 +3,15 @@
 #include <boost/test/included/unit_test.hpp>
 
 #include "heap.hpp"
+#include "node.hpp"
 
 BOOST_AUTO_TEST_CASE (empty_works) {
-  heap h {16};
+  heap<node> h {16};
   BOOST_TEST(h.empty());
 }
 
 BOOST_AUTO_TEST_CASE (size_works) {
-  heap h {16};
+  heap<node> h {16};
   node n[] = {
     node::make_boundary_node(0, 0, 1),
     node::make_boundary_node(0, 0, 2),
@@ -29,7 +30,7 @@ BOOST_AUTO_TEST_CASE (size_works) {
 }
 
 BOOST_AUTO_TEST_CASE (insert_works) {
-  heap h {16};
+  heap<node> h {16};
   node n[] = {
     node::make_boundary_node(0, 0, 1),
     node::make_boundary_node(0, 0, 2),
@@ -53,7 +54,7 @@ BOOST_AUTO_TEST_CASE (insert_works) {
 }
 
 BOOST_AUTO_TEST_CASE (swim_works) {
-  heap h {16};
+  heap<node> h {16};
   node n[] = {
     node::make_boundary_node(0, 0, 1),
     node::make_boundary_node(0, 0, 2),

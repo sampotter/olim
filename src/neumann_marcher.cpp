@@ -20,12 +20,9 @@ void neumann_marcher::stage_neighbors_impl(int i, int j) {
 }
 
 void neumann_marcher::get_valid_neighbors(int i, int j, node ** nb) {
-  // if (is_valid(i - 1, j)) nb[0] = &this->operator()(i - 1, j); // N
-  // if (is_valid(i, j + 1)) nb[1] = &this->operator()(i, j + 1); // E
-  // if (is_valid(i + 1, j)) nb[2] = &this->operator()(i + 1, j); // S
-  // if (is_valid(i, j - 1)) nb[3] = &this->operator()(i, j - 1); // W
+  int a, b;
   for (int k = 0; k < 4; ++k) {
-    int a = i + di[k], b = j + dj[k];
+    a = i + di[k], b = j + dj[k];
     if (is_valid(a, b)) {
       nb[k] = &this->operator()(a, b);
     }

@@ -72,6 +72,15 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] Remove adjust_heap_entry and insert_into_heap
+  - [ ] See which protected member functions in fast_marcher(_3d) can
+    be made private
+  - [ ] Replace use of std::vector<double> for _S_cache with a double *
+  - [ ] Read Section 3 of "imm841.pdf" which talks about how to
+    efficiently solve for the basic method. Try implementing this
+  - [ ] Make sure layout of nodes agrees with MATLAB convention
+  - [ ] Fix order of width and height are reversed w/r/t x0 and y0 in
+    2d marcher
   - [ ] Figure out how to speed up compile times:
     - [ ] pch
     - [ ] cmake stuff?

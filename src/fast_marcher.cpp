@@ -123,9 +123,9 @@ bool fast_marcher::is_valid(int i, int j) const {
 }
 
 node* fast_marcher::get_next_node() {
-  auto const elt = _heap.front();
+  auto const n = _heap.front();
   _heap.pop_front();
-  return elt;
+  return n;
 }
 
 double fast_marcher::get_h() const {
@@ -142,11 +142,11 @@ double fast_marcher::S(int i, int j) {
   return _S_cache[k];
 }
 
-void fast_marcher::adjust_heap_entry(node* n) {
+void fast_marcher::adjust_heap_entry(node * n) {
   _heap.swim(n);
 }
 
-void fast_marcher::insert_into_heap(node* n) {
+void fast_marcher::insert_into_heap(node * n) {
   _heap.insert(n);
 }
 

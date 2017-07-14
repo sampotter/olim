@@ -31,7 +31,7 @@ protected:
   virtual void get_valid_neighbors(int i, int j, node ** nb) = 0;
   bool in_bounds(int i, int j) const;
   bool is_valid(int i, int j) const;
-  node* get_next_node();
+  node * get_next_node();
   double get_h() const;
   double S(int i, int j);
   void adjust_heap_entry(node * n);
@@ -41,8 +41,8 @@ private:
   virtual void update_node_value_impl(int i, int j, double & T) = 0;
   virtual void stage_neighbors_impl(int i, int j) = 0;
 
-  node* _nodes;
   heap _heap;
+  node * _nodes;
   double _h;
   std::vector<double> _S_cache;
   speed_func _S {default_speed_func};

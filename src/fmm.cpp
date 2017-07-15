@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "fmm_mex.hpp"
+#include "fmm.h"
 
 /**
  * This struct contains the parameters that need to be initialized in
@@ -103,13 +103,13 @@ static void parseSpeedFunc(mxArray const * arg, parameters & p) {
 static marcher_type parseMarcherType(mxArray const * arg) {
   auto const str = parseString(arg, "Method argument must be a string.");
   marcher_type type;
-  if (str == "basic") type = marcher_type::basic;
-  else if (str == "olim4_mp0") type = marcher_type::olim4_mp0;
-  else if (str == "olim4_rhr") type = marcher_type::olim4_rhr;
-  else if (str == "olim4_rhr_lut") type = marcher_type::olim4_rhr_lut;
-  else if (str == "olim8_mp0") type = marcher_type::olim8_mp0;
-  else if (str == "olim8_mp1") type = marcher_type::olim8_mp1;
-  else if (str == "olim8_rhr") type = marcher_type::olim8_rhr;
+  if (str == "basic") type = BASIC;
+  else if (str == "olim4_mp0") type = OLIM4_MP0;
+  else if (str == "olim4_rhr") type = OLIM4_RHR;
+  else if (str == "olim4_rhr_lut") type = OLIM4_RHR_LUT;
+  else if (str == "olim8_mp0") type = OLIM8_MP0;
+  else if (str == "olim8_mp1") type = OLIM8_MP1;
+  else if (str == "olim8_rhr") type = OLIM8_RHR;
   else mexErrMsgTxt(("Invalid marcher type: " + str).c_str());
   return type;
 }
@@ -193,7 +193,7 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
    * Set up arguments from passed parameters.
    */
   parameters p {
-    marcher_type::basic, getDefaultSMatrix(M, N), 1, 0, 0, M, N};
+    BASIC, getDefaultSMatrix(M, N), 1, 0, 0, M, N};
   if (nrhs >= 2 && mxIsClass(prhs[1], "char") && mxGetM(prhs[1]) == 1) {
     parseKeywordArguments(nlhs, plhs, nrhs, prhs, p);
   } else {
@@ -215,7 +215,7 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
   plhs[0] = mxCreateDoubleMatrix(M, N, mxREAL);
   double * out = mxGetPr(plhs[0]);
 
-  fmm_mex(out, in, M, N, p.h, mxGetPr(p.S), p.type);
+  fmm(out, in, M, N, p.h, mxGetPr(p.S), p.type);
 
   /**
    * Clean up.

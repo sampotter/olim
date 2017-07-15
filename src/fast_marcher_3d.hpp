@@ -4,7 +4,7 @@
 #include "heap.hpp"
 #include "node_3d.hpp"
 #include "speed_funcs.hpp"
-#include "typedefs.hpp"
+#include "typedefs.h"
 
 struct fast_marcher_3d
 {

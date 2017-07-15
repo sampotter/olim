@@ -4,7 +4,7 @@
 #include "heap.hpp"
 #include "node.hpp"
 #include "speed_funcs.hpp"
-#include "typedefs.hpp"
+#include "typedefs.h"
 
 #include <vector>
 

@@ -11,7 +11,7 @@ add_library (fmm
   src/basic_marcher_3d.cpp
   src/fast_marcher.cpp
   src/fast_marcher_3d.cpp
-  src/fmm_mex.cpp
+  src/fmm_.cpp
   src/moore_marcher.cpp
   src/neumann_marcher.cpp
   src/neumann_marcher_3d.cpp

@@ -13,11 +13,8 @@
 struct parameters {
   marcher_type type;
   mxArray * S;
-  double h;
-  double x0;
-  double y0;
-  int M;
-  int N;
+  double h, x0, y0;
+  int M, N;
 };
 
 /**

@@ -11,6 +11,15 @@
 
 #define GET_VALUE(i) (nb[i]->get_value())
 
+#define ADJ_TRI_UPDATE(dir1, dir2, dir3)                          \
+  do {                                                            \
+    if (has_octant[dir1 ## dir2 ## dir3]) {                       \
+      T1 = GET_VALUE(DIR_ ## dir1), T2 = GET_VALUE(DIR_ ## dir2), \
+        T3 = GET_VALUE(DIR_ ## dir3);                             \
+      T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;        \
+    }                                                             \
+  } while (0);
+
 enum neighbor {DIR_U, DIR_N, DIR_E, DIR_S, DIR_W, DIR_D};
 enum octant {UNE, UES, USW, UWN, DNE, DES, DSW, DWN};
 
@@ -35,38 +44,14 @@ void basic_marcher_3d::update_node_value_impl(int i, int j, int k, double & T) {
   // Triple point updates:
 
   // TODO: could replace with a macro using macro concatenation... (i.e. U ## N ## E)
-  if (has_octant[UNE]) {
-    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[UES]) {
-    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[USW]) {
-    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[UWN]) {
-    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[DNE]) {
-    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[DES]) {
-    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[DSW]) {
-    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
-  if (has_octant[DWN]) {
-    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
-    T = disc = COMPUTE_DISC() > 0 ? COMPUTE_VALUE() : T;
-  }
+  ADJ_TRI_UPDATE(U, N, E);
+  ADJ_TRI_UPDATE(U, E, S);
+  ADJ_TRI_UPDATE(U, S, W);
+  ADJ_TRI_UPDATE(U, W, N);
+  ADJ_TRI_UPDATE(D, N, E);
+  ADJ_TRI_UPDATE(D, E, S);
+  ADJ_TRI_UPDATE(D, S, W);
+  ADJ_TRI_UPDATE(D, W, N);
 
   // Single point updates:
 

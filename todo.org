@@ -72,6 +72,8 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] Figure out how to conditionally avoid using the _S_cache by
+    conditionally setting function pointer
   - [ ] Remove adjust_heap_entry and insert_into_heap
   - [ ] See which protected member functions in fast_marcher(_3d) can
     be made private

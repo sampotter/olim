@@ -13,7 +13,7 @@ struct heap
   heap(size_t capacity);
   ~heap();
 
-  Node * & front();
+  Node *& front();
   Node * const & front() const;
   bool empty() const;
   Node ** data() const;

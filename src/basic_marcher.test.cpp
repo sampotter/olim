@@ -68,14 +68,6 @@ BOOST_AUTO_TEST_CASE (masha_s_values_are_correct) {
       BOOST_TEST(gt[k++] == m.get_value(i, j), tol);
     }
   }
-
-  for (int i = 0; i < 21; ++i) {
-    for (int j = 0; j < 21; ++j) {
-      std::cout << m.get_value(i, j) << " ";
-    }
-    std::cout << std::endl;
-  }
-  std::cout << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE (masha_small_test) {

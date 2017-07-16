@@ -10,7 +10,7 @@ add_library (fmm
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
-  src/marcher_2d.cpp
+  src/marcher.cpp
   src/marcher_3d.cpp
   src/fmm_.cpp
   src/moore_marcher.cpp

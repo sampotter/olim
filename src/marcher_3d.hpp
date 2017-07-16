@@ -1,5 +1,5 @@
-#ifndef __FAST_MARCHER_3D_HPP__
-#define __FAST_MARCHER_3D_HPP__
+#ifndef __MARCHER_3D_HPP__
+#define __MARCHER_3D_HPP__
 
 #include "abstract_marcher.hpp"
 #include "heap.hpp"
@@ -7,7 +7,7 @@
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-struct fast_marcher_3d: public abstract_marcher
+struct marcher_3d: public abstract_marcher
 {
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   double get_value(int i, int j, int k) const;
@@ -34,7 +34,7 @@ private:
   int _height, _width, _depth;
 };
 
-#endif // __FAST_MARCHER_3D_HPP__
+#endif // __MARCHER_3D_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

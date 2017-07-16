@@ -34,6 +34,18 @@ fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
   init();
 }
 
+void fast_marcher::add_boundary_node(int i, int j, double value) {
+  assert(in_bounds(i, j));
+  assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
+  this->operator()(i, j) = node::make_boundary_node(i, j, value);
+  stage_neighbors(&this->operator()(i, j));
+}
+
+double fast_marcher::get_value(int i, int j) const {
+  assert(in_bounds(i, j));
+  return this->operator()(i, j).get_value();
+}
+
 node & fast_marcher::operator()(int i, int j) {
   assert(in_bounds(i, j));
   return _nodes[_width*i + j];
@@ -42,25 +54,6 @@ node & fast_marcher::operator()(int i, int j) {
 node const & fast_marcher::operator()(int i, int j) const {
   assert(in_bounds(i, j));
   return _nodes[_width*i + j];
-}
-
-void fast_marcher::add_boundary_node(int i, int j, double value) {
-  assert(in_bounds(i, j));
-  assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
-  this->operator()(i, j) = node::make_boundary_node(i, j, value);
-  stage_neighbors(&this->operator()(i, j));
-}
-
-void fast_marcher::stage_neighbor(int i, int j) {
-  if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
-    this->operator()(i, j).set_trial();
-    insert_into_heap(&this->operator()(i, j));
-  }
-}
-
-double fast_marcher::get_value(int i, int j) const {
-  assert(in_bounds(i, j));
-  return this->operator()(i, j).get_value();
 }
 
 void fast_marcher::update_node_value(int i, int j) {
@@ -75,21 +68,19 @@ void fast_marcher::update_node_value(int i, int j) {
   }
 }
 
+void fast_marcher::stage_neighbor(int i, int j) {
+  if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
+    this->operator()(i, j).set_trial();
+    insert_into_heap(&this->operator()(i, j));
+  }
+}
+
 bool fast_marcher::in_bounds(int i, int j) const {
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
 
 bool fast_marcher::is_valid(int i, int j) const {
   return in_bounds(i, j) && this->operator()(i, j).is_valid();
-}
-
-void fast_marcher::init() {
-  for (int i = 0; i < _height; ++i) {
-    for (int j = 0; j < _width; ++j) {
-      this->operator()(i, j).set_i(i);
-      this->operator()(i, j).set_j(j);
-    }
-  }
 }
 
 double fast_marcher::S(int i, int j) {
@@ -100,6 +91,15 @@ double fast_marcher::S(int i, int j) {
     _S_cache[k] = _S(_h*j - _x0, _h*i - _y0);
   }
   return _S_cache[k];
+}
+
+void fast_marcher::init() {
+  for (int i = 0; i < _height; ++i) {
+    for (int j = 0; j < _width; ++j) {
+      this->operator()(i, j).set_i(i);
+      this->operator()(i, j).set_j(j);
+    }
+  }
 }
 
 // Local Variables:

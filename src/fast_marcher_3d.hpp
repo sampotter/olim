@@ -16,13 +16,13 @@ protected:
   node_3d & operator()(int i, int j, int k);
   node_3d const & operator()(int i, int j, int k) const;
   void update_node_value(int i, int j, int k);
-  void stage_neighbors(int i, int j, int k);
   void stage_neighbor(int i, int j, int k);
-  virtual void get_valid_neighbors(int i, int j, int k, node_3d ** nb) = 0;
   bool in_bounds(int i, int j, int k) const;
   bool is_valid(int i, int j, int k) const;
   double S(int i, int j, int k);
 
+  virtual void get_valid_neighbors(int i, int j, int k, node_3d ** nb) = 0;
+  
 private:
   virtual void update_node_value_impl(int i, int j, int k, double & T) = 0;
   virtual void stage_neighbors_impl(abstract_node * n) = 0;

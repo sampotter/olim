@@ -23,13 +23,15 @@ protected:
   node const & operator()(int i, int j) const;
   void update_node_value(int i, int j);
   void stage_neighbor(int i, int j);
-  virtual void get_valid_neighbors(int i, int j, node ** nb) = 0;
   bool in_bounds(int i, int j) const;
   bool is_valid(int i, int j) const;
   double S(int i, int j);
 	
+  virtual void get_valid_neighbors(int i, int j, node ** nb) = 0;
+  
 private:
   void init();
+  
   virtual void update_node_value_impl(int i, int j, double & T) = 0;
 
   node * _nodes;

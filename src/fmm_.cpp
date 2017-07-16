@@ -12,7 +12,7 @@
 
 void fmm(double * out, bool * in, int M, int N, double h, double * S,
          marcher_type type) {
-  std::unique_ptr<fast_marcher> m;
+  std::unique_ptr<marcher_2d> m;
   if (S == nullptr) {
     if (type == BASIC) {
       m = std::make_unique<basic_marcher>(M, N, h);

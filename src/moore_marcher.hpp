@@ -1,11 +1,11 @@
 #ifndef __MOORE_MARCHER_HPP__
 #define __MOORE_MARCHER_HPP__
 
-#include "fast_marcher.hpp"
+#include "marcher_2d.hpp"
 
-struct moore_marcher: public fast_marcher
+struct moore_marcher: public marcher_2d
 {
-  using fast_marcher::fast_marcher;
+  using marcher_2d::marcher_2d;
 protected:
   virtual void get_valid_neighbors(int i, int j, node ** nb);
   static int di[8];

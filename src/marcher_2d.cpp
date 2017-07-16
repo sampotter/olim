@@ -1,9 +1,9 @@
-#include "fast_marcher.hpp"
+#include "marcher_2d.hpp"
 
 #include <cassert>
 #include <vector>
 
-fast_marcher::fast_marcher(int height, int width, double h):
+marcher_2d::marcher_2d(int height, int width, double h):
   abstract_marcher {h, width*height},
   _nodes {new node[width*height]},
   _height {height},
@@ -12,8 +12,8 @@ fast_marcher::fast_marcher(int height, int width, double h):
   init();
 }
 
-fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
-                           double x0, double y0):
+marcher_2d::marcher_2d(int height, int width, double h, speed_func S,
+                       double x0, double y0):
   abstract_marcher {h, width*height},
   _nodes {new node[width*height]},
   _S {S},
@@ -25,7 +25,7 @@ fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
   init();
 }
 
-fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
+marcher_2d::marcher_2d(int height, int width, double h, double * S_cache):
   abstract_marcher {h, width*height, S_cache},
   _nodes {new node[width*height]},
   _height {height},
@@ -34,29 +34,29 @@ fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
   init();
 }
 
-void fast_marcher::add_boundary_node(int i, int j, double value) {
+void marcher_2d::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
   assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
   this->operator()(i, j) = node::make_boundary_node(i, j, value);
   stage_neighbors(&this->operator()(i, j));
 }
 
-double fast_marcher::get_value(int i, int j) const {
+double marcher_2d::get_value(int i, int j) const {
   assert(in_bounds(i, j));
   return this->operator()(i, j).get_value();
 }
 
-node & fast_marcher::operator()(int i, int j) {
+node & marcher_2d::operator()(int i, int j) {
   assert(in_bounds(i, j));
   return _nodes[_width*i + j];
 }
 
-node const & fast_marcher::operator()(int i, int j) const {
+node const & marcher_2d::operator()(int i, int j) const {
   assert(in_bounds(i, j));
   return _nodes[_width*i + j];
 }
 
-void fast_marcher::update_node_value(int i, int j) {
+void marcher_2d::update_node_value(int i, int j) {
   assert(in_bounds(i, j));
   double T = std::numeric_limits<double>::infinity();
   update_node_value_impl(i, j, T);
@@ -68,22 +68,22 @@ void fast_marcher::update_node_value(int i, int j) {
   }
 }
 
-void fast_marcher::stage_neighbor(int i, int j) {
+void marcher_2d::stage_neighbor(int i, int j) {
   if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
     this->operator()(i, j).set_trial();
     insert_into_heap(&this->operator()(i, j));
   }
 }
 
-bool fast_marcher::in_bounds(int i, int j) const {
+bool marcher_2d::in_bounds(int i, int j) const {
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
 
-bool fast_marcher::is_valid(int i, int j) const {
+bool marcher_2d::is_valid(int i, int j) const {
   return in_bounds(i, j) && this->operator()(i, j).is_valid();
 }
 
-double fast_marcher::S(int i, int j) {
+double marcher_2d::S(int i, int j) {
   assert(in_bounds(i, j));
   int k = _width*i + j;
   assert(k < static_cast<int>(_S_cache.size()));
@@ -93,7 +93,7 @@ double fast_marcher::S(int i, int j) {
   return _S_cache[k];
 }
 
-void fast_marcher::init() {
+void marcher_2d::init() {
   for (int i = 0; i < _height; ++i) {
     for (int j = 0; j < _width; ++j) {
       this->operator()(i, j).set_i(i);

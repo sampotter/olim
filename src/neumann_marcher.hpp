@@ -1,10 +1,10 @@
 #ifndef __NEUMANN_MARCHER_HPP__
 #define __NEUMANN_MARCHER_HPP__
 
-#include "fast_marcher.hpp"
+#include "marcher_2d.hpp"
 
-struct neumann_marcher: public fast_marcher {
-  using fast_marcher::fast_marcher;
+struct neumann_marcher: public marcher_2d {
+  using marcher_2d::marcher_2d;
 protected:
   virtual void get_valid_neighbors(int i, int j, node ** nb);
   static int di[4];

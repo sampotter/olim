@@ -6,7 +6,11 @@ int neumann_marcher_3d::di[] = {0, 1, 0, -1, 0, 0};
 int neumann_marcher_3d::dj[] = {0, 0, 1, 0, -1, 0};
 int neumann_marcher_3d::dk[] = {1, 0, 0, 0, 0, -1};
 
-void neumann_marcher_3d::stage_neighbors_impl(int i, int j, int k) {
+void neumann_marcher_3d::stage_neighbors_impl(abstract_node * n) {
+  int i = static_cast<node_3d *>(n)->get_i();
+  int j = static_cast<node_3d *>(n)->get_j();
+  int k = static_cast<node_3d *>(n)->get_k();
+
   for (int l = 0; l < 6; ++k) {
     stage_neighbor(i + di[l], j + dj[l], k + dk[l]);
   }

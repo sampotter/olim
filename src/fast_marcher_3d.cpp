@@ -16,15 +16,6 @@ void fast_marcher_3d::stage_neighbor(int i, int j, int k) {
   }
 }
 
-void fast_marcher_3d::run() {
-  node_3d * n = nullptr;
-  while (!_heap.empty()) {
-    n = get_next_node();
-    n->set_valid();
-    stage_neighbors(n->get_i(), n->get_j(), n->get_k());
-  }
-}
-
 double fast_marcher_3d::get_value(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
   return this->operator()(i, j, k).get_value();
@@ -52,11 +43,6 @@ node_3d const & fast_marcher_3d::operator()(int i, int j, int k) const {
   return _nodes[_height*(_width*k + j) + i];
 }
 
-void fast_marcher_3d::stage_neighbors(int i, int j, int k) {
-  assert(in_bounds(i, j, k));
-  stage_neighbors_impl(i, j, k);
-}
-
 bool fast_marcher_3d::in_bounds(int i, int j, int k) const {
   return (unsigned) i < (unsigned) _height &&
     (unsigned) j < (unsigned) _width && (unsigned) k < (unsigned) _depth;
@@ -64,12 +50,6 @@ bool fast_marcher_3d::in_bounds(int i, int j, int k) const {
 
 bool fast_marcher_3d::is_valid(int i, int j, int k) const {
   return in_bounds(i, j, k) && this->operator()(i, j, k).is_valid();
-}
-
-node_3d * fast_marcher_3d::get_next_node() {
-  auto const n = _heap.front();
-  _heap.pop_front();
-  return n;
 }
 
 double fast_marcher_3d::S(int i, int j, int k) {
@@ -80,14 +60,6 @@ double fast_marcher_3d::S(int i, int j, int k) {
     _S_cache[l] = _S(_h*j - _x0, _h*i - _y0, _h*k - _z0);
   }
   return _S_cache[l];
-}
-
-void fast_marcher_3d::adjust_heap_entry(node_3d * n) {
-  _heap.swim(n);
-}
-
-void fast_marcher_3d::insert_into_heap(node_3d * n) {
-  _heap.insert(n);
 }
 
 // Local Variables:

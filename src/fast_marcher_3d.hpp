@@ -10,7 +10,6 @@
 struct fast_marcher_3d: public abstract_marcher
 {
   void add_boundary_node(int i, int j, int k, double value = 0.0);
-  void run();
   double get_value(int i, int j, int k) const;
 
 protected:
@@ -22,14 +21,11 @@ protected:
   virtual void get_valid_neighbors(int i, int j, int k, node_3d ** nb) = 0;
   bool in_bounds(int i, int j, int k) const;
   bool is_valid(int i, int j, int k) const;
-  node_3d * get_next_node();
   double S(int i, int j, int k);
-  void adjust_heap_entry(node_3d * n);
-  void insert_into_heap(node_3d * n);
 
 private:
   virtual void update_node_value_impl(int i, int j, int k, double & T) = 0;
-  virtual void stage_neighbors_impl(int i, int j, int k) = 0;
+  virtual void stage_neighbors_impl(abstract_node * n) = 0;
 
   node_3d * _nodes;
   heap<node_3d> _heap;

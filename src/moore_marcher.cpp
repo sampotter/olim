@@ -5,7 +5,10 @@
 int moore_marcher::di[] = {-1, -1, 0, 1, 1, 1, 0, -1};
 int moore_marcher::dj[] = {0, 1, 1, 1, 0, -1, -1, -1};
 
-void moore_marcher::stage_neighbors_impl(int i, int j) {
+void moore_marcher::stage_neighbors_impl(abstract_node * n) {
+  int i = static_cast<node *>(n)->get_i();
+  int j = static_cast<node *>(n)->get_j();
+
   for (int k = 0; k < 8; ++k) {
     stage_neighbor(i + di[k], j + dj[k]);
   }

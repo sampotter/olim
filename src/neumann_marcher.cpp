@@ -5,7 +5,10 @@
 int neumann_marcher::di[] = {-1, 0, 1, 0};
 int neumann_marcher::dj[] = {0, 1, 0, -1};
 
-void neumann_marcher::stage_neighbors_impl(int i, int j) {
+void neumann_marcher::stage_neighbors_impl(abstract_node * n) {
+  int i = static_cast<node *>(n)->get_i();
+  int j = static_cast<node *>(n)->get_j();
+
   for (int k = 0; k < 4; ++k) {
     stage_neighbor(i + di[k], j + dj[k]);
   }

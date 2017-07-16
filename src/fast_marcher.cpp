@@ -1,17 +1,11 @@
 #include "fast_marcher.hpp"
 
 #include <cassert>
-#include <cmath>
 #include <vector>
-
-static size_t initial_heap_size(int height, int width) {
-  return static_cast<size_t>(std::max(8.0, std::log(height*width)));
-}
 
 fast_marcher::fast_marcher(int height, int width, double h):
   abstract_marcher {h, width*height},
-  _nodes {new node[height*width]},
-  _heap {initial_heap_size(height, width)},
+  _nodes {new node[width*height]},
   _height {height},
   _width {width}
 {
@@ -21,8 +15,7 @@ fast_marcher::fast_marcher(int height, int width, double h):
 fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
                            double x0, double y0):
   abstract_marcher {h, width*height},
-  _nodes {new node[height*width]},
-  _heap {initial_heap_size(height, width)},
+  _nodes {new node[width*height]},
   _S {S},
   _x0 {x0},
   _y0 {y0},
@@ -33,22 +26,12 @@ fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
 }
 
 fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
-  abstract_marcher {h, S_cache},
-  _nodes {new node[height*width]},
-  _heap {initial_heap_size(height, width)},
+  abstract_marcher {h, width*height, S_cache},
+  _nodes {new node[width*height]},
   _height {height},
   _width {width}
 {
   init();
-}
-
-void fast_marcher::init() {
-  for (int i = 0; i < _height; ++i) {
-    for (int j = 0; j < _width; ++j) {
-      this->operator()(i, j).set_i(i);
-      this->operator()(i, j).set_j(j);
-    }
-  }
 }
 
 node & fast_marcher::operator()(int i, int j) {
@@ -65,27 +48,13 @@ void fast_marcher::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
   assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
   this->operator()(i, j) = node::make_boundary_node(i, j, value);
-  stage_neighbors(i, j);
-}
-
-void fast_marcher::stage_neighbors(int i, int j) {
-  assert(in_bounds(i, j));
-  stage_neighbors_impl(i, j);
+  stage_neighbors(&this->operator()(i, j));
 }
 
 void fast_marcher::stage_neighbor(int i, int j) {
   if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
     this->operator()(i, j).set_trial();
     insert_into_heap(&this->operator()(i, j));
-  }
-}
-
-void fast_marcher::run() {
-  node * n = nullptr;
-  while (!_heap.empty()) {
-    n = get_next_node();
-    n->set_valid();
-    stage_neighbors(n->get_i(), n->get_j());
   }
 }
 
@@ -114,10 +83,13 @@ bool fast_marcher::is_valid(int i, int j) const {
   return in_bounds(i, j) && this->operator()(i, j).is_valid();
 }
 
-node* fast_marcher::get_next_node() {
-  auto const n = _heap.front();
-  _heap.pop_front();
-  return n;
+void fast_marcher::init() {
+  for (int i = 0; i < _height; ++i) {
+    for (int j = 0; j < _width; ++j) {
+      this->operator()(i, j).set_i(i);
+      this->operator()(i, j).set_j(j);
+    }
+  }
 }
 
 double fast_marcher::S(int i, int j) {
@@ -128,14 +100,6 @@ double fast_marcher::S(int i, int j) {
     _S_cache[k] = _S(_h*j - _x0, _h*i - _y0);
   }
   return _S_cache[k];
-}
-
-void fast_marcher::adjust_heap_entry(node * n) {
-  _heap.swim(n);
-}
-
-void fast_marcher::insert_into_heap(node * n) {
-  _heap.insert(n);
 }
 
 // Local Variables:

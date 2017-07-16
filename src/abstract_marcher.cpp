@@ -1,26 +1,58 @@
 #include "abstract_marcher.hpp"
 
-abstract_marcher::abstract_marcher(double h, int S_size):
-  _h {h},
-  _S_cache {new double[S_size]},
-  _should_free_S_cache {true}
-{
-  for (int i = 0; i < S_size; ++i) {
-    _S_cache[i] = -1;
+#include <cmath>
+
+static size_t initial_heap_size(int size) {
+  return static_cast<size_t>(std::max(8.0, std::log(size)));
+}
+
+void abstract_marcher::run() {
+  abstract_node * n {nullptr};
+  while (!_heap.empty()) {
+    n = get_next_node();
+    n->set_valid();
+    stage_neighbors(n);
   }
 }
 
-abstract_marcher::abstract_marcher(double h, double * S_cache):
+abstract_marcher::abstract_marcher(double h, int size, double * S_cache):
+  _heap {initial_heap_size(size)},
   _h {h},
-  _S_cache {S_cache},
-  _should_free_S_cache {false}
-{}
+  _S_cache {S_cache == nullptr ? new double[size] : S_cache},
+  _should_free_S_cache {S_cache == nullptr}
+{
+  // If the user didn't pass a pointer to an S_cache, we need to
+  // initialize the one we've just created.
+  if (_should_free_S_cache) {
+    for (int i = 0; i < size; ++i) {
+      _S_cache[i] = -1;
+    }
+  }
+}
 
 abstract_marcher::~abstract_marcher()
 {
   if (_should_free_S_cache) {
     delete[] _S_cache;
   }
+}
+
+void abstract_marcher::stage_neighbors(abstract_node * n) {
+  stage_neighbors_impl(n);
+}
+
+abstract_node * abstract_marcher::get_next_node() {
+  auto const n = _heap.front();
+  _heap.pop_front();
+  return n;
+}
+
+void abstract_marcher::adjust_heap_entry(abstract_node * n) {
+  _heap.swim(n);
+}
+
+void abstract_marcher::insert_into_heap(abstract_node * n) {
+  _heap.insert(n);
 }
 
 // Local Variables:

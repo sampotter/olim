@@ -11,7 +11,7 @@ protected:
   static int di[8];
   static int dj[8];
 private:
-  virtual void stage_neighbors_impl(int i, int j);
+  virtual void stage_neighbors_impl(abstract_node * n);
 };
 
 #endif // __MOORE_MARCHER_HPP__

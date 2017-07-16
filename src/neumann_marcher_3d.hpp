@@ -11,7 +11,7 @@ protected:
   static int dj[6];
   static int dk[6];
 private:
-  virtual void stage_neighbors_impl(int i, int j, int k);
+  virtual void stage_neighbors_impl(abstract_node * n);
 };
 
 #endif // __NEUMANN_MARCHER_3D_HPP__

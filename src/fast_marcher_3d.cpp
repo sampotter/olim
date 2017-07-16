@@ -6,7 +6,7 @@ void fast_marcher_3d::add_boundary_node(int i, int j, int k, double value) {
   assert(in_bounds(i, j, k));
   assert(this->operator()(i, j, k).is_far()); // TODO: for now---worried about heap
   this->operator()(i, j, k) = node_3d::make_boundary_node(i, j, k, value);
-  stage_neighbors(i, j, k);
+  stage_neighbors(&this->operator()(i, j, k));
 }
 
 double fast_marcher_3d::get_value(int i, int j, int k) const {

@@ -72,10 +72,6 @@ node_3d * fast_marcher_3d::get_next_node() {
   return n;
 }
 
-double fast_marcher_3d::get_h() const {
-  return _h;
-}
-
 double fast_marcher_3d::S(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   int l = _height*(_width*k + j) + i;

@@ -7,6 +7,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 find_package (gsl)
 
 add_library (fmm
+  src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/fast_marcher.cpp
@@ -48,6 +49,11 @@ target_link_libraries (basic_marcher.speed fmm)
 
 add_executable (olim4_rhr_lut.speed src/olim4_rhr_lut.speed.cpp)
 target_link_libraries (olim4_rhr_lut.speed fmm)
+
+# See this link about maybe improving the way we're doing this:
+# http://public.kitware.com/pipermail/cmake/2015-April/060350.html
+set (LIBFMM_PATH "${PROJECT_BINARY_DIR}/libfmm.so")
+configure_file (src/fmm.py.in ${PROJECT_BINARY_DIR}/fmm.py)
 
 add_custom_command (
   TARGET fmm

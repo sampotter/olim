@@ -9,10 +9,9 @@ static size_t initial_heap_size(int height, int width) {
 }
 
 fast_marcher::fast_marcher(int height, int width, double h):
+  abstract_marcher {h, width*height},
   _nodes {new node[height*width]},
   _heap {initial_heap_size(height, width)},
-  _h {h},
-  _S_cache(height*width, -1),
   _height {height},
   _width {width}
 {
@@ -21,10 +20,9 @@ fast_marcher::fast_marcher(int height, int width, double h):
 
 fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
                            double x0, double y0):
+  abstract_marcher {h, width*height},
   _nodes {new node[height*width]},
   _heap {initial_heap_size(height, width)},
-  _h {h},
-  _S_cache(height*width, -1),
   _S {S},
   _x0 {x0},
   _y0 {y0},
@@ -34,12 +32,10 @@ fast_marcher::fast_marcher(int height, int width, double h, speed_func S,
   init();
 }
 
-fast_marcher::fast_marcher(int height, int width, double h,
-                           double const * const S_values):
+fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
+  abstract_marcher {h, S_cache},
   _nodes {new node[height*width]},
   _heap {initial_heap_size(height, width)},
-  _h {h},
-  _S_cache(S_values, S_values + height*width),
   _height {height},
   _width {width}
 {
@@ -53,10 +49,6 @@ void fast_marcher::init() {
       this->operator()(i, j).set_j(j);
     }
   }
-}
-
-fast_marcher::~fast_marcher() {
-  delete[] _nodes;
 }
 
 node & fast_marcher::operator()(int i, int j) {
@@ -126,10 +118,6 @@ node* fast_marcher::get_next_node() {
   auto const n = _heap.front();
   _heap.pop_front();
   return n;
-}
-
-double fast_marcher::get_h() const {
-  return _h;
 }
 
 double fast_marcher::S(int i, int j) {

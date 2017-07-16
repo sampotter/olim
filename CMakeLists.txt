@@ -53,7 +53,7 @@ target_link_libraries (olim4_rhr_lut.speed fmm)
 # See this link about maybe improving the way we're doing this:
 # http://public.kitware.com/pipermail/cmake/2015-April/060350.html
 set (LIBFMM_PATH "${PROJECT_BINARY_DIR}/libfmm.so")
-configure_file (src/fmm.py.in ${PROJECT_BINARY_DIR}/fmm.py)
+configure_file (src/fmm.in.py ${PROJECT_BINARY_DIR}/fmm.py)
 
 add_custom_command (
   TARGET fmm

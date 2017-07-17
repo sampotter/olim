@@ -17,8 +17,6 @@ add_library (fmm
   src/moore_marcher.cpp
   src/neumann_marcher.cpp
   src/neumann_marcher_3d.cpp
-  src/node.cpp
-  src/node_3d.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp

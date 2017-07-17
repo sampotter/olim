@@ -5,8 +5,7 @@
 void marcher_3d::add_boundary_node(int i, int j, int k, double value) {
   assert(in_bounds(i, j, k));
   assert(operator()(i, j, k).is_far()); // TODO: for now---worried about heap
-  operator()(i, j, k) = node_3d::make_boundary_node(i, j, k, value);
-  stage_neighbors(&operator()(i, j, k));
+  stage_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
 }
 
 double marcher_3d::get_value(int i, int j, int k) const {

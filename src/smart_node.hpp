@@ -4,11 +4,13 @@
 #include "abstract_smart_node.hpp"
 #include "node.hpp"
 
+struct parent_nodes {
+  abstract_node * first {nullptr};
+  abstract_node * second {nullptr};
+};
+
 struct smart_node: public node, public abstract_smart_node {
-  struct parent_nodes {
-    abstract_node * first {nullptr};
-    abstract_node * second {nullptr};
-  };
+  using node::node;
   parent_nodes get_parent_nodes() const { return _parent_nodes; }
   void set_parent_nodes(parent_nodes p) { _parent_nodes = p; }
 private:

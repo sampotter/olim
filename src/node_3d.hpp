@@ -4,7 +4,10 @@
 #include "abstract_node.hpp"
 
 struct node_3d: public abstract_node {
-  static node_3d make_boundary_node(int i, int j, int k, double value = 0.0);
+  using abstract_node::abstract_node;
+  node_3d() {}
+  node_3d(int i, int j, int k, double value = 0):
+    abstract_node {value, state::valid}, _i {i}, _j {j}, _k {k} {}
   inline int get_i() const { return _i; }
   inline void set_i(int i) { _i = i; }
   inline int get_j() const { return _j; }
@@ -12,9 +15,7 @@ struct node_3d: public abstract_node {
   inline int get_k() const { return _k; }
   inline void set_k(int k) { _k = k; }
 private:
-  int _i;
-  int _j;
-  int _k;
+  int _i {-1}, _j {-1}, _k {-1};
 };
 
 #endif // __NODE_3D_HPP__

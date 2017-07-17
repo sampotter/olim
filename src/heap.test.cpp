@@ -12,11 +12,7 @@ BOOST_AUTO_TEST_CASE (empty_works) {
 
 BOOST_AUTO_TEST_CASE (size_works) {
   heap<node> h {16};
-  node n[] = {
-    node::make_boundary_node(0, 0, 1),
-    node::make_boundary_node(0, 0, 2),
-    node::make_boundary_node(0, 0, 3)
-  };
+  node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
   BOOST_TEST(h.size() == 0);
   h.insert(&n[1]);
   h.insert(&n[0]);
@@ -31,11 +27,7 @@ BOOST_AUTO_TEST_CASE (size_works) {
 
 BOOST_AUTO_TEST_CASE (insert_works) {
   heap<node> h {16};
-  node n[] = {
-    node::make_boundary_node(0, 0, 1),
-    node::make_boundary_node(0, 0, 2),
-    node::make_boundary_node(0, 0, 3)
-  };
+  node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
   h.insert(&n[2]);
   h.insert(&n[1]);
   h.insert(&n[0]);
@@ -55,11 +47,7 @@ BOOST_AUTO_TEST_CASE (insert_works) {
 
 BOOST_AUTO_TEST_CASE (swim_works) {
   heap<node> h {16};
-  node n[] = {
-    node::make_boundary_node(0, 0, 1),
-    node::make_boundary_node(0, 0, 2),
-    node::make_boundary_node(0, 0, 3)
-  };
+  node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
   h.insert(&n[0]);
   h.insert(&n[1]);
   h.insert(&n[2]);

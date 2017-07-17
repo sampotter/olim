@@ -18,8 +18,7 @@ smart_marcher::smart_marcher(int height, int width, double h, double * S_cache):
 void smart_marcher::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
   assert(operator()(i, j).is_far()); // TODO: for now---worried about heap
-  operator()(i, j) = smart_node::make_boundary_node(i, j, value);
-  stage_neighbors(&operator()(i, j));
+  stage_neighbors(&(operator()(i, j) = {i, j, value}));
 }
 
 double smart_marcher::get_value(int i, int j) const {

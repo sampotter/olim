@@ -24,6 +24,7 @@ add_library (fmm
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
+  src/smart_marcher.cpp
   src/smart_neumann_marcher.cpp
   src/solim4_mp0.cpp
   src/speed_funcs.cpp)
@@ -37,7 +38,8 @@ set (tests
   olim4_rhr_lut
   olim8_mp0
   olim8_mp1
-  olim8_rhr)
+  olim8_rhr
+  solim4_mp0)
 
 foreach (test ${tests})
   add_executable (${test}.test src/${test}.test.cpp)

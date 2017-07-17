@@ -87,9 +87,8 @@
   - [ ] Fix order of width and height are reversed w/r/t x0 and y0 in
     2d marcher
   - [ ] Figure out how to speed up compile times:
-    - [ ] pch
-    - [ ] cmake stuff?
-    - [ ] gold linker?
+    - ] Figure out how to use gcc/clang precompiled headers with CMake
+  - [X] Replace use of boost::test with asserts (simpler and faster)
   - [X] olim8_util -> olim_util
   - [X] Consolidate di/dj/offsets in moore_marcher tree into a single
     static variable in moore_marcher

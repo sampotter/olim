@@ -17,7 +17,7 @@ void moore_marcher::stage_neighbors_impl(abstract_node * n) {
   for (int k = 0; k < 8; ++k) {
     a = i + di[k];
     b = j + dj[k];
-    if (in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
+    if (in_bounds(a, b) && !operator()(a, b).is_valid()) {
       update_node_value(a, b);
     }
   }
@@ -29,7 +29,7 @@ void moore_marcher::get_valid_neighbors(int i, int j, node ** nb) {
     a = i + di[k];
     b = j + dj[k];
     if (is_valid(a, b)) {
-      nb[k] = &this->operator()(a, b);
+      nb[k] = &operator()(a, b);
     }
   }
 }

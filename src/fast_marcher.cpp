@@ -17,14 +17,14 @@ fast_marcher::fast_marcher(int height, int width, double h, double * S_cache):
 
 void fast_marcher::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
-  assert(this->operator()(i, j).is_far()); // TODO: for now---worried about heap
-  this->operator()(i, j) = node::make_boundary_node(i, j, value);
-  stage_neighbors(&this->operator()(i, j));
+  assert(operator()(i, j).is_far()); // TODO: for now---worried about heap
+  operator()(i, j) = node::make_boundary_node(i, j, value);
+  stage_neighbors(&operator()(i, j));
 }
 
 double fast_marcher::get_value(int i, int j) const {
   assert(in_bounds(i, j));
-  return this->operator()(i, j).get_value();
+  return operator()(i, j).get_value();
 }
 
 node & fast_marcher::operator()(int i, int j) {
@@ -38,9 +38,9 @@ node const & fast_marcher::operator()(int i, int j) const {
 }
 
 void fast_marcher::stage_neighbor(int i, int j) {
-  if (in_bounds(i, j) && this->operator()(i, j).is_far()) {
-    this->operator()(i, j).set_trial();
-    insert_into_heap(&this->operator()(i, j));
+  if (in_bounds(i, j) && operator()(i, j).is_far()) {
+    operator()(i, j).set_trial();
+    insert_into_heap(&operator()(i, j));
   }
 }
 
@@ -48,7 +48,7 @@ void fast_marcher::update_node_value(int i, int j) {
   assert(in_bounds(i, j));
   double T = std::numeric_limits<double>::infinity();
   update_node_value_impl(i, j, T);
-  node * n = &this->operator()(i, j);
+  node * n = &operator()(i, j);
   assert(n->is_trial());
   if (T <= n->get_value()) {
     n->set_value(T);
@@ -57,14 +57,14 @@ void fast_marcher::update_node_value(int i, int j) {
 }
 
 bool fast_marcher::is_valid(int i, int j) const {
-  return in_bounds(i, j) && this->operator()(i, j).is_valid();
+  return in_bounds(i, j) && operator()(i, j).is_valid();
 }
 
 void fast_marcher::init() {
   for (int i = 0; i < get_height(); ++i) {
     for (int j = 0; j < get_width(); ++j) {
-      this->operator()(i, j).set_i(i);
-      this->operator()(i, j).set_j(j);
+      operator()(i, j).set_i(i);
+      operator()(i, j).set_j(j);
     }
   }
 }

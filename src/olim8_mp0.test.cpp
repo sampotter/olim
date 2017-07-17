@@ -1,25 +1,24 @@
-#define BOOST_TEST_MODULE olim8_mp0
-
-#include <boost/test/included/unit_test.hpp>
+#include <cmath>
 
 #include "olim8_mp0.hpp"
 #include "speed_funcs.hpp"
+#include "test.hpp"
 
-BOOST_AUTO_TEST_CASE (trivial_case_works) {
+void trivial_case_works() {
   olim8_mp0 m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
 }
 
-BOOST_AUTO_TEST_CASE (adjacent_update_works) {
+void adjacent_update_works() {
   olim8_mp0 m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
+  test::is_approx_equal(m.get_value(1, 0), 0.5);
 }
 
-BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
+void neighboring_values_are_correct() {
   olim8_mp0 m {3, 3, 1};
   m.add_boundary_node(1, 1);
   m.run();
@@ -37,14 +36,12 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      BOOST_TEST(
-        gt[k++] == m.get_value(i, j),
-        boost::test_tools::tolerance(1e-15));
+      test::is_approx_equal(gt[k++], m.get_value(i, j), 1e-15);
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE (origin_test) {
+void origin_test() {
   int M = 5, N = 5;
   double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
   olim8_mp0 m {M, N, h, default_speed_func, x0, y0};
@@ -52,14 +49,13 @@ BOOST_AUTO_TEST_CASE (origin_test) {
   m.run();
   for (int i = 0; i < 5; ++i) {
     for (int j = 0; j < 5; ++j) {
-      BOOST_TEST(
-        m.get_value(i, j) == default_speed_func_soln(h*j - x0, h*i - y0),
-        boost::test_tools::tolerance(4e-2));
+      test::is_approx_equal(
+        m.get_value(i, j), default_speed_func_soln(h*j - x0, h*i - y0), 4e-2);
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE (sf1_single_row_test) {
+void sf1_single_row_test() {
   int N = 1001;
   double h = 1.0/(N - 1);
   olim8_mp0 m {1, N, h, s1};
@@ -69,11 +65,11 @@ BOOST_AUTO_TEST_CASE (sf1_single_row_test) {
     double U = m.get_value(0, j);
     double u = f1(h*j, 0);
     printf("%g\n", fabs(u - U)/fabs(u));
-    BOOST_TEST(u == U, boost::test_tools::tolerance(1e-2));
+    test::is_approx_equal(u, U, 1e-2);
   }
 }
 
-BOOST_AUTO_TEST_CASE (sf1_test) {
+void sf1_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
   olim8_mp0 m {M, N, h, s1};
@@ -84,9 +80,18 @@ BOOST_AUTO_TEST_CASE (sf1_test) {
       double U = m.get_value(i, j);
       double u = f1(h*j, h*i);
       printf("%g\n", fabs(u - U)/fabs(u));
-      BOOST_TEST(u == U, boost::test_tools::tolerance(1e-1));
+      test::is_approx_equal(u, U, 1e-1);
     }
   }
+}
+
+int main() {
+  trivial_case_works();
+  adjacent_update_works();
+  neighboring_values_are_correct();
+  origin_test();
+  sf1_single_row_test();
+  sf1_test();
 }
 
 // Local Variables:

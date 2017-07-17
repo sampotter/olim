@@ -1,27 +1,23 @@
-#define BOOST_TEST_MODULE olim8_rhr
-
-#include <boost/test/included/unit_test.hpp>
-
 #include "olim8_rhr.hpp"
-
 #include "speed_funcs.hpp"
+#include "test.hpp"
 
-BOOST_AUTO_TEST_CASE (trivial_case_works) {
+void trivial_case_works() {
   olim8_rhr m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
 };
 
-BOOST_AUTO_TEST_CASE (adjacent_update_works) {
+void adjacent_update_works() {
   olim8_rhr m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.5);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(1, 0), 0.5);
 };
 
-BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
+void neighboring_values_are_correct() {
   olim8_rhr m {3, 3, 1};
   m.add_boundary_node(1, 1);
   m.run();
@@ -39,34 +35,32 @@ BOOST_AUTO_TEST_CASE (neighboring_values_are_correct) {
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      BOOST_TEST(
-        gt[k++] == m.get_value(i, j),
-        boost::test_tools::tolerance(1e-15));
+      test::is_approx_equal(gt[k++], m.get_value(i, j), 1e-15);
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE (slightly_more_involved) {
+void slightly_more_involved() {
   olim8_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);
   m.add_boundary_node(1, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 0), 0.0);
-  BOOST_CHECK_EQUAL(m.get_value(0, 1), 1.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 1), 1.0);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(1, 0), 0.0);
+  test::is_approx_equal(m.get_value(0, 1), 1.0);
+  test::is_approx_equal(m.get_value(1, 1), 1.0);
 }
 
-BOOST_AUTO_TEST_CASE (slightly_more_involved_2) {
+void slightly_more_involved_2() {
   olim8_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 0), 1.0);
-  BOOST_CHECK_EQUAL(m.get_value(0, 1), 1.0);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(1, 0), 1.0);
+  test::is_approx_equal(m.get_value(0, 1), 1.0);
 }
 
-BOOST_AUTO_TEST_CASE (run_on_full_neighborhood) {
+void run_on_full_neighborhood() {
   olim8_rhr m {3, 3, 1};
   m.add_boundary_node(0, 0);
   m.add_boundary_node(0, 1);
@@ -79,19 +73,19 @@ BOOST_AUTO_TEST_CASE (run_on_full_neighborhood) {
   m.run();
 }
 
-BOOST_AUTO_TEST_CASE (maria_test, *boost::unit_test::tolerance(1e-15)) {
+void maria_test() {
   olim8_rhr m {3, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  BOOST_CHECK_EQUAL(m.get_value(0, 0), 0.0);
-  BOOST_CHECK_EQUAL(m.get_value(0, 1), 1.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 0), 1.0);
-  BOOST_CHECK_EQUAL(m.get_value(1, 1), std::sqrt(2.0));
-  BOOST_CHECK_EQUAL(m.get_value(2, 0), 2.0);
-  BOOST_CHECK_EQUAL(m.get_value(2, 1), 2.3243932834975496);
+  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  test::is_approx_equal(m.get_value(0, 1), 1.0);
+  test::is_approx_equal(m.get_value(1, 0), 1.0);
+  test::is_approx_equal(m.get_value(1, 1), std::sqrt(2.0));
+  test::is_approx_equal(m.get_value(2, 0), 2.0);
+  test::is_approx_equal(m.get_value(2, 1), 2.3243932834975496);
 }
 
-BOOST_AUTO_TEST_CASE (origin_test) {
+void origin_test() {
   int M = 5, N = 5;
   double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
   olim8_rhr m {M, N, h, default_speed_func, x0, y0};
@@ -99,14 +93,13 @@ BOOST_AUTO_TEST_CASE (origin_test) {
   m.run();
   for (int i = 0; i < 5; ++i) {
     for (int j = 0; j < 5; ++j) {
-      BOOST_TEST(
-        m.get_value(i, j) == default_speed_func_soln(h*j - x0, h*i - y0),
-        boost::test_tools::tolerance(4e-2));
+      test::is_approx_equal(
+        m.get_value(i, j), default_speed_func_soln(h*j - x0, h*i - y0), 4e-2);
     }
   }
 }
 
-BOOST_AUTO_TEST_CASE (s1_single_row_test) {
+void s1_single_row_test() {
   int N = 1001;
   double h = 1.0/(N - 1);
   olim8_rhr m {1, N, h, s1};
@@ -121,7 +114,7 @@ BOOST_AUTO_TEST_CASE (s1_single_row_test) {
   std::cout << maxerr << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE (s1_test1) {
+void s1_test1() {
   int M = 1001, N = M;
   double h = 1.0/(M - 1);
   olim8_rhr m {M, N, h, s1};
@@ -140,7 +133,7 @@ BOOST_AUTO_TEST_CASE (s1_test1) {
   std::cout << maxerr << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE (s1_test2) {
+void s1_test2() {
   int M = 201, N = M;
   double h = 2.0/(M - 1);
   olim8_rhr m {M, N, h, s1};
@@ -157,6 +150,20 @@ BOOST_AUTO_TEST_CASE (s1_test2) {
     }
   }
   std::cout << maxerr << std::endl;
+}
+
+int main() {
+  trivial_case_works();
+  adjacent_update_works();
+  neighboring_values_are_correct();
+  slightly_more_involved();
+  slightly_more_involved_2();
+  run_on_full_neighborhood();
+  maria_test();
+  origin_test();
+  s1_single_row_test();
+  s1_test1();
+  s1_test2();
 }
 
 // Local Variables:

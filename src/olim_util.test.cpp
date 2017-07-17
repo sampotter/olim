@@ -1,14 +1,10 @@
-#define BOOST_TEST_MODULE olim_util
-
-#include <boost/test/included/unit_test.hpp>
-
-#include <iostream>
-
 #include "olim_util.hpp"
 #include "speed_funcs.hpp"
 
-BOOST_AUTO_TEST_CASE (figuring_it_out) {
-  // std::cout << mp1_diag(0, 1, 1, 1, 1) << std::endl;
+void figuring_it_out() {}
+
+int main() {
+  figuring_it_out();
 }
 
 // Local Variables:

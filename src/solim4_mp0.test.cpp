@@ -1,12 +1,9 @@
-#define BOOST_TEST_MODULE solim4_mp0
-
-#include <boost/test/included/unit_test.hpp>
-
 #include <cstdio>
 
 #include "solim4_mp0.hpp"
+#include "test.hpp"
 
-BOOST_AUTO_TEST_CASE (trying_it_out) {
+void trying_it_out() {
   int M = 31, N = 31;
   solim4_mp0 m {M, N};
   m.add_boundary_node(5, 5);
@@ -32,6 +29,10 @@ BOOST_AUTO_TEST_CASE (trying_it_out) {
       }
     }
   }
+}
+
+int main() {
+  trying_it_out();
 }
 
 // Local Variables:

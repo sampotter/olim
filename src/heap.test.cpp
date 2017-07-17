@@ -1,51 +1,48 @@
-#define BOOST_TEST_MODULE heap
-
-#include <boost/test/included/unit_test.hpp>
-
 #include "heap.hpp"
 #include "node.hpp"
+#include "test.hpp"
 
-BOOST_AUTO_TEST_CASE (empty_works) {
+void empty_works() {
   heap<node> h {16};
-  BOOST_TEST(h.empty());
+  test::is_true(h.empty());
 }
 
-BOOST_AUTO_TEST_CASE (size_works) {
+void size_works() {
   heap<node> h {16};
   node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
-  BOOST_TEST(h.size() == 0);
+  test::is_true(h.size() == 0);
   h.insert(&n[1]);
   h.insert(&n[0]);
   h.insert(&n[2]);
-  BOOST_TEST(h.size() == 3);
+  test::is_true(h.size() == 3);
   h.pop_front();
-  BOOST_TEST(h.size() == 2);
+  test::is_true(h.size() == 2);
   h.pop_front();
   h.pop_front();
-  BOOST_TEST(h.size() == 0);
+  test::is_true(h.size() == 0);
 }
 
-BOOST_AUTO_TEST_CASE (insert_works) {
+void insert_works() {
   heap<node> h {16};
   node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
   h.insert(&n[2]);
   h.insert(&n[1]);
   h.insert(&n[0]);
   node * front = h.front();
-  BOOST_TEST(front == &n[0]);
-  BOOST_TEST(front->get_value() == 1);
+  test::is_true(front == &n[0]);
+  test::is_true(front->get_value() == 1);
   h.pop_front();
   front = h.front();
-  BOOST_TEST(front == &n[1]);
-  BOOST_TEST(front->get_value() == 2);
+  test::is_true(front == &n[1]);
+  test::is_true(front->get_value() == 2);
   h.pop_front();
   front = h.front();
-  BOOST_TEST(front == &n[2]);
-  BOOST_TEST(front->get_value() == 3);
+  test::is_true(front == &n[2]);
+  test::is_true(front->get_value() == 3);
   h.pop_front();
 }
 
-BOOST_AUTO_TEST_CASE (swim_works) {
+void swim_works() {
   heap<node> h {16};
   node n[] = {{0, 0, 1}, {0, 0, 2}, {0, 0, 3}};
   h.insert(&n[0]);
@@ -54,8 +51,15 @@ BOOST_AUTO_TEST_CASE (swim_works) {
   n[2].set_value(0);
   h.swim(&n[2]);
   node * front = h.front();
-  BOOST_TEST(front == &n[2]);
-  BOOST_TEST(front->get_value() == 0);
+  test::is_true(front == &n[2]);
+  test::is_true(front->get_value() == 0);
+}
+
+int main() {
+  empty_works();
+  size_works();
+  insert_works();
+  swim_works();
 }
 
 // Local Variables:

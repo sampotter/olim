@@ -12,7 +12,9 @@ struct smart_marcher: public marcher {
   
   void add_boundary_node(int i, int j, double value = 0.0) override final;
   double get_value(int i, int j) const override final;
-  
+  parent_nodes get_parent_nodes(int i, int j) const;
+  double get_lambda(int i, int j) const;
+
 protected:
   smart_node & operator()(int i, int j);
   smart_node const & operator()(int i, int j) const;

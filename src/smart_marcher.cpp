@@ -26,12 +26,20 @@ double smart_marcher::get_value(int i, int j) const {
   return operator()(i, j).get_value();
 }
 
-smart_node & fast_marcher::operator()(int i, int j) {
+parent_nodes smart_marcher::get_parent_nodes(int i, int j) const {
+  return operator()(i, j).get_parent_nodes();
+}
+
+double smart_marcher::get_lambda(int i, int j) const {
+  return operator()(i, j).get_lambda();
+}
+
+smart_node & smart_marcher::operator()(int i, int j) {
   assert(in_bounds(i, j));
   return _nodes[get_width()*i + j];
 }
 
-smart_node const & fast_marcher::operator()(int i, int j) const {
+smart_node const & smart_marcher::operator()(int i, int j) const {
   assert(in_bounds(i, j));
   return _nodes[get_width()*i + j];
 }

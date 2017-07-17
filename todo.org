@@ -72,6 +72,9 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] Use multiple inheritance for neumann and moore marchers
+  - [ ] Make sure all implementations of update_node_value_impl are
+    short-circuiting and continuing for performance
   - [ ] Figure out how to conditionally avoid using the _S_cache by
     conditionally setting function pointer
   - [ ] Remove adjust_heap_entry and insert_into_heap

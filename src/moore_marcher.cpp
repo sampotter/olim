@@ -23,7 +23,7 @@ void moore_marcher::stage_neighbors_impl(abstract_node * n) {
   }
 }
 
-void moore_marcher::get_valid_neighbors(int i, int j, node ** nb) {
+void moore_marcher::get_valid_neighbors(int i, int j, abstract_node ** nb) {
   int a, b;
   for (int k = 0; k < 8; ++k) {
     a = i + di[k];

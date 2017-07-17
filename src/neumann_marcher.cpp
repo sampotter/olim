@@ -22,7 +22,7 @@ void neumann_marcher::stage_neighbors_impl(abstract_node * n) {
   }
 }
 
-void neumann_marcher::get_valid_neighbors(int i, int j, node ** nb) {
+void neumann_marcher::get_valid_neighbors(int i, int j, abstract_node ** nb) {
   int a, b;
   for (int k = 0; k < 4; ++k) {
     a = i + di[k], b = j + dj[k];

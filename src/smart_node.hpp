@@ -1,10 +1,10 @@
 #ifndef __SMART_NODE_HPP__
 #define __SMART_NODE_HPP__
 
-#include "abstract_node.hpp"
 #include "abstract_smart_node.hpp"
+#include "node.hpp"
 
-struct smart_node: public abstract_node, public abstract_smart_node {
+struct smart_node: public node, public abstract_smart_node {
   struct parent_nodes {
     abstract_node * first {nullptr};
     abstract_node * second {nullptr};

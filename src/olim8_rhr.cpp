@@ -10,7 +10,7 @@ void olim8_rhr::update_node_value_impl(int i, int j, double & T) {
   node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   node * x0 = 0x0;
   node * x1 = 0x0;
-  get_valid_neighbors(i, j, nb);
+  get_valid_neighbors(i, j, (abstract_node **) nb);
   double s = S(i, j), h = get_h();
 
   /*

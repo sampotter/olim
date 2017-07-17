@@ -2,7 +2,6 @@
 #define __MARCHER_HPP__
 
 #include "abstract_marcher.hpp"
-#include "node.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
@@ -24,7 +23,7 @@ protected:
   inline int get_height() const { return _height; }
   inline int get_width() const { return _width; }
   
-  virtual void get_valid_neighbors(int i, int j, node ** nb) = 0;
+  virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_node_value_impl(int i, int j, double & T) = 0;
 
 private:

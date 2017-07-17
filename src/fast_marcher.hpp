@@ -2,6 +2,7 @@
 #define __FAST_MARCHER_HPP__
 
 #include "marcher.hpp"
+#include "node.hpp"
 
 struct fast_marcher: public marcher {
   fast_marcher(int height, int width, double h = 1,

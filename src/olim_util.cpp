@@ -23,14 +23,17 @@ static void check_params(double u0, double u1, double h) {
  * Adjacent triangle update with constant quadrature rule (used by
  * olim8_rhr and olim8_mp0).
  */
-double rhr_adj(double u0, double u1, double s_est, double h) {
+double rhr_adj(double u0, double u1, double s_est, double h, double * lam) {
   check_params(u0, u1, h);
   assert(s_est >= 0);
 
   double c = (u0 - u1)/(s_est*h);
   // TODO: use copysign for next line instead?
-  double lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*std::sqrt(2 - c*c));
-  return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(2*lam*(lam - 1) + 1);
+  double _lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*std::sqrt(2 - c*c));
+  if (lam != nullptr) {
+    *lam = _lam;
+  }
+  return (1 - _lam)*u0 + _lam*u1 + s_est*h*sqrt(2*_lam*(_lam - 1) + 1);
 }
 
 /**

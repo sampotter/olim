@@ -12,12 +12,14 @@ struct fast_marcher: public marcher {
 
   void add_boundary_node(int i, int j, double value = 0.0) override final;
   double get_value(int i, int j) const override final;
+
 protected:
   node & operator()(int i, int j);
   node const & operator()(int i, int j) const;
   void stage_neighbor(int i, int j);
   void update_node_value(int i, int j);
   bool is_valid(int i, int j) const;
+
 private:
   void init();
   

@@ -73,22 +73,19 @@
   - [X] Implement 8-point update
 * Implementation
   - [ ] Use multiple inheritance for neumann and moore marchers
-  - [ ] Make sure all implementations of update_node_value_impl are
-    short-circuiting and continuing for performance
   - [ ] Figure out how to conditionally avoid using the _S_cache by
     conditionally setting function pointer
-  - [ ] Remove adjust_heap_entry and insert_into_heap
   - [ ] See which protected member functions in fast_marcher(_3d) can
     be made private
-  - [ ] Replace use of std::vector<double> for _S_cache with a double *
-  - [ ] Read Section 3 of "imm841.pdf" which talks about how to
+  - [X] Replace use of std::vector<double> for _S_cache with a double *
+  - [X] Read Section 3 of "imm841.pdf" which talks about how to
     efficiently solve for the basic method. Try implementing this
   - [ ] Make sure layout of nodes agrees with MATLAB convention
   - [ ] Fix order of width and height are reversed w/r/t x0 and y0 in
     2d marcher
   - [ ] Figure out how to speed up compile times:
-    - ] Figure out how to use gcc/clang precompiled headers with CMake
-  - [X] Replace use of boost::test with asserts (simpler and faster)
+    - [ ] Figure out how to use gcc/clang precompiled headers with CMake
+    - [X] Replace use of boost::test with asserts (simpler and faster)
   - [X] olim8_util -> olim_util
   - [X] Consolidate di/dj/offsets in moore_marcher tree into a single
     static variable in moore_marcher
@@ -97,9 +94,7 @@
   - [X] Add "keyword argument" style to MEX function
   - [ ] Python wrapper
   - [ ] Julia wrapper
-  - [ ] Improve tests
-    - [ ] Fix failing tests
-    - [ ] Use boost::test for all tests (the fancy test macro in Boost.Test)
+  - [ ] Fix failing tests
   - [ ] Make sure to clean everything up in MATLAB
   - [ ] When you pass something like @(x, y) 1, MATLAB crashes. This
     is because MATLAB doesn't automatically broadcast the 1 to a
@@ -110,7 +105,6 @@
   - [ ] Make the MEX function able to take a double matrix for the
     boundary matrix
   - [ ] Use numeric_limits to check all static casts
-  - [ ] Use multiple inheritance to simplify class hierarchy
 
 # Local Variables:
 # indent-tabs-mode: nil

@@ -116,16 +116,17 @@ void heap<Node>::swim(int pos) {
 
 template <class Node>
 void heap<Node>::sink(int pos) {
-  int ch = LEFT(pos), n = static_cast<size_t>(size());
+  int ch = LEFT(pos), next = ch + 1, n = static_cast<size_t>(size());
   while (ch < n) {
-    if (ch + 1 < n && VALUE(ch) > VALUE(ch + 1)) {
-      ++ch;
+    if (next < n && VALUE(ch) > VALUE(next)) {
+      ch = next;
     }
     if (VALUE(pos) > VALUE(ch)) {
       swap(pos, ch);
     }
     pos = ch;
     ch = LEFT(pos);
+    next = ch + 1;
   }
   assert(has_heap_prop());
 }

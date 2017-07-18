@@ -2,8 +2,9 @@
 #define __OLIM4_RHR_HPP_HPP__
 
 #include "neumann_marcher.hpp"
+#include "node.hpp"
 
-struct olim4_rhr: public neumann_marcher
+struct olim4_rhr: public neumann_marcher<node>
 {
   using neumann_marcher::neumann_marcher;
 private:

@@ -13,7 +13,6 @@ add_library (fmm
   src/fmm_.cpp
   src/marcher_3d.cpp
   src/moore_marcher.cpp
-  src/neumann_marcher.cpp
   src/neumann_marcher_3d.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
@@ -22,7 +21,6 @@ add_library (fmm
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
-  src/smart_neumann_marcher.cpp
   src/solim4_mp0.cpp
   src/speed_funcs.cpp)
 

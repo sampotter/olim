@@ -1,7 +1,6 @@
 #include "marcher.hpp"
 
 #include <cassert>
-#include <vector>
 
 marcher::marcher(int height, int width, double h, speed_func S,
                  double x0, double y0):
@@ -18,10 +17,6 @@ marcher::marcher(int height, int width, double h, double * S_cache):
   _height {height},
   _width {width}
 {}
-
-bool marcher::in_bounds(int i, int j) const {
-  return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
-}
 
 double marcher::S(int i, int j) {
   assert(in_bounds(i, j));

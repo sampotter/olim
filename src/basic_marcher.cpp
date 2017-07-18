@@ -5,8 +5,8 @@
 #include <cmath>
 
 void basic_marcher::update_node_value_impl(int i, int j, double & T) {
-  node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
-  get_valid_neighbors(i, j, (abstract_node **) nb);
+  abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
+  get_valid_neighbors(i, j, nb);
   double sh = get_h()*S(i, j);
   double T1 = 0, T2 = 0, disc = 0;
   for (int k = 0, k1 = 1; k < 4; ++k, k1 = (k1 + 1) % 4) {

@@ -4,8 +4,8 @@
 
 void solim4_mp0::update_node_value_impl(int i, int j, double & T) {
   smart_node * n = &operator()(i, j);
-  smart_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
-  get_valid_neighbors(i, j, (abstract_node **) nb);
+  abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
+  get_valid_neighbors(i, j, nb);
   double s = S(i, j), h = get_h(), s_est, T_new, lam;
 
   for (int k = 0; k < 4; ++k) {

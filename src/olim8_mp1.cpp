@@ -5,9 +5,9 @@
 #include "olim_util.hpp"
 
 void olim8_mp1::update_node_value_impl(int i, int j, double & T) {
-  node* nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  node *x0 = 0x0, *x1 = 0x0;
-  get_valid_neighbors(i, j, (abstract_node **) nb);
+  abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+  abstract_node * x0 = 0x0, * x1 = 0x0;
+  get_valid_neighbors(i, j, nb);
   double h = get_h(), s = S(i, j), u0, u1, sbar0, sbar1;
 
   /*

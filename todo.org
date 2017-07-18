@@ -83,7 +83,9 @@
   - [ ] Make sure layout of nodes agrees with MATLAB convention
   - [ ] Fix order of width and height are reversed w/r/t x0 and y0 in
     2d marcher
-  - [ ] Figure out how to speed up compile times:
+  - [-] Figure out how to speed up compile times:
+    - [ ] http://lld.llvm.org: make sure we're using this on OS X
+    - [ ] gold linker on Linux
     - [ ] Figure out how to use gcc/clang precompiled headers with CMake
     - [X] Replace use of boost::test with asserts (simpler and faster)
   - [X] olim8_util -> olim_util

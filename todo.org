@@ -1,5 +1,5 @@
 * Smart mesh
-  - [ ] Add solution info structure and visualize output
+  - [X] Add solution info structure and visualize output
   - [ ] Look at Masha's program and plots
   - [ ] Try to figure out how smart grid works
   - Things to consider longer term:
@@ -14,14 +14,17 @@
 * General
   - [X] Figure out source of error in marchers
     - [X] Make radial error plots, compare with Masha's
+  - [ ] Add more sophisticated method for initializing boundary (see
+    Masha's code)
   - [ ] Make it possible to specify boundary using sparse matrix of
     bools or doubles
   - [ ] 3D marchers:
+    - [ ] Add a MEX interface for testing
     - [ ] Basic
-      - [ ] OLIM4
-      - [ ] OLIM8 RHR
-      - [ ] OLIM8 MP0
-      - [ ] OLIM8 MP1
+    - [ ] OLIM4
+    - [ ] OLIM8 RHR
+    - [ ] OLIM8 MP0
+    - [ ] OLIM8 MP1
   - [X] Test different speed functions using Maria's analytic solutions
   - [X] Make up a couple neat analytic solutions
     - [X] Asymmetric one
@@ -72,11 +75,10 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
-  - [ ] Use multiple inheritance for neumann and moore marchers
-  - [ ] Figure out how to conditionally avoid using the _S_cache by
-    conditionally setting function pointer
-  - [ ] See which protected member functions in fast_marcher(_3d) can
-    be made private
+  - [X] Use multiple inheritance for neumann and moore marchers
+    - /ended up using template classes/
+  - [ ] Figure out how to conditionally avoid using the _S_cache using
+    function pointer
   - [X] Replace use of std::vector<double> for _S_cache with a double *
   - [X] Read Section 3 of "imm841.pdf" which talks about how to
     efficiently solve for the basic method. Try implementing this

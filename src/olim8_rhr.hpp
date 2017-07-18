@@ -2,8 +2,9 @@
 #define __OLIM8_RHR_HPP__
 
 #include "moore_marcher.hpp"
+#include "node.hpp"
 
-struct olim8_rhr: public moore_marcher
+struct olim8_rhr: public moore_marcher<node>
 {
   using moore_marcher::moore_marcher;
 private:

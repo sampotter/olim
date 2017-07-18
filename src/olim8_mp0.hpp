@@ -2,9 +2,9 @@
 #define __OLIM8_MP0_HPP__
 
 #include "moore_marcher.hpp"
+#include "node.hpp"
 
-struct olim8_mp0: public moore_marcher
-{
+struct olim8_mp0: public moore_marcher<node> {
   using moore_marcher::moore_marcher;
 private:
   virtual void update_node_value_impl(int i, int j, double & T);

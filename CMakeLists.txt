@@ -11,8 +11,6 @@ add_library (fmm
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/fmm_.cpp
-  src/marcher_3d.cpp
-  src/neumann_marcher_3d.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp

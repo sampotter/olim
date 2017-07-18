@@ -1,33 +1,39 @@
-#include "marcher_3d.hpp"
+#ifndef __MARCHER_3D_IMPL_HPP__
+#define __MARCHER_3D_IMPL_HPP__
 
 #include <cassert>
 
-void marcher_3d::add_boundary_node(int i, int j, int k, double value) {
+template <class Node>
+void marcher_3d<Node>::add_boundary_node(int i, int j, int k, double value) {
   assert(in_bounds(i, j, k));
   assert(operator()(i, j, k).is_far()); // TODO: for now---worried about heap
   stage_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
 }
 
-double marcher_3d::get_value(int i, int j, int k) const {
+template <class Node>
+double marcher_3d<Node>::get_value(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
   return operator()(i, j, k).get_value();
 }
 
-node_3d & marcher_3d::operator()(int i, int j, int k) {
+template <class Node>
+Node & marcher_3d<Node>::operator()(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   return _nodes[_height*(_width*k + j) + i];
 }
 
-node_3d const & marcher_3d::operator()(int i, int j, int k) const {
+template <class Node>
+Node const & marcher_3d<Node>::operator()(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
   return _nodes[_height*(_width*k + j) + i];
 }
 
-void marcher_3d::update_node_value(int i, int j, int k) {
+template <class Node>
+void marcher_3d<Node>::update_node_value(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   double T = std::numeric_limits<double>::infinity();
   update_node_value_impl(i, j, k, T);
-  node_3d * n = &operator()(i, j, k);
+  auto * n = &operator()(i, j, k);
   assert(n->is_trial());
   if (T <= n->get_value()) {
     n->set_value(T);
@@ -35,23 +41,27 @@ void marcher_3d::update_node_value(int i, int j, int k) {
   }
 }
 
-void marcher_3d::stage_neighbor(int i, int j, int k) {
+template <class Node>
+void marcher_3d<Node>::stage_neighbor(int i, int j, int k) {
   if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
     operator()(i, j, k).set_trial();
     insert_into_heap(&operator()(i, j, k));
   }
 }
 
-bool marcher_3d::in_bounds(int i, int j, int k) const {
+template <class Node>
+bool marcher_3d<Node>::in_bounds(int i, int j, int k) const {
   return (unsigned) i < (unsigned) _height &&
     (unsigned) j < (unsigned) _width && (unsigned) k < (unsigned) _depth;
 }
 
-bool marcher_3d::is_valid(int i, int j, int k) const {
+template <class Node>
+bool marcher_3d<Node>::is_valid(int i, int j, int k) const {
   return in_bounds(i, j, k) && operator()(i, j, k).is_valid();
 }
 
-double marcher_3d::S(int i, int j, int k) {
+template <class Node>
+double marcher_3d<Node>::S(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   int l = _height*(_width*k + j) + i;
   assert(l < static_cast<int>(_S_cache.size()));
@@ -60,6 +70,8 @@ double marcher_3d::S(int i, int j, int k) {
   }
   return _S_cache[l];
 }
+
+#endif // __MARCHER_3D_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

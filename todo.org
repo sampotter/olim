@@ -12,16 +12,16 @@
     - [ ] Actual predictive meshing (i.e., is there a way to avoid
       two passes?)
 * General
-  - [ ] Figure out source of error in marchers
-    - [ ] Make radial error plots, compare with Masha's
+  - [X] Figure out source of error in marchers
+    - [X] Make radial error plots, compare with Masha's
   - [ ] Make it possible to specify boundary using sparse matrix of
     bools or doubles
   - [ ] 3D marchers:
     - [ ] Basic
-     - [ ] OLIM4
-     - [ ] OLIM8 RHR
-     - [ ] OLIM8 MP0
-     - [ ] OLIM8 MP1
+      - [ ] OLIM4
+      - [ ] OLIM8 RHR
+      - [ ] OLIM8 MP0
+      - [ ] OLIM8 MP1
   - [X] Test different speed functions using Maria's analytic solutions
   - [X] Make up a couple neat analytic solutions
     - [X] Asymmetric one

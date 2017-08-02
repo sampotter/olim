@@ -11,7 +11,7 @@ struct parent_nodes {
 
 struct smart_node: public node, public abstract_smart_node {
   using node::node;
-  parent_nodes get_parent_nodes() const { return _parent_nodes; }
+  parent_nodes const & get_parent_nodes() const { return _parent_nodes; }
   void set_parent_nodes(parent_nodes p) { _parent_nodes = p; }
 private:
   parent_nodes _parent_nodes;

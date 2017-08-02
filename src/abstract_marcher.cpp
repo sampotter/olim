@@ -15,9 +15,8 @@ void abstract_marcher::run() {
   }
 }
 
-abstract_marcher::abstract_marcher(double h, int size, double * S_cache):
+abstract_marcher::abstract_marcher(int size, double * S_cache):
   _heap {initial_heap_size(size)},
-  _h {h},
   _S_cache {S_cache == nullptr ? new double[size] : S_cache},
   _should_free_S_cache {S_cache == nullptr}
 {

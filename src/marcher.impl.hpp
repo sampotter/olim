@@ -6,9 +6,10 @@
 template <class Node>
 marcher<Node>::marcher(int height, int width, double h, speed_func S,
                        double x0, double y0):
-  abstract_marcher {h, width*height},
+  abstract_marcher {width*height},
   _nodes {new Node[width*height]},
   _S {S},
+  _h {h},
   _x0 {x0},
   _y0 {y0},
   _height {height},
@@ -19,8 +20,9 @@ marcher<Node>::marcher(int height, int width, double h, speed_func S,
 
 template <class Node>
 marcher<Node>::marcher(int height, int width, double h, double * S_cache):
-  abstract_marcher {h, width*height, S_cache},
+  abstract_marcher {width*height, S_cache},
   _nodes {new Node[width*height]},
+  _h {h},
   _height {height},
   _width {width}
 {

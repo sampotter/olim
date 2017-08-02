@@ -23,6 +23,7 @@ protected:
   bool in_bounds(int i, int j) const;
   double S(int i, int j);
   bool is_valid(int i, int j) const;
+  double get_h() const { return _h; }
   
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, double & T) = 0;
@@ -32,6 +33,7 @@ private:
 
   Node * _nodes;
   speed_func _S {default_speed_func};
+  double _h {1};
   double _x0 {0}, _y0 {0};
   int _height;
   int _width;

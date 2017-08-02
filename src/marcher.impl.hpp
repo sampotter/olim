@@ -82,7 +82,6 @@ template <class Node>
 double marcher<Node>::S(int i, int j) {
   assert(in_bounds(i, j));
   int k = _width*i + j;
-  assert(k < static_cast<int>(_S_cache.size()));
   if (_S_cache[k] < 0) {
     _S_cache[k] = _S(_h*j - _x0, _h*i - _y0);
   }

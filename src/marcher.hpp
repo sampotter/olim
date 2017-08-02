@@ -6,8 +6,7 @@
 #include "typedefs.h"
 
 template <class Node>
-struct marcher: public abstract_marcher
-{
+struct marcher: public abstract_marcher {
   marcher(int height, int width, double h = 1,
           speed_func S = default_speed_func,
           double x0 = 0.0, double y0 = 0.0);

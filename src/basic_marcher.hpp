@@ -4,8 +4,7 @@
 #include "neumann_marcher.hpp"
 #include "node.hpp"
 
-struct basic_marcher: public neumann_marcher<node>
-{
+struct basic_marcher: public neumann_marcher<node> {
   using neumann_marcher::neumann_marcher;
 private:
   virtual void update_impl(int i, int j, double & T);

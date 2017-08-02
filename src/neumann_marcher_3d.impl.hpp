@@ -18,7 +18,7 @@ void neumann_marcher_3d<Node>::stage_neighbors_impl(abstract_node * n) {
   int j = static_cast<Node *>(n)->get_j();
   int k = static_cast<Node *>(n)->get_k();
 
-  for (int l = 0; l < 6; ++k) {
+  for (int l = 0; l < 6; ++l) {
     this->stage_neighbor(i + di[l], j + dj[l], k + dk[l]);
   }
 

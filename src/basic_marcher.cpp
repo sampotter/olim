@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-void basic_marcher::update_node_value_impl(int i, int j, double & T) {
+void basic_marcher::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(i, j, nb);
   double sh = get_h()*S(i, j);

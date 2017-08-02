@@ -6,7 +6,7 @@
 struct solim4_mp0: public smart_neumann_marcher {
   using smart_neumann_marcher::smart_neumann_marcher;
 private:
-  void update_node_value_impl(int i, int j, double & T) override final;
+  void update_impl(int i, int j, double & T) override final;
 };
 
 #endif // __SOLIM4_MP0_HPP__

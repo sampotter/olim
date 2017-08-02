@@ -2,7 +2,7 @@
 
 #include "olim_util.hpp"
 
-void olim4_mp0::update_node_value_impl(int i, int j, double & T) {
+void olim4_mp0::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
   double s = S(i, j), h = get_h(), s_est;

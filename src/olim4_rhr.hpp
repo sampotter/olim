@@ -8,7 +8,7 @@ struct olim4_rhr: public neumann_marcher<node>
 {
   using neumann_marcher::neumann_marcher;
 private:
-  virtual void update_node_value_impl(int i, int j, double & T);
+  virtual void update_impl(int i, int j, double & T);
 };
 
 #endif // __OLIM4_RHR_HPP_HPP__

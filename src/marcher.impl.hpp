@@ -61,10 +61,10 @@ void marcher<Node>::stage_neighbor(int i, int j) {
 }
 
 template <class Node>
-void marcher<Node>::update_node_value(int i, int j) {
+void marcher<Node>::update(int i, int j) {
   assert(in_bounds(i, j));
   double T = std::numeric_limits<double>::infinity();
-  update_node_value_impl(i, j, T);
+  update_impl(i, j, T);
   auto n = &operator()(i, j);
   assert(n->is_trial());
   if (T <= n->get_value()) {

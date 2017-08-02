@@ -2,7 +2,7 @@
 
 #include "olim_util.hpp"
 
-void solim4_mp0::update_node_value_impl(int i, int j, double & T) {
+void solim4_mp0::update_impl(int i, int j, double & T) {
   smart_node * n = &operator()(i, j);
   abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);

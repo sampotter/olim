@@ -4,7 +4,7 @@
 
 #include "olim_util.hpp"
 
-void olim8_mp0::update_node_value_impl(int i, int j, double & T) {
+void olim8_mp0::update_impl(int i, int j, double & T) {
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   abstract_node * x0 = 0x0;
   abstract_node * x1 = 0x0;

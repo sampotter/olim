@@ -26,7 +26,7 @@ void neumann_marcher_3d<Node>::stage_neighbors_impl(abstract_node * n) {
   for (int l = 0; l < 6; ++l) {
     a = i + di[l], b = j + dj[l], c = k + dk[l];
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update_node_value(a, b, c);
+      this->update(a, b, c);
     }
   }
 }

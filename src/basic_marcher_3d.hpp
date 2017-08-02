@@ -8,7 +8,7 @@ struct basic_marcher_3d: public neumann_marcher_3d<node_3d>
 {
   using neumann_marcher_3d::neumann_marcher_3d;
 private:
-  virtual void update_node_value_impl(int i, int j, int k, double & T);
+  virtual void update_impl(int i, int j, int k, double & T);
 };
 
 #endif // __BASIC_MARCHER_3D_HPP__

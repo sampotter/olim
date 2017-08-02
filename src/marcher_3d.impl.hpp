@@ -29,10 +29,10 @@ Node const & marcher_3d<Node>::operator()(int i, int j, int k) const {
 }
 
 template <class Node>
-void marcher_3d<Node>::update_node_value(int i, int j, int k) {
+void marcher_3d<Node>::update(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   double T = std::numeric_limits<double>::infinity();
-  update_node_value_impl(i, j, k, T);
+  update_impl(i, j, k, T);
   auto * n = &operator()(i, j, k);
   assert(n->is_trial());
   if (T <= n->get_value()) {

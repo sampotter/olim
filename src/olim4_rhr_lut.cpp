@@ -9,7 +9,7 @@ constexpr int NB_S = 2;
 constexpr int NB_E = 4;
 constexpr int NB_N = 8;
 
-void olim4_rhr_lut::update_node_value_impl(int i, int j, double & T) {
+void olim4_rhr_lut::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
   double s = S(i, j), h = get_h(), sh = s*h, tmp;

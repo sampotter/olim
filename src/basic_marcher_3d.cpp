@@ -23,7 +23,7 @@
 enum neighbor {DIR_U, DIR_N, DIR_E, DIR_S, DIR_W, DIR_D};
 enum octant {UNE, UES, USW, UWN, DNE, DES, DSW, DWN};
 
-void basic_marcher_3d::update_node_value_impl(int i, int j, int k, double & T) {
+void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
   double sh = get_h()*S(i, j, k), sh_sq = sh*sh;

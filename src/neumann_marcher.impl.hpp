@@ -22,7 +22,7 @@ void neumann_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
   for (int k = 0; k < 4; ++k) {
     a = i + di[k], b = j + dj[k];
     if (this->in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
-      this->update_node_value(a, b);
+      this->update(a, b);
     }
   }
 }

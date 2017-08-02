@@ -2,6 +2,16 @@
   - [X] Add solution info structure and visualize output
   - [ ] Look at Masha's program and plots
   - [ ] Try to figure out how smart grid works
+    - Rough alg:
+      1. Run normal fast marching method once, collect "solution information"
+      2. Create a new graph whose initial vertex set consists of the
+         original mesh vertices and whose edge set is empty
+      3. For each vertex in the original mesh:
+         - Connect the vertex to each of its "parent meshes" according
+           to the solution information
+         - If x and y are the parent vertices, add the point in [x, y]
+           which lies on the characteristic entering the current
+           solution vertex to the vertex set
   - Things to consider longer term:
     - [ ] Smart mesh refinement (Masha calls this "predictive
       meshing")
@@ -11,6 +21,15 @@
       would save time?)
     - [ ] Actual predictive meshing (i.e., is there a way to avoid
       two passes?)
+** Graph marcher
+   - We want to implement a "graph marcher" to build our smart
+     marchers on top of
+   - [ ] Implement the basic graph marcher using a fairly generic
+     graph data structure (just to get things working)
+   - [ ] Implement the basic 2D marcher using the graph marcher in
+     order to 1) make sure that it works correctly, and 2) compare
+     performance, to see what sort of performance hit is incurred
+     (will also be useful for pub. plots later)
 * General
   - [X] Figure out source of error in marchers
     - [X] Make radial error plots, compare with Masha's
@@ -75,6 +94,9 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] Remove extra padding from S matrix in getDefaultSMatrix in fmm.cpp
+  - [ ] Add ctor for parameters in fmm.cpp
+  - [ ] Do array error checking in fmm.cpp (in mexFunction)
   - [X] Use multiple inheritance for neumann and moore marchers
     - /ended up using template classes/
   - [ ] Figure out how to conditionally avoid using the _S_cache using

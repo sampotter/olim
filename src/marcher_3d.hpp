@@ -14,8 +14,8 @@ struct marcher_3d: public abstract_marcher
 protected:
   Node & operator()(int i, int j, int k);
   Node const & operator()(int i, int j, int k) const;
-  void stage_neighbor(int i, int j, int k);
   void update(int i, int j, int k);
+  void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
   bool is_valid(int i, int j, int k) const;
   double S(int i, int j, int k);

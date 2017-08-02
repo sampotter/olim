@@ -42,7 +42,7 @@ void marcher_3d<Node>::update(int i, int j, int k) {
 }
 
 template <class Node>
-void marcher_3d<Node>::stage_neighbor(int i, int j, int k) {
+void marcher_3d<Node>::stage(int i, int j, int k) {
   if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
     operator()(i, j, k).set_trial();
     insert_into_heap(&operator()(i, j, k));

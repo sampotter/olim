@@ -53,7 +53,7 @@ Node const & marcher<Node>::operator()(int i, int j) const {
 }
 
 template <class Node>
-void marcher<Node>::stage_neighbor(int i, int j) {
+void marcher<Node>::stage(int i, int j) {
   if (in_bounds(i, j) && operator()(i, j).is_far()) {
     operator()(i, j).set_trial();
     insert_into_heap(&operator()(i, j));

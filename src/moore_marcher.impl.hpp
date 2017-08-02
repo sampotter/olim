@@ -15,7 +15,7 @@ void moore_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
   int j = static_cast<Node *>(n)->get_j();
 
   for (int k = 0; k < 8; ++k) {
-    this->stage_neighbor(i + di[k], j + dj[k]);
+    this->stage(i + di[k], j + dj[k]);
   }
 
   int a, b;

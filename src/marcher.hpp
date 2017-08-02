@@ -18,7 +18,7 @@ struct marcher: public abstract_marcher {
 protected:
   Node & operator()(int i, int j);
   Node const & operator()(int i, int j) const;
-  void stage_neighbor(int i, int j);
+  void stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;
   double S(int i, int j);

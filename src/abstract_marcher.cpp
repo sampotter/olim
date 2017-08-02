@@ -2,10 +2,6 @@
 
 #include <cmath>
 
-static size_t initial_heap_size(int size) {
-  return static_cast<size_t>(std::max(8.0, std::log(size)));
-}
-
 void abstract_marcher::run() {
   abstract_node * n {nullptr};
   while (!_heap.empty()) {
@@ -15,26 +11,9 @@ void abstract_marcher::run() {
   }
 }
 
-abstract_marcher::abstract_marcher(int size, double * S_cache):
-  _heap {initial_heap_size(size)},
-  _S_cache {S_cache == nullptr ? new double[size] : S_cache},
-  _should_free_S_cache {S_cache == nullptr}
-{
-  // If the user didn't pass a pointer to an S_cache, we need to
-  // initialize the one we've just created.
-  if (_should_free_S_cache) {
-    for (int i = 0; i < size; ++i) {
-      _S_cache[i] = -1;
-    }
-  }
-}
-
-abstract_marcher::~abstract_marcher()
-{
-  if (_should_free_S_cache) {
-    delete[] _S_cache;
-  }
-}
+abstract_marcher::abstract_marcher(size_t initial_heap_size):
+  _heap {initial_heap_size}
+{}
 
 void abstract_marcher::stage_neighbors(abstract_node * n) {
   stage_neighbors_impl(n);

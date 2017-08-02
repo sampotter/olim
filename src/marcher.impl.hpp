@@ -2,11 +2,17 @@
 #define __MARCHER_IMPL_HPP_HPP__
 
 #include <cassert>
+#include <cmath>
+
+static inline size_t get_initial_heap_size(int width, int height) {
+  return static_cast<size_t>(std::max(8.0, std::log(width*height)));
+}
 
 template <class Node>
 marcher<Node>::marcher(int height, int width, double h, speed_func S,
                        double x0, double y0):
-  abstract_marcher {width*height},
+  abstract_marcher {get_initial_heap_size(width, height)},
+  speed_func_cache {width*height},
   _nodes {new Node[width*height]},
   _S {S},
   _h {h},
@@ -20,7 +26,8 @@ marcher<Node>::marcher(int height, int width, double h, speed_func S,
 
 template <class Node>
 marcher<Node>::marcher(int height, int width, double h, double * S_cache):
-  abstract_marcher {width*height, S_cache},
+  abstract_marcher {get_initial_heap_size(width, height)},
+  speed_func_cache {width*height, S_cache},
   _nodes {new Node[width*height]},
   _h {h},
   _height {height},
@@ -84,10 +91,10 @@ template <class Node>
 double marcher<Node>::S(int i, int j) {
   assert(in_bounds(i, j));
   int k = _width*i + j;
-  if (_S_cache[k] < 0) {
-    _S_cache[k] = _S(_h*j - _x0, _h*i - _y0);
+  if (!is_cached(k)) {
+    cache_value(k, _S(_h*j - _x0, _h*i - _y0));
   }
-  return _S_cache[k];
+  return cached_value(k);
 }
 
 template <class Node>

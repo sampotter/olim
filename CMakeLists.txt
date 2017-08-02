@@ -19,6 +19,7 @@ add_library (fmm
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
   src/solim4_mp0.cpp
+  src/speed_func_cache.cpp
   src/speed_funcs.cpp)
 
 target_link_libraries (fmm ${GSL_LIBRARIES})

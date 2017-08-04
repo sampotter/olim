@@ -13,6 +13,9 @@ void digraph<V>::add_arc(V const & u, V const & v) {
   }
   // TODO: probably want to implement this so that we insert the
   // nodes sorted into an order which makes sense for our updates
+  //
+  // A good approach to doing this would be to expose the type of the
+  // adjacency list as a template parameter
   _adj_list[u].push_back(v);
 }
 

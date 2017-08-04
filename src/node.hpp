@@ -4,7 +4,6 @@
 #include "abstract_node.hpp"
 
 struct node: public abstract_node {
-  using abstract_node::abstract_node;
   node() {}
   node(int i, int j, double value = 0):
     abstract_node {value, state::valid}, _i {i}, _j {j} {}

@@ -26,16 +26,19 @@
      marchers on top of
    - [ ] Implement the basic graph marcher using a fairly generic
      graph data structure (just to get things working)
-   - [ ] Implement the basic 2D marcher using the graph marcher in
+   - [X] Implement the basic 2D marcher using the graph marcher in
      order to 1) make sure that it works correctly, and 2) compare
      performance, to see what sort of performance hit is incurred
      (will also be useful for pub. plots later)
-     - [ ] Before we do this, we need to factor the parts of
+     - [X] Before we do this, we need to factor the parts of
        abstract_marcher that know about a cache of points (_S_cache)
        that are isotropically spaced (_h) into a separate class that
        basically just provides the S cache for MATLAB
-       - [ ] factor cache
-       - [ ] move h into marcher and marcher_3d
+       - [X] factor cache
+       - [X] move h into marcher and marcher_3d
+     - [ ] This is mostly done, but there is some error between the
+       results obtained using the graph marcher and the basic
+       marcher---fix this
 * General
   - [X] Figure out source of error in marchers
     - [X] Make radial error plots, compare with Masha's

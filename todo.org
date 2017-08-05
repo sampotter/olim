@@ -40,6 +40,12 @@
        results obtained using the graph marcher and the basic
        marcher---fix this
 * General
+  - [ ] Make plot of size of heap during algorithms execution---see if
+    it's possible to use a different data structure for parts of the
+    algorithm to speed it up (like keeping a sorted array for small
+    input sizes)
+  - [ ] For periodic Delaunay triangulations, see [[http://doc.cgal.org/latest/Periodic_2_triangulation_2/index.html][here]], but we should
+    actually just use the Voronoi approach (MATLAB implementation [[http://people.sc.fsu.edu/~jburkardt/m_src/sphere_delaunay/sphere_delaunay.html][here]])
   - [X] Figure out source of error in marchers
     - [X] Make radial error plots, compare with Masha's
   - [ ] Add more sophisticated method for initializing boundary (see

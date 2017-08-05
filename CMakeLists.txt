@@ -27,6 +27,7 @@ target_link_libraries (fmm ${GSL_LIBRARIES})
 
 set (tests
   basic_marcher
+  basic_marcher_3d
   heap
   olim_util
   olim4_rhr_lut

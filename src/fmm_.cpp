@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "basic_marcher.hpp"
+#include "basic_marcher_3d.hpp"
 #include "olim4_mp0.hpp"
 #include "olim4_rhr.hpp"
 #include "olim4_rhr_lut.hpp"
@@ -58,6 +59,42 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
   for (int j = 0, k = 0; j < N; ++j) {
     for (int i = 0; i < M; ++i) {
       out[k++] = m->get_value(i, j);
+    }
+  }
+}
+
+void fmm3d(double * out, bool * in, int * dims, double h, double * S,
+           marcher_type type) {
+  int M1 = dims[0], M2 = dims[1], M3 = dims[2];
+
+  std::unique_ptr<marcher_3d<node_3d>> m;
+  if (S == nullptr) {
+    if (type == BASIC) {
+      m = std::make_unique<basic_marcher_3d>(M1, M2, M3, h);
+    }
+  } else {
+    if (type == BASIC) {
+      m = std::make_unique<basic_marcher_3d>(M1, M2, M3, h, S);
+    }
+  }
+
+  for (int i = 0, l = 0; i < M1; ++i) {
+    for (int j = 0; j < M2; ++j) {
+      for (int k = 0; k < M3; ++k) {
+        if (in[l++]) {
+          m->add_boundary_node(i, j, k);
+        }
+      }
+    }
+  }
+
+  m->run();
+
+  for (int i = 0, l = 0; i < M1; ++i) {
+    for (int j = 0; j < M2; ++j) {
+      for (int k = 0; k < M3; ++k) {
+        out[l++] = m->get_value(i, j, k);
+      }
     }
   }
 }

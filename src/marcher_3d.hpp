@@ -23,15 +23,15 @@ protected:
   void update(int i, int j, int k);
   void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
-  bool is_valid(int i, int j, int k) const;
   double S(int i, int j, int k);
+  bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }
 
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb) = 0;
+  virtual void update_impl(int i, int j, int k, double & T) = 0;
   
 private:
-  virtual void update_node_value_impl(int i, int j, int k, double & T) = 0;
-  virtual void stage_neighbors_impl(abstract_node * n) = 0;
+  void init();
 
   Node * _nodes;
   speed_func_3d _S {default_speed_func_3d};

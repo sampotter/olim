@@ -26,7 +26,7 @@
      marchers on top of
    - [ ] Implement the basic graph marcher using a fairly generic
      graph data structure (just to get things working)
-   - [X] Implement the basic 2D marcher using the graph marcher in
+   - [-] Implement the basic 2D marcher using the graph marcher in
      order to 1) make sure that it works correctly, and 2) compare
      performance, to see what sort of performance hit is incurred
      (will also be useful for pub. plots later)
@@ -39,6 +39,40 @@
      - [ ] This is mostly done, but there is some error between the
        results obtained using the graph marcher and the basic
        marcher---fix this
+     - [ ] Once the previous error is fixed, add a "planar
+       neighborhood marcher" (i.e. sorting neighbors by angle) and
+       reimplement test_graph_marcher in terms of it
+** Planar graph marcher
+   - We want to write a marcher on a planar graph (possible embedded
+     in some higher dimensional ambient space)
+   - The OLIM4 and OLIM8 methods provide a reasonable starting point
+     for this---we want to generalize this
+   - From OLIM4, we want to define a "first order" (not
+     technically-speaking) method; and from OLIM8, we want to define a
+     "second order" method
+     - We should come up with better jargon for this than "order"
+   - It looks like the way to generalize this is as follows:
+     - In OLIM4, we first look at 2pt updates which occur in each
+       triangle whose vertices are 1) both valid and 2) adjacent in
+       the neighborhood. Following this, we perform 1pt updates from
+       vertices which are not incident upon any of the 2pt update
+       triangles
+     - In OLIM8, we look at the same 2pt updates as in
+       OLIM4. Additionally, we do 2pt updates for valid triangles
+       whose vertices aren't adjacent, but instead are separated by
+       one vertex; further, there is a condition depending on the
+       in-between vertex which allows us to skip the update (e.g. in
+       the case of OLIM8, we don't do these updates when both of the
+       vertices are diagonal, since this triangle can be decomposed
+       into two other triangles which have already been checked, so
+       doing the update provides no additional information).
+   - So, we can straightforwardly generalize OLIM4; we can also
+     straightforwardly generalize OLIM8. Further, we can come up with
+     higher "order" generalizations of this (every three, every
+     four...).
+   - How can we generalize this to "volumetric" neighborhoods? The
+     first "order" case is easy; the second "order" case is less
+     obvious.
 * General
   - [ ] Make plot of size of heap during algorithms execution---see if
     it's possible to use a different data structure for parts of the

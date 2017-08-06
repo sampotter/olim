@@ -2,7 +2,7 @@ clear;
 
 path(path, '../build/Release');
 
-n = 7;
+n = 31;
 B = zeros(n, n, n, 'logical');
 bi = (n + 1)/2;
 B(bi, bi, bi) = 1;

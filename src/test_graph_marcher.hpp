@@ -1,12 +1,23 @@
 #ifndef __TEST_GRAPH_MARCHER_HPP__
 #define __TEST_GRAPH_MARCHER_HPP__
 
+#include <vector>
+
 #include "graph_marcher.hpp"
 #include "graph_node.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-struct test_graph_marcher: public graph_marcher<graph_node> {
+struct test_graph_marcher_neighbors {
+  using iterator = typename std::vector<graph_node *>::iterator;
+  void add_neighbor(graph_node * n) { _neighbors.push_back(n); }
+  iterator begin() { return _neighbors.begin(); }
+  iterator end() { return _neighbors.end(); }
+private:
+  std::vector<graph_node *> _neighbors;
+};
+
+struct test_graph_marcher: public graph_marcher<graph_node, test_graph_marcher_neighbors> {
   test_graph_marcher(int height, int width, double h = 1,
                      speed_func S = default_speed_func, double x0 = 0.0,
                      double y0 = 0.0);

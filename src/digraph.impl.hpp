@@ -1,27 +1,22 @@
 #ifndef __DIGRAPH_IMPL_HPP__
 #define __DIGRAPH_IMPL_HPP__
 
-template <class V>
-void digraph<V>::add_vertex(V const & v) {
-  _adj_list[v] = std::vector<V>();
+template <class Vertex, class Neighbors>
+void digraph<Vertex, Neighbors>::add_vertex(Vertex const & v) {
+  _adj_list[v] = Neighbors {};
 }
 
-template <class V>
-void digraph<V>::add_arc(V const & u, V const & v) {
+template <class Vertex, class Neighbors>
+void digraph<Vertex, Neighbors>::add_arc(Vertex const & u, Vertex const & v) {
   if (_adj_list.find(u) == _adj_list.end()) {
     add_vertex(u);
   }
-  // TODO: probably want to implement this so that we insert the
-  // nodes sorted into an order which makes sense for our updates
-  //
-  // A good approach to doing this would be to expose the type of the
-  // adjacency list as a template parameter
-  _adj_list[u].push_back(v);
+  _adj_list[u].add_neighbor(v);
 }
 
-template <class V>
-typename digraph<V>::neighbors_type const &
-digraph<V>::get_neighbors(V const & v) const {
+template <class Vertex, class Neighbors>
+Neighbors const &
+digraph<Vertex, Neighbors>::get_neighbors(Vertex const & v) const {
   return _adj_list.at(v);
 }
 

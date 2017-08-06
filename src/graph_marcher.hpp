@@ -5,9 +5,9 @@
 #include "abstract_marcher.hpp"
 #include "digraph.hpp"
 
-template <class Node>
+template <class Node, class Neighbors>
 struct graph_marcher: public abstract_marcher {
-  using digraph_type = digraph<Node *>;
+  using digraph_type = digraph<Node *, Neighbors>;
   
   // TODO: add emplace_back add_node with perfect forwarding
   void add_node(Node const & node);
@@ -20,7 +20,7 @@ protected:
   void update(Node * node);
   
   virtual double S(Node * node) const = 0;
-  virtual typename digraph_type::neighbors_type get_neighbors(abstract_node * node) const;
+  virtual Neighbors get_neighbors(abstract_node * node) const;
   virtual void get_valid_neighbors(abstract_node * node, abstract_node ** nb) = 0;
   virtual void update_impl(Node * node, double & T) = 0;
   

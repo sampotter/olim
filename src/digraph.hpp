@@ -2,17 +2,14 @@
 #define __DIGRAPH_HPP__
 
 #include <unordered_map>
-#include <vector>
 
-template <class V>
+template <class Vertex, class Neighbors>
 struct digraph {
-  using neighbors_type = std::vector<V>;
-  
-  void add_vertex(V const & v);
-  void add_arc(V const & u, V const & v);
-  neighbors_type const & get_neighbors(V const & v) const;
+  void add_vertex(Vertex const & v);
+  void add_arc(Vertex const & u, Vertex const & v);
+  Neighbors const & get_neighbors(Vertex const & v) const;
 private:
-  std::unordered_map<V, neighbors_type> _adj_list;
+  std::unordered_map<Vertex, Neighbors> _adj_list;
 };
 
 #include "digraph.impl.hpp"

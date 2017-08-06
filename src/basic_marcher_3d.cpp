@@ -4,14 +4,19 @@
 #include <cassert>
 #include <cmath>
 
-#define COMPUTE_DISC() \
+#define COMPUTE_DISC_2PT() (2*sh*sh - (T1 - T2)*(T1 - T2))
+
+#define COMPUTE_VALUE_2PT() ((T1 + T2 + std::sqrt(disc))/2)
+
+#define COMPUTE_DISC_3PT() \
   (3*sh_sq - 2*(T1*T1 + T2*T2 + T3*T3 - T1*T2 - T1*T3 - T2*T3))
 
-#define COMPUTE_VALUE() ((T1 + T2 + T3 + std::sqrt(disc))/3)
+#define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
 #define GET_VALUE(i) (nb[i]->get_value())
 
 enum neighbor {DIR_U, DIR_N, DIR_E, DIR_S, DIR_W, DIR_D};
+enum quadrant {NE, ES, SW, WN, UN, UE, US, UW, DN, DE, DS, DW};
 enum octant {UNE, UES, USW, UWN, DNE, DES, DSW, DWN};
 
 void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
@@ -21,6 +26,21 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;
 
   bool has_nb[6] = {nb[0], nb[1], nb[2], nb[3], nb[4], nb[5]};
+
+  bool has_quadrant[12] = {
+    has_nb[DIR_N] && has_nb[DIR_E],
+    has_nb[DIR_E] && has_nb[DIR_S],
+    has_nb[DIR_S] && has_nb[DIR_W],
+    has_nb[DIR_W] && has_nb[DIR_N],
+    has_nb[DIR_U] && has_nb[DIR_N],
+    has_nb[DIR_U] && has_nb[DIR_E],
+    has_nb[DIR_U] && has_nb[DIR_S],
+    has_nb[DIR_U] && has_nb[DIR_W],
+    has_nb[DIR_D] && has_nb[DIR_N],
+    has_nb[DIR_D] && has_nb[DIR_E],
+    has_nb[DIR_D] && has_nb[DIR_S],
+    has_nb[DIR_D] && has_nb[DIR_W]
+  };
 
   bool has_octant[8] = {
     has_nb[DIR_U] && has_nb[DIR_N] && has_nb[DIR_E],
@@ -33,47 +53,110 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     has_nb[DIR_D] && has_nb[DIR_W] && has_nb[DIR_N]
   };
 
+  // Two point updates:
+
+  if (has_quadrant[NE]) {
+    T1 = GET_VALUE(DIR_N), T2 = GET_VALUE(DIR_E);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[ES]) {
+    T1 = GET_VALUE(DIR_E), T2 = GET_VALUE(DIR_S);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[SW]) {
+    T1 = GET_VALUE(DIR_S), T2 = GET_VALUE(DIR_W);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[WN]) {
+    T1 = GET_VALUE(DIR_W), T2 = GET_VALUE(DIR_N);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[UN]) {
+    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_N);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[UE]) {
+    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_E);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[US]) {
+    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_S);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[UW]) {
+    T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_W);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[DN]) {
+    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_N);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[DE]) {
+    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_E);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[DS]) {
+    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_S);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+  if (has_quadrant[DW]) {
+    T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_W);
+    disc = COMPUTE_DISC_2PT();
+    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+  }
+
   // Triple point updates:
 
   if (has_octant[UNE]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[UES]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[USW]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[UWN]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[DNE]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[DES]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[DSW]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
   if (has_octant[DWN]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
-    disc = COMPUTE_DISC();
-    T = disc > 0 ? COMPUTE_VALUE() : T;
+    disc = COMPUTE_DISC_3PT();
+    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
   }
 
   // Single point updates:

@@ -52,9 +52,13 @@
     Masha's code)
   - [ ] Make it possible to specify boundary using sparse matrix of
     bools or doubles
-  - [ ] 3D marchers:
-    - [ ] Add a MEX interface for testing
-    - [ ] Basic
+  - [-] 3D marchers:
+    - [X] Add a MEX interface for testing
+    - [X] Basic
+      - [ ] Test speed and potentially optimize this---right now we
+        just do all 1, 2, and 3 point updates, but some will not be
+        necessary (depending on vertex incidence in neighborhood
+        graph)
     - [ ] OLIM4
     - [ ] OLIM8 RHR
     - [ ] OLIM8 MP0
@@ -96,6 +100,10 @@
     midpoint rule OLIM exactly (although using GSL to solve the
     quartic is pretty g.d. fast)
   - [ ] Lookup table optimization for OLIM
+    - [ ] OLIM4
+    - [ ] OLIM6
+    - [ ] OLIM8
+    - [ ] OLIM26
   - [ ] Add a more robust initialization method for curves, etc.
   - [ ] For methods that degenerate when s = 1, come up with a way to
     issue a warning

@@ -8,7 +8,8 @@ enum marcher_type {
   OLIM4_RHR_LUT,
   OLIM8_MP0,
   OLIM8_MP1,
-  OLIM8_RHR
+  OLIM8_RHR,
+  SOLIM4_MP0
 };
 
 typedef double(* speed_func)(double, double);

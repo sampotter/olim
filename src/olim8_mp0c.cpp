@@ -1,10 +1,10 @@
-#include "olim8_mp0.hpp"
+#include "olim8_mp0c.hpp"
 
 #include <cmath>
 
 #include "olim_util.hpp"
 
-void olim8_mp0::update_impl(int i, int j, double & T) {
+void olim8_mp0c::update_impl(int i, int j, double & T) {
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   abstract_node * x0 = 0x0;
   abstract_node * x1 = 0x0;
@@ -63,7 +63,7 @@ void olim8_mp0::update_impl(int i, int j, double & T) {
   }
 }
 
-double olim8_mp0::get_s_est(double s, int i0, int j0, int i1, int j1) {
+double olim8_mp0c::get_s_est(double s, int i0, int j0, int i1, int j1) {
   return (s + (S(i0, j0) + S(i1, j1))/2)/2;
 }
 

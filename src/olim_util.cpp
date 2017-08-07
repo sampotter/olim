@@ -21,7 +21,7 @@ static void check_params(double u0, double u1, double h) {
 
 /**
  * Adjacent triangle update with constant quadrature rule (used by
- * olim8_rhr and olim8_mp0).
+ * olim8_rhr and olim8_mp0c).
  */
 double rhr_adj(double u0, double u1, double s_est, double h, double * lam) {
   check_params(u0, u1, h);
@@ -38,7 +38,7 @@ double rhr_adj(double u0, double u1, double s_est, double h, double * lam) {
 
 /**
  * Diagonal triangle update with constant quadrature rule (used by
- * olim8_rhr and olim8_mp0).
+ * olim8_rhr and olim8_mp0c).
  */
 double rhr_diag(double u0, double u1, double s_est, double h) {
   check_params(u0, u1, h);

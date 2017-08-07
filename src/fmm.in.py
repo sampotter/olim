@@ -21,7 +21,7 @@ def _get_S_ptr(S, m, n):
 def _get_marcher_type(method):
     return {
         'basic': 0, 'olim4_mp0': 1, 'olim4_rhr': 2, 'olim4_rhr_lut': 3,
-        'olim8_mp0': 4, 'olim8_mp1': 5, 'olim8_rhr': 6
+        'olim8_mp0c': 4, 'olim8_mp1': 5, 'olim8_rhr': 6
     }[method]
 
 def fmm(B, h=1, S=None, method='basic'):

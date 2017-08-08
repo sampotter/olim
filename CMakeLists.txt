@@ -34,6 +34,7 @@ set (tests
   olim_util
   olim4_rhr_lut
   olim8_mp0c
+  olim8_mp0l
   olim8_mp1
   olim8_rhr
   rootfinding

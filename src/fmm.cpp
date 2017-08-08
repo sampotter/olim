@@ -169,6 +169,7 @@ static marcher_type parseMarcherType(mxArray const * arg) {
   else if (str == "olim4_rhr") type = OLIM4_RHR;
   else if (str == "olim4_rhr_lut") type = OLIM4_RHR_LUT;
   else if (str == "olim8_mp0c") type = OLIM8_MP0C;
+  else if (str == "olim8_mp0l") type = OLIM8_MP0L;
   else if (str == "olim8_mp1") type = OLIM8_MP1;
   else if (str == "olim8_rhr") type = OLIM8_RHR;
   else mexErrMsgTxt(("Invalid marcher type: " + str).c_str());

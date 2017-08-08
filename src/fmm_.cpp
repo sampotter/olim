@@ -8,6 +8,7 @@
 #include "olim4_rhr.hpp"
 #include "olim4_rhr_lut.hpp"
 #include "olim8_mp0c.hpp"
+#include "olim8_mp0l.hpp"
 #include "olim8_mp1.hpp"
 #include "olim8_rhr.hpp"
 
@@ -25,6 +26,8 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim4_rhr_lut>(M, N, h);
     } else if (type == OLIM8_MP0C) {
       m = std::make_unique<olim8_mp0c>(M, N, h);
+    } else if (type == OLIM8_MP0L) {
+      m = std::make_unique<olim8_mp0l>(M, N, h);
     } else if (type == OLIM8_MP1) {
       m = std::make_unique<olim8_mp1>(M, N, h);
     } else if (type == OLIM8_RHR) {
@@ -41,6 +44,8 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim4_rhr_lut>(M, N, h, S);
     } else if (type == OLIM8_MP0C) {
       m = std::make_unique<olim8_mp0c>(M, N, h, S);
+    } else if (type == OLIM8_MP0L) {
+      m = std::make_unique<olim8_mp0l>(M, N, h, S);
     } else if (type == OLIM8_MP1) {
       m = std::make_unique<olim8_mp1>(M, N, h, S);
     } else if (type == OLIM8_RHR) {

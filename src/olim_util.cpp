@@ -51,6 +51,70 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 
+double mp0l_adj(double u0, double u1, double s, double s0, double s1, double h) {
+  check_params(u0, u1, h);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
+
+  double s0bar = (s + s0)/2;
+  double s1bar = (s + s1)/2;
+  double ds = s1 - s0;
+  double du = u1 - u0;
+  double b = s0bar/ds - 0.75, b_sq = b*b;
+  double c = (ds - s - s0)/(4*ds) + du/(2*ds*h);
+  double lam1 = (-b + std::sqrt(b_sq - 4*c))/2;
+  double lam2 = (-b - std::sqrt(b_sq - 4*c))/2;
+
+  double T = std::numeric_limits<double>::infinity(), one_minus_lam, lam_sq,
+    dist, slambar;
+  if (0 <= lam1 && lam1 <= 1) {
+    one_minus_lam = 1 - lam1;
+    lam_sq = lam1*lam1;
+    slambar = (one_minus_lam*s0bar + lam1*s1bar);
+    dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
+    T = std::min(T, one_minus_lam*u0 + lam1*u1 + slambar*dist);
+  }
+  if (0 <= lam2 && lam2 <= 1) {
+    one_minus_lam = 1 - lam2;
+    lam_sq = lam2*lam2;
+    slambar = (one_minus_lam*s0bar + lam2*s1bar);
+    dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
+    T = std::min(T, one_minus_lam*u0 + lam2*u1 + slambar*dist);
+  }
+  return T;
+}
+
+double mp0l_diag(double u0, double u1, double s, double s0, double s1, double h) {
+  check_params(u0, u1, h);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
+
+  double s0bar = (s + s0)/2;
+  double s1bar = (s + s1)/2;
+  double ds = s1 - s0;
+  double du = u1 - u0;
+  double tmp1 = s0bar/ds;
+  double tmp2 = -tmp1/2;
+  double tmp3 = std::sqrt(tmp1*tmp1 - 2 - 4*du/(h*ds))/2;
+  double lam1 = tmp2 + tmp3;
+  double lam2 = tmp2 - tmp3;
+
+  double T = std::numeric_limits<double>::infinity(), dist, slambar;
+  if (0 <= lam1 && lam1 <= 1) {
+    slambar = ((1 - lam1)*s0bar + lam1*s1bar);
+    dist = h*std::sqrt(lam1*lam1 + 1);
+    T = std::min(T, (1 - lam1)*u0 + lam1*u1 + slambar*dist);
+  }
+  if (0 <= lam2 && lam2 <= 1) {
+    slambar = ((1 - lam2)*s0bar + lam2*s1bar);
+    dist = h*std::sqrt(lam2*lam2 + 1);
+    T = std::min(T, (1 - lam2)*u0 + lam2*u1 + slambar*dist);
+  }
+  return T;
+}
+
 double mp1_adj(double u0, double u1, double s0, double s1, double h) {
   check_params(u0, u1, h);
   assert(s0 >= 0);

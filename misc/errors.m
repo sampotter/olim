@@ -2,6 +2,8 @@ clear;
 
 path(path, '../build/Release');
 
+marks = {'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '<', '>', 'p', 'h'};
+
 s1 = @(x, y) 1 - sin(sqrt(x.^2 + y.^2));
 f1 = @(x, y) cos(sqrt(x.^2 + y.^2)) + sqrt(x.^2 + y.^2) - 1;
 
@@ -34,82 +36,92 @@ f9 = @(x, y) 1 - 1./exp(a.*(x.^2 + y.^2));
 S = {s1 s2 s3 s4 s5 s6 s7 s8 s9};
 F = {f1 f2 f3 f4 f5 f6 f7 f8 f9};
 
-n = 9;
+n = 3;
 s = S{n};
 f = F{n};
 
 k = 1;
+
 % Ms = 2*ceil(logspace(1, 3, 11)/2) + 1;
-Ms = (2.^(3:10)) + 1;
+Ms = (2.^(3:11)) + 1;
+
 for M = Ms
     fprintf('M = %d\n', M);
+
     B = zeros(M, 'logical');
     B((M + 1)/2, (M + 1)/2) = 1;
     h = 2/(M - 1);
     [X Y] = meshgrid(linspace(-1, 1, M), linspace(-1, 1, M));
+
     u = f(X, Y);
     u(isnan(u)) = 0;
-    U_basic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', 1, 'y0', 1);
+
     U_olim4_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_rhr', 'x0', 1, 'y0', 1);
-    U_olim4_rhr_lut = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_rhr_lut', 'x0', 1, 'y0', 1);
     U_olim4_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_mp0', 'x0', 1, 'y0', 1);
     U_olim8_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
     U_olim8_mp0c = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0c', 'x0', 1, 'y0', 1);
+    U_olim8_mp0l = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0l', ...
+                       'x0', 1, 'y0', 1);
+
     % U_olim8_mp1 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1', 'x0', 1, 'y0', 1);
     % u = sqrt(X.*X + Y.*Y);
-    % U_basic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', 1);
     % U_olim8_rhr = fmm(B, 'h', h, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
     % U_olim8_mp0c = fmm(B, 'h', h, 'Method', 'olim8_mp0c', 'x0', 1, 'y0', 1);
-    % U_olim8_mp1 = fmm(B, 'h', h, 'Method', 'olim8_mp1', 'x0', 1, 'y0', 1);
+    % U_olim8_mp0l = fmm(B, 'h', h, 'Method', 'olim8_mp0l', 'x0', 1, 'y0', 1);
+    % U_olim8_mp1 = fmm(B, 'h', h, 'Method', 'olim8_mp1', 'x0', 1,
+    % 'y0', 1);
+
     relerr = @(U, p) norm(u(:) - U(:), p)/norm(u(:), p);
-    E_basic_inf(k) = relerr(U_basic, 'inf');
+
     E_olim4_rhr_inf(k) = relerr(U_olim4_rhr, 'inf');
-    E_olim4_rhr_lut_inf(k) = relerr(U_olim4_rhr_lut, 'inf');
     E_olim4_mp0_inf(k) = relerr(U_olim4_mp0, 'inf');
     E_olim8_rhr_inf(k) = relerr(U_olim8_rhr, 'inf');
     E_olim8_mp0c_inf(k) = relerr(U_olim8_mp0c, 'inf');
+    E_olim8_mp0l_inf(k) = relerr(U_olim8_mp0l, 'inf');
     % E_olim8_mp1_inf(k) = relerr(U_olim8_mp1, 'inf');
-    E_basic_2(k) = relerr(U_basic, 2);
+
     E_olim4_rhr_2(k) = relerr(U_olim4_rhr, 2);
-    E_olim4_rhr_lut_2(k) = relerr(U_olim4_rhr_lut, 2);
     E_olim4_mp0_2(k) = relerr(U_olim4_mp0, 2);
     E_olim8_rhr_2(k) = relerr(U_olim8_rhr, 2);
+    E_olim8_mp0l_2(k) = relerr(U_olim8_mp0l, 2);
     E_olim8_mp0c_2(k) = relerr(U_olim8_mp0c, 2);
     % E_olim8_mp1_2(k) = relerr(U_olim8_mp1, 2);
+
     k = k + 1;
 end
 
 figure;
 set(gcf, 'Name', 'Relative Error', 'NumberTitle', 'off');
 
+getplotsymb = @(index) strcat('-', marks{index});
+
 subplot(1, 2, 1);
-loglog(Ms, E_basic_inf); hold on;
-loglog(Ms, E_olim4_rhr_inf); hold on;
-loglog(Ms, E_olim4_rhr_lut_inf); hold on;
-loglog(Ms, E_olim4_mp0_inf); hold on;
-loglog(Ms, E_olim8_rhr_inf); hold on;
-loglog(Ms, E_olim8_mp0c_inf); hold on;
+loglog(Ms, E_olim4_rhr_inf, getplotsymb(1)); hold on;
+loglog(Ms, E_olim4_mp0_inf, getplotsymb(2)); hold on;
+loglog(Ms, E_olim8_rhr_inf, getplotsymb(3)); hold on;
+loglog(Ms, E_olim8_mp0c_inf, getplotsymb(4)); hold on;
+loglog(Ms, E_olim8_mp0l_inf, getplotsymb(5)); hold on;
 % loglog(Ms, E_olim8_mp1_inf); hold on;
 title('l_\infty');
 ylabel('||u - U||_\infty/||u||_\infty');
 xlabel('n');
 xlim([min(Ms), max(Ms)]);
-legend('basic', 'olim4\_rhr', 'olim4\_rhr\_lut', 'olim4\_mp0', ...
-       'olim8\_rhr', 'olim8\_mp0c');
+legend('olim4\_rhr', 'olim4\_mp0', 'olim8\_rhr', 'olim8\_mp0c', ...
+       'olim8\_mp0l');
+
 subplot(1, 2, 2);
-loglog(Ms, E_basic_2); hold on;
-loglog(Ms, E_olim4_rhr_2); hold on;
-loglog(Ms, E_olim4_rhr_lut_2); hold on;
-loglog(Ms, E_olim4_mp0_2); hold on;
-loglog(Ms, E_olim8_rhr_2); hold on;
-loglog(Ms, E_olim8_mp0c_2); hold on;
+loglog(Ms, E_olim4_rhr_2, getplotsymb(1)); hold on;
+loglog(Ms, E_olim4_mp0_2, getplotsymb(2)); hold on;
+loglog(Ms, E_olim8_rhr_2, getplotsymb(3)); hold on;
+loglog(Ms, E_olim8_mp0c_2, getplotsymb(4)); hold on;
+loglog(Ms, E_olim8_mp0l_2, getplotsymb(5)); hold on;
 % loglog(Ms, E_olim8_mp1_2); hold on;
 title('l_2');
 ylabel('||u - U||_2/||u||_2');
 xlabel('n');
 xlim([min(Ms), max(Ms)]);
-legend('basic', 'olim4\_rhr', 'olim4\_rhr\_lut', 'olim4\_mp0', ...
-       'olim8\_rhr', 'olim8\_mp0c');
+legend('olim4\_rhr', 'olim4\_mp0', 'olim8\_rhr', 'olim8\_mp0c', ...
+       'olim8\_mp0l');
 
 figure;
 set(gcf, 'Name', 'Analytic Solution', 'NumberTitle', 'off');
@@ -124,27 +136,9 @@ colorbar;
 figure;
 set(gcf, 'Name', 'Pointwise Error', 'NumberTitle', 'off');
 
-subplot(4, 2, 1); 
-imagesc(U_basic - u);
-title('basic'); 
-set(gca, 'XTick', [1 M/2 M]);
-set(gca, 'XTickLabels', [-1 0 1]);
-set(gca, 'YTick', [1 M/2 M]);
-set(gca, 'YTickLabels', [-1 0 1]);
-colorbar;
-
 subplot(4, 2, 2); 
 imagesc(U_olim4_rhr - u);
 title('olim4\_rhr'); 
-set(gca, 'XTick', [1 M/2 M]);
-set(gca, 'XTickLabels', [-1 0 1]);
-set(gca, 'YTick', [1 M/2 M]);
-set(gca, 'YTickLabels', [-1 0 1]);
-colorbar;
-
-subplot(4, 2, 3); 
-imagesc(U_olim4_rhr_lut - u);
-title('olim4\_rhr\_lut'); 
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
 set(gca, 'YTick', [1 M/2 M]);
@@ -171,7 +165,16 @@ colorbar;
 
 subplot(4, 2, 6); 
 imagesc(U_olim8_mp0c - u);
-title('olim8\_mp0'); 
+title('olim8\_mp0c');
+set(gca, 'XTick', [1 M/2 M]);
+set(gca, 'XTickLabels', [-1 0 1]);
+set(gca, 'YTick', [1 M/2 M]);
+set(gca, 'YTickLabels', [-1 0 1]);
+colorbar;
+
+subplot(4, 2, 7);
+imagesc(U_olim8_mp0l - u);
+title('olim8\_mp0l');
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
 set(gca, 'YTick', [1 M/2 M]);

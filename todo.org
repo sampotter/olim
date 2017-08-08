@@ -74,6 +74,10 @@
      first "order" case is easy; the second "order" case is less
      obvious.
 * General
+  - [ ] Debug olim8_mp0l by fixing its performance on the linear (abs
+    value) example---I believe it should give an exact result
+  - [ ] Try doing the "ordered evaluations" (1pt, then 2pt, etc.) on
+    my methods and see if there is any difference in the error
   - [ ] Make plot of size of heap during algorithms execution---see if
     it's possible to use a different data structure for parts of the
     algorithm to speed it up (like keeping a sorted array for small

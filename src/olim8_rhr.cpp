@@ -1,57 +1,23 @@
 #include "olim8_rhr.hpp"
 
-#include <algorithm>
-#include <cassert>
 #include <cmath>
 
 #include "olim_util.hpp"
 
-void olim8_rhr::update_impl(int i, int j, double & T) {
-  abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  abstract_node * x0 = 0x0;
-  abstract_node * x1 = 0x0;
-  get_valid_neighbors(i, j, nb);
-  double s = S(i, j), h = get_h();
+double olim8_rhr_update_rules::adj1pt(double u0, double s, double h) const {
+  return u0 + s*h;
+}
 
-  /*
-   * First, do the adjacent and diagonal single point updates (and
-   * only if the update triangles upon which the update edges are
-   * incident are *not* present):
-   */
-  for (int k = 0; k < 8; k += 2) { // adjacent
-    if ((x0 = nb[k]) && !nb[(k + 6) % 8] && !nb[(k + 7) % 8] &&
-        !nb[(k + 1) % 8] && !nb[(k + 2) % 8]) {
-      T = std::min(T, x0->get_value() + s*h);
-    }
-  }
-  for (int k = 1; k < 8; k += 2) { // diagonal
-    if ((x0 = nb[k]) && !nb[(k + 7) % 8] && !nb[(k + 1) % 8]) {
-      T = std::min(T, x0->get_value() + s*h*std::sqrt(2));
-    }
-  }
+double olim8_rhr_update_rules::adj2pt(double u0, double u1, double s, double h) const {
+  return rhr_adj(u0, u1, s, h);
+}
 
-  /**
-   * Next, do the diagonal triangle updates.
-   */
-  for (int k = 0; k < 8; k += 2) {
-    if ((x0 = nb[k]) && (x1 = nb[k + 1])) {
-      T = std::min(T, rhr_diag(x0->get_value(), x1->get_value(), s, h));
-    }
-  }
-  for (int k = 1; k < 8; k += 2) {
-    if ((x0 = nb[(k + 1) % 8]) && (x1 = nb[k])) {
-      T = std::min(T, rhr_diag(x0->get_value(), x1->get_value(), s, h));
-    }
-  }
+double olim8_rhr_update_rules::diag1pt(double u0, double s, double h) const {
+  return u0 + s*h*std::sqrt(2);
+}
 
-  /**
-   * Finally, do the adjacent triangle updates.
-   */
-  for (int k = 0; k < 8; k += 2) {
-    if ((x0 = nb[k]) && (x1 = nb[(k + 2) % 8])) {
-      T = std::min(T, rhr_adj(x0->get_value(), x1->get_value(), s, h));
-    }
-  }
+double olim8_rhr_update_rules::diag2pt(double u0, double u1, double s, double h) const {
+  return rhr_diag(u0, u1, s, h);
 }
 
 // Local Variables:

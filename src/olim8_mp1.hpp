@@ -1,16 +1,18 @@
 #ifndef __OLIM8_MP1_HPP__
 #define __OLIM8_MP1_HPP__
 
-#include "moore_marcher.hpp"
-#include "node.hpp"
+#include "olim8.hpp"
 
-struct olim8_mp1: public moore_marcher<node> {
-  using moore_marcher::moore_marcher;
-private:
-  virtual void update_impl(int i, int j, double & T);
+struct olim8_mp1_update_rules {
+  double adj1pt(double u0, double s, double s0, double h) const;
+  double adj2pt(double u0, double u1, double s, double s0, double s1, double h) const;
+  double diag1pt(double u0, double s, double s0, double h) const;
+  double diag2pt(double u0, double u1, double s, double s0, double s1, double h) const;
 };
 
-#endif // __OLIM8_RHR_HPP__
+using olim8_mp1 = olim8<olim8_mp1_update_rules>;
+
+#endif // __OLIM8_MP1_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

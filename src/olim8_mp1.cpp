@@ -4,68 +4,28 @@
 
 #include "olim_util.hpp"
 
-void olim8_mp1::update_impl(int i, int j, double & T) {
-  abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  abstract_node * x0 = 0x0, * x1 = 0x0;
-  get_valid_neighbors(i, j, nb);
-  double h = get_h(), s = S(i, j), u0, u1, sbar0, sbar1;
+double olim8_mp1_update_rules::adj1pt(double u0, double s, double s0,
+                                      double h) const {
+  return u0 + h*(s + s0)/2;
+}
 
-  /*
-   * First, do the adjacent and diagonal single point updates (and
-   * only if the update triangles upon which the update edges are
-   * incident are *not* present):
-   */
-  for (int k = 0; k < 8; k += 2) {
-    if ((x0 = nb[k]) && !nb[(k + 6) % 8] && !nb[(k + 7) % 8] &&
-        !nb[(k + 1) % 8] && !nb[(k + 2) % 8]) {
-      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
-      T = std::min(T, x0->get_value() + h*sbar0);
-    }
-  }
-  for (int k = 1; k < 8; k += 2) {
-    if ((x0 = nb[k]) && !nb[(k + 7) % 8] && !nb[(k + 1) % 8]) {
-      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
-      T = std::min(T, x0->get_value() + h*sbar0*std::sqrt(2));
-    }
-  }
+double olim8_mp1_update_rules::adj2pt(double u0, double u1, double s,
+                                      double s0, double s1, double h) const {
+  double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
+  return sbar0 == sbar1 ? rhr_adj(u0, u1, sbar0, h) :
+    mp1_adj(u0, u1, sbar0, sbar1, h);
+}
 
-  /**
-   * Next, do the diagonal triangle updates.
-   */
-  for (int k = 0, l = k + 1; k < 8; k += 2, l = k + 1) {
-    if ((x0 = nb[k]) && (x1 = nb[l])) {
-      u0 = x0->get_value();
-      u1 = x1->get_value();
-      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
-      sbar1 = (s + S(i + di[l], j + dj[l]))/2;
-      T = std::min(T, sbar0 == sbar1 ? rhr_diag(u0, u1, sbar0, h) :
-                   mp1_diag(u0, u1, sbar0, sbar1, h));
-    }
-  }
-  for (int k = 1, l = k + 1; k < 8; k += 2, l = (k + 1) % 8) {
-    if ((x0 = nb[l]) && (x1 = nb[k])) {
-      u0 = x0->get_value();
-      u1 = x1->get_value();
-      sbar0 = (s + S(i + di[l], j + dj[l]))/2;
-      sbar1 = (s + S(i + di[k], j + dj[k]))/2;
-      T = std::min(T, sbar0 == sbar1 ? rhr_diag(u0, u1, sbar0, h) :
-                   mp1_diag(u0, u1, sbar0, sbar1, h));
-    }
-  }
+double olim8_mp1_update_rules::diag1pt(double u0, double s, double s0,
+                                       double h) const {
+  return u0 + h*(s + s0)*std::sqrt(2)/2;
+}
 
-  /**
-   * Finally, do the adjacent triangle updates.
-   */
-  for (int k = 0, l = k + 2; k < 8; k += 2, l = (k + 2) % 8) {
-    if ((x0 = nb[k]) && (x1 = nb[l])) {
-      u0 = x0->get_value();
-      u1 = x1->get_value();
-      sbar0 = (s + S(i + di[k], j + dj[k]))/2;
-      sbar1 = (s + S(i + di[l], j + dj[l]))/2;
-      T = std::min(T, sbar0 == sbar1 ? rhr_adj(u0, u1, sbar0, h) :
-                   mp1_adj(u0, u1, sbar0, sbar1, h));
-    }
-  }
+double olim8_mp1_update_rules::diag2pt(double u0, double u1, double s,
+                                       double s0, double s1, double h) const {
+  double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
+  return sbar0 == sbar1 ? rhr_diag(u0, u1, sbar0, h) :
+    mp1_diag(u0, u1, sbar0, sbar1, h);
 }
 
 // Local Variables:

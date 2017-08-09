@@ -74,14 +74,28 @@
      first "order" case is easy; the second "order" case is less
      obvious.
 * General
+  - [ ] It would be good to conduct tests that don't just involve a
+    single origin point. To this end:
+    - [ ] Make it possible to initialize with a curve
+      - [ ] Also need speed functions with analytic solutions for this case
+    - [ ] Make it possible to initialize with a bunch of random points
+      - [ ] Speed funcs w/ analytic solutions
+    - It might be the case that Maria's optimized update rules only
+      offer a speed-up in this "dense" case (at least in 2D)---this is
+      just a hypothesis
   - [ ] Debug olim8_mp0l by fixing its performance on the linear (abs
     value) example---I believe it should give an exact result
   - [ ] Try doing the "ordered evaluations" (1pt, then 2pt, etc.) on
     my methods and see if there is any difference in the error
+    - Is it possible to do a test on the values of s to see if the
+      optimized/ordered evaluations would provide a correct answer? Is
+      there a theorem relating to the Lipschitz constant of the
+      function? It may depend on the mesh itself...
   - [ ] Make plot of size of heap during algorithms execution---see if
     it's possible to use a different data structure for parts of the
     algorithm to speed it up (like keeping a sorted array for small
     input sizes)
+  - [ ] Try OLIM4 MP0C/L&MP1
   - [ ] For periodic Delaunay triangulations, see [[http://doc.cgal.org/latest/Periodic_2_triangulation_2/index.html][here]], but we should
     actually just use the Voronoi approach (MATLAB implementation [[http://people.sc.fsu.edu/~jburkardt/m_src/sphere_delaunay/sphere_delaunay.html][here]])
   - [X] Figure out source of error in marchers
@@ -92,14 +106,15 @@
     bools or doubles
   - [-] 3D marchers:
     - [X] Add a MEX interface for testing
-    - [X] Basic
+    - [ ] Basic
       - [ ] Test speed and potentially optimize this---right now we
         just do all 1, 2, and 3 point updates, but some will not be
         necessary (depending on vertex incidence in neighborhood
         graph)
     - [ ] OLIM4
     - [ ] OLIM8 RHR
-    - [ ] OLIM8 MP0
+    - [ ] OLIM8 MP0C
+    - [ ] OLIM8 MP0L
     - [ ] OLIM8 MP1
   - [X] Test different speed functions using Maria's analytic solutions
   - [X] Make up a couple neat analytic solutions
@@ -155,6 +170,10 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] The 8pt and 4pt rule classes can be improved by turning them
+    into abstract classes or template classes, where the individual
+    methods just differ in the way they update T for each type of
+    update
   - [ ] Remove extra padding from S matrix in getDefaultSMatrix in fmm.cpp
   - [ ] Add ctor for parameters in fmm.cpp
   - [ ] Do array error checking in fmm.cpp (in mexFunction)

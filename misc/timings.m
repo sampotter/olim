@@ -9,7 +9,7 @@ mnum = 1;
 % Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
 Ms = 2.^(3:9) + 1;
 methods = {'basic', 'olim4_rhr', 'olim4_rhr_lut', 'olim4_mp0', ...
-           'olim8_rhr', 'olim8_mp0', 'olim8_mp1'};
+           'olim8_rhr', 'olim8_mp0c', 'olim8_mp1'};
 T = inf(length(Ms), length(methods));
 for k = 1:length(methods)
     method = methods{k};
@@ -37,7 +37,7 @@ for k = 1:length(methods)
     hold on;
 end
 legend('basic', 'olim4\_rhr', 'olim4\_lut\_rhr', 'olim4\_mp0', ...
-       'olim8\_rhr', 'olim8\_mp0', 'olim8\_mp1');
+       'olim8\_rhr', 'olim8\_mp0c', 'olim8\_mp1');
 
 figure;
 set(gcf, 'Name', 'LUT Speedup', 'NumberTitle', 'off');

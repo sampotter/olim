@@ -15,8 +15,7 @@ add_library (fmm
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
   src/olim4_rhr_lut.cpp
-  src/olim8_mp0c.cpp
-  src/olim8_mp0l.cpp
+  src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
   src/rootfinding.cpp
@@ -33,8 +32,7 @@ set (tests
   heap
   olim_util
   olim4_rhr_lut
-  olim8_mp0c
-  olim8_mp0l
+  olim8_mp0
   olim8_mp1
   olim8_rhr
   rootfinding

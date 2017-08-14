@@ -1,16 +1,18 @@
 #ifndef __ROOTFINDING_HPP__
 #define __ROOTFINDING_HPP__
 
+#include <functional>
+
 constexpr double default_tol = 1e-7;
 
 struct rootfinder {
-  rootfinder(double (* f)(double));
+  rootfinder(std::function<double(double)> const & f);
   virtual double find_root(double x0, double x1, double tol = default_tol)
     const = 0;
 protected:
   double eval_f(double x) const;
 private:
-  double (* _f)(double);
+  std::function<double(double)> _f;
 };
 
 struct secant: public rootfinder {

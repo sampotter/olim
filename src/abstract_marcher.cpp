@@ -37,4 +37,3 @@ void abstract_marcher::insert_into_heap(abstract_node * n) {
 // indent-tabs-mode: nil
 // c-basic-offset: 2
 // End:
-

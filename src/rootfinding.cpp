@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-rootfinder::rootfinder(double (* f)(double)): _f {f} {}
+rootfinder::rootfinder(std::function<double(double)> const & f): _f {f} {}
 
 double rootfinder::eval_f(double x) const {
   return _f(x);

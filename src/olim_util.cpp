@@ -58,29 +58,40 @@ double mp0l_adj(double u0, double u1, double s, double s0, double s1, double h) 
   assert(s1 >= 0);
 
   double s0bar = (s + s0)/2;
-  double s1bar = (s + s1)/2;
   double ds = s1 - s0;
-  double du = u1 - u0;
-  double b = s0bar/ds - 0.75, b_sq = b*b;
-  double c = (ds - s - s0)/(4*ds) + du/(2*ds*h);
-  double lam1 = (-b + std::sqrt(b_sq - 4*c))/2;
-  double lam2 = (-b - std::sqrt(b_sq - 4*c))/2;
 
-  double T = std::numeric_limits<double>::infinity(), one_minus_lam, lam_sq,
-    dist, slambar;
+  if (s == s0 && s == s1) {
+    return rhr_adj(u0, u1, s, h);
+  } else if (ds == 0) {
+    return rhr_adj(u0, u1, s0bar, h);
+  }
+
+  double s1bar = (s + s1)/2;
+  double du = u1 - u0;
+  double b = s0bar/ds - 0.75;
+  double c = (ds - s - s0)/(4*ds) + du/(2*ds*h);
+  double disc = b*b - 4*c;
+  assert(disc >= 0);
+  double lam1 = (-b + std::sqrt(disc))/2;
+  double lam2 = (-b - std::sqrt(disc))/2;
+
+  double T = std::numeric_limits<double>::infinity(), T_new, one_minus_lam,
+    lam_sq, dist, slambar;
   if (0 <= lam1 && lam1 <= 1) {
     one_minus_lam = 1 - lam1;
     lam_sq = lam1*lam1;
     slambar = (one_minus_lam*s0bar + lam1*s1bar);
     dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
-    T = std::min(T, one_minus_lam*u0 + lam1*u1 + slambar*dist);
+    T_new = one_minus_lam*u0 + lam1*u1 + slambar*dist;
+    T = std::min(T, T_new);
   }
   if (0 <= lam2 && lam2 <= 1) {
     one_minus_lam = 1 - lam2;
     lam_sq = lam2*lam2;
     slambar = (one_minus_lam*s0bar + lam2*s1bar);
     dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
-    T = std::min(T, one_minus_lam*u0 + lam2*u1 + slambar*dist);
+    T_new = one_minus_lam*u0 + lam2*u1 + slambar*dist;
+    T = std::min(T, T_new);
   }
   return T;
 }
@@ -92,27 +103,18 @@ double mp0l_diag(double u0, double u1, double s, double s0, double s1, double h)
   assert(s1 >= 0);
 
   double s0bar = (s + s0)/2;
-  double s1bar = (s + s1)/2;
   double ds = s1 - s0;
-  double du = u1 - u0;
-  double tmp1 = s0bar/ds;
-  double tmp2 = -tmp1/2;
-  double tmp3 = std::sqrt(tmp1*tmp1 - 2 - 4*du/(h*ds))/2;
-  double lam1 = tmp2 + tmp3;
-  double lam2 = tmp2 - tmp3;
+  double alpha_sq = std::pow((u0 - u1)/h, 2);
 
-  double T = std::numeric_limits<double>::infinity(), dist, slambar;
-  if (0 <= lam1 && lam1 <= 1) {
-    slambar = ((1 - lam1)*s0bar + lam1*s1bar);
-    dist = h*std::sqrt(lam1*lam1 + 1);
-    T = std::min(T, (1 - lam1)*u0 + lam1*u1 + slambar*dist);
-  }
-  if (0 <= lam2 && lam2 <= 1) {
-    slambar = ((1 - lam2)*s0bar + lam2*s1bar);
-    dist = h*std::sqrt(lam2*lam2 + 1);
-    T = std::min(T, (1 - lam2)*u0 + lam2*u1 + slambar*dist);
-  }
-  return T;
+  // TODO: handle case where sbar0^2 == alpha^2 or prove that it cannot happen
+
+  double a = s0bar*s0bar - alpha_sq;
+  double b = s0bar*ds;
+  double c = ds/4 - alpha_sq;
+  double disc = b*b - 4*a*c;
+  assert(disc >= 0);
+  double tmp1 = -b/(2*a), tmp2 = std::sqrt(disc)/(2*a);
+  
 }
 
 double mp1_adj(double u0, double u1, double s0, double s1, double h) {
@@ -188,6 +190,100 @@ double mp1_diag(double u0, double u1, double s0, double s1, double h) {
   return lam == -1 ?
     std::numeric_limits<double>::infinity() :
     (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1);
+}
+
+static double polyval(double * coefs, int ncoefs, double x) {
+  double y = 0;
+  for (int i = ncoefs - 1; i > 0; --i) {
+    y += coefs[i];
+    y *= x;
+  }
+  return y + coefs[0];
+}
+
+static int sigma(double ** polys, double x) {
+  double signs[5] = {
+    polyval(polys[0], 5, x),
+    polyval(polys[1], 4, x),
+    polyval(polys[2], 3, x),
+    polyval(polys[3], 2, x),
+    polyval(polys[4], 1, x)
+  };
+  int changes = 0;
+  for (int i = 1, j = 0; i < 5; ++i, ++j) {
+    if (signs[i] != 0 && signs[j] != 0 && signs[i] != signs[j]) {
+      ++changes;
+    }
+  }
+  return changes;
+}
+
+static int sturm(double ** polys, double l, double r) {
+  return sigma(polys, l) - sigma(polys, r);
+}
+
+static double secant(double * poly, double x0, double x1, double l, double r,
+                     bool & foundroot, double tol = 1e-13) {
+  double x, f0, f1;
+  do {
+    f0 = polyval(poly, 5, x0);
+    f1 = polyval(poly, 5, x1);
+    x = (x1*f0 - x0*f1)/(f0 - f1);
+    if (x < l || r < x) {
+      foundroot = false;
+      return x;
+    }
+    x1 = x0;
+    x0 = x;
+  } while (fabs(polyval(poly, 5, x)) > tol);
+  foundroot = true;
+  return x;
+}
+
+static void rec(double ** polys, double * roots, int & root,
+                double left, double right) {
+  int nroots = sturm(polys, left, right);
+  if (nroots == 1) {
+    double h = 0.1, x0;
+    bool foundroot = false;
+    x0 = secant(polys[0], left, left + (right - left)*h, left, right, foundroot);
+    if (!foundroot) {
+      x0 = secant(polys[0], right, right + (left - right)*h, left, right, foundroot);
+    }
+    assert(foundroot);
+    roots[root++] = x0;
+  } else if (nroots > 1) {
+    double mid = (left + right)/2;
+    rec(polys, roots, root, left, mid);
+    rec(polys, roots, root, mid, right);
+  }
+}
+
+void find_quartic_roots(double * a, double * roots, double left, double right) {
+  // TODO: use descartes sign rule here to save flops?
+  
+  double b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]};
+  double c[3] = {
+    -a[0] + a[1]*a[3]/(16*a[4]),
+    (-6*a[1] + a[2]*a[3]/a[4])/8,
+    -a[2]/2 + 3*a[3]*a[3]/(16*a[4])
+  };
+  double d[2] = {
+    -b[0] + c[0]*(-b[3]*c[1] + b[2]*c[2])/(c[2]*c[2]),
+    (-b[3]*(c[1]*c[1] + c[0]*c[2]) + (b[2]*c[1] - b[1]*c[2])*c[2])/(c[2]*c[2])
+  };
+  double e[1] = {-c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])};
+
+  double * polys[5] = {a, b, c, d, e};
+
+  // TODO: check if f(0) = 0? (since sturm handles the half-open
+  // interval (a, b])
+
+  int root = 0;
+  rec(polys, roots, root, left, right);
+  for (; root < 5; ++root) {
+    roots[root] = -1;
+  }
 }
 
 // Local Variables:

@@ -1,5 +1,6 @@
 #include "test_graph_marcher.hpp"
 
+#include <cmath>
 #include <limits>
 
 test_graph_marcher::test_graph_marcher(int height, int width, double h,

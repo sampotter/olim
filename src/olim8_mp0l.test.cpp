@@ -55,11 +55,8 @@ void degenerates_to_olim8_rhr_on_constant_speed_func() {
   m2.add_boundary_node((n - 1)/2, (n - 1)/2);
   m2.run();
 
-  double x, y;
   for (int i = 0; i < n; ++i) {
-    y = h*i - 1;
     for (int j = 0; j < n; ++j) {
-      x = h*j - 1;
       test::is_approx_equal(m1.get_value(i, j), m2.get_value(i, j), 1e-15);
     }
   }

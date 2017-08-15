@@ -160,14 +160,14 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
     return rhr_diag(u0, u1, sbar0, h);
   }
 
-  double alpha = std::fabs((u0 - u1)/h);
-  double ds = s1 - s0;
+  double alpha = std::fabs((u0 - u1)/h), alpha_sq = alpha*alpha;
+  double ds = s1 - s0, ds_sq = ds*ds;
   double a[] = {
-    (ds - alpha)*(ds + alpha),
+    ds_sq - alpha_sq,
     2*s0*ds,
-    4*ds*ds + (s0 - alpha)*(s0 + alpha),
+    4*ds_sq + s0*s0 - alpha_sq,
     4*s0*ds,
-    4*ds*ds
+    4*ds_sq
   };
   printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 

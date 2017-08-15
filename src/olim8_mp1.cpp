@@ -142,8 +142,8 @@ double olim8_mp1_bsearch_update_rules::adj2pt(double u0, double u1, double s,
 
   int i = 0;
   printf("roots:");
-  while ((lam = roots[i]) != -1) {
     printf(" %g");
+  while ((lam = roots[i++]) != -1) {
     T = std::min(
       T,
       (1 - lam)*u0+ lam*u1 +
@@ -157,7 +157,7 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
                                                double h) const {
   double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
   if (sbar0 == sbar1) {
-    return rhr_adj(u0, u1, sbar0, h);
+    return rhr_diag(u0, u1, sbar0, h);
   }
 
   double alpha = std::fabs((u0 - u1)/h);
@@ -175,7 +175,7 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
   find_quartic_roots(a, roots);
 
   int i = 0;
-  while ((lam = roots[i]) != -1) {
+  while ((lam = roots[i++]) != -1) {
     T = std::min(
       T,
       (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1));

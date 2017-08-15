@@ -6,7 +6,7 @@ if [ `uname -s` == "Linux" ]; then
   do
     mkdir -p build/$build_type
     cd build/$build_type
-    CXX=clang++ cmake -DCMAKE_BUILD_TYPE=$build_type -GNinja ../..
+    CXX=clang++ cmake -DCMAKE_CXX_FLAGS="-stdlib=libc++" -DCMAKE_BUILD_TYPE=$build_type -GNinja ../..
     ninja -j `nproc`
     cd -
   done  

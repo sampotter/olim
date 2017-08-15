@@ -102,19 +102,22 @@ double mp0l_diag(double u0, double u1, double s, double s0, double s1, double h)
   assert(s0 >= 0);
   assert(s1 >= 0);
 
-  double s0bar = (s + s0)/2;
-  double ds = s1 - s0;
-  double alpha_sq = std::pow((u0 - u1)/h, 2);
+  // double s0bar = (s + s0)/2;
+  // double ds = s1 - s0;
+  // double alpha_sq = std::pow((u0 - u1)/h, 2);
 
   // TODO: handle case where sbar0^2 == alpha^2 or prove that it cannot happen
 
-  double a = s0bar*s0bar - alpha_sq;
-  double b = s0bar*ds;
-  double c = ds/4 - alpha_sq;
-  double disc = b*b - 4*a*c;
-  assert(disc >= 0);
-  double tmp1 = -b/(2*a), tmp2 = std::sqrt(disc)/(2*a);
-  
+  // double a = s0bar*s0bar - alpha_sq;
+  // double b = s0bar*ds;
+  // double c = ds/4 - alpha_sq;
+  // double disc = b*b - 4*a*c;
+  // assert(disc >= 0);
+  // double tmp1 = -b/(2*a), tmp2 = std::sqrt(disc)/(2*a);
+
+  printf("warning! not implemented!\n");
+
+  return std::numeric_limits<double>::infinity();
 }
 
 double mp1_adj(double u0, double u1, double s0, double s1, double h) {
@@ -201,21 +204,22 @@ static double polyval(double * coefs, int ncoefs, double x) {
   return y + coefs[0];
 }
 
-int signum(double x) {
-  return x > 0 ? 1 : x < 0 ? -1 : 0;
-}
-
 static int sigma(double ** polys, double x) {
-  int signs[5] = {
-    signum(polyval(polys[0], 5, x)),
-    signum(polyval(polys[1], 4, x)),
-    signum(polyval(polys[2], 3, x)),
-    signum(polyval(polys[3], 2, x)),
-    signum(polyval(polys[4], 1, x))
-  };
+  // TODO: we can optimize this by packing bits probably
+  int nsigns = 0;
+  int signs[5];
+  double y;
+  for (int i = 0; i < 5; ++i) {
+    y = polyval(polys[i], 5 - i, x);
+    if (y > 0) {
+      signs[nsigns++] = 1;
+    } else if (y < 0) {
+      signs[nsigns++] = -1;
+    }
+  }
   int changes = 0;
-  for (int i = 1, j = 0; i < 5; ++i, ++j) {
-    if (signs[i] != 0 && signs[j] != 0 && signs[i] != signs[j]) {
+  for (int i = 1, j = 0; i < nsigns; ++i, ++j) {
+    if (signs[i] != signs[j]) {
       ++changes;
     }
   }
@@ -223,7 +227,30 @@ static int sigma(double ** polys, double x) {
 }
 
 int sturm(double ** polys, double l, double r) {
-  return sigma(polys, l) - sigma(polys, r);
+  int nroots = 0, degree = 4;
+  double * a = polys[0];
+  while (a[degree] < 1e-13) {
+    --degree;
+  }
+  assert(degree > 1);
+  if (degree == 2) {
+    double disc = a[1]*a[1] - 4*a[2]*a[0];
+    if (disc < 0) {
+      nroots = 0;
+    } else if (disc == 0) {
+      double x0 = (-a[1] + std::sqrt(disc))/(2*a[2]);
+      nroots = l < x0 && x0 <= r ? 1 : 0;
+    } else {
+      double x0 = (-a[1] + std::sqrt(disc))/(2*a[2]),
+        x1 = (-a[1] - std::sqrt(disc))/(2*a[2]);
+      nroots = (int) (l < x0 && x0 <= r) + (int) (l < x1 && x1 <= r);
+    }
+  }
+  assert(degree != 3);
+  if (degree == 4) {
+    nroots = sigma(polys, l) - sigma(polys, r);
+  }
+  return nroots;
 }
 
 static double secant(double * poly, double x0, double x1, double l, double r,

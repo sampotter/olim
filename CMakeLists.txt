@@ -59,7 +59,7 @@ configure_file (src/fmm.in.py ${PROJECT_BINARY_DIR}/fmm.py)
 add_custom_command (
   TARGET fmm
   POST_BUILD
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/run_mex.sh"
+  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build_mex.sh"
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_BUILD_TYPE})
 

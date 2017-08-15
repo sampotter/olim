@@ -55,7 +55,7 @@ double olim8_mp1_secant_update_rules::adj2pt(double u0, double u1, double s,
     16*s0*ds - 24*ds_sq,
     16*ds_sq
   };
-  printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   auto f = [&] (double x) {
     return evalquartic(x, a);
@@ -95,7 +95,7 @@ double olim8_mp1_secant_update_rules::diag2pt(double u0, double u1, double s,
     4*s0*ds,
     4*ds*ds
   };
-  printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   auto const f = [&] (double x) {
     return evalquartic(x, a);
@@ -136,15 +136,15 @@ double olim8_mp1_bsearch_update_rules::adj2pt(double u0, double u1, double s,
     16*s0*ds - 24*ds_sq,
     16*ds_sq
   };
-  printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   double lam, roots[5], T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);
 
   int i = 0;
-  printf("roots:");
-  while ((lam = roots[i]) != -1) {
-    printf(" %g");
+  // printf("roots:");
+  while ((lam = roots[i++]) != -1) {
+    // printf(" %g");
     T = std::min(
       T,
       (1 - lam)*u0+ lam*u1 +
@@ -158,25 +158,25 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
                                                double h) const {
   double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
   if (sbar0 == sbar1) {
-    return rhr_adj(u0, u1, sbar0, h);
+    return rhr_diag(u0, u1, sbar0, h);
   }
 
-  double alpha = std::fabs((u0 - u1)/h);
-  double ds = s1 - s0;
+  double alpha = std::fabs((u0 - u1)/h), alpha_sq = alpha*alpha;
+  double ds = s1 - s0, ds_sq = ds*ds;
   double a[] = {
-    (ds - alpha)*(ds + alpha),
+    ds_sq - alpha_sq,
     2*s0*ds,
-    4*ds*ds + (s0 - alpha)*(s0 + alpha),
+    4*ds_sq + s0*s0 - alpha_sq,
     4*s0*ds,
-    4*ds*ds
+    4*ds_sq
   };
-  printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   double lam, roots[5], T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);
 
   int i = 0;
-  while ((lam = roots[i]) != -1) {
+  while ((lam = roots[i++]) != -1) {
     T = std::min(
       T,
       (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1));

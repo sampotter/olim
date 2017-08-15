@@ -13,7 +13,7 @@ f2 = @(x, y) ((x + y).^2)/(2*sqrt(2));
 s3 = @(x, y) sqrt(x.^2 + y.^2);
 f3 = @(x, y) (x.^2 + y.^2)/2;
 
-% Breaks olim8_mp0c and mp1? (because of singularity at origin)
+% Breaks olim8_mp0 and mp1? (because of singularity at origin)
 s4 = @(x, y) 2*sqrt((x.^2 - y.^2).^2.*(x.^4 + 14.*x.^2.*y.^2 + y.^4)./((x.^2 + y.^2).^3));
 f4 = @(x, y) -3*x.^2 + y.^2 + 4*x.^4./(x.^2 + y.^2);
 
@@ -83,17 +83,14 @@ for M = Ms
     U_olim4_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_rhr', 'x0', 1, 'y0', 1);
     U_olim4_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_mp0', 'x0', 1, 'y0', 1);
     U_olim8_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
-    U_olim8_mp0c = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0c', 'x0', 1, 'y0', 1);
-    % U_olim8_mp0l = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0l', ...
-    %                    'x0', 1, 'y0', 1);
+    U_olim8_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0', 'x0', 1, 'y0', 1);
     U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', ...
                       'x0', 1, 'y0', 1);
 
     % U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', 'x0', 1, 'y0', 1);
     % u = sqrt(X.*X + Y.*Y);
     % U_olim8_rhr = fmm(B, 'h', h, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
-    % U_olim8_mp0c = fmm(B, 'h', h, 'Method', 'olim8_mp0c', 'x0', 1, 'y0', 1);
-    % U_olim8_mp0l = fmm(B, 'h', h, 'Method', 'olim8_mp0l', 'x0', 1, 'y0', 1);
+    % U_olim8_mp0 = fmm(B, 'h', h, 'Method', 'olim8_mp0', 'x0', 1, 'y0', 1);
     % U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Method', 'olim8_mp1_bsearch', 'x0', 1,
     % 'y0', 1);
 
@@ -102,15 +99,13 @@ for M = Ms
     E_olim4_rhr_inf(k) = relerr(U_olim4_rhr, 'inf');
     E_olim4_mp0_inf(k) = relerr(U_olim4_mp0, 'inf');
     E_olim8_rhr_inf(k) = relerr(U_olim8_rhr, 'inf');
-    E_olim8_mp0c_inf(k) = relerr(U_olim8_mp0c, 'inf');
-    % E_olim8_mp0l_inf(k) = relerr(U_olim8_mp0l, 'inf');
+    E_olim8_mp0_inf(k) = relerr(U_olim8_mp0, 'inf');
     E_olim8_mp1_bsearch_inf(k) = relerr(U_olim8_mp1_bsearch, 'inf');
 
     E_olim4_rhr_2(k) = relerr(U_olim4_rhr, 2);
     E_olim4_mp0_2(k) = relerr(U_olim4_mp0, 2);
     E_olim8_rhr_2(k) = relerr(U_olim8_rhr, 2);
-    % E_olim8_mp0l_2(k) = relerr(U_olim8_mp0l, 2);
-    E_olim8_mp0c_2(k) = relerr(U_olim8_mp0c, 2);
+    E_olim8_mp0_2(k) = relerr(U_olim8_mp0, 2);
     E_olim8_mp1_bsearch_2(k) = relerr(U_olim8_mp1_bsearch, 2);
 
     k = k + 1;
@@ -125,8 +120,7 @@ subplot(1, 2, 1);
 loglog(Ms, E_olim4_rhr_inf, getplotsymb(1)); hold on;
 loglog(Ms, E_olim4_mp0_inf, getplotsymb(2)); hold on;
 loglog(Ms, E_olim8_rhr_inf, getplotsymb(3)); hold on;
-loglog(Ms, E_olim8_mp0c_inf, getplotsymb(4)); hold on;
-% loglog(Ms, E_olim8_mp0l_inf, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp0_inf, getplotsymb(4)); hold on;
 loglog(Ms, E_olim8_mp1_bsearch_inf, getplotsymb(6)); hold on;
 title('l_\infty');
 ylabel('||u - U||_\infty/||u||_\infty');
@@ -135,15 +129,14 @@ xlim([min(Ms), max(Ms)]);
 legend('olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
-       'olim8\_mp0c', ...%        'olim8\_mp0l', ...
+       'olim8\_mp0', ...
        'olim8\_mp1');
 
 subplot(1, 2, 2);
 loglog(Ms, E_olim4_rhr_2, getplotsymb(1)); hold on;
 loglog(Ms, E_olim4_mp0_2, getplotsymb(2)); hold on;
 loglog(Ms, E_olim8_rhr_2, getplotsymb(3)); hold on;
-loglog(Ms, E_olim8_mp0c_2, getplotsymb(4)); hold on;
-% loglog(Ms, E_olim8_mp0l_2, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp0_2, getplotsymb(4)); hold on;
 loglog(Ms, E_olim8_mp1_bsearch_2, getplotsymb(6)); hold on;
 title('l_2');
 ylabel('||u - U||_2/||u||_2');
@@ -152,7 +145,7 @@ xlim([min(Ms), max(Ms)]);
 legend('olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
-       'olim8\_mp0c', ...%       'olim8\_mp0l', ...
+       'olim8\_mp0', ...
        'olim8\_mp1');
 
 figure;
@@ -196,22 +189,13 @@ set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
 subplot(3, 2, 4); 
-imagesc(U_olim8_mp0c - u);
-title('olim8\_mp0c');
+imagesc(U_olim8_mp0 - u);
+title('olim8\_mp0');
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
 set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
-
-% subplot(3, 2, 5);
-% imagesc(U_olim8_mp0l - u);
-% title('olim8\_mp0l');
-% set(gca, 'XTick', [1 M/2 M]);
-% set(gca, 'XTickLabels', [-1 0 1]);
-% set(gca, 'YTick', [1 M/2 M]);
-% set(gca, 'YTickLabels', [-1 0 1]);
-% colorbar;
 
 subplot(3, 2, 6);
 imagesc(U_olim8_mp1_bsearch - u);

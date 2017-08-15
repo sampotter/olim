@@ -201,13 +201,17 @@ static double polyval(double * coefs, int ncoefs, double x) {
   return y + coefs[0];
 }
 
+int signum(double x) {
+  return x > 0 ? 1 : x < 0 ? -1 : 0;
+}
+
 static int sigma(double ** polys, double x) {
-  double signs[5] = {
-    polyval(polys[0], 5, x),
-    polyval(polys[1], 4, x),
-    polyval(polys[2], 3, x),
-    polyval(polys[3], 2, x),
-    polyval(polys[4], 1, x)
+  int signs[5] = {
+    signum(polyval(polys[0], 5, x)),
+    signum(polyval(polys[1], 4, x)),
+    signum(polyval(polys[2], 3, x)),
+    signum(polyval(polys[3], 2, x)),
+    signum(polyval(polys[4], 1, x))
   };
   int changes = 0;
   for (int i = 1, j = 0; i < 5; ++i, ++j) {
@@ -218,7 +222,7 @@ static int sigma(double ** polys, double x) {
   return changes;
 }
 
-static int sturm(double ** polys, double l, double r) {
+int sturm(double ** polys, double l, double r) {
   return sigma(polys, l) - sigma(polys, r);
 }
 

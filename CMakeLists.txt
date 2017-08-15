@@ -6,7 +6,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 find_package (GSL)
 
-add_library (fmm
+add_library (fmm SHARED
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp

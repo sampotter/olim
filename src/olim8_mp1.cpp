@@ -54,7 +54,7 @@ double olim8_mp1_secant_update_rules::adj2pt(double u0, double u1, double s,
     16*s0*ds - 24*ds_sq,
     16*ds_sq
   };
-  printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   auto f = [&] (double x) {
     return evalquartic(x, a);
@@ -94,7 +94,7 @@ double olim8_mp1_secant_update_rules::diag2pt(double u0, double u1, double s,
     4*s0*ds,
     4*ds*ds
   };
-  printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   auto const f = [&] (double x) {
     return evalquartic(x, a);
@@ -135,15 +135,15 @@ double olim8_mp1_bsearch_update_rules::adj2pt(double u0, double u1, double s,
     16*s0*ds - 24*ds_sq,
     16*ds_sq
   };
-  printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   double lam, roots[5], T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);
 
   int i = 0;
-  printf("roots:");
-    printf(" %g");
+  // printf("roots:");
   while ((lam = roots[i++]) != -1) {
+    // printf(" %g");
     T = std::min(
       T,
       (1 - lam)*u0+ lam*u1 +
@@ -169,7 +169,7 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
     4*s0*ds,
     4*ds_sq
   };
-  printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
   double lam, roots[5], T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);

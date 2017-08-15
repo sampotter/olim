@@ -222,7 +222,7 @@ static int sigma(double ** polys, double x) {
   return changes;
 }
 
-static int sturm(double ** polys, double l, double r) {
+int sturm(double ** polys, double l, double r) {
   return sigma(polys, l) - sigma(polys, r);
 }
 

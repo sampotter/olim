@@ -1,6 +1,7 @@
 #include "olim8_mp1.hpp"
 
 #include <cmath>
+#include <cstdio>
 
 #include "olim_util.hpp"
 #include "rootfinding.hpp"

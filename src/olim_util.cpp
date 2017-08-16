@@ -305,6 +305,13 @@ void find_quartic_roots(double * a, double * roots, double left, double right) {
   };
   double e[1] = {-c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])};
 
+  // printf("double a[5] = {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
+  // printf("double b[4] = {%g, %g, %g, %g}\n", b[0], b[1], b[2], b[3]);
+  // printf("double c[3] = {%g, %g, %g}\n", c[0], c[1], c[2]);
+  // printf("double d[2] = {%g, %g}\n", d[0], d[1]);
+  // printf("double e[1] = {%g}\n", e[0]);
+  // printf("\n");
+
   double * polys[5] = {a, b, c, d, e};
 
   // TODO: check if f(0) = 0? (since sturm handles the half-open
@@ -312,6 +319,17 @@ void find_quartic_roots(double * a, double * roots, double left, double right) {
 
   int root = 0;
   rec(polys, roots, root, left, right);
+
+  // printf("roots = {");
+  // if (root > 0) {
+  //   for (int i = 0; i < root - 1; ++i) {
+  //     printf("%g, ", roots[i]);
+  //   }
+  //   printf("%g}\n", roots[root - 1]);
+  // } else {
+  //   printf("}\n");
+  // }
+
   for (; root < 5; ++root) {
     roots[root] = -1;
   }

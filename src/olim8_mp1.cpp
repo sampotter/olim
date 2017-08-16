@@ -136,20 +136,29 @@ double olim8_mp1_bsearch_update_rules::adj2pt(double u0, double u1, double s,
     16*s0*ds - 24*ds_sq,
     16*ds_sq
   };
-  // printf("adj: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
-  double lam, roots[5], T = std::numeric_limits<double>::infinity();
+  double lam, Tnew, argmin, roots[5], T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);
+  (void) argmin;
 
   int i = 0;
-  // printf("roots:");
   while ((lam = roots[i++]) != -1) {
-    // printf(" %g");
-    T = std::min(
-      T,
-      (1 - lam)*u0+ lam*u1 +
-        ((1 - lam)*s0 + lam*s1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1));
+    double lhs = (u0 - u1)*std::sqrt(1 - 2*lam + 2*lam*lam)/h;
+    double rhs = -s0*(4*lam*lam - 5*lam + 2) + s1*(4*lam*lam - 3*lam + 1);
+    if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+      Tnew = (1 - lam)*u0+ lam*u1 +
+        ((1 - lam)*s0 + lam*s1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1);
+      if (Tnew < T) {
+        T = Tnew;
+        argmin = lam;
+      }
+    }
   }
+  // if (std::isinf(T)) {
+  //   printf("adj2pt: T not updated\n");
+  // } else {
+  //   printf("adj2pt: T <- %g (argmin = %g)\n", T, argmin);
+  // }
   return T;
 }
 
@@ -170,17 +179,30 @@ double olim8_mp1_bsearch_update_rules::diag2pt(double u0, double u1, double s,
     4*s0*ds,
     4*ds_sq
   };
-  // printf("diag: {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
 
-  double lam, roots[5], T = std::numeric_limits<double>::infinity();
+  double lam, Tnew, argmin, roots[5],
+    T = std::numeric_limits<double>::infinity();
   find_quartic_roots(a, roots);
+  (void) argmin;
 
   int i = 0;
   while ((lam = roots[i++]) != -1) {
-    T = std::min(
-      T,
-      (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1));
+    double lhs = (u0 - u1)*std::sqrt(lam*lam + 1)/h;
+    double rhs = s1 + 2*s1*lam*lam - s0*(1 - lam + 2*lam*lam);
+    if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+      Tnew = (1 - lam)*u0+ lam*u1 +
+        ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1);
+      if (Tnew < T) {
+        T = Tnew;
+        argmin = lam;
+      }
+    }
   }
+  // if (std::isinf(T)) {
+  //   printf("diag2pt: T not updated\n");
+  // } else {
+  //   printf("diag2pt: T <- %g (argmin = %g)\n", T, argmin);
+  // }
   return T;
 }
 

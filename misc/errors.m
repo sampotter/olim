@@ -197,7 +197,7 @@ set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
-subplot(3, 2, 6);
+subplot(3, 2, 5);
 imagesc(U_olim8_mp1_bsearch - u);
 title('olim8\_mp1');
 set(gca, 'XTick', [1 M/2 M]);

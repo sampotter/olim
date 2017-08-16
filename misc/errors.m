@@ -86,6 +86,8 @@ for M = Ms
     U_olim8_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0', 'x0', 1, 'y0', 1);
     U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', ...
                       'x0', 1, 'y0', 1);
+    U_olim8_mp1_gsl = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_gsl', ...
+                      'x0', 1, 'y0', 1);
 
     % U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', 'x0', 1, 'y0', 1);
     % u = sqrt(X.*X + Y.*Y);
@@ -101,12 +103,14 @@ for M = Ms
     E_olim8_rhr_inf(k) = relerr(U_olim8_rhr, 'inf');
     E_olim8_mp0_inf(k) = relerr(U_olim8_mp0, 'inf');
     E_olim8_mp1_bsearch_inf(k) = relerr(U_olim8_mp1_bsearch, 'inf');
+    E_olim8_mp1_gsl_inf(k) = relerr(U_olim8_mp1_gsl, 'inf');
 
     E_olim4_rhr_2(k) = relerr(U_olim4_rhr, 2);
     E_olim4_mp0_2(k) = relerr(U_olim4_mp0, 2);
     E_olim8_rhr_2(k) = relerr(U_olim8_rhr, 2);
     E_olim8_mp0_2(k) = relerr(U_olim8_mp0, 2);
     E_olim8_mp1_bsearch_2(k) = relerr(U_olim8_mp1_bsearch, 2);
+    E_olim8_mp1_gsl_2(k) = relerr(U_olim8_mp1_gsl, 2);
 
     k = k + 1;
 end
@@ -121,7 +125,8 @@ loglog(Ms, E_olim4_rhr_inf, getplotsymb(1)); hold on;
 loglog(Ms, E_olim4_mp0_inf, getplotsymb(2)); hold on;
 loglog(Ms, E_olim8_rhr_inf, getplotsymb(3)); hold on;
 loglog(Ms, E_olim8_mp0_inf, getplotsymb(4)); hold on;
-loglog(Ms, E_olim8_mp1_bsearch_inf, getplotsymb(6)); hold on;
+loglog(Ms, E_olim8_mp1_bsearch_inf, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp1_gsl_inf, getplotsymb(6)); hold on;
 title('l_\infty');
 ylabel('||u - U||_\infty/||u||_\infty');
 xlabel('n');
@@ -130,14 +135,16 @@ legend('olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
        'olim8\_mp0', ...
-       'olim8\_mp1');
+       'olim8\_mp1\_bsearch', ...
+       'olim8\_mp1\_gsl');
 
 subplot(1, 2, 2);
 loglog(Ms, E_olim4_rhr_2, getplotsymb(1)); hold on;
 loglog(Ms, E_olim4_mp0_2, getplotsymb(2)); hold on;
 loglog(Ms, E_olim8_rhr_2, getplotsymb(3)); hold on;
 loglog(Ms, E_olim8_mp0_2, getplotsymb(4)); hold on;
-loglog(Ms, E_olim8_mp1_bsearch_2, getplotsymb(6)); hold on;
+loglog(Ms, E_olim8_mp1_bsearch_2, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp1_gsl_2, getplotsymb(6)); hold on;
 title('l_2');
 ylabel('||u - U||_2/||u||_2');
 xlabel('n');
@@ -146,7 +153,8 @@ legend('olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
        'olim8\_mp0', ...
-       'olim8\_mp1');
+       'olim8\_mp1\_bsearch', ...
+       'olim8\_mp1\_gsl');
 
 figure;
 set(gcf, 'Name', 'Analytic Solution', 'NumberTitle', 'off');
@@ -199,7 +207,16 @@ colorbar;
 
 subplot(3, 2, 5);
 imagesc(U_olim8_mp1_bsearch - u);
-title('olim8\_mp1');
+title('olim8\_mp1\_bsearch');
+set(gca, 'XTick', [1 M/2 M]);
+set(gca, 'XTickLabels', [-1 0 1]);
+set(gca, 'YTick', [1 M/2 M]);
+set(gca, 'YTickLabels', [-1 0 1]);
+colorbar;
+
+subplot(3, 2, 6);
+imagesc(U_olim8_mp1_gsl - u);
+title('olim8\_mp1\_gsl');
 set(gca, 'XTick', [1 M/2 M]);
 set(gca, 'XTickLabels', [-1 0 1]);
 set(gca, 'YTick', [1 M/2 M]);

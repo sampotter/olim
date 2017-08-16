@@ -58,43 +58,47 @@ static double polyval(double * coefs, int ncoefs, double x) {
   return y + coefs[0];
 }
 
+static char nbits[16] = {
+  0, // 0000
+  1, // 0001
+  1, // 0010
+  2, // 0011
+  1, // 0100
+  2, // 0101
+  2, // 0110
+  3, // 0111
+  1, // 1000
+  2, // 1001
+  2, // 1010
+  3, // 1011
+  2, // 1100
+  3, // 1101
+  3, // 1110
+  4  // 1111
+};
+
 int sigma(double ** polys, double x) {
-  // TODO: we can optimize this by packing bits probably
-  // int nsigns = 0;
-  // int signs[5];
-  // double y;
-  // for (int i = 0; i < 5; ++i) {
-  //   y = polyval(polys[i], 5 - i, x);
-  //   if (y > 0) {
-  //     signs[nsigns++] = 1;
-  //   } else if (y < 0) {
-  //     signs[nsigns++] = -1;
-  //   }
-  // }
-  // int changes = 0;
-  // for (int i = 1, j = 0; i < nsigns; ++i, ++j) {
-  //   if (signs[i] != signs[j]) {
-  //     ++changes;
-  //   }
-  // }
-  // return changes;
+  double * a = polys[0];
+  double y = a[0] + x*(a[1] + x*(a[2] + x*(a[3] + x*a[4])));
+  char signs = y > 0 ? 127 : 0;
 
-  char signs = polyval(polys[0], 5, x) > 0 ? 127 : 0;
+  a = polys[1];
+  y = a[0] + x*(a[1] + x*(a[2] + x*a[3]));
+  signs = (signs << 1) | (y > 0);
 
-  double y;
-  for (int i = 1; i < 5; ++i) {
-    y = polyval(polys[i], 5 - i, x);
-    if (y > 0) {
-      signs = (signs << 1) | 1;
-    } else if (y < 0) {
-      signs <<= 1;
-    }
-  }
+  a = polys[2];
+  y = a[0] + x*(a[1] + x*a[2]);
+  signs = (signs << 1) | (y > 0);
 
-  return ((signs & 1) ^ (signs & 2)) +
-    ((signs & 2) ^ (signs & 3)) +
-    ((signs & 3) ^ (signs & 4)) +
-    ((signs & 4) ^ (signs & 5));
+  a = polys[3];
+  y = a[0] + x*a[1];
+  signs = (signs << 1) | (y > 0);
+
+  a = polys[4];
+  y = a[0];
+  signs = (signs << 1) | (y > 0);
+
+  return nbits[((signs | (signs << 1)) >> 1) & 15];
 }
 
 int sturm(double ** polys, double l, double r) {

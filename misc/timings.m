@@ -45,3 +45,6 @@ figure;
 set(gcf, 'Name', 'LUT Speedup', 'NumberTitle', 'off');
 loglog(Ms, T(:, 2)./T(:, 3));
 legend('olim4\_rhr');
+
+fprintf('M / speed-up of bsearch over gsl / & of rhr over bsearch\n');
+[Ms' T(:, 8)./T(:, 7) T(:, 7)./T(:, 5)]

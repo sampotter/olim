@@ -6,7 +6,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 find_package (GSL)
 
-add_library (fmm SHARED
+set (SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
@@ -23,6 +23,14 @@ add_library (fmm SHARED
   src/speed_func_cache.cpp
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)
+
+if (${APPLE})
+  add_library (fmm ${SRC_FILES})
+elseif (${WIN32})
+  message (FATAL_ERROR "Windows unsupported")
+else ()
+  add_library (fmm SHARED ${SRC_FILES})
+endif ()
 
 target_link_libraries (fmm ${GSL_LIBRARIES})
 

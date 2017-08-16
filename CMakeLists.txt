@@ -51,11 +51,15 @@ foreach (test ${tests})
   add_test (${test} ${test}.test)
 endforeach ()
 
-add_executable (basic_marcher.speed src/basic_marcher.speed.cpp)
-target_link_libraries (basic_marcher.speed fmm)
+set (speed_tests
+  basic_marcher
+  olim4_rhr_lut
+  olim8_mp1)
 
-add_executable (olim4_rhr_lut.speed src/olim4_rhr_lut.speed.cpp)
-target_link_libraries (olim4_rhr_lut.speed fmm)
+foreach (speed_test ${speed_tests})
+  add_executable (${speed_test}.speed src/${speed_test}.speed.cpp)
+  target_link_libraries (${speed_test}.speed fmm)
+endforeach ()
 
 # See this link about maybe improving the way we're doing this:
 # http://public.kitware.com/pipermail/cmake/2015-April/060350.html

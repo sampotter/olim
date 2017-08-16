@@ -9,7 +9,6 @@ enum marcher_type {
   OLIM8_MP0,
   OLIM8_MP1_BSEARCH,
   OLIM8_MP1_GSL,
-  OLIM8_MP1_SECANT,
   OLIM8_RHR,
   SOLIM4_MP0
 };

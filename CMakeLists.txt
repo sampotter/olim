@@ -18,7 +18,6 @@ set (SRC_FILES
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
-  src/rootfinding.cpp
   src/solim4_mp0.cpp
   src/speed_func_cache.cpp
   src/speed_funcs.cpp
@@ -43,7 +42,6 @@ set (tests
   olim8_mp0
   olim8_mp1
   olim8_rhr
-  rootfinding
   solim4_mp0
   test_graph_marcher)
 

@@ -85,16 +85,9 @@ for M = Ms
     U_olim8_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
     U_olim8_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp0', 'x0', 1, 'y0', 1);
     U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', ...
-                      'x0', 1, 'y0', 1);
+                              'x0', 1, 'y0', 1);
     U_olim8_mp1_gsl = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_gsl', ...
-                      'x0', 1, 'y0', 1);
-
-    % U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_mp1_bsearch', 'x0', 1, 'y0', 1);
-    % u = sqrt(X.*X + Y.*Y);
-    % U_olim8_rhr = fmm(B, 'h', h, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
-    % U_olim8_mp0 = fmm(B, 'h', h, 'Method', 'olim8_mp0', 'x0', 1, 'y0', 1);
-    % U_olim8_mp1_bsearch = fmm(B, 'h', h, 'Method', 'olim8_mp1_bsearch', 'x0', 1,
-    % 'y0', 1);
+                          'x0', 1, 'y0', 1);
 
     relerr = @(U, p) norm(u(:) - U(:), p)/norm(u(:), p);
 

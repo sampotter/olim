@@ -58,7 +58,7 @@ static double polyval(double * coefs, int ncoefs, double x) {
   return y + coefs[0];
 }
 
-static int sigma(double ** polys, double x) {
+int sigma(double ** polys, double x) {
   // TODO: we can optimize this by packing bits probably
   // int nsigns = 0;
   // int signs[5];

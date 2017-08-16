@@ -126,25 +126,25 @@ static double secant(double * poly, double x0, double x1, double l, double r,
 }
 
 static void rec(double ** polys, double * roots, int & root,
-                double left, double right) {
-  int nroots = sturm(polys, left, right);
+                double l, double r) {
+  int nroots = sturm(polys, l, r);
   if (nroots == 1) {
     double h = 0.1, x0;
     bool foundroot = false;
-    x0 = secant(polys[0], left, left + (right - left)*h, left, right, foundroot);
+    x0 = secant(polys[0], l, l + (r - l)*h, l, r, foundroot);
     if (!foundroot) {
-      x0 = secant(polys[0], right, right + (left - right)*h, left, right, foundroot);
+      x0 = secant(polys[0], r, r + (l - r)*h, l, r, foundroot);
     }
     assert(foundroot);
     roots[root++] = x0;
   } else if (nroots > 1) {
-    double mid = (left + right)/2;
-    rec(polys, roots, root, left, mid);
-    rec(polys, roots, root, mid, right);
+    double mid = (l + r)/2;
+    rec(polys, roots, root, l, mid);
+    rec(polys, roots, root, mid, r);
   }
 }
 
-void find_quartic_roots(double * a, double * roots, double left, double right) {
+void find_quartic_roots(double * a, double * roots, double l, double r) {
   // TODO: use descartes sign rule here to save flops?
   
   double b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]};
@@ -172,7 +172,7 @@ void find_quartic_roots(double * a, double * roots, double left, double right) {
   // interval (a, b])
 
   int root = 0;
-  rec(polys, roots, root, left, right);
+  rec(polys, roots, root, l, r);
 
   // printf("roots = {");
   // if (root > 0) {

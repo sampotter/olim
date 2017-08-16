@@ -6,8 +6,6 @@
 #include <cstdio>
 #include <limits>
 
-#include <gsl/gsl_poly.h>
-
 static void check_params(double u0, double u1, double h) {
   (void) u0;
   (void) u1;
@@ -49,150 +47,6 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   double sgn = u0 > u1 ? 1 : -1;
   double lam = std::max(0.0, std::min(1.0, sgn*c/std::sqrt(1 - c*c)));
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
-}
-
-double mp0l_adj(double u0, double u1, double s, double s0, double s1, double h) {
-  check_params(u0, u1, h);
-  assert(s >= 0);
-  assert(s0 >= 0);
-  assert(s1 >= 0);
-
-  double s0bar = (s + s0)/2;
-  double ds = s1 - s0;
-
-  if (s == s0 && s == s1) {
-    return rhr_adj(u0, u1, s, h);
-  } else if (ds == 0) {
-    return rhr_adj(u0, u1, s0bar, h);
-  }
-
-  double s1bar = (s + s1)/2;
-  double du = u1 - u0;
-  double b = s0bar/ds - 0.75;
-  double c = (ds - s - s0)/(4*ds) + du/(2*ds*h);
-  double disc = b*b - 4*c;
-  assert(disc >= 0);
-  double lam1 = (-b + std::sqrt(disc))/2;
-  double lam2 = (-b - std::sqrt(disc))/2;
-
-  double T = std::numeric_limits<double>::infinity(), T_new, one_minus_lam,
-    lam_sq, dist, slambar;
-  if (0 <= lam1 && lam1 <= 1) {
-    one_minus_lam = 1 - lam1;
-    lam_sq = lam1*lam1;
-    slambar = (one_minus_lam*s0bar + lam1*s1bar);
-    dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
-    T_new = one_minus_lam*u0 + lam1*u1 + slambar*dist;
-    T = std::min(T, T_new);
-  }
-  if (0 <= lam2 && lam2 <= 1) {
-    one_minus_lam = 1 - lam2;
-    lam_sq = lam2*lam2;
-    slambar = (one_minus_lam*s0bar + lam2*s1bar);
-    dist = h*std::sqrt(lam_sq + one_minus_lam*one_minus_lam);
-    T_new = one_minus_lam*u0 + lam2*u1 + slambar*dist;
-    T = std::min(T, T_new);
-  }
-  return T;
-}
-
-double mp0l_diag(double u0, double u1, double s, double s0, double s1, double h) {
-  check_params(u0, u1, h);
-  assert(s >= 0);
-  assert(s0 >= 0);
-  assert(s1 >= 0);
-
-  // double s0bar = (s + s0)/2;
-  // double ds = s1 - s0;
-  // double alpha_sq = std::pow((u0 - u1)/h, 2);
-
-  // TODO: handle case where sbar0^2 == alpha^2 or prove that it cannot happen
-
-  // double a = s0bar*s0bar - alpha_sq;
-  // double b = s0bar*ds;
-  // double c = ds/4 - alpha_sq;
-  // double disc = b*b - 4*a*c;
-  // assert(disc >= 0);
-  // double tmp1 = -b/(2*a), tmp2 = std::sqrt(disc)/(2*a);
-
-  printf("warning! not implemented!\n");
-
-  return std::numeric_limits<double>::infinity();
-}
-
-double mp1_adj(double u0, double u1, double s0, double s1, double h) {
-  check_params(u0, u1, h);
-  assert(s0 >= 0);
-  assert(s1 >= 0);
-
-  double alpha_sq = std::pow((u0 - u1)/h, 2);
-  double s0_sq = s0*s0;
-  double ds = s1 - s0;
-  double ds_sq = ds*ds;
-  double a[] = {
-    s0_sq - alpha_sq - 2*s0*ds + ds_sq,
-    -4*s0_sq + 2*alpha_sq + 10*s0*ds - 6*ds_sq,
-    4*s0_sq - 2*alpha_sq - 20*s0*ds + 17*ds_sq,
-    16*s0*ds - 24*ds_sq,
-    16*ds_sq
-  };
-
-  double lam = -1;  double z[8];
-  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
-  gsl_poly_complex_solve(a, 5, w, z);
-  gsl_poly_complex_workspace_free(w);
-
-  for (int i = 0; i < 4; ++i) {
-    if (z[2*i + 1] != 0 || z[2*i] < 0 || z[2*i] > 1) {
-      continue;
-    }
-    lam = z[2*i];
-    double lhs = (u0 - u1)*std::sqrt(1 - 2*lam + 2*lam*lam)/h;
-    double rhs = -s0*(4*lam*lam - 5*lam + 2) + s1*(4*lam*lam - 3*lam + 1);
-    if (std::fabs(lhs - rhs)/std::fabs(lhs) < 1e-6) {
-      break;
-    }
-  }
-  return lam == -1 ?
-    std::numeric_limits<double>::infinity() :
-    (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1);
-}
-
-double mp1_diag(double u0, double u1, double s0, double s1, double h) {
-  check_params(u0, u1, h);
-  assert(s0 >= 0);
-  assert(s1 >= 0);
-
-  double alpha = std::fabs((u0 - u1)/h);
-  double ds = s1 - s0;
-  double a[] = {
-    (ds - alpha)*(ds + alpha),
-    2*s0*ds,
-    4*ds*ds + (s0 - alpha)*(s0 + alpha),
-    4*s0*ds,
-    4*ds*ds
-  };
-
-  double z[8];
-  gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);
-  gsl_poly_complex_solve(a, 5, w, z);
-  gsl_poly_complex_workspace_free(w);
-
-  double lam = -1;
-  for (int i = 0; i < 4; ++i) {
-    if (z[2*i + 1] != 0 || z[2*i] < 0 || z[2*i] > 1) {
-      continue;
-    }
-    lam = z[2*i];
-    double lhs = (u0 - u1)*std::sqrt(lam*lam + 1)/h;
-    double rhs = s1 + 2*s1*lam*lam - s0*(1 - lam + 2*lam*lam);
-    if (std::fabs(lhs - rhs)/std::fabs(lhs) < 1e-6) {
-      break;
-    }
-  }
-  return lam == -1 ?
-    std::numeric_limits<double>::infinity() :
-    (1 - lam)*u0+ lam*u1 + ((1 - lam)*s0 + lam*s1)*h*std::sqrt(lam*lam + 1);
 }
 
 static double polyval(double * coefs, int ncoefs, double x) {
@@ -329,10 +183,6 @@ void find_quartic_roots(double * a, double * roots, double left, double right) {
   // } else {
   //   printf("}\n");
   // }
-
-  for (; root < 5; ++root) {
-    roots[root] = -1;
-  }
 }
 
 // Local Variables:

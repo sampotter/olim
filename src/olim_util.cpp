@@ -114,10 +114,12 @@ int sturm(double ** polys, double l, double r) {
       nroots = 0;
     } else if (disc == 0) {
       double x0 = (-a[1] + std::sqrt(disc))/(2*a[2]);
+      // TODO: use unsigned form for comparison
       nroots = l < x0 && x0 <= r ? 1 : 0;
     } else {
       double x0 = (-a[1] + std::sqrt(disc))/(2*a[2]),
         x1 = (-a[1] - std::sqrt(disc))/(2*a[2]);
+      // TODO: use unsigned form for comparison
       nroots = (int) (l < x0 && x0 <= r) + (int) (l < x1 && x1 <= r);
     }
   }

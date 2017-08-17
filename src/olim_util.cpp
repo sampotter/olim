@@ -159,10 +159,14 @@ int sturm(double ** polys, double l, double r) {
   return nroots;
 }
 
+// TODO: remove use of polyval
+
 static double secant(double * poly, double x0, double x1, double l, double r,
                      bool & foundroot, double tol = 1e-13) {
   double x, f0, f1;
+  int niter = 0;
   do {
+    ++niter;
     f0 = polyval(poly, 5, x0);
     f1 = polyval(poly, 5, x1);
     x = (x1*f0 - x0*f1)/(f0 - f1);
@@ -174,66 +178,62 @@ static double secant(double * poly, double x0, double x1, double l, double r,
     x0 = x;
   } while (fabs(polyval(poly, 5, x)) > tol);
   foundroot = true;
+  printf("%d\n", niter);
   return x;
+}
+
+static double newton(double * p, double * pd, double x, double l, double r,
+                     bool & foundroot, double tol = 1e=-13) {
+  double f;
+  while (fabs(f = polyval(p, 5, x)) > tol) {
+    x -= f/polyval(pd, 4, x);
+    if (x < l || r < x) {
+      foundroot = false;
+      return x;
+    }
+  }
+  foundroot = true;
+  return x;
+}
+
+static void findroot(double * a, double l, double r, double h, double * x0) {
+  bool found = false;
+  *x0 = secant(a, l, l + (r - l)*h, l, r, found);
+  if (!found) *x0 = secant(a, r, r + (l - r)*h, l, r, found);
+  assert(found);
 }
 
 static void rec(double ** polys, double * roots, int & root,
                 double l, double r) {
   int nroots = sturm(polys, l, r);
-  if (nroots <= 2) {
-    double h = 0.1, x0, * a = polys[0];
-    bool foundroot;
-    x0 = secant(a, l, l + (r - l)*h, l, r, foundroot);
-    assert(foundroot);
-    roots[root++] = x0;
-    if (nroots == 2) {
-      double x1 = secant(a, r, r + (l - r)*h, l, r, foundroot);
-      assert(foundroot);
-      if (fabs(x0 - x1) > 1e-13) {
-        roots[root++] = x1;
-      }
-    }
-  } else {
+  if (nroots == 1) {
+    findroot(polys[0], l, r, 0.1, &roots[root++]);
+  } else if (nroots > 1) {
     double mid = (l + r)/2;
     rec(polys, roots, root, l, mid);
     rec(polys, roots, root, mid, r);
   }
-
-  // int nroots = sturm(polys, l, r);
-  // if (nroots == 1) {
-  //   double h = 0.1, x0;
-  //   bool foundroot = false;
-  //   x0 = secant(polys[0], l, l + (r - l)*h, l, r, foundroot);
-  //   if (!foundroot) {
-  //     x0 = secant(polys[0], r, r + (l - r)*h, l, r, foundroot);
-  //   }
-  //   assert(foundroot);
-  //   roots[root++] = x0;
-  // } else if (nroots == 2) {
-  // } else {
-  // } else if (nroots > 1) {
-  //   double mid = (l + r)/2;
-  //   rec(polys, roots, root, l, mid);
-  //   rec(polys, roots, root, mid, r);
-  // }
 }
 
 void find_quartic_roots(double * a, double * roots, double l, double r) {
-  // TODO: use descartes sign rule here to save flops?
-  
-  double b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]};
-  double c[3] = {
+  // TODO: simplify arithmetic (low priority)
+
+  double b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]}; // 1st der. of a
+  double c[3] = { // -rem(a, b)
     -a[0] + a[1]*a[3]/(16*a[4]),
     (-6*a[1] + a[2]*a[3]/a[4])/8,
     -a[2]/2 + 3*a[3]*a[3]/(16*a[4])
   };
-  double d[2] = {
+  double d[2] = { // -rem(b, c)
     -b[0] + c[0]*(-b[3]*c[1] + b[2]*c[2])/(c[2]*c[2]),
     (-b[3]*(c[1]*c[1] + c[0]*c[2]) + (b[2]*c[1] - b[1]*c[2])*c[2])/(c[2]*c[2])
   };
-  double e[1] = {-c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])};
+  double e[1] = { // -rem(c, d)
+    -c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])
+  };
+  double f[3] = {b[1], 2*b[2], 3*b[3]}; // 2nd der. of a
 
-  double * polys[5] = {a, b, c, d, e};
+  double * polys[5] = {a, b, c, d, e, f};
 
   int root = 0;
   

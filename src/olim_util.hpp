@@ -12,6 +12,7 @@ double mp1_adj(double u0, double u1, double sbar0, double sbar1, double h);
 double mp1_diag(double u0, double u1, double sbar0, double sbar1, double h);
 
 int sigma(double ** polys, double x);
+int oldsigma(double ** polys, double x);
 int sturm(double ** polys, double l, double r);
 
 void find_quartic_roots(double * coefs, double * roots,

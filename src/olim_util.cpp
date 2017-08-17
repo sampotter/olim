@@ -84,21 +84,44 @@ int sigma(double ** polys, double x) {
 
   a = polys[1];
   y = a[0] + x*(a[1] + x*(a[2] + x*a[3]));
-  signs = (signs << 1) | (y > 0);
+  signs = (signs << (y != 0)) | (y > 0);
 
   a = polys[2];
   y = a[0] + x*(a[1] + x*a[2]);
-  signs = (signs << 1) | (y > 0);
+  signs = (signs << (y != 0)) | (y > 0);
 
   a = polys[3];
   y = a[0] + x*a[1];
-  signs = (signs << 1) | (y > 0);
+  signs = (signs << (y != 0)) | (y > 0);
 
   a = polys[4];
   y = a[0];
-  signs = (signs << 1) | (y > 0);
+  signs = (signs << (y != 0)) | (y > 0);
 
-  return nbits[((signs | (signs << 1)) >> 1) & 15];
+  // TODO: compare with modding and adding---that may actually be
+  // faster
+  return nbits[((signs ^ (signs << 1)) >> 1) & 15];
+}
+
+int oldsigma(double ** polys, double x) {
+  int nsigns = 0;
+  int signs[5];
+  double y;
+  for (int i = 0; i < 5; ++i) {
+    y = polyval(polys[i], 5 - i, x);
+    if (y > 0) {
+      signs[nsigns++] = 1;
+    } else if (y < 0) {
+      signs[nsigns++] = -1;
+    }
+  }
+  int changes = 0;
+  for (int i = 1, j = 0; i < nsigns; ++i, ++j) {
+    if (signs[i] != signs[j]) {
+      ++changes;
+    }
+  }
+  return changes;
 }
 
 int sturm(double ** polys, double l, double r) {
@@ -125,7 +148,13 @@ int sturm(double ** polys, double l, double r) {
   }
   assert(degree != 3);
   if (degree == 4) {
-    nroots = sigma(polys, l) - sigma(polys, r);
+    // TODO: Sturm's theorem finds roots on (l, r]; the case p(l) = 0
+    // *does* happen and *isn't* handled by our fast sigma---so,
+    // perturb l to the right a very small amount to get around this
+    double l_plus_eps = l + std::numeric_limits<decltype(l)>::epsilon();
+    assert(sigma(polys, l_plus_eps) == oldsigma(polys, l_plus_eps));
+    assert(sigma(polys, r) == oldsigma(polys, r));
+    nroots = sigma(polys, l_plus_eps) - sigma(polys, r);
   }
   return nroots;
 }

@@ -2,6 +2,8 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
+#include <limits>
+
 void figuring_it_out() {}
 
 void sigma_works_1() {
@@ -33,6 +35,75 @@ void sigma_works_1() {
   double * polys[] = {a, b, c, d, e};
 
   test::is_true(sigma(polys, 0.1) == 2);
+}
+
+void sigma_works_2() {
+  double a[] = {
+    -0.99000016666583334,
+    0.0098791278581576019,
+    -0.013920963747804107,
+    0.019758255716315204,
+    0.000099996666711110551
+  };
+  double b[] = {
+    0.0098791278581576019,
+    -0.027841927495608213,
+    0.059274767148945612,
+    0.0003999866668444422
+  };
+  double c[] = {
+    1.1120006923430827,
+    -0.35123825863789943,
+    0.738963635937399
+  };
+  double d[] = {
+    0.079604292893865752,
+    -0.00102434857077549
+  };
+  double e[] = {
+    -4436.5455201568111
+  };
+  double * polys[] = {a, b, c, d, e};
+  int lhs = sigma(polys, 0), oldlhs = oldsigma(polys, 0);
+  int rhs = sigma(polys, 1), oldrhs = oldsigma(polys, 1);
+  test::is_true(lhs == 2);
+  test::is_true(oldlhs == 2);
+  test::is_true(rhs == 2);
+  test::is_true(oldrhs == 2);
+}
+
+void sigma_works_3() {
+  double a[] = {
+    0,
+    0.000050000000000000002,
+    0.0001,
+    0.0001,
+    0.0001
+  };
+  double b[] = {
+    0.000050000000000000002,
+    0.00020000000000000001,
+    0.00030000000000000003,
+    0.00040000000000000002
+  };
+  double c[] = {
+    0.0000031249999999999997,
+    -0.000025000000000000005,
+    -0.000031250000000000001
+  };
+  double d[] = {
+    -0.000048000000000000001,
+    -0.00017600000000000005
+  };
+  double e[] = {
+    -0.0000076188016528925621
+  };
+  double * polys[] = {a, b, c, d, e};
+  double eps = std::numeric_limits<double>::epsilon();
+  int lhs = sigma(polys, 0 + eps), oldlhs = oldsigma(polys, 1);
+  int rhs = sigma(polys, 0 + eps), oldrhs = oldsigma(polys, 1);
+  test::is_true(lhs == oldlhs);
+  test::is_true(rhs == oldrhs);
 }
 
 void sturm_works_1() {
@@ -132,6 +203,8 @@ void sturm_works_3() {
 int main() {
   figuring_it_out();
   sigma_works_1();
+  sigma_works_2();
+  sigma_works_3();
   sturm_works_1();
   sturm_works_2();
   sturm_works_3();

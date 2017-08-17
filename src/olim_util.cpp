@@ -180,20 +180,42 @@ static double secant(double * poly, double x0, double x1, double l, double r,
 static void rec(double ** polys, double * roots, int & root,
                 double l, double r) {
   int nroots = sturm(polys, l, r);
-  if (nroots == 1) {
-    double h = 0.1, x0;
-    bool foundroot = false;
-    x0 = secant(polys[0], l, l + (r - l)*h, l, r, foundroot);
-    if (!foundroot) {
-      x0 = secant(polys[0], r, r + (l - r)*h, l, r, foundroot);
-    }
+  if (nroots <= 2) {
+    double h = 0.1, x0, * a = polys[0];
+    bool foundroot;
+    x0 = secant(a, l, l + (r - l)*h, l, r, foundroot);
     assert(foundroot);
     roots[root++] = x0;
-  } else if (nroots > 1) {
+    if (nroots == 2) {
+      double x1 = secant(a, r, r + (l - r)*h, l, r, foundroot);
+      assert(foundroot);
+      if (fabs(x0 - x1) > 1e-13) {
+        roots[root++] = x1;
+      }
+    }
+  } else {
     double mid = (l + r)/2;
     rec(polys, roots, root, l, mid);
     rec(polys, roots, root, mid, r);
   }
+
+  // int nroots = sturm(polys, l, r);
+  // if (nroots == 1) {
+  //   double h = 0.1, x0;
+  //   bool foundroot = false;
+  //   x0 = secant(polys[0], l, l + (r - l)*h, l, r, foundroot);
+  //   if (!foundroot) {
+  //     x0 = secant(polys[0], r, r + (l - r)*h, l, r, foundroot);
+  //   }
+  //   assert(foundroot);
+  //   roots[root++] = x0;
+  // } else if (nroots == 2) {
+  // } else {
+  // } else if (nroots > 1) {
+  //   double mid = (l + r)/2;
+  //   rec(polys, roots, root, l, mid);
+  //   rec(polys, roots, root, mid, r);
+  // }
 }
 
 void find_quartic_roots(double * a, double * roots, double l, double r) {
@@ -211,30 +233,15 @@ void find_quartic_roots(double * a, double * roots, double l, double r) {
   };
   double e[1] = {-c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])};
 
-  // printf("double a[5] = {%g, %g, %g, %g, %g}\n", a[0], a[1], a[2], a[3], a[4]);
-  // printf("double b[4] = {%g, %g, %g, %g}\n", b[0], b[1], b[2], b[3]);
-  // printf("double c[3] = {%g, %g, %g}\n", c[0], c[1], c[2]);
-  // printf("double d[2] = {%g, %g}\n", d[0], d[1]);
-  // printf("double e[1] = {%g}\n", e[0]);
-  // printf("\n");
-
   double * polys[5] = {a, b, c, d, e};
 
-  // TODO: check if f(0) = 0? (since sturm handles the half-open
-  // interval (a, b])
-
   int root = 0;
-  rec(polys, roots, root, l, r);
+  
+  if (fabs(a[0]) < 1e-14) {
+    roots[root++] = 0;
+  }
 
-  // printf("roots = {");
-  // if (root > 0) {
-  //   for (int i = 0; i < root - 1; ++i) {
-  //     printf("%g, ", roots[i]);
-  //   }
-  //   printf("%g}\n", roots[root - 1]);
-  // } else {
-  //   printf("}\n");
-  // }
+  rec(polys, roots, root, l, r);
 }
 
 // Local Variables:

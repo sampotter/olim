@@ -164,9 +164,7 @@ int sturm(double ** polys, double l, double r) {
 static double secant(double * poly, double x0, double x1, double l, double r,
                      bool & foundroot, double tol = 1e-13) {
   double x, f0, f1;
-  int niter = 0;
   do {
-    ++niter;
     f0 = polyval(poly, 5, x0);
     f1 = polyval(poly, 5, x1);
     x = (x1*f0 - x0*f1)/(f0 - f1);
@@ -178,21 +176,20 @@ static double secant(double * poly, double x0, double x1, double l, double r,
     x0 = x;
   } while (fabs(polyval(poly, 5, x)) > tol);
   foundroot = true;
-  printf("%d\n", niter);
   return x;
 }
 
 static double newton(double * p, double * pd, double x, double l, double r,
-                     bool & foundroot, double tol = 1e=-13) {
+                     bool & found, double tol = 1e-13) {
   double f;
   while (fabs(f = polyval(p, 5, x)) > tol) {
     x -= f/polyval(pd, 4, x);
     if (x < l || r < x) {
-      foundroot = false;
+      found = false;
       return x;
     }
   }
-  foundroot = true;
+  found = true;
   return x;
 }
 
@@ -233,7 +230,7 @@ void find_quartic_roots(double * a, double * roots, double l, double r) {
   };
   double f[3] = {b[1], 2*b[2], 3*b[3]}; // 2nd der. of a
 
-  double * polys[5] = {a, b, c, d, e, f};
+  double * polys[6] = {a, b, c, d, e, f};
 
   int root = 0;
   

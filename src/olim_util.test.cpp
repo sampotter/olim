@@ -2,6 +2,7 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
+#include <cstdio>
 #include <limits>
 
 void figuring_it_out() {}
@@ -200,6 +201,45 @@ void sturm_works_3() {
   test::is_true(sturm(polys, 0, 1) == 0);
 }
 
+void sturm_works_4() {
+  double a[] = {
+    -0.99476271779816383,
+    -0.0040797065327272484,
+    0.80278768800205891,
+    -0.0081594130654544968,
+    0.00001715476311934851
+  };
+  double b[] = {
+    -0.0040797065327272484,
+    1.6055753760041178,
+    -0.02447823919636349,
+    0.000068619052477394041
+  };
+  double c[] = {
+    0.2887299652279402,
+    -47.72622322373811,
+    0.32627601410407686
+  };
+  double d[] = {
+    -0.0086994542995620129,
+    0.50672200724493743
+  };
+  double e[] = {
+    0.5305424594038346
+  };
+  double * polys[] = {a, b, c, d, e};
+  test::is_true(sturm(polys, 0, 1) == 0);
+}
+
+void find_quartic_roots_works_1() {
+  double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
+  double roots[4] = {-1, -1, -1, -1};
+  find_quartic_roots(a, roots, 0, 1);
+  for (int i = 0; i < 4 && roots[i] != -1; ++i) {
+    printf("%g\n", roots[i]);
+  }
+}
+
 int main() {
   figuring_it_out();
   sigma_works_1();
@@ -208,6 +248,8 @@ int main() {
   sturm_works_1();
   sturm_works_2();
   sturm_works_3();
+  sturm_works_4();
+  find_quartic_roots_works_1();
 }
 
 // Local Variables:

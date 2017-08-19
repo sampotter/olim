@@ -200,17 +200,12 @@ static void findroot(double * a, double l, double r, double h, double * x0) {
   assert(found);
 }
 
-static void rec(double ** polys, double * roots, int & root,
-                double l, double r) {
-  int nroots = sturm(polys, l, r);
-  if (nroots == 1) {
-    findroot(polys[0], l, r, 0.1, &roots[root++]);
-  } else if (nroots > 1) {
-    double mid = (l + r)/2;
-    rec(polys, roots, root, l, mid);
-    rec(polys, roots, root, mid, r);
-  }
-}
+struct interval {
+  interval() {}
+  interval(int nroots, double l, double r): nroots {nroots}, l {l}, r {r} {}
+  int nroots {-1};
+  double l {-1}, r {-1};
+};
 
 void find_quartic_roots(double * a, double * roots, double l, double r) {
   // TODO: simplify arithmetic (low priority)
@@ -238,7 +233,31 @@ void find_quartic_roots(double * a, double * roots, double l, double r) {
     roots[root++] = 0;
   }
 
-  rec(polys, roots, root, l, r);
+  double mid;
+  int nroots = sturm(polys, l, r);
+  interval ivals[4];
+  int i = 0;
+  if (nroots >= 1) {
+    ivals[i++] = {nroots, l, r};
+  }
+  while (i > 0) {
+    interval ival = ivals[--i];
+    if (ival.nroots == 1) {
+      findroot(polys[0], ival.l, ival.r, 0.1, &roots[root++]);
+    } else if (ival.nroots > 1) {
+      mid = (l + r)/2;
+      int sigl = sigma(polys, l), sigm = sigma(polys, mid),
+        sigr = sigma(polys, r);
+      if ((nroots = sturm(polys, l, mid)) >= 1) {
+        assert(0 <= i && i < 4);
+        ivals[i++] = {nroots, l, mid};
+      }
+      if ((nroots = sturm(polys, mid, r)) >= 1) {
+        assert(0 <= i && i < 4);
+        ivals[i++] = {nroots, mid, r};
+      }
+    }
+  }
 }
 
 // Local Variables:

@@ -179,20 +179,6 @@ static double secant(double * poly, double x0, double x1, double l, double r,
   return x;
 }
 
-static double newton(double * p, double * pd, double x, double l, double r,
-                     bool & found, double tol = 1e-13) {
-  double f;
-  while (fabs(f = polyval(p, 5, x)) > tol) {
-    x -= f/polyval(pd, 4, x);
-    if (x < l || r < x) {
-      found = false;
-      return x;
-    }
-  }
-  found = true;
-  return x;
-}
-
 static void findroot(double * a, double l, double r, double h, double * x0) {
   bool found = false;
   *x0 = secant(a, l, l + (r - l)*h, l, r, found);

@@ -57,11 +57,6 @@ double olim8_mp1_update_rules<Rootfinder>::adj2pt(
   }
 
   (void) argmin;
-  // if (std::isinf(T)) {
-  //   printf("adj2pt: T not updated\n");
-  // } else {
-  //   printf("adj2pt: T <- %g (argmin = %g)\n", T, argmin);
-  // }
 
   return T;
 }
@@ -104,11 +99,6 @@ double olim8_mp1_update_rules<Rootfinder>::diag2pt(
   }
   
   (void) argmin;
-  // if (std::isinf(T)) {
-  //   printf("diag2pt: T not updated\n");
-  // } else {
-  //   printf("diag2pt: T <- %g (argmin = %g)\n", T, argmin);
-  // }
   
   return T;
 }

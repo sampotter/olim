@@ -4,8 +4,10 @@
 #include <cstdio>
 #include <gsl/gsl_poly.h>
 
+#include "qroots.hpp"
+
 void bsearch_rootfinder::find_roots(double * a, double * roots) const {
-  find_quartic_roots(a, roots);
+  qroots(a, roots);
 }
 
 void gsl_rootfinder::find_roots(double * a, double * roots) const {

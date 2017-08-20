@@ -1,11 +1,9 @@
-#include "olim_util.hpp"
+#include "qroots.hpp"
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
 #include <cstdio>
 #include <limits>
-
-void figuring_it_out() {}
 
 void sigma_works_1() {
   double a[] = {
@@ -231,17 +229,16 @@ void sturm_works_4() {
   test::is_true(sturm(polys, 0, 1) == 0);
 }
 
-void find_quartic_roots_works_1() {
+void qroots_works_1() {
   double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
   double roots[4] = {-1, -1, -1, -1};
-  find_quartic_roots(a, roots, 0, 1);
+  qroots(a, roots, 0, 1);
   for (int i = 0; i < 4 && roots[i] != -1; ++i) {
     printf("%g\n", roots[i]);
   }
 }
 
 int main() {
-  figuring_it_out();
   sigma_works_1();
   sigma_works_2();
   sigma_works_3();
@@ -249,7 +246,7 @@ int main() {
   sturm_works_2();
   sturm_works_3();
   sturm_works_4();
-  find_quartic_roots_works_1();
+  qroots_works_1();
 }
 
 // Local Variables:

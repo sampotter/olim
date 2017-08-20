@@ -18,6 +18,7 @@ set (SRC_FILES
   src/olim8_mp0.cpp
   src/olim8_mp1.cpp
   src/olim8_rhr.cpp
+  src/qroots.cpp
   src/solim4_mp0.cpp
   src/speed_func_cache.cpp
   src/speed_funcs.cpp
@@ -37,11 +38,11 @@ set (tests
   basic_marcher
   basic_marcher_3d
   heap
-  olim_util
   olim4_rhr_lut
   olim8_mp0
   olim8_mp1
   olim8_rhr
+  qroots
   solim4_mp0
   test_graph_marcher)
 

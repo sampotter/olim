@@ -2,11 +2,17 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.0)
 
+enable_language (Fortran)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 find_package (GSL)
 
-set (SRC_FILES
+set (RPOLY_SRC_FILES src/rpoly.f src/rpoly.cpp)
+
+add_library (rpoly ${RPOLY_SRC_FILES})
+
+set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
@@ -25,14 +31,19 @@ set (SRC_FILES
   src/test_graph_marcher.cpp)
 
 if (${APPLE})
-  add_library (fmm ${SRC_FILES})
+  add_library (fmm ${FMM_SRC_FILES})
 elseif (${WIN32})
   message (FATAL_ERROR "Windows unsupported")
 else ()
-  add_library (fmm SHARED ${SRC_FILES})
+  add_library (fmm SHARED ${FMM_SRC_FILES})
 endif ()
 
+target_link_libraries (fmm rpoly)
 target_link_libraries (fmm ${GSL_LIBRARIES})
+
+add_executable (rpoly.test src/rpoly.test.cpp)
+target_link_libraries (rpoly.test rpoly)
+add_test (rpoly rpoly.test)
 
 set (tests
   basic_marcher

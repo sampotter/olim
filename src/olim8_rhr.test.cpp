@@ -2,6 +2,32 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
+#include <cstdio>
+
+void writeup_test() {
+  int n = 4;
+  double h = 1.0/(n - 1);
+  olim8_rhr m {n, n, h};
+  for (int j = 0; j < n; ++j) {
+    m.add_boundary_node(0, j);
+  }
+  for (int i = 1; i < n; ++i) {
+    m.add_boundary_node(i, 0, h*i/2.0);
+  }
+  m.run();
+  // printf("[");
+  // for (int i = 0; i < n - 1; ++i) {
+  //   for (int j = 0; j < n - 1; ++j) {
+  //     printf("%g ", m.get_value(i, j));
+  //   }
+  //   printf("%g; ", m.get_value(i, n - 1));
+  // }
+  // for (int j = 0; j < n - 1; ++j) {
+  //   printf("%g ", m.get_value(n - 1, j));
+  // }
+  // printf("%g]\n", m.get_value(n - 1, n - 1));
+}
+
 void trivial_case_works() {
   olim8_rhr m {1, 1};
   m.add_boundary_node(0, 0);
@@ -153,6 +179,7 @@ void s1_test2() {
 }
 
 int main() {
+  writeup_test();
   trivial_case_works();
   adjacent_update_works();
   neighboring_values_are_correct();

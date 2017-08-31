@@ -4,6 +4,9 @@
 #include <cassert>
 #include <cmath>
 
+#include "common.macros.hpp"
+#include "olim6.defs.hpp"
+
 #define COMPUTE_DISC_2PT() (2*sh*sh - (T1 - T2)*(T1 - T2))
 
 #define COMPUTE_VALUE_2PT() ((T1 + T2 + std::sqrt(disc))/2)
@@ -12,12 +15,6 @@
   (3*sh_sq - 2*(T1*T1 + T2*T2 + T3*T3 - T1*T2 - T1*T3 - T2*T3))
 
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
-
-#define GET_VALUE(i) (nb[i]->get_value())
-
-enum neighbor {DIR_U, DIR_N, DIR_E, DIR_S, DIR_W, DIR_D};
-enum quadrant {NE, ES, SW, WN, UN, UE, US, UW, DN, DE, DS, DW};
-enum octant {UNE, UES, USW, UWN, DNE, DES, DSW, DWN};
 
 void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

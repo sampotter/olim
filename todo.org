@@ -1,3 +1,20 @@
+* Two new ideas
+** Adaptive mesh
+   - Are there any conditions which we can use to determine how
+     densely the domain needs to be sampled in order to achieve a
+     desired accuracy?
+   - If so, we could distribute points with the required density,
+     compute a Delaunay triangulation, and then run an unstructured
+     solver to compute a solution.
+** A "one-point only" update
+   - Imagine a point to be updated and the contour defined by the the
+     boundary of its update neighborhood. Consider the value of the
+     solution computed so far (including trial and far points). Since
+     we consider far points, some of these values will be
+     infinite. Choose an "appropriate" mapping which will send
+     infinity to some finite value and preserve minima. Now
+     periodically interpolate this function and find its global
+     minimum. Do a one-point update from that point.
 * Smart mesh
   - [X] Add solution info structure and visualize output
   - [ ] Look at Masha's program and plots

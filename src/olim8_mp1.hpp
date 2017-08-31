@@ -12,11 +12,12 @@ struct olim8_mp1_update_rules: public rootfinder {
 };
 
 struct bsearch_rootfinder {
-  void find_roots(double * a, double * roots) const;
+  void find_roots(double const * a, double * roots) const;
 };
 
 struct gsl_rootfinder {
-  void find_roots(double * a, double * roots) const;
+  void find_roots(double const * a, double * roots) const;
+};
 
 struct rpoly_rootfinder {
   void find_roots(double const * a, double * roots) const;

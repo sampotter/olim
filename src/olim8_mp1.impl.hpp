@@ -72,7 +72,7 @@ double olim8_mp1_update_rules<Rootfinder>::diag2pt(
 
   double alpha = std::fabs((u0 - u1)/h);
   double dsbar = sbar1 - sbar0;
-  double a[] = {
+  double const a[] = {
     (dsbar - alpha)*(dsbar + alpha),
     2*sbar0*dsbar,
     4*dsbar*dsbar + (sbar0 - alpha)*(sbar0 + alpha),

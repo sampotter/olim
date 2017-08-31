@@ -7,11 +7,11 @@
 #include "qroots.hpp"
 #include "rpoly.hpp"
 
-void bsearch_rootfinder::find_roots(double * a, double * roots) const {
+void bsearch_rootfinder::find_roots(double const * a, double * roots) const {
   qroots(a, roots);
 }
 
-void gsl_rootfinder::find_roots(double * a, double * roots) const {
+void gsl_rootfinder::find_roots(double const * a, double * roots) const {
   double z[8];
   
   gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(5);

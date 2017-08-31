@@ -3,7 +3,7 @@
 
 #include <complex>
 
-bool rpoly(double * const coefs, int degree, std::complex<double> * roots);
+bool rpoly(double const * coefs, int degree, std::complex<double> * roots);
 
 #endif // __RPOLY_HPP__
 

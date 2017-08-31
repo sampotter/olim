@@ -4,7 +4,7 @@
 #include <cmath>
 #include <limits>
 
-static double polyval(double * coefs, int ncoefs, double x) {
+static double polyval(double const * const coefs, int ncoefs, double x) {
   double y = 0;
   for (int i = ncoefs - 1; i > 0; --i) {
     y += coefs[i];
@@ -32,8 +32,8 @@ static char nbits[16] = {
   4  // 1111
 };
 
-int sigma(double ** polys, double x) {
-  double * a = polys[0];
+int sigma(double const * const * polys, double x) {
+  double const * a = polys[0];
   double y = a[0] + x*(a[1] + x*(a[2] + x*(a[3] + x*a[4])));
   char signs = y > 0 ? 127 : 0;
 
@@ -58,7 +58,7 @@ int sigma(double ** polys, double x) {
   return nbits[((signs ^ (signs << 1)) >> 1) & 15];
 }
 
-int oldsigma(double ** polys, double x) {
+int oldsigma(double const * const * polys, double x) {
   int nsigns = 0, signs[5], changes = 0;
 
   double y = polys[0][0] +
@@ -90,7 +90,7 @@ int oldsigma(double ** polys, double x) {
   return changes;
 }
 
-int sturm(double ** polys, double l, double r) {
+int sturm(double const * const * polys, double l, double r) {
   // Sturm's theorem finds roots on (l, r]; the case p(l) = 0 *does*
   // happen and *isn't* handled by our fast sigma---so, perturb l to
   // the right a very small amount to get around this
@@ -102,8 +102,8 @@ int sturm(double ** polys, double l, double r) {
 
 // TODO: remove use of polyval
 
-static double secant(double * const a, double x0, double x1, double l, double r,
-                     bool & found, double tol = 1e-13) {
+static double secant(double const * a, double x0, double x1, double l,
+                     double r, bool & found, double tol = 1e-13) {
   double x, f0 = polyval(a, 5, x0), f1 = polyval(a, 5, x1);
   do {
     x = (x1*f0 - x0*f1)/(f0 - f1);
@@ -119,7 +119,7 @@ static double secant(double * const a, double x0, double x1, double l, double r,
   return x;
 }
 
-static void findroot(double * a, double l, double r, double h, double * x0) {
+static void findroot(double const * a, double l, double r, double h, double * x0) {
   bool found = false;
   *x0 = secant(a, l, l + (r - l)*h, l, r, found);
   if (!found) *x0 = secant(a, r, r + (l - r)*h, l, r, found);
@@ -133,7 +133,7 @@ struct interval {
   double l {-1}, r {-1};
 };
 
-void qroots(double * a, double * roots, double l, double r) {
+void qroots(double const * a, double * roots, double l, double r) {
   // Check to see if we're actually dealing with a polynomial of lower
   // degree so we can invoke an appropriate direct solver.
 
@@ -161,24 +161,24 @@ void qroots(double * a, double * roots, double l, double r) {
   // TODO: are there other, simpler Sturm sequences that we can use instead?
   // TODO: simplify arithmetic (low priority)
 
-  double b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]}; // 1st der. of a
+  double const b[4] = {a[1], 2*a[2], 3*a[3], 4*a[4]}; // 1st der. of a
 
-  double c[3] = { // -rem(a, b)
+  double const c[3] = { // -rem(a, b)
     -a[0] + a[1]*a[3]/(16*a[4]),
     (-6*a[1] + a[2]*a[3]/a[4])/8,
     -a[2]/2 + 3*a[3]*a[3]/(16*a[4])
   };
 
-  double d[2] = { // -rem(b, c)
+  double const d[2] = { // -rem(b, c)
     -b[0] + c[0]*(-b[3]*c[1] + b[2]*c[2])/(c[2]*c[2]),
     (-b[3]*(c[1]*c[1] + c[0]*c[2]) + (b[2]*c[1] - b[1]*c[2])*c[2])/(c[2]*c[2])
   };
 
-  double e[1] = { // -rem(c, d)
+  double const e[1] = { // -rem(c, d)
     -c[0] + d[0]*(-c[2]*d[0] + c[1]*d[1])/(d[1]*d[1])
   };
 
-  double * polys[5] = {a, b, c, d, e};
+  double const * const polys[5] = {a, b, c, d, e};
   
   if (fabs(a[0]) < 1e-14) {
     roots[root++] = 0;

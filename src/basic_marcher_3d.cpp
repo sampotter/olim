@@ -53,6 +53,8 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     has_nb[DIR_D] && has_nb[DIR_W] && has_nb[DIR_N]
   };
 
+  // TODO: we aren't taking the minimum---shouldn't we be doing that?
+
   // Two point updates:
 
   if (has_quadrant[NE]) {

@@ -3,8 +3,8 @@
 
 #include "olim8.hpp"
 
-template <class Rootfinder>
-struct olim8_mp1_update_rules: public Rootfinder {
+template <class rootfinder>
+struct olim8_mp1_update_rules: public rootfinder {
   double adj1pt(double u0, double s, double s0, double h) const;
   double diag1pt(double u0, double s, double s0, double h) const;
   double adj2pt(double u0, double u1, double s, double s0, double s1, double h) const;

@@ -1,7 +1,5 @@
 #include "olim8_mp1.hpp"
 
-#include <cmath>
-#include <cstdio>
 #include <gsl/gsl_poly.h>
 
 #include "qroots.hpp"

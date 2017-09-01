@@ -50,69 +50,91 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     has_nb[DIR_D] && has_nb[DIR_W] && has_nb[DIR_N]
   };
 
-  // TODO: we aren't taking the minimum---shouldn't we be doing that?
-
   // Two point updates:
 
   if (has_quadrant[NE]) {
     T1 = GET_VALUE(DIR_N), T2 = GET_VALUE(DIR_E);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[ES]) {
     T1 = GET_VALUE(DIR_E), T2 = GET_VALUE(DIR_S);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[SW]) {
     T1 = GET_VALUE(DIR_S), T2 = GET_VALUE(DIR_W);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[WN]) {
     T1 = GET_VALUE(DIR_W), T2 = GET_VALUE(DIR_N);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[UN]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_N);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[UE]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_E);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[US]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_S);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[UW]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_W);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[DN]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_N);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[DE]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_E);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[DS]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_S);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
   if (has_quadrant[DW]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_W);
     disc = COMPUTE_DISC_2PT();
-    T = disc > 0 ? COMPUTE_VALUE_2PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_2PT());
+    }
   }
 
   // Triple point updates:
@@ -120,42 +142,58 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   if (has_octant[UNE]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[UES]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[USW]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[UWN]) {
     T1 = GET_VALUE(DIR_U), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[DNE]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_N), T3 = GET_VALUE(DIR_E);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[DES]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_E), T3 = GET_VALUE(DIR_S);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[DSW]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_S), T3 = GET_VALUE(DIR_W);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
   if (has_octant[DWN]) {
     T1 = GET_VALUE(DIR_D), T2 = GET_VALUE(DIR_W), T3 = GET_VALUE(DIR_N);
     disc = COMPUTE_DISC_3PT();
-    T = disc > 0 ? COMPUTE_VALUE_3PT() : T;
+    if (disc > 0) {
+      T = std::min(T, COMPUTE_VALUE_3PT());
+    }
   }
 
   // Single point updates:

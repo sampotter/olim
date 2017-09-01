@@ -1,0 +1,213 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\theoremstyle{definition}
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+
+Let $p_0, p_1, p_2 \in \mathbb{R}^3$, let
+$\lambda_1, \lambda_2 \in [0, 1]$, let
+$u_0, u_1, u_2 \in \mathbb{R}_{\geq}$, and let
+$\hat{s} \in \mathbb{R}_{>}$. Denote
+$\lambda = (\lambda_1, \lambda_2)$ and define:
+\begin{align*}
+  u_\lambda &= (1 - \lambda_1 - \lambda_2) u_0 + \lambda_1 u_1 + \lambda_2 u_2, \\
+  p_\lambda &= (1 - \lambda_1 - \lambda_2) p_0 + \lambda_1 p_1 + \lambda_2 p_2, \\
+  F(\lambda) &= u_\lambda + \hat{s} ||p_\lambda||.
+\end{align*}
+Then, letting
+$\delta u := (\delta u_1, \delta u_2) := (u_1 - u_0, u_2 - u_0)$,
+$\delta p_i = p_i - p_0$ for $i = 1, 2$ (in general, we will use
+notation like $\delta u$ and $\delta p_i$ to denote signed
+differences):
+\begin{align*}
+  \nabla_\lambda u_\lambda = \delta u, \qquad \nabla_\lambda ||p_\lambda|| = \begin{bmatrix} \delta p_1^\top \\ \delta p_2^\top \end{bmatrix} \frac{p_\lambda}{||p_\lambda||}.
+\end{align*}
+Next, without loss of generality, since:
+\begin{align*}
+  {(p_\lambda)}_x^2
+  &= \left({(p_0)}_x + \lambda_1 {(\delta p_1)}_x + \lambda_2 {(\delta p_2)}_x\right)^2 \\
+  &= {(p_0)}_x^2 + \lambda_1^2 {(\delta p_1)}_x^2 + \lambda_2^2 {(\delta p_2)}_x^2 + \\
+  &\qquad 2 \lambda_1 {(\delta p_1)}_x {(p_0)}_x + 2 \lambda_2 {(\delta p_2)}_x {(p_0)}_x + 2 \lambda_1 \lambda_2 {(\delta p_1)}_x {(\delta p_2)}_x
+\end{align*}
+We have
+$||p_\lambda||^2 = ||p_0||^2 + \lambda_1^2 ||\delta p_1||^2 +
+\lambda_2^2 ||\delta p_2||^2 + 2 \lambda_1 \delta p_1^\top p_0 + 2
+\lambda_2 \delta p_2^\top p_0 + 2 \lambda_1 \lambda_2 \delta p_1^\top
+\delta p_2$. Squaring $\delta p_i^\top p_\lambda$, we obtain:
+\begin{align*}
+  {(\delta p_i^\top p_\lambda)}^2
+  &= \left(\delta p_i^\top (p_0 + \lambda_1 \delta p_1 + \lambda_2 \delta p_2)\right)^2 \\
+  &= {(\delta p_i^\top p_0)}^2 + \lambda_1^2 {(\delta p_i^\top \delta p_1)}^2 + \lambda_2^2 {(\delta p_i^\top \delta p_2)}^2 + \\
+  &\qquad 2 \lambda_1 \delta p_i^\top p_0 \delta p_i^\top \delta p_1 + 2 \lambda_2 \delta p_i^\top p_0 \delta p_i^\top \delta p_2  + 2 \lambda_1 \lambda_2 \delta p_i^\top \delta p_1 \delta p_i^\top \delta p_2,
+\end{align*}
+and setting $\nabla_\lambda F(\lambda) = 0$ and defining
+$\alpha_i = |\delta u_i/\hat{s}|^2$ gives:
+\begin{align*}
+  \frac{-\delta u_i}{\hat{s}} ||p_\lambda|| = \delta p_i^\top p_\lambda \implies \alpha_i ||p_\lambda||^2 = {(\delta p_i^\top p_\lambda)}^2
+\end{align*}
+for $i = 1, 2$. Collecting terms, we can see that we are left with a
+system of two conic sections in $\lambda = (\lambda_1,
+\lambda_2)$. Writing
+$Q_i(\lambda_1, \lambda_2) = A_i \lambda_1^2 + B_i \lambda_1 \lambda_2 + C_i \lambda_2^2 + D_i
+\lambda_1 + E_i \lambda_2 + F_i$, we have:
+\begin{align*}
+  A_i &= \alpha_i ||\delta p_1||^2 - {(\delta p_1^\top \delta p_i)}^2 = \delta p_1^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} \delta p_1, \\
+  B_i &= 2 \alpha_i \delta p_1^\top \delta p_2 - 2 \delta p_i^\top \delta p_1 \delta p_i^\top \delta p_2 = 2 \delta p_1^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} \delta p_2, \\
+  C_i &= \alpha_i ||\delta p_2||^2 - {(\delta p_2^\top \delta p_i)}^2 = \delta p_2^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} \delta p_2, \\
+  D_i &= 2 \alpha_i \delta p_1^\top p_0 - 2 \delta p_i^\top p_0 \delta p_i^\top \delta p_1 = 2 \delta p_1^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} p_0, \\
+  E_i &= 2 \alpha_i \delta p_2^\top p_0 - 2 \delta p_i^\top p_0 \delta p_i^\top \delta p_2 = 2 \delta p_2^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} p_0, \\
+  F_i &= \alpha_i ||p_0||^2 - {(\delta p_i^\top p_0)}^2 = p_0^\top {(\alpha_i I - \delta p_i \delta p_i^\top)} p_0.
+\end{align*}
+Defining $\mathcal{X}_i = \alpha_i I - \delta p_i \delta p_i^\top$, we
+can see that each coefficient is readily factored into a variety of
+$\mathcal{X}_i$-weighted inner products:
+\begin{align*}
+  A_i &= ||\delta p_1||_{\mathcal{X}_i}^2, \\
+  B_i &= 2 \langle \delta p_1, \delta p_2 \rangle_{\mathcal{X}_i}, \\
+  C_i &= ||\delta p_2||_{\mathcal{X}_i}^2, \\
+  D_i &= 2 \langle \delta p_1, p_0 \rangle_{\mathcal{X}_i}, \\
+  E_i &= 2 \langle \delta p_2, p_0 \rangle_{\mathcal{X}_i}, \\
+  F_i &= ||p_0||_{\mathcal{X}_i}^2.
+\end{align*}
+We can write a quartic using a homogeneous matrix; in particular,
+$Q_i(\lambda_1, \lambda_2) = ||(\lambda_1, \lambda_2,
+1)||_{A_{Q_i}}^2$ for some $A_{Q_i} \in \mathbb{R}^{3 \times 3}$. In our case, we have:
+\begin{align*}
+  A_{Q_i} = \begin{bmatrix}
+    A_i & B_i/2 & D_i/2 \\
+    B_i/2 & C_i & E_i/2 \\
+    D_i/2 & E_i/2 & F_i
+  \end{bmatrix} = \begin{bmatrix}
+    ||\delta p_1||_{\mathcal{X}_i}^2 & \langle \delta p_1, \delta p_2 \rangle_{\mathcal{X}_i} & \langle \delta p_1, p_0 \rangle_{\mathcal{X}_i} \\
+    \langle \delta p_1, \delta p_2 \rangle_{\mathcal{X}_i} & ||\delta p_2||_{\mathcal{X}_i}^2 & \langle \delta p_2, p_0 \rangle_{\mathcal{X}_i} \\
+    \langle \delta p_1, p_0 \rangle_{\mathcal{X}_i} & \langle \delta p_2, p_0 \rangle_{\mathcal{X}_i} & ||p_0||_{\mathcal{X}_i}^2
+  \end{bmatrix}.
+\end{align*}
+Defining
+$\mathcal{P} = \begin{bmatrix} \delta p_1 & \delta p_2 &
+  p_0 \end{bmatrix}$, this gives us
+$A_{Q_i} = \mathcal{P}^\top \mathcal{X}_i \mathcal{P}$. To find the
+intersection of $Q_1$ and $Q_2$, we let $\mu_i \neq 0$ for $i = 1, 2$
+and fix $\det(\mu_1 A_{Q_1} + \mu_2 A_{Q_2}) = 0$. Since:
+\begin{align*}
+  \mu_1 A_{Q_1} + \mu_2 A_{Q_2} = \mathcal{P}^\top {(\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2)} \mathcal{P},
+\end{align*}
+a sufficient condition for this to hold is
+$\det(\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2) = 0$.
+
+\subsection*{Approach 1}
+
+To achieve $\det(\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2) = 0$, it is sufficient to
+factor $\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2$ into an outer product of low rank
+matrices. Taking $\mu_1 = 1$ and $\mu_2 = -\alpha_1/\alpha_2$, we
+obtain:
+\begin{align*}
+  \mathcal{X}_1 - \frac{\alpha_1}{\alpha_2} \mathcal{X}_2 = \alpha_1 I - \delta p_1 \delta p_1^\top - \alpha_1 I + \frac{\alpha_1}{\alpha_2} \delta p_2 \delta p_2^\top = \begin{bmatrix} 1 & \\ & \frac{\alpha_1}{\alpha_2} \end{bmatrix} \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix} \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix}^\top.
+\end{align*}
+Now, to solve for the intersection of $Q_1$ and $Q_2$, we can instead
+solve for the intersection of the degenerate conic $Q_0$ defined by
+$\mathcal{P}^\top {(\mathcal{X}_1 - (\alpha_1/\alpha_2) \mathcal{X}_2)} \mathcal{P}$ and
+one of the original conics, $Q_1$ or $Q_2$. \textbf{TODO}: finish
+this.
+
+\subsubsection*{Splitting the Degenerate Conic}
+
+Let
+$\mathcal{X}_0 = \alpha_1^{-1} \delta p_1 \delta p_1^\top +
+\alpha_2^{-1} \delta p_2 \delta p_2^\top$. Since
+$\mathcal{X}_0 \propto \mathcal{X}_1 - (\alpha_1/\alpha_2)
+\mathcal{X}_2$, the conics generated by
+$\mathcal{P}^\top \mathcal{X}_0 \mathcal{P}$ and
+$\mathcal{P}^\top {(\mathcal{X}_1 - (\alpha_1/\alpha_2)
+  \mathcal{X}_2)} \mathcal{P}$ are the same, so we work instead with
+$\mathcal{X}_0$.
+
+\begin{lemma}
+  Let $i = 1, 2, 3$ and $j = 1, 2, 3$ such that $i \neq j$. Then:
+  \begin{align*}
+    \left|\begin{matrix}
+      {(\mathcal{X}_0)}_{ii} & {(\mathcal{X}_0)}_{ij} \\
+      {(\mathcal{X}_0)}_{ji} & {(\mathcal{X}_0)}_{jj}
+    \end{matrix}\right| = \frac{1}{\alpha_1 \alpha_2} \left|\begin{matrix}
+      {(\delta p_1)}_i & {(\delta p_2)}_i \\
+      {(\delta p_1)}_j & {(\delta p_2)}_j
+    \end{matrix}\right|^2.
+  \end{align*}
+  Additionally, if $p_0, p_1, p_2$, and $\hat{p}$ form a nondegenerate
+  tetrahedra, then there exists a choice of $i$ and $j$ such that this
+  quantity is nonzero.
+\end{lemma}
+
+\begin{proof}
+  For clarity, label $a = \delta p_1$ and $b = \delta p_2$. Then:
+  \begin{align*}
+    {(\mathcal{X}_0)}_{ii} = {(\alpha_1^{-1} aa^\top + \alpha_2^{-1} bb^\top)}_{ii} = \alpha_1^{-1} a_i^2 + \alpha_2^{-1} b_i^2,
+  \end{align*}
+  and likewise for $j$. Similarly,
+  ${(\mathcal{X}_0)}_{ij} = {(\mathcal{X}_0)}_{ji} = \alpha_1^{-1} a_i
+  a_j + \alpha_2^{-1} b_i b_j$. This gives:
+  \begin{align*}
+    \left|\begin{matrix}
+      {(\mathcal{X}_0)}_{ii} & {(\mathcal{X}_0)}_{ij} \\
+      {(\mathcal{X}_0)}_{ji} & {(\mathcal{X}_0)}_{jj}
+    \end{matrix}\right| &= {(\alpha_1^{-1} a_i^2 + \alpha_2^{-1} b_i^2)}{(\alpha_1^{-1} a_j^2 + \alpha_2^{-1} b_j^2)} - {(\alpha_1^{-1} a_ia_j + \alpha_2^{-1} b_ib_j)}^2 = \frac{{(a_ib_j - a_jb_i)}^2}{\alpha_1 \alpha_2},
+  \end{align*}
+  which establishes the first claim. To prove the second claim,
+  observe that since the tetrahedra formed by $p_0, p_1, p_2$, and
+  $\hat{p}$ is nondegenerate,
+  $\dim \operatorname{span}\{\delta p_1, \delta p_2\} = 2$, and it is
+  possible to project this subspace onto either the $xy$-, $yz$-, or
+  $xz$-plane without reducing its dimension. Hence, choosing the
+  indices $i$ and $j$ that correspond to this projection, we can see
+  that the determinant above must be nonzero, since it is zero if and
+  only if the projections of $\delta p_1$ and $\delta p_2$ are
+  collinear.
+\end{proof}
+
+\subsection*{Approach 2}
+
+\noindent \emph{This was another idea I had, but I think it's incorrect. You can ignore it.} \\
+
+Now, since
+$\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2 = (\mu_1 \alpha_1 + \mu_2 \alpha_2) I + \mu_1
+\delta p_1 \delta p_1^\top + \mu_2 \delta p_2 \delta p_2^\top$, we can write:
+\begin{align*}
+  \mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2 = (\mu_1 \alpha_1 + \mu_2 \alpha_2) I + \begin{bmatrix} \mu_1 & \\ & \mu_2 \end{bmatrix} \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix} \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix}^\top.
+\end{align*}
+For an invertible matrix $A$ and matrix $U$ and $V$, we have that
+$A + UV^\top$ is invertible if and only if $I + V^\top A^{-1} U$ is
+invertible (\textbf{TODO}: see Woodbury formula---not 100\% sure if
+this is true). So, letting
+$\nu_i = \mu_i/(\mu_1 \alpha_1 + \mu_2 \alpha_2)$ for $i = 1, 2$, we
+have $\det(\mu_1 \mathcal{X}_1 + \mu_2 \mathcal{X}_2) = 0$ if and only if:
+\begin{align*}
+  I + \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix}^\top \begin{bmatrix} \frac{\mu_1}{\mu_1 \alpha_1 + \mu_2 \alpha_2} & \\ & \frac{\mu_2}{\mu_1 \alpha_1 + \mu_2 \alpha_2} \end{bmatrix} \begin{bmatrix} \delta p_1 & \delta p_2 \end{bmatrix} = \begin{bmatrix} 1 + \nu_1 ||\delta p_1||^2 & \nu_2 \langle \delta p_1, \delta p_2 \rangle \\ \nu_1 \langle \delta p_1, \delta p_2 \rangle & 1 + \nu_2 ||\delta p_2||^2 \end{bmatrix}
+\end{align*}
+is singular. Taking the determinant of this matrix and setting it
+equal to zero yields:
+\begin{align*}
+  {(1 + \nu_1 ||\delta p_1||^2)}{(1 + \nu_2 ||\delta p_2||^2)} - \nu_1 \nu_2 \langle \delta p_1, \delta p_2 \rangle^2 = 1 + \nu_1 ||\delta p_1||^2 + \nu_2 ||\delta p_2||^2 = 0.
+\end{align*}
+This is equivalent to $||\delta p_1||^2 \mu_1 + ||\delta p_2||^2 \mu_2 = -\alpha_1 \mu_1 - \alpha_2 \mu_2$, giving:
+\begin{align*}
+  \mu_2 = -\frac{\alpha_1 + ||\delta p_1||^2}{\alpha_2 + ||\delta p_2||^2} \mu_1.
+\end{align*}
+Substituting this value for $\mu_2$, we obtain a set of degenerate
+conics parametrized by $\mu_1$ and given (in matrix form) by:
+\begin{align*}
+  A_{Q_0} = \mu_1 \mathcal{P}^\top \left(\mathcal{X}_1 - \frac{\alpha_1 + ||\delta p_1||^2}{\alpha_2 + ||\delta p_2||^2} \mathcal{X}_2\right) \mathcal{P}.
+\end{align*}
+\textbf{TODO}: finish or throw out?
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

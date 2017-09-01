@@ -6,7 +6,8 @@ enable_language (Fortran)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
-find_package (GSL)
+find_package (Armadillo REQUIRED)
+find_package (GSL REQUIRED)
 
 set (RPOLY_SRC_FILES src/rpoly.f src/rpoly.cpp)
 
@@ -16,6 +17,7 @@ set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
+  src/conics.cpp
   src/fmm_.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
@@ -38,6 +40,7 @@ else ()
   add_library (fmm SHARED ${FMM_SRC_FILES})
 endif ()
 
+target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 target_link_libraries (fmm rpoly)
 target_link_libraries (fmm ${GSL_LIBRARIES})
 
@@ -48,6 +51,7 @@ add_test (rpoly rpoly.test)
 set (tests
   basic_marcher
   basic_marcher_3d
+  conics
   heap
   olim4_rhr_lut
   olim8_mp0

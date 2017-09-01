@@ -1,0 +1,56 @@
+\documentclass{article}
+
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+
+\begin{document}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{comparing-updates-domain.eps}
+  \caption{A square domain $\Omega$ for comparing triangular
+    updates.}\label{fig:comparing-updates-domain}
+\end{figure}
+
+Let $u : \Omega \to \mathbb{R}_{\geq}$ denote the solution to the
+equation $||\nabla u|| = 1$, and assume that $u$ satisfies the
+boundary condition:
+\begin{align}
+  u(x) = 0, \qquad x \in [x_0, x_1] \cup [x_1, x_2]
+\end{align}
+Further, assume that the sides of the square domain $\Omega$ are of
+length $h > 0$. Let $[x_0, x_2]$ be parametrized by
+$\lambda \in [0, 1]$ so that $x \in [x_0, x_1]$ can be written
+$x_\lambda = (1 - \lambda) x_0 + \lambda x_1$. Then, by an application of Huygen's
+principle:
+\begin{align}
+  u(x_\lambda) = h \min(\lambda, 1 - \lambda), \qquad \lambda \in [0, 1], \qquad x_\lambda \in [x_0, x_2]
+\end{align}
+Since $u$ is symmetric about the diagonal
+$[\hat{x}, x_1] \subseteq \Omega$, both diagonal updates yield the
+same estimate for $\hat{u}$---call these values
+$\hat{u}^{(\operatorname{diag})}$. Then:
+\begin{align}
+  \hat{u}^{(\operatorname{diag})} = u_{\lambda^*} + \hat{s} ||\hat{x} - x_{\lambda^*}|| = h,
+\end{align}
+since $s \equiv 1$, $\lambda^* = 0$, and
+$||\hat{x} - x_{\lambda^*}|| = h$. Along the same lines, we have:
+\begin{align}
+  \hat{u}^{(\operatorname{adj})} = \frac{\sqrt{2}}{2} h.
+\end{align}
+Hence:
+\begin{align}
+  \hat{u} = \min(\hat{u}^{(\operatorname{diag})}, \hat{u}^{(\operatorname{adj})}) = \frac{\sqrt{2}}{2} h.
+\end{align}
+By another application of Huygen's principle, it is straightforward to
+see that $u(\hat{x}) = h$.
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

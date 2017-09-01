@@ -1,0 +1,65 @@
+\documentclass{article}
+
+\usepackage{
+  amsmath,
+  amssymb,
+  amsthm,
+  fullpage
+}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+
+Throughout the following, we will assume that the following quantities
+are defined:
+\begin{align*}
+  \hat{p} &:= \text{the update point, taken to be zero for simplicity} \\
+  p_0, p_1, p_2 &:= \text{the other three vertices of the update tetrahedra} \\
+  h &:= \text{the lattice constant of the computational mesh} \\
+  s &:= \text{a nonnegative speed function} \\
+  \hat{u} = u(\hat{p}) &:= \text{the numerical solution at $\hat{p}$} \\
+  u_0, u_1, u_2 &:= \text{the computed numerical solution at $p_0, p_1$, and $p_2$} \\
+  \lambda = (\lambda_1, \lambda_2) &:= \text{barycentric coordinates parametrizing the points $p_\lambda = p_0 + \lambda_1 (p_1 - p_0) + \lambda_2 (p_2 - p_0)$}
+\end{align*}
+For convenience, we will also define:
+\begin{align*}
+  \delta u_i = u_i - u_0, \qquad \delta p_i = p_i - p_0, \qquad u_\lambda = u_0 + \lambda_1 \delta u_1 + \lambda \delta u_2.
+\end{align*}
+In particular, $u_\lambda$ denotes a linear approximation to $u$ on
+the triangle with $p_0, p_1$, and $p_2$ as its vertices.
+
+\begin{lemma}
+  Let $F(\lambda) = u_\lambda + \hat{s} ||\hat{p} - p_\lambda||$,
+  define $\alpha_i = |\delta u_i/(\hat{s} h)|$, and let:
+  \begin{align*}
+    A_i = 2 - \alpha_i^2, \qquad B_i = 1 - 2\alpha_i^2, \qquad C_i = 1 - \alpha_i^2,
+  \end{align*}
+  for $i = 1, 2$. Further, define:
+  \begin{align*}
+    Q_1(\lambda) &= 2A_1\lambda_1^2 + 2A_1\lambda_1\lambda_2 + B_1\lambda_2^2 -2A_1\lambda_1 -2C_1\lambda_2 + C_1, \\
+    Q_2(\lambda) &= B_2\lambda_1^2 + 2A_2\lambda_1\lambda_2 + 2A_2\lambda_2^2 -2C_2\lambda_1 -2A_1\lambda_2 + C_2.
+  \end{align*}
+  Then, computing
+  $\lambda^* = \operatorname{argmin}_{\lambda \in \Delta^2}
+  F(\lambda)$ is equivalent to finding
+  $\lambda^* \in \Delta^2 \cap Q_1 \cap Q_2$ such that:
+  \begin{align*}
+    \begin{bmatrix}
+      2 & 1 \\ 1 & 2
+    \end{bmatrix} \begin{bmatrix}
+      \lambda_1 \\ \lambda_2
+    \end{bmatrix} = \boldsymbol{1}_{2 \times 1} - \frac{l_\lambda}{\hat{s} h} \begin{bmatrix}
+      \delta u_1 \\ \delta u_2
+    \end{bmatrix}.
+  \end{align*}
+\end{lemma}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

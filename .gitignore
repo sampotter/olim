@@ -9,3 +9,4 @@ compile_commands.json
 *.eps
 auto
 .juliahistory
+misc/*

@@ -1,4 +1,18 @@
-* Two new ideas
+* Masha's todo list
+   1. "Suppose slowness is smooth or Lipschitz continuous. Show that
+      than one can use hierarchical update rules for saving CPU time."
+   2. "3D: hierarchical update vs complete update"
+   3. "Smart mesh"
+   4. "Smart mesh for 6 point update"
+   5. "Predictive smart mesh"
+* Ideas
+** Regular mesh triangular updates
+   - There are two types of "regular mesh triangular updates" (RMTUs)
+     in 2D and three in 3D. It's easy to identify these with ways of
+     choosing simplices embedded in a hybercube based on the Hamming
+     norms of the vertices of the simplices. Are there n RMTUs in n
+     dimensions? Is there an automatic procedure to extract them?
+** Conics for RHR triangular updates
 ** Adaptive mesh
    - Are there any conditions which we can use to determine how
      densely the domain needs to be sampled in order to achieve a

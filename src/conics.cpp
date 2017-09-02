@@ -93,16 +93,17 @@ static void get_points_on_line(arma::vec const & l, arma::vec & p1,
   }
 }
 
-static void intersect_conic_with_line(arma::mat const & A, arma::vec const & l,
+static bool intersect_conic_with_line(arma::mat const & A, arma::vec const & l,
                                       arma::vec & p1, arma::vec & p2) {
   get_points_on_line(l, p1, p2);
   double d11 = dot(p1, A*p1), d12 = dot(p1, A*p2), d22 = dot(p2, A*p2);
   double delta = d12*d12 - d11*d22;
-  assert(delta >= 0);
+  if (delta < 0) return false;
   double t1 = (-d12 + sqrt(delta))/d22, t2 = -(d12 + sqrt(delta))/d22;
   arma::vec dp1 = t1*p2, dp2 = t2*p2;
   p2 = p1 + dp1;
   p1 = p1 + dp2;
+  return true;
 }
 
 void intersect_conics(double const * Q1, double const * Q2, double * P, int & n) {
@@ -110,34 +111,48 @@ void intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
 
   mat const A1 = conic_matrix_from_coefs(Q1);
   mat const A2 = conic_matrix_from_coefs(Q2);
-  
-  mat const X = A1*inv(A2);
-
-  double const a = trace(X);
-  double const b = X(0, 0)*X(1, 1) - X(0, 1)*X(1, 0) + X(1, 1)*X(2, 2) -
-    X(1, 2)*X(2, 1) + X(0, 0)*X(2, 2) - X(0, 2)*X(2, 0);
-  double const c = det(X);
-
-  double roots[3];
-  int nroots = gsl_poly_solve_cubic(a, b, c, &roots[0], &roots[1], &roots[2]);
+  auto const rank1 = rank(A1), rank2 = rank(A2);
 
   vec m, l;
-  int i = 0, split;
-  do {
-    double root = roots[i++];
-    split = split_deg_conic(A1 + root*A2, m, l);
-  } while (!split);
-  assert(split);
+
+  if (rank1 == 3 && rank2 == 3) {
+    mat const X = A1*inv(A2);
+
+    double const a = trace(X);
+    double const b = X(0, 0)*X(1, 1) - X(0, 1)*X(1, 0) + X(1, 1)*X(2, 2) -
+      X(1, 2)*X(2, 1) + X(0, 0)*X(2, 2) - X(0, 2)*X(2, 0);
+    double const c = det(X);
+
+    double roots[3];
+    int nroots = gsl_poly_solve_cubic(a, b, c, &roots[0], &roots[1], &roots[2]);
+
+    int i = 0, split;
+    do {
+      double root = roots[i++];
+      split = split_deg_conic(A1 + root*A2, m, l);
+    } while (i < nroots && !split);
+    assert(split);
+  } else if (rank1 < 3) {
+    assert(split_deg_conic(A1, m, l));
+  } else if (rank2 < 3) {
+    assert(split_deg_conic(A2, m, l));
+  }
 
   vec p1(3), p2(3);
   
-  intersect_conic_with_line(A1, m, p1, p2);
-  std::copy(p1.begin(), p1.end(), &P[0]);
-  std::copy(p2.begin(), p2.end(), &P[3]);
-
-  intersect_conic_with_line(A1, l, p1, p2);
-  std::copy(p1.begin(), p1.end(), &P[6]);
-  std::copy(p2.begin(), p2.end(), &P[9]);
+  n = 0;
+  if (intersect_conic_with_line(A1, m, p1, p2)) {
+    P[2*n] = p1[0]/p1[2];
+    P[2*n++ + 1] = p1[1]/p1[2];
+    P[2*n] = p2[0]/p2[2];
+    P[2*n++ + 1] = p2[1]/p2[2];
+  }
+  if (intersect_conic_with_line(A1, l, p1, p2)) {
+    P[2*n] = p1[0]/p1[2];
+    P[2*n++ + 1] = p1[1]/p1[2];
+    P[2*n] = p2[0]/p2[2];
+    P[2*n++ + 1] = p2[1]/p2[2];
+  }
 }
 
 // Local Variables:

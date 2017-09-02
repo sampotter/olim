@@ -23,6 +23,7 @@ set (FMM_SRC_FILES
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
   src/olim4_rhr_lut.cpp
+  src/olim6_rhr.cpp
   src/olim8_mp0.cpp
   src/olim8_rhr.cpp
   src/qroots.cpp
@@ -54,6 +55,7 @@ set (tests
   conics
   heap
   olim4_rhr_lut
+  olim6_rhr
   olim8_mp0
   olim8_mp1
   olim8_rhr

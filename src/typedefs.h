@@ -6,6 +6,7 @@ enum marcher_type {
   OLIM4_MP0,
   OLIM4_RHR,
   OLIM4_RHR_LUT,
+  OLIM6_RHR_ARMA,
   OLIM8_MP0,
   OLIM8_MP1_BSEARCH,
   OLIM8_MP1_GSL,

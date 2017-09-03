@@ -2,8 +2,8 @@
 
 #include "conics.hpp"
 
-void arma_cim::intersect_conics(double const * Q1, double const * Q2,
-                                double * P, int & n) const {
+void arma_rootfinder::intersect_conics(double const * Q1, double const * Q2,
+                                       double * P, int & n) const {
   ::intersect_conics(Q1, Q2, P, n);
 }
 

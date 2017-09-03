@@ -3,8 +3,8 @@
 
 #include "olim6.hpp"
 
-template <class cim> // 'c'onic 'i'ntersection 'm'ethod
-struct olim6_rhr_update_rules: cim {
+template <class rootfinder>
+struct olim6_rhr_update_rules: rootfinder {
   double adj1pt(double u0, double s, double s0, double h) const;
   double adj2pt(double u0, double u1, double s, double s0, double s1,
                 double h) const;
@@ -12,12 +12,12 @@ struct olim6_rhr_update_rules: cim {
                 double s2, double h) const;
 };
 
-struct arma_cim {
+struct arma_rootfinder {
   void intersect_conics(double const * Q1, double const * Q2, double * P,
                         int & n) const;
 };
 
-using olim6_rhr_arma = olim6<olim6_rhr_update_rules<arma_cim>>;
+using olim6_rhr_arma = olim6<olim6_rhr_update_rules<arma_rootfinder>>;
 
 #include "olim6_rhr.impl.hpp"
 

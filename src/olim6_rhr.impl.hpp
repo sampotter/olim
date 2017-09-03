@@ -2,16 +2,16 @@
 
 #include "olim_util.hpp"
 
-template <class cim>
-double olim6_rhr_update_rules<cim>::adj1pt(
+template <class rootfinder>
+double olim6_rhr_update_rules<rootfinder>::adj1pt(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
   return u0 + s*h;
 }
 
-template <class cim>
-double olim6_rhr_update_rules<cim>::adj2pt(
+template <class rootfinder>
+double olim6_rhr_update_rules<rootfinder>::adj2pt(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   (void) s0;
@@ -19,8 +19,8 @@ double olim6_rhr_update_rules<cim>::adj2pt(
   return rhr_adj(u0, u1, s, h);
 }
 
-template <class cim>
-double olim6_rhr_update_rules<cim>::adj3pt(
+template <class rootfinder>
+double olim6_rhr_update_rules<rootfinder>::adj3pt(
   double u0, double u1, double u2,
   double s, double s0, double s1, double s2, double h) const
 {

@@ -100,7 +100,7 @@ double rhr_adj(double u0, double u1, double s_est, double h, double * lam) {
 
   double c = (u0 - u1)/(s_est*h);
   // TODO: use copysign for next line instead?
-  double _lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*std::sqrt(2 - c*c));
+  double _lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*sqrt(2 - c*c));
   if (lam != nullptr) {
     *lam = _lam;
   }
@@ -118,7 +118,7 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   // TODO: make this one as simple as the adj rule
   double c = std::fabs(u0 - u1)/(s_est*h);
   double sgn = u0 > u1 ? 1 : -1;
-  double lam = std::max(0.0, std::min(1.0, sgn*c/std::sqrt(1 - c*c)));
+  double lam = std::max(0.0, std::min(1.0, sgn*c/sqrt(1 - c*c)));
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 

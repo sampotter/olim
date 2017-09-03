@@ -1,6 +1,7 @@
 #ifndef __OLIM6_RHR_HPP__
 #define __OLIM6_RHR_HPP__
 
+#include "conics.hpp"
 #include "olim6.hpp"
 
 template <class rootfinder>
@@ -10,11 +11,6 @@ struct olim6_rhr_update_rules: rootfinder {
                 double h) const;
   double adj3pt(double u0, double u1, double u2, double s, double s0, double s1,
                 double s2, double h) const;
-};
-
-struct arma_rootfinder {
-  void intersect_conics(double const * Q1, double const * Q2, double * P,
-                        int & n) const;
 };
 
 using olim6_rhr_arma = olim6<olim6_rhr_update_rules<arma_rootfinder>>;

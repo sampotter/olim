@@ -25,7 +25,7 @@ double rhr<2>(double const * p0, double const * dp, double u0, double u1,
 
   double alpha = (u1 - u0)/s_est, alpha_sq = alpha*alpha,
     p0normsq = p0[0]*p0[0] + p0[1]*p0[1],
-    d0dotdp = p0[0]*dp[0] + p0[1]*dp[1],
+    p0dotdp = p0[0]*dp[0] + p0[1]*dp[1],
     dpnormsq = dp[0]*dp[0] + dp[1]*dp[1],
     a = (alpha_sq - 1)*p0normsq,
     b = 2*p0dotdp*(alpha_sq - dpnormsq),

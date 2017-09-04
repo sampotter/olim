@@ -1,7 +1,6 @@
 #include "conics.hpp"
 
 #include <cassert>
-#include <cstdio>
 
 #include <armadillo>
 #include <gsl/gsl_poly.h>

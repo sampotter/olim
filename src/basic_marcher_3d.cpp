@@ -17,6 +17,7 @@
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
 void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
+  using namespace olim6_defs;
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
   double sh = get_h()*speed(i, j, k), sh_sq = sh*sh;

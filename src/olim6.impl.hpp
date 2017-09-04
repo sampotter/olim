@@ -8,6 +8,7 @@
 
 template <class update_rules>
 void olim6<update_rules>::update_impl(int i, int j, int k, double & T) {
+  using namespace olim6_defs;
   using std::min;
 
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

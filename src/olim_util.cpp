@@ -122,7 +122,7 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 
-double rhr_3d22(double u0, double u1, double s_est, double h) {
+double rhr_3d_22(double u0, double u1, double s_est, double h) {
   check_params(u0, u1, h);
   assert(s_est >= 0);
 

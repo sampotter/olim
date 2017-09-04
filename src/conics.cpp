@@ -1,6 +1,7 @@
 #include "conics.hpp"
 
 #include <cassert>
+#include <cstdio>
 
 #include <armadillo>
 #include <gsl/gsl_poly.h>
@@ -113,7 +114,7 @@ void intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
   mat const A2 = conic_matrix_from_coefs(Q2);
   auto const rank1 = rank(A1), rank2 = rank(A2);
 
-  vec m, l;
+  vec m(3), l(3);
 
   if (rank1 == 3 && rank2 == 3) {
     mat const X = A1*inv(A2);

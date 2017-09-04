@@ -7,7 +7,7 @@
 void basic_marcher::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(i, j, nb);
-  double sh = get_h()*S(i, j);
+  double sh = get_h()*speed(i, j);
 
   double T1 = std::min(
     nb[0] ? nb[0]->get_value() : std::numeric_limits<double>::infinity(),

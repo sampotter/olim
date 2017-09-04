@@ -5,18 +5,18 @@
 void olim4_mp0::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
-  double s = S(i, j), h = get_h(), s_est;
+  double s = speed(i, j), h = get_h(), s_est;
 
   for (int k = 0; k < 4; ++k) {
     if (nb[k] && !nb[(k + 1) % 4] && !nb[(k + 3) % 4]) {
-      s_est = (s + S(i + di[k], j + dj[k]))/2;
+      s_est = (s + speed(i + di[k], j + dj[k]))/2;
       T = std::min(T, nb[k]->get_value() + h*s_est);
     }
   }
 
   for (int k = 0, l = 1; k < 4; ++k, l = (k + 1) % 4) {
     if (nb[k] && nb[l]) {
-      s_est = (s + (S(i + di[k], j + dj[k]) + S(i + di[l], j + dj[l]))/2)/2;
+      s_est = (s + (speed(i + di[k], j + dj[k]) + speed(i + di[l], j + dj[l]))/2)/2;
       T = std::min(T, rhr_adj(nb[k]->get_value(), nb[l]->get_value(), s_est, h));
     }
   }

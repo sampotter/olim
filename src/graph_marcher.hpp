@@ -19,7 +19,7 @@ protected:
   void stage(Node * node);
   void update(Node * node);
   
-  virtual double S(Node * node) const = 0;
+  virtual double speed(Node * node) const = 0;
   virtual Neighbors get_neighbors(abstract_node * node) const;
   virtual void get_valid_neighbors(abstract_node * node, abstract_node ** nb) = 0;
   virtual void update_impl(Node * node, double & T) = 0;

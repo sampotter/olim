@@ -9,12 +9,12 @@ static inline size_t get_initial_heap_size(int width, int height) {
 }
 
 template <class Node>
-marcher<Node>::marcher(int height, int width, double h, speed_func S,
+marcher<Node>::marcher(int height, int width, double h, speed_func speed,
                        double x0, double y0):
   abstract_marcher {get_initial_heap_size(width, height)},
   speed_func_cache {width*height},
   _nodes {new Node[width*height]},
-  _S {S},
+  _speed {speed},
   _h {h},
   _x0 {x0},
   _y0 {y0},
@@ -88,11 +88,11 @@ bool marcher<Node>::in_bounds(int i, int j) const {
 }
 
 template <class Node>
-double marcher<Node>::S(int i, int j) {
+double marcher<Node>::speed(int i, int j) {
   assert(in_bounds(i, j));
   int k = _width*i + j;
   if (!is_cached(k)) {
-    cache_value(k, _S(_h*j - _x0, _h*i - _y0));
+    cache_value(k, _speed(_h*j - _x0, _h*i - _y0));
   }
   return cached_value(k);
 }

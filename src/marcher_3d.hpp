@@ -23,7 +23,7 @@ protected:
   void update(int i, int j, int k);
   void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
-  double S(int i, int j, int k);
+  double speed(int i, int j, int k);
   bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }
 
@@ -34,7 +34,7 @@ private:
   void init();
 
   Node * _nodes;
-  speed_func_3d _S {default_speed_func_3d};
+  speed_func_3d _speed {default_speed_func_3d};
   double _h {1};
   double _x0 {0}, _y0 {0}, _z0 {0};
   int _height, _width, _depth;

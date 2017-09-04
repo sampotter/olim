@@ -10,12 +10,12 @@ template <class update_rules>
 void olim6<update_rules>::update_impl(int i, int j, int k, double & T) {
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
-  double h = get_h(), s = S(i, j, k);
+  double h = get_h(), s = speed(i, j, k);
   
   double s_[6];
   for (int l = 0; l < 6; ++l) {
     if (nb[l]) {
-      s_[l] = S(i + di[l], j + dj[l], k + dk[l]);
+      s_[l] = speed(i + di[l], j + dj[l], k + dk[l]);
     }
   }
 

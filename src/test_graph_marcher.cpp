@@ -4,8 +4,8 @@
 #include <limits>
 
 test_graph_marcher::test_graph_marcher(int height, int width, double h,
-                                       speed_func S, double x0, double y0):
-  _S {S}, _height {height}, _width {width}, _h {h}
+                                       speed_func speed, double x0, double y0):
+  _speed {speed}, _height {height}, _width {width}, _h {h}
 {
   for (int i = 0; i < _height; ++i) {
     for (int j = 0; j < _width; ++j) {
@@ -57,8 +57,8 @@ double test_graph_marcher::get_value(int i, int j) const {
   return get_node(_width*i + j).get_value();
 }
 
-double test_graph_marcher::S(graph_node * node) const {
-  return _S(node->get_x(), node->get_y());
+double test_graph_marcher::speed(graph_node * node) const {
+  return _speed(node->get_x(), node->get_y());
 }
 
 void test_graph_marcher::get_valid_neighbors(abstract_node * node,
@@ -72,7 +72,7 @@ void test_graph_marcher::get_valid_neighbors(abstract_node * node,
 void test_graph_marcher::update_impl(graph_node * node, double & T) {
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(node, nb);
-  double sh = get_h()*S(node);
+  double sh = get_h()*speed(node);
 
   double T1 = std::min(
     nb[0] ? nb[0]->get_value() : std::numeric_limits<double>::infinity(),

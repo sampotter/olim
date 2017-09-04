@@ -5,7 +5,7 @@
 void olim4_rhr::update_impl(int i, int j, double & T) {
   abstract_node * nb[4] = {0x0, 0x0, 0x0, 0x0}; // NESW
   get_valid_neighbors(i, j, nb);
-  double s = S(i, j), h = get_h(), sh = s*h;
+  double s = speed(i, j), h = get_h(), sh = s*h;
 
   for (int k = 0; k < 4; ++k) {
     if (nb[k] && !nb[(k + 1) % 4] && !nb[(k + 3) % 4]) {

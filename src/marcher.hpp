@@ -22,7 +22,7 @@ protected:
   void stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;
-  double S(int i, int j);
+  double speed(int i, int j);
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   
@@ -33,7 +33,7 @@ private:
   void init();
 
   Node * _nodes;
-  speed_func _S {default_speed_func};
+  speed_func _speed {default_speed_func};
   double _h {1};
   double _x0 {0}, _y0 {0};
   int _height;

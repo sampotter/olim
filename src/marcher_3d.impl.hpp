@@ -10,11 +10,11 @@ static inline size_t get_initial_heap_size(int width, int height, int depth) {
 
 template <class Node>
 marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
-                             speed_func_3d S, double x0, double y0, double z0):
+                             speed_func_3d speed, double x0, double y0, double z0):
   abstract_marcher {get_initial_heap_size(width, height, depth)},
   speed_func_cache {width*height*depth},
   _nodes {new Node[width*height*depth]},
-  _S {S},
+  _speed {speed},
   _h {h},
   _x0 {x0},
   _y0 {y0},
@@ -28,9 +28,9 @@ marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
 
 template <class Node>
 marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
-                             double * S_cache):
+                             double * speed_cache):
   abstract_marcher {get_initial_heap_size(width, height, depth)},
-  speed_func_cache {width*height*depth, S_cache},
+  speed_func_cache {width*height*depth, speed_cache},
   _nodes {new Node[width*height*depth]},
   _h {h},
   _height {height},
@@ -93,11 +93,11 @@ bool marcher_3d<Node>::in_bounds(int i, int j, int k) const {
 }
 
 template <class Node>
-double marcher_3d<Node>::S(int i, int j, int k) {
+double marcher_3d<Node>::speed(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   int l = _height*(_width*k + j) + i;
   if (!is_cached(l)) {
-    cache_value(l, _S(_h*j - _x0, _h*i - _y0, _h*k - _z0));
+    cache_value(l, _speed(_h*j - _x0, _h*i - _y0, _h*k - _z0));
   }
   return cached_value(l);
 }

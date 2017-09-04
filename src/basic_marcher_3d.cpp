@@ -19,7 +19,7 @@
 void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
-  double sh = get_h()*S(i, j, k), sh_sq = sh*sh;
+  double sh = get_h()*speed(i, j, k), sh_sq = sh*sh;
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;
 
   bool has_nb[6] = {nb[0], nb[1], nb[2], nb[3], nb[4], nb[5]};

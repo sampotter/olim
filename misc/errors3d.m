@@ -48,7 +48,7 @@ set(gcf, 'Name', 'Relative Error', 'NumberTitle', 'off');
 getplotsymb = @(index) strcat('-', marks{index});
 
 subplot(1, 2, 1);
-loglog(Ms, E_olim6_rhr_arma_inf, get_plot_symb(1)); hold on;
+loglog(Ms, E_olim6_rhr_arma_inf, getplotsymb(1)); hold on;
 
 subplot(1, 2, 2);
-loglog(Ms, E_olim6_rhr_arma_2, get_plot_symb(1)); hold on;
+loglog(Ms, E_olim6_rhr_arma_2, getplotsymb(1)); hold on;

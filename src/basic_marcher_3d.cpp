@@ -18,6 +18,8 @@
 
 void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
   using namespace olim6_defs;
+  using std::min;
+
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
   double sh = get_h()*speed(i, j, k), sh_sq = sh*sh;
@@ -42,84 +44,84 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     T1 = VAL(N), T2 = VAL(E);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[ES]) {
     T1 = VAL(E), T2 = VAL(S);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[SW]) {
     T1 = VAL(S), T2 = VAL(W);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[WN]) {
     T1 = VAL(W), T2 = VAL(N);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[UN]) {
     T1 = VAL(U), T2 = VAL(N);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[UE]) {
     T1 = VAL(U), T2 = VAL(E);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[US]) {
     T1 = VAL(U), T2 = VAL(S);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[UW]) {
     T1 = VAL(U), T2 = VAL(W);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[DN]) {
     T1 = VAL(D), T2 = VAL(N);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[DE]) {
     T1 = VAL(D), T2 = VAL(E);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[DS]) {
     T1 = VAL(D), T2 = VAL(S);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
   if (quad[DW]) {
     T1 = VAL(D), T2 = VAL(W);
     disc = COMPUTE_DISC_2PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_2PT());
+      T = min(T, COMPUTE_VALUE_2PT());
     }
   }
 
@@ -129,56 +131,56 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     T1 = VAL(U), T2 = VAL(N), T3 = VAL(E);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[UES]) {
     T1 = VAL(U), T2 = VAL(E), T3 = VAL(S);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[USW]) {
     T1 = VAL(U), T2 = VAL(S), T3 = VAL(W);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[UWN]) {
     T1 = VAL(U), T2 = VAL(W), T3 = VAL(N);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[DNE]) {
     T1 = VAL(D), T2 = VAL(N), T3 = VAL(E);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[DES]) {
     T1 = VAL(D), T2 = VAL(E), T3 = VAL(S);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[DSW]) {
     T1 = VAL(D), T2 = VAL(S), T3 = VAL(W);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
   if (oct[DWN]) {
     T1 = VAL(D), T2 = VAL(W), T3 = VAL(N);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) {
-      T = std::min(T, COMPUTE_VALUE_3PT());
+      T = min(T, COMPUTE_VALUE_3PT());
     }
   }
 
@@ -186,22 +188,22 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
 
   // TODO: could order this so that fewer comparisons are made
   if (nb[U] && !(oct[UNE] || oct[UES] || oct[USW] || oct[UWN])) {
-    T = std::min(T, VAL(U) + sh);
+    T = min(T, VAL(U) + sh);
   }
   if (nb[N] && !(oct[UNE] || oct[UWN] || oct[DNE] || oct[DWN])) {
-    T = std::min(T, VAL(N) + sh);
+    T = min(T, VAL(N) + sh);
   }
   if (nb[E] && !(oct[UNE] || oct[UES] || oct[DNE] || oct[DES])) {
-    T = std::min(T, VAL(E) + sh);
+    T = min(T, VAL(E) + sh);
   }
   if (nb[S] && !(oct[UES] || oct[USW] || oct[DES] || oct[DSW])) {
-    T = std::min(T, VAL(S) + sh);
+    T = min(T, VAL(S) + sh);
   }
   if (nb[W] && !(oct[USW] || oct[UWN] || oct[DSW] || oct[DWN])) {
-    T = std::min(T, VAL(W) + sh);
+    T = min(T, VAL(W) + sh);
   }
   if (nb[D] && !(oct[DNE] || oct[DWN] || oct[DSW] || oct[DWN])) {
-    T = std::min(T, VAL(D) + sh);
+    T = min(T, VAL(D) + sh);
   }
 }
 

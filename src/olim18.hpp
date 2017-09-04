@@ -9,13 +9,15 @@ struct olim18: public marcher_3d<Node>, public Updates {
   using marcher_3d<Node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
-  static int di[6];
-  static int dj[6];
-  static int dk[6];
+  static int di[18];
+  static int dj[18];
+  static int dk[18];
 private:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
 };
+
+#include "olim18.impl.hpp"
 
 #endif // __OLIM18_HPP__
 

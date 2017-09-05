@@ -3,7 +3,11 @@
 
 namespace olim18_defs {
   enum dir {
-    U, UN, UE, US, UW, N, NE, E, SE, S, SW, W, NW, D, DN, DE, DS, DW
+    U,
+    UN, UE, US, UW,
+    N, NE, E, SE, S, SW, W, NW,
+    D,
+    DN, DE, DS, DW
   };
 
   enum nb12 {

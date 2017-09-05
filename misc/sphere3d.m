@@ -14,14 +14,14 @@ getU = @(method) fmm(B, 'Method', method, 'h', h, 'x0', 1, 'y0', 1, 'z0', 1);
 
 [x y z] = meshgrid(linspace(-1, 1, n), linspace(-1, 1, n), linspace(-1, 1, n));
 
-methods = {'basic', 'olim6_rhr_arma'};
+methodnames = {'basic', 'olim6_rhr_arma', 'olim18_rhr_arma', 'olim26_rhr_arma'};
 
 rows = 2;
 cols = 2;
-assert(length(methods) <= rows*cols);
+assert(length(methodnames) <= rows*cols);
 
-for k = 1:length(methods)
-    method = methods{k};
+for k = 1:length(methodnames)
+    method = methodnames{k};
     U = getU(method);
     subplot(rows, cols, k);
     title(strrep(method, '_', '\_'));

@@ -4,9 +4,9 @@
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
 
-template <class Node, class Updates>
-struct olim18: public marcher_3d<Node>, public Updates {
-  using marcher_3d<Node>::marcher_3d;
+template <class node, class update_rules>
+struct olim18: public marcher_3d<node>, public update_rules {
+  using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
   static int di[18];

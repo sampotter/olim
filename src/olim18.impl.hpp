@@ -6,23 +6,23 @@
 // neighbor order: U, UN, UE, US, UW, N, NE, E, SE, S, SW, W, NW, D,
 // DN, DE, DS, DW
 
-template <class Node, class Updates>
-int olim18<Node, Updates>::di[] = {
+template <class node, class update_rules>
+int olim18<node, update_rules>::di[] = {
   0, 1, 0, -1, 0, 1, 1, 0, -1, -1, -1, 0, 1, 0, 1, 0, -1, 0
 };
 
-template <class Node, class Updates>
-int olim18<Node, Updates>::dj[] = {
+template <class node, class update_rules>
+int olim18<node, update_rules>::dj[] = {
   0, 0, 1, 0, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 0, 1, 0, -1
 };
 
-template <class Node, class Updates>
-int olim18<Node, Updates>::dk[] = {
+template <class node, class update_rules>
+int olim18<node, update_rules>::dk[] = {
   1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1
 };
 
-template <class Node, class Updates>
-void olim18<Node, Updates>::get_valid_neighbors(int i, int j, int k,
+template <class node, class update_rules>
+void olim18<node, update_rules>::get_valid_neighbors(int i, int j, int k,
                                                 abstract_node ** nb) {
   int a, b, c;
   for (int l = 0; l < 18; ++l) {
@@ -33,11 +33,11 @@ void olim18<Node, Updates>::get_valid_neighbors(int i, int j, int k,
   }
 }
 
-template <class Node, class Updates>
-void olim18<Node, Updates>::stage_neighbors_impl(abstract_node * n) {
-  int i = static_cast<Node *>(n)->get_i();
-  int j = static_cast<Node *>(n)->get_j();
-  int k = static_cast<Node *>(n)->get_k();
+template <class node, class update_rules>
+void olim18<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
+  int i = static_cast<node *>(n)->get_i();
+  int j = static_cast<node *>(n)->get_j();
+  int k = static_cast<node *>(n)->get_k();
 
   for (int l = 0; l < 18; ++l) {
     this->stage(i + di[l], j + dj[l], k + dk[l]);
@@ -52,8 +52,8 @@ void olim18<Node, Updates>::stage_neighbors_impl(abstract_node * n) {
   }
 }
 
-template <class Node, class Updates>
-void olim18<Node, Updates>::update_impl(int i, int j, int k, double & T) {
+template <class node, class update_rules>
+void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   using namespace olim18_defs;
   using std::min;
 

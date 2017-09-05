@@ -12,6 +12,7 @@
 #include "olim8_mp1.hpp"
 #include "olim8_rhr.hpp"
 #include "olim18_rhr.hpp"
+#include "olim26_rhr.hpp"
 
 void fmm(double * out, bool * in, int M, int N, double h, double * S,
          marcher_type type) {
@@ -93,6 +94,8 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
       m = std::make_unique<olim6_rhr_arma>(M1, M2, M3, h);
     } else if (type == OLIM18_RHR_ARMA) {
       m = std::make_unique<olim18_rhr_arma>(M1, M2, M3, h);
+    } else if (type == OLIM26_RHR_ARMA) {
+      m = std::make_unique<olim26_rhr_arma>(M1, M2, M3, h);
     }
   }
 

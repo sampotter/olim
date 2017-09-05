@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <src/config.hpp>
+
 template <class update_rules>
 void olim8<update_rules>::update_impl(int i, int j, double & T) {
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
@@ -54,6 +56,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
     }
   }
 
+#ifdef OLIM8_ADJ_UPDATES
   /**
    * Finally, do the adjacent triangle updates.
    */
@@ -66,6 +69,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       T = std::min(T, this->adj2pt(u0, u1, s, s0, s1, h));
     }
   }
+#endif // OLIM8_ADJ_UPDATES
 }
 
 #endif // __OLIM8_IMPL_HPP__

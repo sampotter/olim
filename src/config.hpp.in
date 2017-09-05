@@ -1,0 +1,5 @@
+#cmakedefine OLIM8_ADJ_UPDATES @OLIM8_ADJ_UPDATES@
+
+// Local Variables:
+// indent-tabs-mode: nil
+// End:

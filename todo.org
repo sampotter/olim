@@ -201,6 +201,16 @@
     simplified 1-point/2-point update
   - [X] Implement 8-point update
 * Implementation
+  - [ ] For olim6/18/26, add an intermediate template class with an
+    integer template parameter which just implements
+    get_valid_neighbors and stage_neighbors_impl (and maybe di, dj,
+    dk...? this would be interesting)
+  - [ ] Need to go through update functions and make sure we're
+    clamping instead of "min"ing with infinity---this should ensure
+    that skipping updates because their domain is a subset of another
+    update is valid
+  - [ ] Investigate using templates to avoid passing s_i arguments to
+    update rules (e.g. for rhr and mp0 rules)
   - [ ] The 8pt and 4pt rule classes can be improved by turning them
     into abstract classes or template classes, where the individual
     methods just differ in the way they update T for each type of

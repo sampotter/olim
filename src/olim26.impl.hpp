@@ -6,25 +6,30 @@
 #include "common.macros.hpp"
 #include "olim26.defs.hpp"
 
-// neighbor order: U, UN, UNE, UE, USE, US, USW, UW, UNW, N, NE, E,
-// SE, S, SW, W, NW, DN, DNE, DE, DSE, DS, DSW, DW, DNW, D
+// neighbor order:
+// degree 1: U, N, E, S, W, D
+// degree 2: UN, UE, US, UW, NE, SE, SW, NW, DN, DE, DS, DW
+// degree 3: UNE, USE, USW, UNW, DNE, DSE, DSW, DNW
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::di[] = {
-  0, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1,
-  -1, -1, 0, 1, 0
+  0, 1, 0, -1, 0, 0,
+  1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
+  1, -1, -1, 1, 1, -1, -1, 1
 };
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::dj[] = {
-  0, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1, 1,
-  0, -1, -1, -1, 0
+  0, 0, 1, 0, -1, 0,
+  0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
+  1, 1, -1, -1, 1, 1, -1, -1
 };
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::dk[] = {
-  1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1,
-  -1, -1, -1, -1, -1
+  1, 0, 0, 0, 0, -1,
+  1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
+  1, 1, 1, 1, -1, -1, -1, -1
 };
 
 template <class node, class update_rules>

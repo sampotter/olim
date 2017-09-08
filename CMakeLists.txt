@@ -70,7 +70,11 @@ set (tests
 foreach (test ${tests})
   add_executable (${test}.test src/${test}.test.cpp)
   target_link_libraries (${test}.test fmm)
-  add_test (${test} ${test}.test)
+  add_test (
+	NAME ${test} COMMAND ${CMAKE_COMMAND}
+	-DTEST_PROG=$<TARGET_FILE:${test}.test>
+	-DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
+	-P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
 endforeach ()
 
 set (speed_tests

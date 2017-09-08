@@ -63,6 +63,8 @@ set (tests
   olim8_mp0
   olim8_mp1
   olim8_rhr
+  olim18_rhr
+  olim26_rhr
   qroots
   solim4_mp0
   test_graph_marcher)

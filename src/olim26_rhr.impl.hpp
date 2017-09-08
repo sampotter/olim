@@ -57,8 +57,9 @@ double olim26_rhr_update_rules<rootfinder>::tri23(
   (void) s0;
   (void) s1;
   double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
-  assert(1 > alpha*alpha);
-  double lam = std::max(0.0, std::min(1.0, 2*sgn*alpha/sqrt(1 - alpha*alpha)));
+  assert(1 >= alpha*alpha);
+  double lam = std::max(
+    0.0, std::min(1.0, sgn*sqrt(2)*alpha/sqrt(1 - alpha*alpha)));
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
 }
 

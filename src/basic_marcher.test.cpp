@@ -6,14 +6,14 @@ void trivial_case_works() {
   basic_marcher m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
 }
 
 void adjacent_update_works() {
   basic_marcher m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(1, 0), 0.5);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
 }
 
 void neighboring_values_are_correct() {
@@ -34,55 +34,7 @@ void neighboring_values_are_correct() {
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      test::is_approx_equal(gt[k++], m.get_value(i, j), 1e-15);
-    }
-  }
-}
-
-void masha_s_values_are_correct() {
-  double gt[] = {
-    0.02939463262323,
-    0.01540058973304,
-    0.02037282789484,
-    0.01089789836732,
-    2.030579675453e-07,
-    0.01070992017687,
-    0.02286521936613,
-    0.01465429342172,
-    0.02703978500521,
-  };
-
-  basic_marcher m {21, 21, 0.1, s7, 1, 1};
-  m.add_boundary_node(10, 10, 2.030579675453e-07);
-  m.run();
-
-  int k = 0;
-  for (int i = 9; i <= 11; ++i) {
-    for (int j = 9; j <= 11; ++j) {
-      test::is_approx_equal(gt[k++], m.get_value(i, j), 1e-4);
-    }
-  }
-}
-
-void masha_small_test() {
-  double gt[] = {
-    0.02939463262323,
-    0.01540058973304,
-    0.02037282789484,
-    0.01089789836732,
-    2.030579675453e-07,
-    0.01070992017687,
-    0.02286521936613,
-    0.01465429342172,
-    0.02703978500521,
-  };
-  double h = 0.1, x0 = 0.1, y0 = 0.1;
-  basic_marcher m {3, 3, h, s7, x0, y0};
-  m.add_boundary_node(1, 1, 2.030579675453e-07);
-  m.run();
-  for (int i = 0, k = 0; i < 3; ++i) {
-    for (int j = 0; j < 3; ++j) {
-      test::is_approx_equal(m.get_value(i, j), gt[k++], 1e-5);
+      IS_APPROX_EQUAL(gt[k++], m.get_value(i, j), 1e-15);
     }
   }
 }
@@ -92,15 +44,13 @@ void rectangular_domain_works() {
   basic_marcher m {11, 21, h, default_speed_func, x0, y0};
   m.add_boundary_node(5, 10);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 1.17825, 1e-5);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 1.17825, 1e-5);
 }
 
 int main() {
   trivial_case_works();
   adjacent_update_works();
   neighboring_values_are_correct();
-  masha_s_values_are_correct();
-  masha_small_test();
   rectangular_domain_works();
 }
 

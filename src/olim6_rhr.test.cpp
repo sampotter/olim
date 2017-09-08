@@ -19,9 +19,9 @@ void planes_are_correct() {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       double m4value = m4.get_value(i, j);
-      test::is_approx_equal(m4value, m6.get_value(i, j, n/2));
-      test::is_approx_equal(m4value, m6.get_value(i, n/2, j));
-      test::is_approx_equal(m4value, m6.get_value(n/2, i, j));
+      IS_APPROX_EQUAL(m4value, m6.get_value(i, j, n/2));
+      IS_APPROX_EQUAL(m4value, m6.get_value(i, n/2, j));
+      IS_APPROX_EQUAL(m4value, m6.get_value(n/2, i, j));
     }
   }
 }

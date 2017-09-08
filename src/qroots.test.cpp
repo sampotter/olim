@@ -33,7 +33,7 @@ void sigma_works_1() {
   };
   double * polys[] = {a, b, c, d, e};
 
-  test::is_true(sigma(polys, 0.1) == 2);
+  IS_TRUE(sigma(polys, 0.1) == 2);
 }
 
 void sigma_works_2() {
@@ -65,10 +65,10 @@ void sigma_works_2() {
   double * polys[] = {a, b, c, d, e};
   int lhs = sigma(polys, 0), oldlhs = oldsigma(polys, 0);
   int rhs = sigma(polys, 1), oldrhs = oldsigma(polys, 1);
-  test::is_true(lhs == 2);
-  test::is_true(oldlhs == 2);
-  test::is_true(rhs == 2);
-  test::is_true(oldrhs == 2);
+  IS_TRUE(lhs == 2);
+  IS_TRUE(oldlhs == 2);
+  IS_TRUE(rhs == 2);
+  IS_TRUE(oldrhs == 2);
 }
 
 void sigma_works_3() {
@@ -101,8 +101,8 @@ void sigma_works_3() {
   double eps = std::numeric_limits<double>::epsilon();
   int lhs = sigma(polys, 0 + eps), oldlhs = oldsigma(polys, 1);
   int rhs = sigma(polys, 0 + eps), oldrhs = oldsigma(polys, 1);
-  test::is_true(lhs == oldlhs);
-  test::is_true(rhs == oldrhs);
+  IS_TRUE(lhs == oldlhs);
+  IS_TRUE(rhs == oldrhs);
 }
 
 void sturm_works_1() {
@@ -132,7 +132,7 @@ void sturm_works_1() {
     -0.006034391692523379
   };
   double * polys[] = {a, b, c, d, e};
-  test::is_true(sturm(polys, 0, 1) == 0);
+  IS_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 void sturm_works_2() {
@@ -162,11 +162,11 @@ void sturm_works_2() {
     0.0185546875
   };
   double * polys[] = {a, b, c, d, e};
-  test::is_true(sturm(polys, 0, 1) == 2);
-  test::is_true(sturm(polys, 0, 0.5) == 1);
-  test::is_true(sturm(polys, 0.5, 1) == 1);
-  test::is_true(sturm(polys, 0.4, 0.5) == 0);
-  test::is_true(sturm(polys, 0.49999999999999994, 0.5) == 0);
+  IS_TRUE(sturm(polys, 0, 1) == 2);
+  IS_TRUE(sturm(polys, 0, 0.5) == 1);
+  IS_TRUE(sturm(polys, 0.5, 1) == 1);
+  IS_TRUE(sturm(polys, 0.4, 0.5) == 0);
+  IS_TRUE(sturm(polys, 0.49999999999999994, 0.5) == 0);
 }
 
 void sturm_works_3() {
@@ -196,7 +196,7 @@ void sturm_works_3() {
     0.000057748375077573313
   };
   double * polys[] = {a, b, c, d, e};
-  test::is_true(sturm(polys, 0, 1) == 0);
+  IS_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 void sturm_works_4() {
@@ -226,7 +226,7 @@ void sturm_works_4() {
     0.5305424594038346
   };
   double * polys[] = {a, b, c, d, e};
-  test::is_true(sturm(polys, 0, 1) == 0);
+  IS_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 void qroots_works_1() {

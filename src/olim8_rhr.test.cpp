@@ -32,15 +32,15 @@ void trivial_case_works() {
   olim8_rhr m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
 };
 
 void adjacent_update_works() {
   olim8_rhr m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
-  test::is_approx_equal(m.get_value(1, 0), 0.5);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
 };
 
 void neighboring_values_are_correct() {
@@ -61,7 +61,7 @@ void neighboring_values_are_correct() {
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      test::is_approx_equal(gt[k++], m.get_value(i, j), 1e-15);
+      IS_APPROX_EQUAL(gt[k++], m.get_value(i, j), 1e-15);
     }
   }
 }
@@ -71,19 +71,19 @@ void slightly_more_involved() {
   m.add_boundary_node(0, 0);
   m.add_boundary_node(1, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
-  test::is_approx_equal(m.get_value(1, 0), 0.0);
-  test::is_approx_equal(m.get_value(0, 1), 1.0);
-  test::is_approx_equal(m.get_value(1, 1), 1.0);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(0, 1), 1.0);
+  IS_APPROX_EQUAL(m.get_value(1, 1), 1.0);
 }
 
 void slightly_more_involved_2() {
   olim8_rhr m {2, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
-  test::is_approx_equal(m.get_value(1, 0), 1.0);
-  test::is_approx_equal(m.get_value(0, 1), 1.0);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 1.0);
+  IS_APPROX_EQUAL(m.get_value(0, 1), 1.0);
 }
 
 void run_on_full_neighborhood() {
@@ -103,12 +103,12 @@ void maria_test() {
   olim8_rhr m {3, 2, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
-  test::is_approx_equal(m.get_value(0, 1), 1.0);
-  test::is_approx_equal(m.get_value(1, 0), 1.0);
-  test::is_approx_equal(m.get_value(1, 1), std::sqrt(2.0));
-  test::is_approx_equal(m.get_value(2, 0), 2.0);
-  test::is_approx_equal(m.get_value(2, 1), 2.3243932834975496);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(0, 1), 1.0);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 1.0);
+  IS_APPROX_EQUAL(m.get_value(1, 1), std::sqrt(2.0));
+  IS_APPROX_EQUAL(m.get_value(2, 0), 2.0);
+  IS_APPROX_EQUAL(m.get_value(2, 1), 2.3243932834975496);
 }
 
 void origin_test() {
@@ -119,7 +119,7 @@ void origin_test() {
   m.run();
   for (int i = 0; i < 5; ++i) {
     for (int j = 0; j < 5; ++j) {
-      test::is_approx_equal(
+      IS_APPROX_EQUAL(
         m.get_value(i, j), default_speed_func_soln(h*j - x0, h*i - y0), 4e-2);
     }
   }

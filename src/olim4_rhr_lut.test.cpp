@@ -6,14 +6,14 @@ void trivial_case_works() {
   olim4_rhr_lut m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 0.0);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
 }
 
 void adjacent_update_works() {
   olim4_rhr_lut m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  test::is_approx_equal(m.get_value(1, 0), 0.5);
+  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
 }
 
 void neighboring_values_are_correct() {
@@ -34,7 +34,7 @@ void neighboring_values_are_correct() {
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      test::is_approx_equal(gt[k++], m.get_value(i, j));
+      IS_APPROX_EQUAL(gt[k++], m.get_value(i, j));
     }
   }
 }
@@ -59,7 +59,7 @@ void masha_s_values_are_correct() {
   int k = 0;
   for (int i = 9; i <= 11; ++i) {
     for (int j = 9; j <= 11; ++j) {
-      test::is_approx_equal(gt[k++], m.get_value(i, j));
+      IS_APPROX_EQUAL(gt[k++], m.get_value(i, j));
     }
   }
 }
@@ -82,7 +82,7 @@ void masha_small_test() {
   m.run();
   for (int i = 0, k = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {
-      test::is_approx_equal(m.get_value(i, j), gt[k++]);
+      IS_APPROX_EQUAL(m.get_value(i, j), gt[k++]);
     }
   }
 }
@@ -92,7 +92,7 @@ void rectangular_domain_works() {
   olim4_rhr_lut m {11, 21, h, default_speed_func, x0, y0};
   m.add_boundary_node(5, 10);
   m.run();
-  test::is_approx_equal(m.get_value(0, 0), 1.17825);
+  IS_APPROX_EQUAL(m.get_value(0, 0), 1.17825);
 }
 
 int main() {

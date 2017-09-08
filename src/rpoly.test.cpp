@@ -6,10 +6,10 @@ void rpoly_works_1() {
   double a[] = {0.0384, -0.4, 1.4, -2, 1};
   std::complex<double> roots[4];
   int degree = 4;
-  test::is_true(!rpoly(a, degree, roots));
+  IS_TRUE(!rpoly(a, degree, roots));
   for (int i = 0; i < degree; ++i) {
-    test::is_approx_equal(roots[i].real(), gtzeros[i], 8e-15);
-    test::is_approx_equal(roots[i].imag(), 0.0, 1e-15);
+    IS_APPROX_EQUAL(roots[i].real(), gtzeros[i], 8e-15);
+    IS_APPROX_EQUAL(roots[i].imag(), 0.0, 1e-15);
   }
 }
 
@@ -22,7 +22,7 @@ void rpoly_works_2() {
     0.100099996666711110551
   };
   std::complex<double> roots[4];
-  test::is_true(!rpoly(a, 4, roots));
+  IS_TRUE(!rpoly(a, 4, roots));
 }
 
 int main() {

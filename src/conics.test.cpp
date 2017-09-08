@@ -38,8 +38,8 @@ void intersect_conics_works_1() {
   int n;
   intersect_conics(Q1, Q2, P, n);
   for (int i = 0, j = 1, k = 2; i < 12; i += 3, j += 3, k += 3) {
-    test::is_approx_equal(P[i]/P[k], Q[i]/Q[k]);
-    test::is_approx_equal(P[j]/P[k], Q[j]/Q[k]);
+    IS_APPROX_EQUAL(P[i]/P[k], Q[i]/Q[k]);
+    IS_APPROX_EQUAL(P[j]/P[k], Q[j]/Q[k]);
   }
 }
 

@@ -6,19 +6,25 @@
 #include <cstdlib>
 #include <type_traits>
 
+#define IS_TRUE(prop) test::is_true(prop, __FILE__, __LINE__)
+
+#define IS_APPROX_EQUAL(t, t_hat, ...)                                  \
+  test::is_approx_equal(t, t_hat, __FILE__, __LINE__, ##__VA_ARGS__)
+
 namespace test {
-  void is_true(bool prop) {
+  void is_true(bool prop, char const * filename, int line) {
     if (!prop) {
-      fprintf(stdout, "failure: is_true\n");
+      fprintf(stdout, "failure (%s:%d): is_true\n", filename, line);
     }
   }
 
   template <class T>
-  void is_approx_equal(T t, T t_hat, T tol = 1e-7) {
+  void is_approx_equal(T t, T t_hat, char const * filename, int line,
+                       T tol = 1e-7) {
     static_assert(std::is_floating_point<T>::value);
     T const val = std::fabs(t - t_hat)/std::fabs(t);
     if (val > tol) {
-      fprintf(stdout, "failure: %g > %g\n", val, tol);
+      fprintf(stdout, "failure (%s:%d): %g > %g\n", filename, line, val, tol);
     }
   }
 }

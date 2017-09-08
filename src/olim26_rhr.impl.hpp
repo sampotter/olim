@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include "olim_util.hpp"
+
 template <class rootfinder>
 double olim26_rhr_update_rules<rootfinder>::line1(
   double u0, double s, double s0, double h) const

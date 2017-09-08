@@ -1,6 +1,7 @@
 #ifndef __OLIM18_IMPL_HPP__
 #define __OLIM18_IMPL_HPP__
 
+#include "common.macros.hpp"
 #include "olim18.defs.hpp"
 
 // neighbor order: U, UN, UE, US, UW, N, NE, E, SE, S, SW, W, NW, D,

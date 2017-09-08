@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "common.macros.hpp"
 #include "olim26.defs.hpp"
 
 // neighbor order: U, UN, UNE, UE, USE, US, USW, UW, UNW, N, NE, E,

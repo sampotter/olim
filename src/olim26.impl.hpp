@@ -77,12 +77,12 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   }
 
   bool nb12[24] = {
-    nb[N_NE], nb[NE_E], nb[E_SE], nb[SE_S],
-    nb[S_SW], nb[SW_W], nb[W_NW], nb[NW_N],
-    nb[U_UN], nb[UN_N], nb[N_DN], nb[DN_D],
-    nb[D_DS], nb[DS_S], nb[S_US], nb[US_U],
-    nb[U_UE], nb[UE_E], nb[E_DE], nb[DE_D],
-    nb[D_DW], nb[DW_W], nb[W_UW], nb[UW_U]
+    nb[N] && nb[NE], nb[NE] && nb[E], nb[E] && nb[SE], nb[SE] && nb[S],
+    nb[S] && nb[SW], nb[SW] && nb[W], nb[W] && nb[NW], nb[NW] && nb[N],
+    nb[U] && nb[UN], nb[UN] && nb[N], nb[N] && nb[DN], nb[DN] && nb[D],
+    nb[D] && nb[DS], nb[DS] && nb[S], nb[S] && nb[US], nb[US] && nb[U],
+    nb[U] && nb[UE], nb[UE] && nb[E], nb[E] && nb[DE], nb[DE] && nb[D],
+    nb[D] && nb[DW], nb[DW] && nb[W], nb[W] && nb[UW], nb[UW] && nb[U]
   };
 
   bool nb13[24] = {

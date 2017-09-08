@@ -12,6 +12,10 @@
      choosing simplices embedded in a hybercube based on the Hamming
      norms of the vertices of the simplices. Are there n RMTUs in n
      dimensions? Is there an automatic procedure to extract them?
+** FEM mesh generator (from class) + trimesh marcher
+** Triangle subdivision
+   - Worth subdividing triangles on solvers which are done on a
+     triangle mesh?
 ** Conics for RHR triangular updates
 ** Adaptive mesh
    - Are there any conditions which we can use to determine how

@@ -8,6 +8,8 @@
 
 #define IS_TRUE(prop) test::is_true(prop, __FILE__, __LINE__)
 
+#define IS_FALSE(prop) test::is_false(prop, __FILE__, __LINE__)
+
 #define IS_APPROX_EQUAL(t, t_hat, ...)                                  \
   test::is_approx_equal(t, t_hat, __FILE__, __LINE__, ##__VA_ARGS__)
 
@@ -15,6 +17,12 @@ namespace test {
   void is_true(bool prop, char const * filename, int line) {
     if (!prop) {
       fprintf(stdout, "failure (%s:%d): is_true\n", filename, line);
+    }
+  }
+
+  void is_false(bool prop, char const * filename, int line) {
+    if (prop) {
+      fprintf(stdout, "failure (%s:%d): is_false\n", filename, line);
     }
   }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70206" creator="Ipe 7.2.7">
-<info created="D:20170901230117" modified="D:20170903160109"/>
+<info created="D:20170901230117" modified="D:20170911095824"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -643,76 +643,6 @@ h
 128 352 m
 128 256 l
 160 304 l
-</path>
-<path matrix="1 0 0 1 -15.819 32.05" stroke="black">
-64 704 m
-128 752 l
-224 752 l
-160 704 l
-160 608 l
-64 608 l
-64 704 l
-160 704 l
-</path>
-<path matrix="1 0 0 1 -15.819 32.05" stroke="black">
-128 752 m
-128 656 l
-64 608 l
-</path>
-<path matrix="1 0 0 1 -15.819 32.05" stroke="black">
-128 656 m
-224 656 l
-160 608 l
-</path>
-<path matrix="1 0 0 1 -15.819 32.05" stroke="black">
-224 752 m
-224 656 l
-</path>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="128 752" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="64 704" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="160 704" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="224 752" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="224 656" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="160 608" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="64 608" size="normal" stroke="black"/>
-<use matrix="1 0 0 1 -15.819 32.05" name="mark/disk(sx)" pos="128 656" size="normal" stroke="black"/>
-<path matrix="1 0 0 1 -1.38677 -4.96795" stroke="black" pen="fat">
-48 736 m
-48 640 l
-144 640 l
-48 736 l
-112 688 l
-144 640 l
-144 640 l
-</path>
-<path matrix="1 0 0 1 -1.38677 -4.96795" stroke="black" dash="dashed" pen="heavier">
-48 640 m
-112 688 l
-</path>
-<path matrix="1 0 0 1 5.54187 -2.53981" stroke="black" pen="fat">
-112 688 m
-144 640 l
-208 688 l
-208 784 l
-144 640 l
-112 688 l
-208 784 l
-</path>
-<path matrix="1 0 0 1 5.54187 -2.53981" stroke="black" dash="dashed" pen="heavier">
-112 688 m
-208 688 l
-</path>
-<path matrix="1 0 0 1 -0.693383 4.76539" stroke="black" pen="fat">
-48 736 m
-112 688 l
-208 784 l
-48 736 l
-112 784 l
-208 784 l
-</path>
-<path matrix="1 0 0 1 -0.693383 4.76539" stroke="black" dash="dashed" pen="heavier">
-112 784 m
-112 688 l
 </path>
 </page>
 </ipe>

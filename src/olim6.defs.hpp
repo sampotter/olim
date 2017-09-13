@@ -2,9 +2,7 @@
 #define __OLIM6_DEFS_HPP__
 
 namespace olim6_defs {
-  enum neighbor {U, N, E, S, W, D};
-  enum quadrant {NE, ES, SW, WN, UN, UE, US, UW, DN, DE, DS, DW};
-  enum octant {UNE, UES, USW, UWN, DNE, DES, DSW, DWN};
+  enum neighbor {N, E, U, S, W, D};
 }
 
 #endif // __OLIM6_DEFS_HPP__

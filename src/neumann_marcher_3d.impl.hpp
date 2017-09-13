@@ -4,13 +4,13 @@
 // neighbor order: U, N, E, S, W, D (up -> clockwise from north -> down)
 
 template <class Node>
-int neumann_marcher_3d<Node>::di[] = {0, 1, 0, -1, 0, 0};
+int neumann_marcher_3d<Node>::di[] = {1, 0, 0, -1, 0, 0};
 
 template <class Node>
-int neumann_marcher_3d<Node>::dj[] = {0, 0, 1, 0, -1, 0};
+int neumann_marcher_3d<Node>::dj[] = {0, 1, 0, 0, -1, 0};
 
 template <class Node>
-int neumann_marcher_3d<Node>::dk[] = {1, 0, 0, 0, 0, -1};
+int neumann_marcher_3d<Node>::dk[] = {0, 0, 1, 0, 0, -1};
 
 template <class Node>
 void neumann_marcher_3d<Node>::stage_neighbors_impl(abstract_node * n) {

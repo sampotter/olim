@@ -97,16 +97,19 @@ static bool intersect_conic_with_line(arma::mat const & A, arma::vec const & l,
                                       arma::vec & p1, arma::vec & p2) {
   get_points_on_line(l, p1, p2);
   double d11 = dot(p1, A*p1), d12 = dot(p1, A*p2), d22 = dot(p2, A*p2);
-  double delta = d12*d12 - d11*d22;
+  double delta = d12*d12 - d11*d22, sqrtdelta = sqrt(delta);
   if (delta < 0) return false;
-  double t1 = (-d12 + sqrt(delta))/d22, t2 = -(d12 + sqrt(delta))/d22;
+  double numer = sqrtdelta - d12, denom = d22;
+  double t1 = numer == 0 && denom == 0 ? 0 : numer/denom;
+  numer = -(sqrtdelta + d12);
+  double t2 = numer == 0 && denom == 0 ? 0 : numer/denom;
   arma::vec dp1 = t1*p2, dp2 = t2*p2;
   p2 = p1 + dp1;
   p1 = p1 + dp2;
   return true;
 }
 
-void intersect_conics(double const * Q1, double const * Q2, double * P, int & n) {
+bool intersect_conics(double const * Q1, double const * Q2, double * P, int & n) {
   using namespace arma;
 
   mat const A1 = conic_matrix_from_coefs(Q1);
@@ -115,6 +118,7 @@ void intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
 
   vec m(3), l(3);
 
+  bool split = false;
   if (rank1 == 3 && rank2 == 3) {
     mat const X = A1*inv(A2);
 
@@ -126,16 +130,18 @@ void intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
     double roots[3];
     int nroots = gsl_poly_solve_cubic(a, b, c, &roots[0], &roots[1], &roots[2]);
 
-    int i = 0, split;
+    int i = 0;
     do {
       double root = roots[i++];
       split = split_deg_conic(A1 + root*A2, m, l);
     } while (i < nroots && !split);
-    assert(split);
-  } else if (rank1 < 3) {
-    assert(split_deg_conic(A1, m, l));
-  } else if (rank2 < 3) {
-    assert(split_deg_conic(A2, m, l));
+  } else if (rank1 < rank2) {
+    split = split_deg_conic(A1, m, l);
+  } else {
+    split = split_deg_conic(A2, m, l);
+  }
+  if (!split) {
+    return false;
   }
 
   vec p1(3), p2(3);
@@ -153,11 +159,13 @@ void intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
     P[2*n] = p2[0]/p2[2];
     P[2*n++ + 1] = p2[1]/p2[2];
   }
+
+  return true;
 }
 
-void arma_rootfinder::intersect_conics(double const * Q1, double const * Q2,
+bool arma_rootfinder::intersect_conics(double const * Q1, double const * Q2,
                                        double * P, int & n) const {
-  ::intersect_conics(Q1, Q2, P, n);
+  return ::intersect_conics(Q1, Q2, P, n);
 }
 
 // Local Variables:

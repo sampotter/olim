@@ -58,6 +58,7 @@ set (tests
   basic_marcher_3d
   conics
   heap
+  olim_util
   olim4_rhr_lut
   olim6_rhr
   olim8_mp0

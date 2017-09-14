@@ -152,8 +152,8 @@ void planes_are_correct() {
 }
 
 int main() {
-  planes_are_correct();
   quadrants_are_correct();
+  // planes_are_correct();
 }
 
 // Local Variables:

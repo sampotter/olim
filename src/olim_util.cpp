@@ -122,26 +122,22 @@ double rhr_diag(double u0, double u1, double s_est, double h) {
   return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(lam*lam + 1);
 }
 
-double rhr_3d_22(double u0, double u1, double s_est, double h) {
-  check_params(u0, u1, h);
-  assert(s_est >= 0);
+double rhr_3d_22(double u0, double u1, double s, double h) {
+  using std::min;
+  using std::max;
+  using std::sqrt;
 
-  double alpha = (u1 - u0)/s_est, alpha_sq = alpha*alpha, h_sq = h*h,
-    a = 2*(alpha_sq - 1), b = -2*(alpha_sq - 2*h_sq), c = 2*alpha_sq - h_sq,
-    disc = b*b - 4*a*c;
+  check_params(u0, u1, h);
+  assert(s >= 0);
+
+  double du = u1 - u0, sh = s*h, alpha = du/sh, alpha_sq = alpha*alpha;
+  double disc = 1 - 2*(2*alpha_sq - 1)/(alpha_sq - 2);
 
   assert(disc >= 0);
 
-  double lam = (-b + sqrt(disc))/(2*a),
-    lhs = -alpha*sqrt(2*(lam*(1 - lam) + 1))/h, rhs = 2*lam - 1;
-  if (fabs(lhs - rhs) < 1e-13) {
-    return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(2*(lam*(1 - lam) + 1));
-  }
-
-  lam = -(b + sqrt(disc))/(2*a),
-    lhs = -alpha*sqrt(2*(lam*(1 - lam) + 1))/h, rhs = 2*lam - 1;
-  assert(fabs(lhs - rhs) < 1e-13);
-  return (1 - lam)*u0 + lam*u1 + s_est*h*sqrt(2*(lam*(1 - lam) + 1));
+  double lam = max(0.0, min(1.0, (1 + (u0 > u1 ? 1 : -1)*sqrt(disc))/2));
+  double llam = sqrt(2*(lam*(lam - 1) + 1));
+  return (1 - lam)*u0 + lam*u1 + sh*llam;
 }
 
 // Local Variables:

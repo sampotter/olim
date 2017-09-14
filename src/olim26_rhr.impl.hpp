@@ -44,9 +44,9 @@ double olim26_rhr_update_rules<rootfinder>::tri13(
 {
   (void) s0;
   (void) s1;
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
-  assert(2 > alpha*alpha);
-  double lam = std::max(0.0, std::min(1.0, sgn*alpha/sqrt(2*(2 - alpha*alpha))));
+  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1,
+    alpha_sq = std::min(2.0, alpha*alpha);
+  double lam = std::max(0.0, std::min(1.0, sgn*alpha/sqrt(2*(2 - alpha_sq))));
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
 }
 
@@ -56,10 +56,10 @@ double olim26_rhr_update_rules<rootfinder>::tri23(
 {
   (void) s0;
   (void) s1;
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
-  assert(1 >= alpha*alpha);
+  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1,
+    alpha_sq = std::min(1.0, alpha*alpha);
   double lam = std::max(
-    0.0, std::min(1.0, sgn*sqrt(2)*alpha/sqrt(1 - alpha*alpha)));
+    0.0, std::min(1.0, sgn*sqrt(2)*alpha/sqrt(1 - alpha_sq)));
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
 }
 
@@ -73,22 +73,25 @@ double olim26_rhr_update_rules<rootfinder>::tetra123(
   (void) s2;
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
-  double beta1 = (du2 - 2*du1)/sh, beta1_sq = beta1*beta1;
-  double beta2 = (du1 - du2)/sh, beta2_sq = beta2*beta2;
-  double AQ1[6] = {beta1_sq - 1, 2*beta1_sq, 2*beta1_sq, 0, 0, beta1_sq};
-  double AQ2[6] = {beta2_sq, 2*beta2_sq, 2*beta2_sq - 1, 0, 0, beta2_sq};
+  double alpha1 = fabs(du1)/sh, alpha2 = fabs(du2)/sh;
+  double a1sq = alpha1*alpha1, a2sq = alpha2*alpha2;
+  double AQ1[6] = {a1sq - 1, 2*(a1sq - 1), 2*a1sq - 1, 0, 0, a1sq};
+  double AQ2[6] = {a2sq - 1, 2*(a2sq - 2), 2*(a2sq - 2), 0, 0, a2sq};
 
   int n = 0;
   double isects[8];
-  this->intersect_conics(AQ1, AQ2, isects, n);
+  if (!this->intersect_conics(AQ1, AQ2, isects, n)) {
+    return std::numeric_limits<double>::infinity();
+  }
 
   double T = std::numeric_limits<double>::infinity();
-  double lam1, lam2, l;
+  double lam1, lam2, l, sum;
   for (int i = 0; i < n; i += 2) {
     lam1 = isects[i];
     lam2 = isects[i + 1];
-    l = sqrt(lam1*lam1 + 2*lam2*(lam1 + lam2) + 1);
-    if (fabs(lam1 + l*beta1) < 1e-13 && fabs(lam2 + l*beta2) < 1e-13) {
+    sum = lam1 + lam2;
+    l = sqrt(lam2*lam2 + sum*sum + 1);
+    if (fabs(du1 + sh*sum/l) < 1e-13 && fabs(du2 + sh*(lam1 + 2*lam2)/l) < 1e-13) {
       T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }

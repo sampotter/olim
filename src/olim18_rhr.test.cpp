@@ -129,7 +129,7 @@ void quadrants_are_correct() {
 }
 
 void planes_are_correct() {
-  int n = 21;
+  int n = 3;
   double h = 1.0/(n/2);
   
   olim8_rhr m8 {n, n, h, default_speed_func, 1, 1};

@@ -110,8 +110,8 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   memset(nb, 0x0, 26*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k);
-  int l, * is;
+  double h = this->get_h(), s = this->speed(i, j, k), Tnew;
+  int l, l0, l1, l2, a, b, * is;
 
   double s_[26];
   for (l = 0; l < 26; ++l) {
@@ -154,6 +154,73 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     if (is[0] || is[1] || is[2] || is[3] || is[4] || is[5])
       continue;
     T = min(T, this->line3(VAL(l), s, s_[l], h));
+  }
+
+  /**
+   * Degree (1, 2) and (1, 3) triangle updates
+   */
+  for (l0 = 0; l0 < 6; ++l0) {
+    is = olim26_defs::line1tris[l0];
+    if (nb[l0]) {
+      for (a = 0, l1 = *is; a < 8; l1 = is[++a]) {
+        if (nb[l1]) {
+          if (a % 2 == 0) {
+            T = min(T, this->tri12(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
+          } else {
+            T = min(T, this->tri13(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Degree (2, 3) triangle updates
+   */
+  for (a = 0, l0 = 18; a < 8; ++a, ++l0) {
+    is = olim26_defs::line3tris[a];
+    if (nb[l0]) {
+      for (b = 3, l1 = is[b]; b < 6; l1 = is[++b]) {
+        if (nb[l1]) {
+          T = min(T, this->tri23(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
+        }
+      }
+    }
+  }
+
+  /**
+   * Degree (1, 2, 3) tetrahedron updates
+   */
+  for (a = 0, l0 = 18; a < 8; ++a, ++l0) {
+    is = olim26_defs::line3tris[a];
+    if (nb[l0]) {
+      for (b = 0, l1 = *is, l2 = is[(b + 1) % 6]; b < 6;
+           l1 = is[++b], l2 = is[(b + 1) % 6]) {
+        if (nb[l1] && nb[l2]) {
+          if (b % 2 == 0) {
+            Tnew = this->tetra123(
+              VAL(l1), VAL(l2), VAL(l0), s, s_[l1], s_[l2], s_[l0], h);
+            if (ISINF(Tnew)) {
+              T = min(T, this->tri12(VAL(l1), VAL(l2), s, s_[l1], s_[l2], h));
+              T = min(T, this->tri13(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
+              T = min(T, this->tri23(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
+            } else {
+              T = min(T, Tnew);
+            }
+          } else {
+            Tnew = this->tetra123(
+              VAL(l2), VAL(l1), VAL(l0), s, s_[l2], s_[l1], s_[l0], h);
+            if (ISINF(Tnew)) {
+              T = min(T, this->tri12(VAL(l2), VAL(l1), s, s_[l2], s_[l1], h));
+              T = min(T, this->tri13(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
+              T = min(T, this->tri23(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
+            } else {
+              T = min(T, Tnew);
+            }
+          }
+        }
+      }
+    }
   }
 }
 

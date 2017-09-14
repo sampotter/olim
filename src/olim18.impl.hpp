@@ -54,9 +54,37 @@ void olim18<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
   }
 }
 
-// Directions lying on the "equator" of the stencil.
-static char eqdirs[4] = {
+// Directions lying on the "equator" of the stencil:
+static int eqdirs[4] = {
   olim18_defs::N, olim18_defs::E, olim18_defs::S, olim18_defs::W};
+
+// Look-up table for triangles incident on 1-lines:
+// TODO: change these to use olim18_defs::dir enum
+static int line1tris[6][4] = {
+  {10, 11, 14, 15}, // N
+  {8,  9,  13, 14}, // E
+  {9,  10, 16, 17}, // U
+  {6,  12, 13, 17}, // S
+  {7,  12, 15, 16}, // W
+  {6,  7,  8,  11}, // D
+};
+
+// Look-up table for triangles incident on 2-lines:
+// TODO: change these to use olim18_defs::dir enum
+static int line2tris[12][6] = {
+  {3, 5, 7,  8,  12, 13}, // DS
+  {4, 5, 6,  11, 12, 15}, // DW
+  {1, 5, 6,  11, 13, 14}, // DE
+  {1, 2, 10, 17, 13, 14}, // UE
+  {0, 2, 9,  16, 14, 15}, // UN
+  {0, 5, 7,  8,  14, 15}, // DN
+  {3, 4, 6,  7,  16, 17}, // SW
+  {1, 3, 6,  8,  9,  17}, // SE
+  {0, 1, 8,  9,  10, 11}, // NE
+  {0, 4, 7,  10, 11, 16}, // NW
+  {2, 4, 10, 17, 12, 15}, // UW
+  {2, 3, 9,  16, 12, 13}, // US
+};
 
 /**
  * Hash a pair of directions in {N, E, U, S, W, D} uniquely into the
@@ -75,7 +103,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   memset(nb, 0x0, 18*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k), s_[18];
+  double h = this->get_h(), s = this->speed(i, j, k), s_[18], Tnew;
   int l, l0, l1, l2, lmin, lmax, l01, l02, l12;
 
   for (l = 0; l < 18; ++l) {
@@ -88,12 +116,15 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
    * line updates (degree 1 and 2)
    */
   for (l = 0; l < 6; ++l) {
-    if (nb[l]) {
+    if (nb[l] && !(nb[line1tris[l][0]] || nb[line1tris[l][1]] ||
+                   nb[line1tris[l][2]] || nb[line1tris[l][3]])) {
       T = min(T, this->line1(VAL(l), s, s_[l], h));
     }
   }
-  for (l = 6; l < 18; ++l) {
-    if (nb[l]) {
+  for (l = 6, l0 = 0; l < 18; ++l, ++l0) {
+    if (nb[l] && !(nb[line2tris[l0][0]] || nb[line2tris[l0][1]] ||
+                   nb[line2tris[l0][2]] || nb[line2tris[l0][3]] ||
+                   nb[line2tris[l0][4]] || nb[line2tris[l0][5]])) {
       T = min(T, this->line2(VAL(l), s, s_[l], h));
     }
   }
@@ -133,16 +164,50 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
 
       /*
        * (1, 2, 2) 3-pt updates
+       *
+       * TODO: since the tetrahedral updates are done by solving the
+       * unconstrained optimization problem, if the updates fail, we
+       * need to fall back to the triangular updates on the boundaries
+       * of the tetrahedra---in the future, we will need to split this
+       * algorithm into two: one solving the unconstrained
+       * optimization problem (or maybe it's not necessar?) and one
+       * solving the same problem but with constraints
+       *
+       * TODO: refactor this using a separate function...
        */
       if (nb[l0] && nb[l01] && nb[l02]) {
-        T = min(T, this->tetra122(VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h));
+        Tnew = this->tetra122(
+          VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h);
+        if (Tnew == INF(Tnew)) {
+          T = min(T, this->tri12(VAL(l0), VAL(l01), s, s_[l0], s_[l01], h));
+          T = min(T, this->tri12(VAL(l0), VAL(l02), s, s_[l0], s_[l02], h));
+          T = min(T, this->tri22(VAL(l01), VAL(l02), s, s_[l01], s_[l02], h));
+        } else {
+          T = min(T, Tnew);
+        }
       }
       if (nb[l12]) {
         if (nb[l1] && nb[l01]) {
-          T = min(T, this->tetra122(VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h));
+          Tnew = this->tetra122(
+            VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h);
+          if (Tnew == INF(Tnew)) {
+            T = min(T, this->tri12(VAL(l1), VAL(l01), s, s_[l1], s_[l01], h));
+            T = min(T, this->tri12(VAL(l1), VAL(l12), s, s_[l1], s_[l12], h));
+            T = min(T, this->tri22(VAL(l01), VAL(l12), s, s_[l01], s_[l12], h));
+          } else {
+            T = min(T, Tnew);
+          }
         }
         if (nb[l2] && nb[l02]) {
-          T = min(T, this->tetra122(VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h));
+          Tnew = this->tetra122(
+            VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h);
+          if (Tnew == INF(Tnew)) {
+            T = min(T, this->tri12(VAL(l2), VAL(l02), s, s_[l2], s_[l02], h));
+            T = min(T, this->tri12(VAL(l2), VAL(l12), s, s_[l2], s_[l12], h));
+            T = min(T, this->tri22(VAL(l02), VAL(l12), s, s_[l02], s_[l12], h));
+          } else {
+            T = min(T, Tnew);
+          }
         }
       }
 
@@ -150,9 +215,15 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
        * (2, 2, 2) 3-pt update
        */
       if (nb[l01] && nb[l02] && nb[l12]) {
-        T = min(T, this->tetra222(
-                  VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12],
-                  h));      
+        Tnew = this->tetra222(
+          VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12], h);
+      if (Tnew == INF(Tnew)) {
+        T = min(T, this->tri22(VAL(l01), VAL(l02), s, s_[l01], s_[l02], h));
+        T = min(T, this->tri22(VAL(l01), VAL(l12), s, s_[l01], s_[l12], h));
+        T = min(T, this->tri22(VAL(l02), VAL(l12), s, s_[l02], s_[l12], h));
+      } else {
+        T = min(T, Tnew);
+      }
       }
     }
   }
@@ -160,6 +231,9 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
 
 /**
  * TODO: replace this with a macro once it's working
+ *
+ * TODO: do we need to check for possibly incident tetrahedra in this
+ * function, or is it unnecessary?
  */
 template <class node, class update_rules>
 void olim18<node, update_rules>::do_tri_updates(
@@ -172,7 +246,7 @@ void olim18<node, update_rules>::do_tri_updates(
   for (i = 0, j = 1; i < 6; ++i, j = (i + 1) % 6) {
     l0 = dirs[i], l1 = dirs[j];
     if (nb[l0] && nb[l1]) {
-      if (l0 % 2 == 0) {
+      if (i % 2 == 0) {
         T = min(T, this->tri12(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
       } else {
         T = min(T, this->tri12(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));

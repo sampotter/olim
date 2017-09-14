@@ -127,7 +127,8 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     is = olim26_defs::line1tris[l];
     if (!nb[l])
       continue;
-    if (is[0] || is[1] || is[2] || is[3] || is[4] || is[5] || is[6] || is[7])
+    if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]] ||
+        nb[is[4]] || nb[is[5]] || nb[is[6]] || nb[is[7]])
       continue;
     T = min(T, this->line1(VAL(l), s, s_[l], h));
   }
@@ -139,7 +140,7 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     is = olim26_defs::line2tris[l - 6];
     if (!nb[l])
       continue;
-    if (is[0] || is[1] || is[2] || is[3])
+    if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]])
       continue;
     T = min(T, this->line2(VAL(l), s, s_[l], h));
   }
@@ -151,7 +152,8 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     is = olim26_defs::line3tris[l - 18];
     if (!nb[l])
       continue;
-    if (is[0] || is[1] || is[2] || is[3] || is[4] || is[5])
+    if (nb[is[0]] || nb[is[1]] || nb[is[2]] ||
+        nb[is[3]] || nb[is[4]] || nb[is[5]])
       continue;
     T = min(T, this->line3(VAL(l), s, s_[l], h));
   }

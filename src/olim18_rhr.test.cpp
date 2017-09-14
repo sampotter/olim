@@ -3,6 +3,47 @@
 #include "olim8_rhr.hpp"
 #include "olim18_rhr.hpp"
 
+void quadrants_are_correct() {
+  int n = 2;
+  double h = 1;
+  {
+    olim18_rhr_arma m {n, n, 1, h, default_speed_func_3d, 0, 0, 0};
+    m.add_boundary_node(0, 0, 0);
+    m.run();
+    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
+    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(1, 1, 0), sqrt(2));
+  }
+  {
+    olim18_rhr_arma m {n, n, 1, h, default_speed_func_3d, 1, 0, 0};
+    m.add_boundary_node(0, 1, 0);
+    m.run();
+    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
+    IS_APPROX_EQUAL(m.get_value(1, 0, 0), sqrt(2));
+    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
+  }
+  {
+    olim18_rhr_arma m {n, n, 1, h, default_speed_func_3d, 0, 1, 0};
+    m.add_boundary_node(1, 0, 0);
+    m.run();
+    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(0, 1, 0), sqrt(2));
+    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 0.0);
+    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
+  }
+  {
+    olim18_rhr_arma m {n, n, 1, h, default_speed_func_3d, 1, 1, 0};
+    m.add_boundary_node(1, 1, 0);
+    m.run();
+    IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
+    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 0.0);
+  }
+}
+
 void planes_are_correct() {
   int n = 21;
   double h = 1.0/(n/2);
@@ -28,6 +69,7 @@ void planes_are_correct() {
 
 int main() {
   planes_are_correct();
+  quadrants_are_correct();
 }
 
 // Local Variables:

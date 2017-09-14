@@ -15,6 +15,9 @@ protected:
 private:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
+  void do_tri_updates(abstract_node const * const * nb, int const * dirs,
+                      double s, double const * s_cache, double h,
+                      double & T) const;
 };
 
 #include "olim18.impl.hpp"

@@ -178,7 +178,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
       if (nb[l0] && nb[l01] && nb[l02]) {
         Tnew = this->tetra122(
           VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h);
-        if (Tnew == INF(Tnew)) {
+        if (ISINF(Tnew)) {
           T = min(T, this->tri12(VAL(l0), VAL(l01), s, s_[l0], s_[l01], h));
           T = min(T, this->tri12(VAL(l0), VAL(l02), s, s_[l0], s_[l02], h));
           T = min(T, this->tri22(VAL(l01), VAL(l02), s, s_[l01], s_[l02], h));
@@ -190,7 +190,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
         if (nb[l1] && nb[l01]) {
           Tnew = this->tetra122(
             VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h);
-          if (Tnew == INF(Tnew)) {
+          if (ISINF(Tnew)) {
             T = min(T, this->tri12(VAL(l1), VAL(l01), s, s_[l1], s_[l01], h));
             T = min(T, this->tri12(VAL(l1), VAL(l12), s, s_[l1], s_[l12], h));
             T = min(T, this->tri22(VAL(l01), VAL(l12), s, s_[l01], s_[l12], h));
@@ -201,7 +201,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
         if (nb[l2] && nb[l02]) {
           Tnew = this->tetra122(
             VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h);
-          if (Tnew == INF(Tnew)) {
+          if (ISINF(Tnew)) {
             T = min(T, this->tri12(VAL(l2), VAL(l02), s, s_[l2], s_[l02], h));
             T = min(T, this->tri12(VAL(l2), VAL(l12), s, s_[l2], s_[l12], h));
             T = min(T, this->tri22(VAL(l02), VAL(l12), s, s_[l02], s_[l12], h));
@@ -217,7 +217,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
       if (nb[l01] && nb[l02] && nb[l12]) {
         Tnew = this->tetra222(
           VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12], h);
-      if (Tnew == INF(Tnew)) {
+      if (ISINF(Tnew)) {
         T = min(T, this->tri22(VAL(l01), VAL(l02), s, s_[l01], s_[l02], h));
         T = min(T, this->tri22(VAL(l01), VAL(l12), s, s_[l01], s_[l12], h));
         T = min(T, this->tri22(VAL(l02), VAL(l12), s, s_[l02], s_[l12], h));

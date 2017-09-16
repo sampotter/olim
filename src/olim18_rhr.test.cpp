@@ -128,6 +128,34 @@ void quadrants_are_correct() {
   }
 }
 
+void octants_are_correct() {
+  int n = 2;
+  double h = 1;
+  for (int i = 0, i_ = 1; i < 2; i_ = (++i + 1) % 2) {
+    for (int j = 0, j_ = 1; j < 2; ++j) {
+      for (int k = 0; k < 2; ++k) {
+        double x0 = j, y0 = i, z0 = k;
+        olim18_rhr_arma m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
+        m.add_boundary_node(i, j, k);
+        m.run();
+        IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
+        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
+        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
+        IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
+        IS_APPROX_EQUAL(
+          m.get_value((i + 1) % 2, (j + 1) % 2, k), 1.0 + sqrt(2)/2.0);
+        IS_APPROX_EQUAL(
+          m.get_value((i + 1) % 2, j, (k + 1) % 2), 1.0 + sqrt(2)/2.0);
+        IS_APPROX_EQUAL(
+          m.get_value(i, (j + 1) % 2, (k + 1) % 2), 1.0 + sqrt(2)/2.0);
+        IS_APPROX_EQUAL(
+          m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),
+          1.0 + sqrt(2)/2.0 + sqrt(3)/3.0);
+      }
+    }
+  }
+}
+
 void planes_are_correct() {
   int n = 21;
   double h = 1.0/(n/2);
@@ -140,7 +168,6 @@ void planes_are_correct() {
   m18.add_boundary_node(n/2, n/2, n/2);
   m18.run();
 
-  // Check that planes are correct:
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       double m8value = m8.get_value(i, j);
@@ -152,8 +179,9 @@ void planes_are_correct() {
 }
 
 int main() {
-  planes_are_correct();
   quadrants_are_correct();
+  octants_are_correct();
+  planes_are_correct();
 }
 
 // Local Variables:

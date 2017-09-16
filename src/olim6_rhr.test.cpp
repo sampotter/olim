@@ -4,7 +4,7 @@
 #include "olim6_rhr.hpp"
 
 void planes_are_correct() {
-  int n = 21;
+  int n = 11;
   double h = 1.0/(n/2);
   
   olim4_rhr m4 {n, n, h, default_speed_func, 1, 1};

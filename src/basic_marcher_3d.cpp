@@ -41,7 +41,7 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
         if (disc > 0) T = min(T, COMPUTE_VALUE_2PT());
       }
       if (nb[l1] && nb[l2]) {
-        T1 = VAL(l1), T2 = VAL(l2);
+        T2 = VAL(l1), T3 = VAL(l2);
         disc = COMPUTE_DISC_3PT();
         if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
       }

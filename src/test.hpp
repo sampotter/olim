@@ -17,12 +17,14 @@ namespace test {
   void is_true(bool prop, char const * filename, int line) {
     if (!prop) {
       fprintf(stdout, "failure (%s:%d): is_true\n", filename, line);
+      std::abort();
     }
   }
 
   void is_false(bool prop, char const * filename, int line) {
     if (prop) {
       fprintf(stdout, "failure (%s:%d): is_false\n", filename, line);
+      std::abort();
     }
   }
 
@@ -33,6 +35,7 @@ namespace test {
     T const val = std::fabs(t - t_hat)/std::fabs(t);
     if (val > tol) {
       fprintf(stdout, "failure (%s:%d): %g > %g\n", filename, line, val, tol);
+      std::abort();
     }
   }
 }

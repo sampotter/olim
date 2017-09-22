@@ -3,17 +3,28 @@
 
 #include <algorithm>
 #include <cassert>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 #include "common.defs.hpp"
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
+
+#define PRINT_UPDATES 1
 
 template <class rootfinder>
 double olim3d_rhr_update_rules<rootfinder>::line1(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
+#if PRINT_UPDATES
+  double tmp = u0 + s*h;
+  printf("line1(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+  return tmp;
+#else
   return u0 + s*h;
+#endif
 }
 
 template <class rootfinder>
@@ -21,7 +32,13 @@ double olim3d_rhr_update_rules<rootfinder>::line2(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
+#if PRINT_UPDATES
+  double tmp = u0 + s*h*sqrt2;
+  printf("line2(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+  return tmp;
+#else
   return u0 + s*h*sqrt2;
+#endif
 }
 
 template <class rootfinder>
@@ -29,7 +46,13 @@ double olim3d_rhr_update_rules<rootfinder>::line3(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
+#if PRINT_UPDATES
+  double tmp = u0 + s*h*sqrt3;
+  printf("line3(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+  return tmp;
+#else
   return u0 + s*h*sqrt3;
+#endif
 }
 
 template <class rootfinder>
@@ -38,7 +61,16 @@ double olim3d_rhr_update_rules<rootfinder>::tri11(
 {
   (void) s0;
   (void) s1;
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, h, s);
+#endif
+#if PRINT_UPDATES
+  double tmp = rhr_adj(u0, u1, s, h);
+  printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
+  return tmp;
+#else
   return rhr_adj(u0, u1, s, h);
+#endif
 }
 
 template <class rootfinder>
@@ -47,7 +79,16 @@ double olim3d_rhr_update_rules<rootfinder>::tri12(
 {
   (void) s0;
   (void) s1;
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, h, s);
+#endif
+#if PRINT_UPDATES
+  double tmp = rhr_diag(u0, u1, s, h);
+  printf("tri12(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
+  return tmp;
+#else
   return rhr_diag(u0, u1, s, h);
+#endif
 }
 
 template <class rootfinder>
@@ -56,10 +97,19 @@ double olim3d_rhr_update_rules<rootfinder>::tri13(
 {
   (void) s0;
   (void) s1;
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, h, s);
+#endif
   double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
   assert(2 > alpha*alpha);
   double lam = std::max(0.0, std::min(1.0, sgn*alpha/sqrt(2*(2 - alpha*alpha))));
+#if PRINT_UPDATES
+  double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
+  printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
+  return tmp;
+#else
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
+#endif
 }
 
 template <class rootfinder>
@@ -92,11 +142,20 @@ double olim3d_rhr_update_rules<rootfinder>::tri23(
 {
   (void) s0;
   (void) s1;
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, h, s);
+#endif
   double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
   assert(1 >= alpha*alpha);
   double lam = std::max(
     0.0, std::min(1.0, sgn*sqrt2*alpha/sqrt(1 - alpha*alpha)));
+#if PRINT_UPDATES
+  double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
+  printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
+  return tmp;
+#else
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
+#endif
 }
 
 template <class rootfinder>
@@ -107,6 +166,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra111(
   (void) s0;
   (void) s1;
   (void) s2;
+
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, u2, h, s);
+#endif
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha2 = fabs(du2/sh);
@@ -137,6 +200,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra111(
       T = std::min(T, lam0*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }
+#if PRINT_UPDATES
+  printf("tetra111(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
+         u0, u1, u2, s, h, T);
+#endif
   return T;
 }
 
@@ -148,6 +215,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
   (void) s0;
   (void) s1;
   (void) s2;
+
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, u2, s, h);
+#endif
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha1_sq = alpha1*alpha1;
@@ -184,6 +255,11 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
     T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }
 
+#if PRINT_UPDATES
+  printf("tetra122(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
+         u0, u1, u2, s, h, T);
+#endif
+
   return T;
 }
 
@@ -195,6 +271,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra123(
   (void) s0;
   (void) s1;
   (void) s2;
+
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, u2, s, h);
+#endif
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double beta1 = (du2 - 2*du1)/sh, beta1_sq = beta1*beta1;
@@ -216,6 +296,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra123(
       T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }
+#if PRINT_UPDATES
+  printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
+         u0, u1, u2, s, h, T);
+#endif
   return T;
 }
 
@@ -227,6 +311,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra222(
   (void) s0;
   (void) s1;
   (void) s2;
+
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, u2, s, h);
+#endif
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha2 = fabs(du2/sh);
@@ -256,6 +344,10 @@ double olim3d_rhr_update_rules<rootfinder>::tetra222(
       T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }
+#if PRINT_UPDATES
+  printf("tetra222(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
+         u0, u1, u2, s, h, T);
+#endif
   return T;
 }
 

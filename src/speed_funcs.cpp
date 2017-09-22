@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "common.defs.hpp"
+
 double default_speed_func(double x, double y) {
   (void) x;
   (void) y;
@@ -32,7 +34,7 @@ double s2(double x, double y) {
 }
 
 double f2(double x, double y) {
-  return (x + y)*(x + y)/(2*std::sqrt(2));
+  return (x + y)*(x + y)/(2*sqrt2);
 }
 
 double s3(double x, double y) {

@@ -1,6 +1,7 @@
 #ifndef __OLIM8_MP1_IMPL_HPP__
 #define __OLIM8_MP1_IMPL_HPP__
 
+#include "common.defs.hpp"
 #include "olim_util.hpp"
 
 template <class Rootfinder>
@@ -14,7 +15,7 @@ template <class Rootfinder>
 double olim8_mp1_update_rules<Rootfinder>::diag1pt(
   double u0, double s, double s0, double h) const
 {
-  return u0 + h*(s + s0)*std::sqrt(2)/2;
+  return u0 + h*(s + s0)*sqrt2/2;
 }
 
 template <class Rootfinder>

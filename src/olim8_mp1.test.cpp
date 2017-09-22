@@ -20,8 +20,7 @@ void neighboring_values_are_correct() {
   olim8_mp1_bsearch m {3, 3, 1};
   m.add_boundary_node(1, 1);
   m.run();
-  double root2 = std::sqrt(2);
-  double gt[] = {root2, 1, root2, 1, 0, 1, root2, 1, root2};
+  double gt[] = {sqrt2, 1, sqrt2, 1, 0, 1, sqrt2, 1, sqrt2};
   int k = 0;
   for (int i = 0; i < 3; ++i) {
     for (int j = 0; j < 3; ++j) {

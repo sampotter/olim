@@ -1,10 +1,9 @@
+#include "common.defs.hpp"
 #include "conics.hpp"
 #include "test.hpp"
 #include "olim_update_rules.hpp"
 
 #include <cmath>
-
-constexpr double pi = 3.141592653589793;
 
 static olim3d_rhr_update_rules<arma_rootfinder> updates;
 

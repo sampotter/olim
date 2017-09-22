@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "common.defs.hpp"
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
 
@@ -20,7 +21,7 @@ double olim3d_rhr_update_rules<rootfinder>::line2(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
-  return u0 + s*h*sqrt(2);
+  return u0 + s*h*sqrt2;
 }
 
 template <class rootfinder>
@@ -28,7 +29,7 @@ double olim3d_rhr_update_rules<rootfinder>::line3(
   double u0, double s, double s0, double h) const
 {
   (void) s0;
-  return u0 + s*h*sqrt(3);
+  return u0 + s*h*sqrt3;
 }
 
 template <class rootfinder>
@@ -79,7 +80,7 @@ double olim3d_rhr_update_rules<rootfinder>::tri23(
   double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
   assert(1 >= alpha*alpha);
   double lam = std::max(
-    0.0, std::min(1.0, sgn*sqrt(2)*alpha/sqrt(1 - alpha*alpha)));
+    0.0, std::min(1.0, sgn*sqrt2*alpha/sqrt(1 - alpha*alpha)));
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
 }
 

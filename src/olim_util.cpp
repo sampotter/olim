@@ -37,7 +37,7 @@ double rhr<2>(double const * p0, double const * dp, double u0, double u1,
   check_params(u0, u1, h, s);
 #endif
 
-  double alpha = (u1 - u0)/s, alpha_sq = alpha*alpha,
+  double sh = s*h, alpha = (u1 - u0)/sh, alpha_sq = alpha*alpha,
     p0normsq = p0[0]*p0[0] + p0[1]*p0[1],
     p0dotdp = p0[0]*dp[0] + p0[1]*dp[1],
     dpnormsq = dp[0]*dp[0] + dp[1]*dp[1],
@@ -75,7 +75,7 @@ double rhr<3>(double const * p0, double const * dp, double u0, double u1,
   check_params(u0, u1, h, s);
 #endif
 
-  double alpha = (u1 - u0)/s, alpha_sq = alpha*alpha,
+  double sh = s*h, alpha = (u1 - u0)/sh, alpha_sq = alpha*alpha,
     p0normsq = p0[0]*p0[0] + p0[1]*p0[1] + p0[2]*p0[2],
     p0dotdp = p0[0]*dp[0] + p0[1]*dp[1] + p0[2]*dp[2],
     dpnormsq = dp[0]*dp[0] + dp[1]*dp[1] + dp[2]*dp[2],

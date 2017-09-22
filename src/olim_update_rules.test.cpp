@@ -130,6 +130,10 @@ void tetra222_is_symmetric() {
   IS_APPROX_EQUAL(val102, val021);
 }
 
+void tetra222_works() {
+  IS_APPROX_EQUAL(updates.tetra222(0, 0, 0, 1, 1, 1, 1, 1), 2.0/sqrt(3));
+}
+
 int main() {
   line1_works();
   line2_works();
@@ -143,6 +147,7 @@ int main() {
   tetra111_works();
   tetra122_is_symmetric();
   tetra222_is_symmetric();
+  tetra222_works();
 }
 
 // Local Variables:

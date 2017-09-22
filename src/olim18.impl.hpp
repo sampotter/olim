@@ -10,8 +10,12 @@
 #include "common.macros.hpp"
 #include "olim18.defs.hpp"
 
-// neighbor order: N, E, U, S, W, D, DS, DW, DE, UE, UN, DN, SW, SE,
-// NE, NW, UW, US---the order of the degree 2 neighbors is critically
+// neighbor order:
+//
+// N, E, U, S, W, D, DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
+// 0, 1, 2, 3, 4, 5, 6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17
+//
+// the order of the degree 2 neighbors is critically
 // important for the hash function DEG2NB to work
 
 template <class node, class update_rules>

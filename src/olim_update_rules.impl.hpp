@@ -1,6 +1,8 @@
 #ifndef __OLIM_UPDATE_RULES_IMPL_HPP__
 #define __OLIM_UPDATE_RULES_IMPL_HPP__
 
+// #define PRINT_UPDATES 1
+
 #include <algorithm>
 #include <cassert>
 #if PRINT_UPDATES
@@ -10,8 +12,6 @@
 #include "common.defs.hpp"
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
-
-#define PRINT_UPDATES 1
 
 template <class rootfinder>
 double olim3d_rhr_update_rules<rootfinder>::line1(

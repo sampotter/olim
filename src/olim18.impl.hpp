@@ -1,10 +1,14 @@
 #ifndef __OLIM18_IMPL_HPP__
 #define __OLIM18_IMPL_HPP__
 
+// #define PRINT_UPDATES 1
+
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
+
 #include "common.macros.hpp"
 #include "olim18.defs.hpp"
-
-#define PRINT_UPDATES 1
 
 // neighbor order: N, E, U, S, W, D, DS, DW, DE, UE, UN, DN, SW, SE,
 // NE, NW, UW, US---the order of the degree 2 neighbors is critically

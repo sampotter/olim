@@ -37,9 +37,91 @@ void tri13_works() {
   IS_APPROX_EQUAL(updates.tri13(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
 }
 
+void tri22_works() {
+  IS_APPROX_EQUAL(updates.tri22(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(6)/2);
+  IS_APPROX_EQUAL(updates.tri22(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+  IS_APPROX_EQUAL(updates.tri22(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+}
+
 void tri23_works() {
   IS_APPROX_EQUAL(updates.tri23(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(3));
   IS_APPROX_EQUAL(updates.tri23(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+}
+
+void tetra111_is_symmetric() {
+  double u0 = 2.5453289254261224;
+  double u1 = 2.5453289254261224;
+  double u2 = 2.2844570503761732;
+  double s = 1, s0 = 1, s1 = 1, s2 = 1, h = 1;
+  double val012 = updates.tetra111(u0, u1, u2, s, s0, s1, s2, h);
+  double val120 = updates.tetra111(u1, u2, u0, s, s1, s2, s0, h);
+  double val201 = updates.tetra111(u2, u0, u1, s, s2, s0, s1, h);
+  double val210 = updates.tetra111(u2, u1, u0, s, s2, s1, s0, h);
+  double val102 = updates.tetra111(u1, u0, u2, s, s1, s0, s2, h);
+  double val021 = updates.tetra111(u0, u2, u1, s, s0, s2, s1, h);
+  IS_APPROX_EQUAL(val012, val120);
+  IS_APPROX_EQUAL(val120, val201);
+  IS_APPROX_EQUAL(val201, val210);
+  IS_APPROX_EQUAL(val210, val102);
+  IS_APPROX_EQUAL(val102, val021);
+
+  u0 = 2.4;
+  u1 = 2.2;
+  u2 = 2.0;
+  val012 = updates.tetra111(u0, u1, u2, s, s0, s1, s2, h);
+  val120 = updates.tetra111(u1, u2, u0, s, s1, s2, s0, h);
+  val201 = updates.tetra111(u2, u0, u1, s, s2, s0, s1, h);
+  val210 = updates.tetra111(u2, u1, u0, s, s2, s1, s0, h);
+  val102 = updates.tetra111(u1, u0, u2, s, s1, s0, s2, h);
+  val021 = updates.tetra111(u0, u2, u1, s, s0, s2, s1, h);
+  IS_APPROX_EQUAL(val012, val120);
+  IS_APPROX_EQUAL(val120, val201);
+  IS_APPROX_EQUAL(val201, val210);
+  IS_APPROX_EQUAL(val210, val102);
+  IS_APPROX_EQUAL(val102, val021);
+}
+
+void tetra122_is_symmetric() {
+  double u0 = 2.4;
+  double u1 = 2.2;
+  double u2 = 2.0;
+  double s = 1, s0 = 1, s1 = 1, s2 = 1, h = 1;
+  double val012 = updates.tetra122(u0, u1, u2, s, s0, s1, s2, h);
+  double val021 = updates.tetra122(u0, u2, u1, s, s0, s2, s1, h);
+  IS_APPROX_EQUAL(val012, val021);
+}
+
+void tetra222_is_symmetric() {
+  double u0 = 2.5453289254261224;
+  double u1 = 2.5453289254261224;
+  double u2 = 2.2844570503761732;
+  double s = 1, s0 = 1, s1 = 1, s2 = 1, h = 1;
+  double val012 = updates.tetra222(u0, u1, u2, s, s0, s1, s2, h);
+  double val120 = updates.tetra222(u1, u2, u0, s, s1, s2, s0, h);
+  double val201 = updates.tetra222(u2, u0, u1, s, s2, s0, s1, h);
+  double val210 = updates.tetra222(u2, u1, u0, s, s2, s1, s0, h);
+  double val102 = updates.tetra222(u1, u0, u2, s, s1, s0, s2, h);
+  double val021 = updates.tetra222(u0, u2, u1, s, s0, s2, s1, h);
+  IS_APPROX_EQUAL(val012, val120);
+  IS_APPROX_EQUAL(val120, val201);
+  IS_APPROX_EQUAL(val201, val210);
+  IS_APPROX_EQUAL(val210, val102);
+  IS_APPROX_EQUAL(val102, val021);
+
+  u0 = 2.4;
+  u1 = 2.2;
+  u2 = 2.0;
+  val012 = updates.tetra222(u0, u1, u2, s, s0, s1, s2, h);
+  val120 = updates.tetra222(u1, u2, u0, s, s1, s2, s0, h);
+  val201 = updates.tetra222(u2, u0, u1, s, s2, s0, s1, h);
+  val210 = updates.tetra222(u2, u1, u0, s, s2, s1, s0, h);
+  val102 = updates.tetra222(u1, u0, u2, s, s1, s0, s2, h);
+  val021 = updates.tetra222(u0, u2, u1, s, s0, s2, s1, h);
+  IS_APPROX_EQUAL(val012, val120);
+  IS_APPROX_EQUAL(val120, val201);
+  IS_APPROX_EQUAL(val201, val210);
+  IS_APPROX_EQUAL(val210, val102);
+  IS_APPROX_EQUAL(val102, val021);
 }
 
 int main() {
@@ -49,7 +131,11 @@ int main() {
   tri11_works();
   tri12_works();
   tri13_works();
+  tri22_works();
   tri23_works();
+  tetra111_is_symmetric();
+  tetra122_is_symmetric();
+  tetra222_is_symmetric();
 }
 
 // Local Variables:

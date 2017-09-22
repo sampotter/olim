@@ -80,6 +80,13 @@ void tetra111_is_symmetric() {
   IS_APPROX_EQUAL(val102, val021);
 }
 
+void tetra111_works() {
+  IS_APPROX_EQUAL(updates.tetra111(1, 0, 0, 1, 1, 1, 1, 1), 1.0);
+  IS_APPROX_EQUAL(updates.tetra111(0, 1, 0, 1, 1, 1, 1, 1), 1.0);
+  IS_APPROX_EQUAL(updates.tetra111(0, 0, 1, 1, 1, 1, 1, 1), 1.0);
+  IS_APPROX_EQUAL(updates.tetra111(0, 0, 0, 1, 1, 1, 1, 1), sqrt(3)/3);
+}
+
 void tetra122_is_symmetric() {
   double u0 = 2.4;
   double u1 = 2.2;
@@ -133,6 +140,7 @@ int main() {
   tri22_works();
   tri23_works();
   tetra111_is_symmetric();
+  tetra111_works();
   tetra122_is_symmetric();
   tetra222_is_symmetric();
 }

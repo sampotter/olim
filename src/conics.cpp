@@ -118,7 +118,7 @@ bool intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
 
   vec m(3), l(3);
 
-  bool split = false;
+  bool split = false, isect_A1 = true;
   if (rank1 == 3 && rank2 == 3) {
     mat const X = A1*inv(A2);
 
@@ -137,6 +137,7 @@ bool intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
     } while (i < nroots && !split);
   } else if (rank1 < rank2) {
     split = split_deg_conic(A1, m, l);
+    isect_A1 = false;
   } else {
     split = split_deg_conic(A2, m, l);
   }
@@ -147,13 +148,13 @@ bool intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
   vec p1(3), p2(3);
   
   n = 0;
-  if (intersect_conic_with_line(A1, m, p1, p2)) {
+  if (intersect_conic_with_line(isect_A1 ? A1 : A2, m, p1, p2)) {
     P[2*n] = p1[0]/p1[2];
     P[2*n++ + 1] = p1[1]/p1[2];
     P[2*n] = p2[0]/p2[2];
     P[2*n++ + 1] = p2[1]/p2[2];
   }
-  if (intersect_conic_with_line(A1, l, p1, p2)) {
+  if (intersect_conic_with_line(isect_A1 ? A1 : A2, l, p1, p2)) {
     P[2*n] = p1[0]/p1[2];
     P[2*n++ + 1] = p1[1]/p1[2];
     P[2*n] = p2[0]/p2[2];

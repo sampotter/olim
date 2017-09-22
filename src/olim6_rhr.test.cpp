@@ -211,17 +211,6 @@ void result_is_symmetric() {
   }
 }
 
-void adj3pt_works() {
-  double u0 = 2.5453289254261224, u1 = 2.5453289254261224,
-    u2 = 2.2844570503761732, s = 1, s0 = 1, s1 = 1, s2 = 1, h = 1;
-  olim3d_rhr_update_rules<arma_rootfinder> rf;
-  double val012 = rf.tetra111(u0, u1, u2, s, s0, s1, s2, h);
-  double val120 = rf.tetra111(u1, u2, u0, s, s1, s2, s0, h);
-  double val201 = rf.tetra111(u2, u0, u1, s, s2, s0, s1, h);
-  IS_APPROX_EQUAL(val012, val120);
-  IS_APPROX_EQUAL(val120, val201);
-}
-
 void two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
@@ -304,7 +293,6 @@ int main() {
   octants_are_correct();
   planes_are_correct();
   result_is_symmetric();
-  adj3pt_works();
   two_by_two_by_three_cells_are_correct();
   agrees_with_basic_marcher_3d();
   plane_boundaries_are_correct();

@@ -20,6 +20,12 @@ void line3_works() {
   IS_APPROX_EQUAL(updates.line3(0.0, 1.0, 1.0, 1.0), sqrt(3));
 }
 
+void tri11_works() {
+  IS_APPROX_EQUAL(updates.tri11(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2)/2);
+  IS_APPROX_EQUAL(updates.tri11(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(updates.tri11(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+}
+
 void tri12_works() {
   IS_APPROX_EQUAL(updates.tri12(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
   IS_APPROX_EQUAL(updates.tri12(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
@@ -40,6 +46,7 @@ int main() {
   line1_works();
   line2_works();
   line3_works();
+  tri11_works();
   tri12_works();
   tri13_works();
   tri23_works();

@@ -19,14 +19,14 @@ s = S{n};
 f = F{n};
 
 methodnames = {'basic', 'olim6_rhr_arma', 'olim18_rhr_arma', 'olim26_rhr_arma'};
+K = length(methodnames);
+for k = 1:K
+    legendnames{k} = strrep(methodnames{k}, '_', '\_');
+end
 
-U = {};
-E_inf = {};
-E_2 = {};
+relerr = @(u, U, p) norm(u(:) - U(:), p)/norm(u(:), p);
 
-relerr = @(method, u, U, p) norm(u(:) - U(:), p)/norm(u(:), p);
-
-k = 1;
+l = 1;
 for M = Ms
     fprintf('M = %d\n', M);
     
@@ -35,20 +35,25 @@ for M = Ms
     h = 2/(M - 1);
     [X Y Z] = meshgrid(linspace(-1, 1, M), linspace(-1, 1, M), linspace(-1, 1, M));
 
-    get_U = @(method) fmm(B, 'h', h, 'Speed', s, 'Method', method, ...
-                          'x0', 1, 'y0', 1, 'z0', 1);
+    get_U = @(method) fmm(...
+        B, ...
+        'h', h, ...
+        'Speed', s, ...
+        'Method', method, ...
+        'x0', 1, ...
+        'y0', 1, ...
+        'z0', 1);
 
     u = f(X, Y, Z);
     u(isnan(u)) = 0;
     
-    for k = 1:length(methodnames)
-        method = methodnames{k};
-        U{k} = get_U(method);
-        E_inf{k} = relerr(method, u, U{k}, 'inf');
-        E_2{k} = relerr(method, u, U{k}, 2);
+    for k = 1:K
+        U = get_U(methodnames{k});
+        E_inf(l, k) = relerr(u, U, 'inf');
+        E_2(l, k) = relerr(u, U, 2);
     end
     
-    k = k + 1;
+    l = l + 1;
 end
 
 figure;
@@ -57,19 +62,17 @@ set(gcf, 'Name', 'Relative Error', 'NumberTitle', 'off');
 getplotsymb = @(index) strcat('-', marks{index});
 
 subplot(1, 2, 1);
-for k = 1:length(methodnames)
-    method = methodnames{k}
-    loglog(Ms, getfield(E_inf, method), getplotsymb(k));
+for k = 1:K
+    loglog(Ms, E_inf(:, k), getplotsymb(k));
     hold on;
 end
 title('l_\infty');
-legend(methodnames);
+legend(legendnames);
 
 subplot(1, 2, 2);
-for k = 1:length(methodnames)
-    method = methodnames{k}
-    loglog(Ms, getfield(E_2, method), getplotsymb(k));
+for k = 1:K
+    loglog(Ms, E_2(:, k), getplotsymb(k));
     hold on;
 end
 title('l_2');
-legend(methodnames);
+legend(legendnames);

@@ -1,7 +1,7 @@
 #ifndef __NEUMANN_MARCHER_3D_IMPL_HPP__
 #define __NEUMANN_MARCHER_3D_IMPL_HPP__
 
-// neighbor order: U, N, E, S, W, D (up -> clockwise from north -> down)
+// neighbor order: N, E, U, S, W, D (up -> clockwise from north -> down)
 
 template <class Node>
 int neumann_marcher_3d<Node>::di[] = {1, 0, 0, -1, 0, 0};

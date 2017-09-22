@@ -1,8 +1,10 @@
 #ifndef __OLIM6_HPP_HPP__
 #define __OLIM6_HPP_HPP__
 
+#include "conics.hpp"
 #include "neumann_marcher_3d.hpp"
 #include "node_3d.hpp"
+#include "olim_update_rules.hpp"
 
 template <class update_rules>
 struct olim6: public neumann_marcher_3d<node_3d>, public update_rules {

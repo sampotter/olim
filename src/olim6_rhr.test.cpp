@@ -214,10 +214,10 @@ void result_is_symmetric() {
 void adj3pt_works() {
   double u0 = 2.5453289254261224, u1 = 2.5453289254261224,
     u2 = 2.2844570503761732, s = 1, s0 = 1, s1 = 1, s2 = 1, h = 1;
-  olim6_rhr_update_rules<arma_rootfinder> rf;
-  double val012 = rf.adj3pt(u0, u1, u2, s, s0, s1, s2, h);
-  double val120 = rf.adj3pt(u1, u2, u0, s, s1, s2, s0, h);
-  double val201 = rf.adj3pt(u2, u0, u1, s, s2, s0, s1, h);
+  olim3d_rhr_update_rules<arma_rootfinder> rf;
+  double val012 = rf.tetra111(u0, u1, u2, s, s0, s1, s2, h);
+  double val120 = rf.tetra111(u1, u2, u0, s, s1, s2, s0, h);
+  double val201 = rf.tetra111(u2, u0, u1, s, s2, s0, s1, h);
   IS_APPROX_EQUAL(val012, val120);
   IS_APPROX_EQUAL(val120, val201);
 }

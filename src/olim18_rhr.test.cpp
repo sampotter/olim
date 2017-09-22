@@ -131,8 +131,8 @@ void quadrants_are_correct() {
 void octants_are_correct() {
   int n = 2;
   double h = 1;
-  for (int i = 0, i_ = 1; i < 2; i_ = (++i + 1) % 2) {
-    for (int j = 0, j_ = 1; j < 2; ++j) {
+  for (int i = 0; i < 2; ++i) {
+    for (int j = 0; j < 2; ++j) {
       for (int k = 0; k < 2; ++k) {
         double x0 = j, y0 = i, z0 = k;
         olim18_rhr_arma m {n, n, n, h, default_speed_func_3d, x0, y0, z0};

@@ -144,25 +144,42 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   }
   
   /**
-   * triangular updates ((1, 2) and (2, 2) 2-pt updates)
-   *
-   * TODO: find a simpler way to do this iteration
+   * (1, 2) triangular updates
    */
   {
-    int dirs[6] = {U, DEG2NB(N, U), N, DEG2NB(N, E), E, DEG2NB(E, U)};
-    do_tri_updates(nb, dirs, s, s_, h, T);
-    
-    dirs[0] = U, dirs[1] = DEG2NB(U, W), dirs[2] = W, dirs[3] = DEG2NB(S, W),
-      dirs[4] = S, dirs[5] = DEG2NB(U, S);
-    do_tri_updates(nb, dirs, s, s_, h, T);
+    int dirs[8] = {U, UN, N, DN, D, DS, S, US};
+    do_tri12_updates(nb, dirs, s, s_, h, T);
 
-    dirs[0] = D, dirs[1] = DEG2NB(W, D), dirs[2] = W, dirs[3] = DEG2NB(N, W),
-      dirs[4] = N, dirs[5] = DEG2NB(N, D);
-    do_tri_updates(nb, dirs, s, s_, h, T);
+    dirs[1] = UE, dirs[2] = E, dirs[3] = DE, dirs[4] = D, dirs[5] = DW,
+      dirs[6] = W, dirs[7] = UW;
+    do_tri12_updates(nb, dirs, s, s_, h, T);
 
-    dirs[0] = D, dirs[1] = DEG2NB(S, D), dirs[2] = S, dirs[3] = DEG2NB(E, S),
-      dirs[4] = E, dirs[5] = DEG2NB(E, D);
-    do_tri_updates(nb, dirs, s, s_, h, T);
+    dirs[0] = N, dirs[1] = NE, dirs[3] = SE, dirs[4] = S, dirs[5] = SW,
+      dirs[7] = NW;
+    do_tri12_updates(nb, dirs, s, s_, h, T);
+  }
+
+  /**
+   * (2, 2) triangular updates
+   */
+  {
+    int dirs[4] = {UN, UE, US, UW};
+    do_tri22_updates(nb, dirs, s, s_, h, T);
+
+    dirs[1] = NE, dirs[2] = DN, dirs[3] = NW;
+    do_tri22_updates(nb, dirs, s, s_, h, T);
+
+    dirs[0] = UW, dirs[1] = SW, dirs[2] = DW;
+    do_tri22_updates(nb, dirs, s, s_, h, T);
+
+    dirs[0] = US, dirs[2] = DS, dirs[3] = SE;
+    do_tri22_updates(nb, dirs, s, s_, h, T);
+
+    dirs[0] = UE, dirs[1] = NE, dirs[2] = DE;
+    do_tri22_updates(nb, dirs, s, s_, h, T);
+
+    dirs[0] = DW, dirs[1] = DN, dirs[3] = DS;
+    do_tri22_updates(nb, dirs, s, s_, h, T);
   }
 
   /**
@@ -209,20 +226,16 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
 #endif
 }
 
-/**
- * TODO: replace this with a macro once it's working
- */
 template <class node, class update_rules>
-void olim18<node, update_rules>::do_tri_updates(
+void olim18<node, update_rules>::do_tri12_updates(
   abstract_node const * const * nb, int const * dirs, double s,
   double const * s_, double h, double & T)
   const
 {
   using std::min;
-  int i, j, l0, l1;
-  for (i = 0, j = 1; i < 6; ++i, j = (i + 1) % 6) {
-    l0 = dirs[i], l1 = dirs[j];
-    if (nb[l0] && nb[l1]) {
+  int l0, l1;
+  for (int i = 0, j = 1; i < 8; j = (++i + 1) % 8) {
+    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) {
       if (i % 2 == 0) {
         T = min(T, this->tri12(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
       } else {
@@ -230,9 +243,18 @@ void olim18<node, update_rules>::do_tri_updates(
       }
     }
   }
-  for (i = 1, j = 3; i < 6; i += 2, j = (i + 2) % 6) {
-    l0 = dirs[i], l1 = dirs[j];
-    if (nb[l0] && nb[l1]) {
+}
+
+template <class node, class update_rules>
+void olim18<node, update_rules>::do_tri22_updates(
+  abstract_node const * const * nb, int const * dirs, double s,
+  double const * s_, double h, double & T)
+  const
+{
+  using std::min;
+  int l0, l1;
+  for (int i = 0, j = 1; i < 4; j = (++i + 1) % 4) {
+    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) {
       T = min(T, this->tri22(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
     }
   }

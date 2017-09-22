@@ -2,6 +2,8 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.0)
 
+set (CMAKE_CXX_FLAGS_DEBUG "-DEIKONAL_DEBUG")
+
 enable_language (Fortran)
 
 option (OLIM8_ADJ_UPDATES
@@ -59,7 +61,6 @@ set (tests
   conics
   heap
   olim_update_rules
-  olim_util
   olim4_rhr_lut
   olim6_rhr
   olim8_mp0

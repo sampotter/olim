@@ -19,6 +19,13 @@ void line3_works() {
   IS_APPROX_EQUAL(updates.line3(0.0, 1.0, 1.0, 1.0), sqrt(3));
 }
 
+void tri11_is_symmetric() {
+  double u0 = 0.0, u1 = 0.1, s = 1, h = 1;
+  double val01 = updates.tri11(u0, u1, s, s, s, h);
+  double val10 = updates.tri11(u1, u0, s, s, s, h);
+  IS_APPROX_EQUAL(val01, val10);
+}
+
 void tri11_works() {
   IS_APPROX_EQUAL(updates.tri11(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2)/2);
   IS_APPROX_EQUAL(updates.tri11(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
@@ -40,6 +47,13 @@ void tri22_works() {
   IS_APPROX_EQUAL(updates.tri22(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(6)/2);
   IS_APPROX_EQUAL(updates.tri22(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
   IS_APPROX_EQUAL(updates.tri22(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+}
+
+void tri22_is_symmetric() {
+  double u0 = 0.0, u1 = 0.1, s = 1, h = 1;
+  double val01 = updates.tri22(u0, u1, s, s, s, h);
+  double val10 = updates.tri22(u1, u0, s, s, s, h);
+  IS_APPROX_EQUAL(val01, val10);
 }
 
 void tri23_works() {
@@ -138,9 +152,11 @@ int main() {
   line1_works();
   line2_works();
   line3_works();
+  tri11_is_symmetric();
   tri11_works();
   tri12_works();
   tri13_works();
+  tri22_is_symmetric();
   tri22_works();
   tri23_works();
   tetra111_is_symmetric();

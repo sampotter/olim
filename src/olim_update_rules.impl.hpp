@@ -1,6 +1,9 @@
 #ifndef __OLIM_UPDATE_RULES_IMPL_HPP__
 #define __OLIM_UPDATE_RULES_IMPL_HPP__
 
+#include <algorithm>
+#include <cassert>
+
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
 

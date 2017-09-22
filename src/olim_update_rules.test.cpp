@@ -1,10 +1,12 @@
+#include "conics.hpp"
 #include "test.hpp"
+#include "olim_update_rules.hpp"
 
 #include <cmath>
 
 constexpr double pi = 3.141592653589793;
 
-static olim26_rhr_update_rules<arma_rootfinder> updates;
+static olim3d_rhr_update_rules<arma_rootfinder> updates;
 
 void line1_works() {
   IS_APPROX_EQUAL(updates.line1(0.0, 1.0, 1.0, 1.0), 1.0);

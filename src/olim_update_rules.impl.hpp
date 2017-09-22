@@ -68,7 +68,22 @@ double olim3d_rhr_update_rules<rootfinder>::tri22(
 {
   (void) s0;
   (void) s1;
-  return rhr_3d_22(u0, u1, s, h);
+#ifdef EIKONAL_DEBUG
+  check_params(u0, u1, h, s);
+#endif
+  double du = u1 - u0, sh = s*h, alpha = du/sh, alpha_sq = alpha*alpha;
+  double disc = 1 - 2*(2*alpha_sq - 1)/(alpha_sq - 2);
+  assert(disc >= 0);
+  double lam = std::max(
+    0.0, std::min(1.0, (1 + (u0 > u1 ? 1 : -1)*std::sqrt(disc))/2));
+  double llam = sqrt(2*(lam*(lam - 1) + 1));
+#if PRINT_UPDATES
+  double tmp = (1 - lam)*u0 + lam*u1 + sh*llam;
+  printf("tri22(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
+  return tmp;
+#else
+  return (1 - lam)*u0 + lam*u1 + sh*llam;
+#endif
 }
 
 template <class rootfinder>

@@ -212,6 +212,9 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
 {
+  using std::min;
+  using std::sqrt;
+
   (void) s0;
   (void) s1;
   (void) s2;
@@ -223,36 +226,33 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha1_sq = alpha1*alpha1;
   double alpha2 = fabs(du2/sh), alpha2_sq = alpha2*alpha2;
-
-  assert(fabs(1 - 2*alpha1_sq*alpha2_sq) > 1e-13);
-  double denom = sqrt(1 - 2*alpha1_sq*alpha2_sq);
+  double denom = sqrt(1 - alpha1_sq - alpha2_sq);
+  double lam1 = alpha1/denom;
+  double lam2 = alpha2/denom;
 
   double T = std::numeric_limits<double>::infinity();
-  double lam1, lam2, l;
 
-  lam1 = sqrt(alpha1_sq + (alpha2_sq + alpha1_sq)*alpha2_sq)/denom;
-  lam2 = sqrt((alpha1_sq - alpha2_sq)*alpha2_sq + alpha2_sq)/denom;
-  l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l/sh + lam1) < 1e-13 && fabs(du2*l/sh + lam2) < 1e-13) {
-    T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
+  double l = sqrt(1 + lam1*lam1 + lam2*lam2);
+  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
+    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }
 
   lam1 = -lam1;
   l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l/sh + lam1) < 1e-13 && fabs(du2*l/sh + lam2) < 1e-13) {
-    T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
+  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
+    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }
 
   lam2 = -lam2;
   l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l/sh + lam1) < 1e-13 && fabs(du2*l/sh + lam2) < 1e-13) {
-    T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
+  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
+    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }
 
   lam1 = -lam1;
   l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l/sh + lam1) < 1e-13 && fabs(du2*l/sh + lam2) < 1e-13) {
-    T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
+  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
+    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }
 
 #if PRINT_UPDATES

@@ -1,7 +1,9 @@
 #ifndef __OLIM_UPDATE_RULES_IMPL_HPP__
 #define __OLIM_UPDATE_RULES_IMPL_HPP__
 
-// #define PRINT_UPDATES 1
+#if EIKONAL_DEBUG
+#    define PRINT_UPDATES 1
+#endif
 
 #include <algorithm>
 #include <cassert>

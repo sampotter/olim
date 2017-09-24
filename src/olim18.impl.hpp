@@ -1,7 +1,9 @@
 #ifndef __OLIM18_IMPL_HPP__
 #define __OLIM18_IMPL_HPP__
 
-// #define PRINT_UPDATES 1
+#if EIKONAL_DEBUG
+#    define PRINT_UPDATES 1
+#endif
 
 #if PRINT_UPDATES
 #    include <cstdio>

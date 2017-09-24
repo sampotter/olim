@@ -225,18 +225,27 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
   check_params(u0, u1, u2, s, h);
 #endif
 
+  double T = std::numeric_limits<double>::infinity();
+
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha1_sq = alpha1*alpha1;
   double alpha2 = fabs(du2/sh), alpha2_sq = alpha2*alpha2;
+
+  if (alpha1_sq + alpha2_sq >= 1) {
+    return T;
+  }
+
   double denom = sqrt(1 - alpha1_sq - alpha2_sq);
   double lam1 = alpha1/denom;
   double lam2 = alpha2/denom;
 
   assert(lam1 >= 0);
   assert(lam2 >= 0);
-  assert(1 - lam1 - lam2 >= 0);
 
-  double T = std::numeric_limits<double>::infinity();
+  double lam0 = 1 - lam1 - lam2;
+  if (lam0 < 0) {
+    return T;
+  }
 
   double l = sqrt(1 + lam1*lam1 + lam2*lam2);
   if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {

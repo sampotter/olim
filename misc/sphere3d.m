@@ -27,7 +27,7 @@ for k = 1:length(methodnames)
     title(strrep(method, '_', '\_'));
     isosurface(x, y, z, U, 1);
     colormap gray;
-    view(3);
+    view([0 0]);
     camlight;
     lighting flat;
 end

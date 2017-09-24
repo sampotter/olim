@@ -22,17 +22,26 @@
 
 template <class node, class update_rules>
 int olim18<node, update_rules>::di[] = {
-  1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 1, 1, -1, -1, 1, 1, 0, -1
+// N, E, U,  S, W, D
+   1, 0, 0, -1, 0, 0,
+// DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
+   -1, 0,  0,  0,  1,  1, -1, -1,  1,  1,  0,  -1
 };
 
 template <class node, class update_rules>
 int olim18<node, update_rules>::dj[] = {
-  0, 1, 0, 0, -1, 0, 0, -1, 1, 1, 0, 0, -1, 1, 1, -1, -1, 0
+// N, E, U, S, W,  D
+   0, 1, 0, 0, -1, 0,
+// DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
+   0,  -1, 1,  1,  0,  0,  -1, 1,  1,  -1, -1, 0
 };
 
 template <class node, class update_rules>
 int olim18<node, update_rules>::dk[] = {
-  0, 0, 1, 0, 0, -1, -1, -1, -1, 1, 1, -1, 0, 0, 0, 0, 1, 1
+// N, E, U, S, W, D
+   0, 0, 1, 0, 0, -1,
+// DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
+   -1, -1, -1, 1,  1,  -1, 0,  0,  0,  0,  1,  1
 };
 
 template <class node, class update_rules>

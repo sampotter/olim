@@ -232,27 +232,13 @@ double olim3d_rhr_update_rules<rootfinder>::tetra122(
   double lam1 = alpha1/denom;
   double lam2 = alpha2/denom;
 
+  assert(lam1 >= 0);
+  assert(lam2 >= 0);
+  assert(1 - lam1 - lam2 >= 0);
+
   double T = std::numeric_limits<double>::infinity();
 
   double l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
-    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
-  }
-
-  lam1 = -lam1;
-  l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
-    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
-  }
-
-  lam2 = -lam2;
-  l = sqrt(1 + lam1*lam1 + lam2*lam2);
-  if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
-    T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
-  }
-
-  lam1 = -lam1;
-  l = sqrt(1 + lam1*lam1 + lam2*lam2);
   if (fabs(du1*l + sh*lam1) < 1e-13 && fabs(du2*l + sh*lam2) < 1e-13) {
     T = min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
   }

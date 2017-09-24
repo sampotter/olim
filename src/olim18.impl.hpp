@@ -197,42 +197,81 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     do_tri22_updates(nb, dirs, s, s_, h, T);
   }
 
+  // TODO: eliminate the code duplication below
+
   /**
-   * tetrahedral updates
+   * upper octant tetrahedral updates
    */
-  for (l0 = U; l0 != D; l0 = D) {
-    for (l = 0, l1 = N, l2 = E;
-         l < 4;
-         ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
-      l01 = DEG2NB(min(l0, l1), max(l0, l1));
-      l02 = DEG2NB(min(l0, l2), max(l0, l2));
-      l12 = DEG2NB(min(l1, l2), max(l1, l2));
+  l0 = U;
+  for (l = 0, l1 = N, l2 = E;
+       l < 4;
+       ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
+    l01 = DEG2NB(min(l0, l1), max(l0, l1));
+    l02 = DEG2NB(min(l0, l2), max(l0, l2));
+    l12 = DEG2NB(min(l1, l2), max(l1, l2));
 
-      /*
-       * (1, 2, 2) 3-pt updates
-       */
-      if (nb[l0] && nb[l01] && nb[l02]) {
+    /*
+     * (1, 2, 2) 3-pt updates
+     */
+    if (nb[l0] && nb[l01] && nb[l02]) {
+      T = min(T, this->tetra122(
+                VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h));
+    }
+    if (nb[l12]) {
+      if (nb[l1] && nb[l01]) {
         T = min(T, this->tetra122(
-          VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h));
+                  VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h));
       }
-      if (nb[l12]) {
-        if (nb[l1] && nb[l01]) {
-          T = min(T, this->tetra122(
-            VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h));
-        }
-        if (nb[l2] && nb[l02]) {
-          T = min(T, this->tetra122(
-            VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h));
-        }
+      if (nb[l2] && nb[l02]) {
+        T = min(T, this->tetra122(
+                  VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h));
       }
+    }
 
-      /*
-       * (2, 2, 2) 3-pt update
-       */
-      if (nb[l01] && nb[l02] && nb[l12]) {
-        T = min(T, this->tetra222(
-          VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12], h));
+    /*
+     * (2, 2, 2) 3-pt update
+     */
+    if (nb[l01] && nb[l02] && nb[l12]) {
+      T = min(T, this->tetra222(
+                VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12], h));
+    }
+  }
+
+  /**
+   * lower octant tetrahedral updates
+   */
+  l0 = D;
+  for (l = 0, l1 = N, l2 = E;
+       l < 4;
+       ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
+    l01 = DEG2NB(min(l0, l1), max(l0, l1));
+    l02 = DEG2NB(min(l0, l2), max(l0, l2));
+    l12 = DEG2NB(min(l1, l2), max(l1, l2));
+
+    /*
+     * (1, 2, 2) 3-pt updates
+     */
+    if (nb[l0] && nb[l01] && nb[l02]) {
+      T = min(T, this->tetra122(
+                VAL(l0), VAL(l01), VAL(l02), s, s_[l0], s_[l01], s_[l02], h));
+    }
+    if (nb[l12]) {
+      if (nb[l1] && nb[l01]) {
+        T = min(T, this->tetra122(
+                  VAL(l1), VAL(l01), VAL(l12), s, s_[l1], s_[l01], s_[l12], h));
       }
+      if (nb[l2] && nb[l02]) {
+        T = min(T, this->tetra122(
+                  VAL(l2), VAL(l02), VAL(l12), s, s_[l2], s_[l02], s_[l12], h));
+      }
+    }
+
+    /*
+     * (2, 2, 2) 3-pt update
+     */
+    if (nb[l01] && nb[l02] && nb[l12]) {
+      T = min(T, this->tetra222(
+                VAL(l01), VAL(l02), VAL(l12), s, s_[l01], s_[l02], s_[l12], h));
     }
   }
 

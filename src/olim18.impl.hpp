@@ -62,6 +62,10 @@ void olim18<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
 
+#if PRINT_UPDATES
+  printf("olim18::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
+
   for (int l = 0; l < 18; ++l) {
     this->stage(i + di[l], j + dj[l], k + dk[l]);
   }

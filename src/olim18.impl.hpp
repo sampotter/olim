@@ -120,7 +120,7 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   get_valid_neighbors(i, j, k, nb);
 
   double h = this->get_h(), s = this->speed(i, j, k), s_[18];
-  int l, l0, l1, l2, lmin, lmax, l01, l02, l12;
+  int l, l0, l1, l2, l01, l02, l12;
 
   for (l = 0; l < 18; ++l) {
     if (nb[l]) {
@@ -191,9 +191,9 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
     for (l = 0, l1 = N, l2 = E;
          l < 4;
          ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
-      lmin = min(l0, l1), lmax = max(l0, l1), l01 = DEG2NB(l0, l1);
-      lmin = min(l0, l2), lmax = max(l0, l2), l02 = DEG2NB(l0, l2);
-      lmin = min(l1, l2), lmax = max(l1, l2), l12 = DEG2NB(l1, l2);
+      l01 = DEG2NB(min(l0, l1), max(l0, l1));
+      l02 = DEG2NB(min(l0, l2), max(l0, l2));
+      l12 = DEG2NB(min(l1, l2), max(l1, l2));
 
       /*
        * (1, 2, 2) 3-pt updates

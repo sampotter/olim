@@ -211,8 +211,9 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   for (a = 0, l0 = 18; a < 8; ++a, ++l0) {
     is = olim26_defs::line3tris[a];
     if (nb[l0]) {
-      for (b = 0, l1 = *is, l2 = is[(b + 1) % 6]; b < 6;
-           l1 = is[++b], l2 = is[(b + 1) % 6]) {
+      for (b = 0, l1 = is[0], l2 = is[1];
+           b < 6;
+           ++b, l1 = is[b % 6], l2 = is[(b + 1) % 6]) {
         if (nb[l1] && nb[l2]) {
           if (b % 2 == 0) {
             Tnew = this->tetra123(

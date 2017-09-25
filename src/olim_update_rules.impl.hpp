@@ -273,10 +273,13 @@ double olim3d_rhr_update_rules<rootfinder>::tetra123(
 #endif
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
-  double beta1 = (du2 - 2*du1)/sh, beta1_sq = beta1*beta1;
-  double beta2 = (du1 - du2)/sh, beta2_sq = beta2*beta2;
-  double AQ1[6] = {beta1_sq - 1, 2*beta1_sq, 2*beta1_sq, 0, 0, beta1_sq};
-  double AQ2[6] = {beta2_sq, 2*beta2_sq, 2*beta2_sq - 1, 0, 0, beta2_sq};
+  double alpha1 = fabs(du1/sh), alpha1_sq = alpha1*alpha1;
+  double alpha2 = fabs(du2/sh), alpha2_sq = alpha2*alpha2;
+
+  double AQ1[6] = {
+    alpha1_sq - 1, 2*alpha1_sq - 2, 2*alpha1_sq - 1, 0, 0, alpha1_sq};
+  double AQ2[6] = {
+    2*alpha2_sq - 1, 4*alpha2_sq - 4, 4*alpha2_sq - 4, 0, 0, alpha2_sq};
 
   int n = 0;
   double isects[8];
@@ -287,8 +290,9 @@ double olim3d_rhr_update_rules<rootfinder>::tetra123(
   for (int i = 0; i < n; i += 2) {
     lam1 = isects[i];
     lam2 = isects[i + 1];
-    l = sqrt(lam1*lam1 + 2*lam2*(lam1 + lam2) + 1);
-    if (fabs(lam1 + l*beta1) < 1e-13 && fabs(lam2 + l*beta2) < 1e-13) {
+    l = sqrt(lam1*lam1 + 2*lam2*lam1 + 2*lam2*lam2 + 1);
+    if (fabs(alpha1*l + lam1 + lam2) < 1e-13 &&
+        fabs(alpha2*l + lam1 + 2*lam2) < 1e-13) {
       T = std::min(T, (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }

@@ -1,5 +1,9 @@
 #cmakedefine OLIM8_ADJ_UPDATES @OLIM8_ADJ_UPDATES@
 
+#if EIKONAL_DEBUG
+#cmakedefine PRINT_UPDATES @PRINT_UPDATES@
+#endif
+
 // Local Variables:
 // indent-tabs-mode: nil
 // End:

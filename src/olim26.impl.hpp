@@ -101,14 +101,14 @@ namespace olim26_defs {
   };
 
   int line3tris[8][6] = {
-    {U,  N,  E, UN, UE, NE}, // UNE
-    {U,  S,  E, US, UE, SE}, // USE
-    {U,  S,  W, US, UW, SW}, // USW
-    {U,  N,  W, UN, UW, NW}, // UNW
-    {D,  N,  E, DN, DE, NE}, // DNE
-    {D,  S,  E, DS, DE, SE}, // DSE
-    {D,  S,  W, DS, DW, SW}, // DSW
-    {D,  N,  W, DN, DW, NW}, // DNW
+    {U, UN, N, NE, E, UE}, // UNE
+    {U, US, S, SE, E, UE}, // USE
+    {U, UW, W, SW, S, US}, // USW
+    {U, UN, N, NW, W, UW}, // UNW
+    {D, DN, N, NE, E, DE}, // DNE
+    {D, DS, S, SE, E, DE}, // DSE
+    {D, DS, S, SW, W, DW}, // DSW
+    {D, DN, N, NW, W, DW}, // DNW
   };
 }
 

@@ -141,35 +141,15 @@ void octants_are_correct() {
         olim26_rhr_arma m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
         m.add_boundary_node(i, j, k);
         m.run();
-        printf("%d, %d, %d\n", i, j, k);
-        printf("- %d, %d, %d: %g\n", i, j, k, m.get_value(i, j, k));
-        printf("- %d, %d, %d: %g\n",
-               (i + 1) % 2, j, k, m.get_value((i + 1) % 2, j, k));
-        printf("- %d, %d, %d: %g\n",
-               i, (j + 1) % 2, k, m.get_value(i, (j + 1) % 2, k));
-        printf("- %d, %d, %d: %g\n",
-               i, j, (k + 1) % 2, m.get_value(i, j, (k + 1) % 2));
-        printf("- %d, %d, %d: %g\n",
-               (i + 1) % 2, (j + 1) % 2, k,
-               m.get_value((i + 1) % 2, (j + 1) % 2, k));
-        printf("- %d, %d, %d: %g\n",
-               (i + 1) % 2, j, (k + 1) % 2,
-               m.get_value((i + 1) % 2, j, (k + 1) % 2));
-        printf("- %d, %d, %d: %g\n",
-               i, (j + 1) % 2, (k + 1) % 2,
-               m.get_value(i, (j + 1) % 2, (k + 1) % 2));
-        printf("- %d, %d, %d: %g\n",
-               (i + 1) % 2, (j + 1) % 2, (k + 1) % 2,
-               m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2));
-        // IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
-        // IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
-        // IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
-        // IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
-        // IS_APPROX_EQUAL(m.get_value((i + 1) % 2, (j + 1) % 2, k), sqrt(2));
-        // IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, (k + 1) % 2), sqrt(2));
-        // IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, (k + 1) % 2), sqrt(2));
-        // IS_APPROX_EQUAL(
-        //   m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2), 1.0 + 2/sqrt(3));
+        IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
+        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
+        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
+        IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
+        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, (j + 1) % 2, k), sqrt(2));
+        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, (k + 1) % 2), sqrt(2));
+        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, (k + 1) % 2), sqrt(2));
+        IS_APPROX_EQUAL(
+          m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2), sqrt(3));
       }
     }
   }
@@ -300,7 +280,7 @@ void plane_boundaries_are_correct() {
 }
 
 int main() {
-  // quadrants_are_correct();
+  quadrants_are_correct();
   octants_are_correct();
   // planes_are_correct();
   // result_is_symmetric();

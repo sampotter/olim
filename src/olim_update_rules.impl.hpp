@@ -100,9 +100,9 @@ double olim3d_rhr_update_rules<rootfinder>::tri13(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
-  assert(2 > alpha*alpha);
-  double lam = std::max(0.0, std::min(1.0, sgn*alpha/sqrt(2*(2 - alpha*alpha))));
+  double sh = s*h, alpha = fabs(u1 - u0)/sh, alpha_sq = alpha*alpha;
+  assert(2 >= alpha_sq);
+  double lam = std::max(0.0, std::min(1.0, alpha/sqrt(2*(2 - alpha_sq))));
 #if PRINT_UPDATES
   double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
   printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
@@ -145,10 +145,11 @@ double olim3d_rhr_update_rules<rootfinder>::tri23(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, sgn = u0 > u1 ? 1 : -1;
-  assert(1 >= alpha*alpha);
-  double lam = std::max(
-    0.0, std::min(1.0, sgn*sqrt2*alpha/sqrt(1 - alpha*alpha)));
+  double sh = s*h, alpha = fabs(u1 - u0)/sh, alpha_sq = alpha*alpha;
+  if (alpha_sq > 1) {
+    return std::numeric_limits<double>::infinity();
+  }
+  double lam = std::max(0.0, std::min(1.0, sqrt2*alpha/sqrt(1 - alpha_sq)));
 #if PRINT_UPDATES
   double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
   printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);

@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include "common.defs.hpp"
 #include "olim_util.hpp"
 
 double olim8_rhr_update_rules::adj1pt(double u0, double s, double s0,
@@ -20,7 +21,7 @@ double olim8_rhr_update_rules::adj2pt(double u0, double u1, double s, double s0,
 double olim8_rhr_update_rules::diag1pt(double u0, double s, double s0,
                                        double h) const {
   (void) s0;
-  return u0 + s*h*std::sqrt(2);
+  return u0 + s*h*sqrt2;
 }
 
 double olim8_rhr_update_rules::diag2pt(double u0, double u1, double s,

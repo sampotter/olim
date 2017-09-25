@@ -2,6 +2,7 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.0)
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 
 enable_language (Fortran)
@@ -10,6 +11,7 @@ option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES
   "Output individual updates for debugging." OFF)
+
 configure_file (src/config.hpp.in src/config.hpp)
 include_directories (${PROJECT_BINARY_DIR})
 

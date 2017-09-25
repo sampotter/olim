@@ -202,7 +202,7 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
           if (b % 2 == 0) {
             Tnew = this->tetra123(
               VAL(l1), VAL(l2), VAL(l0), s, s_[l1], s_[l2], s_[l0], h);
-            if (ISINF(Tnew)) {
+            if (std::isinf(Tnew)) {
               T = min(T, this->tri12(VAL(l1), VAL(l2), s, s_[l1], s_[l2], h));
               T = min(T, this->tri13(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
               T = min(T, this->tri23(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
@@ -212,7 +212,7 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
           } else {
             Tnew = this->tetra123(
               VAL(l2), VAL(l1), VAL(l0), s, s_[l2], s_[l1], s_[l0], h);
-            if (ISINF(Tnew)) {
+            if (std::isinf(Tnew)) {
               T = min(T, this->tri12(VAL(l2), VAL(l1), s, s_[l2], s_[l1], h));
               T = min(T, this->tri13(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
               T = min(T, this->tri23(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));

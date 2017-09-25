@@ -21,21 +21,21 @@
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::di[] = {
-  0, 1, 0, -1, 0, 0,
+  1, 0, 0, -1, 0, 0,
   1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
   1, -1, -1, 1, 1, -1, -1, 1
 };
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::dj[] = {
-  0, 0, 1, 0, -1, 0,
+  0, 1, 0, 0, -1, 0,
   0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
   1, 1, -1, -1, 1, 1, -1, -1
 };
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::dk[] = {
-  1, 0, 0, 0, 0, -1,
+  0, 0, 1, 0, 0, -1,
   1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
   1, 1, 1, 1, -1, -1, -1, -1
 };

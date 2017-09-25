@@ -12,9 +12,12 @@
 #include "olim26.defs.hpp"
 
 // neighbor order:
-// degree 1: U, N, E, S, W, D
+// degree 1: N, E, U, S, W, D
+//           0, 1, 2, 3, 4, 5
 // degree 2: UN, UE, US, UW, NE, SE, SW, NW, DN, DE, DS, DW
+//           6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17
 // degree 3: UNE, USE, USW, UNW, DNE, DSE, DSW, DNW
+//           18,  19,  20,  21,  22,  23,  24,  25
 
 template <class node, class update_rules>
 int olim26<node, update_rules>::di[] = {

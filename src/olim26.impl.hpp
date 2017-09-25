@@ -1,8 +1,12 @@
 #ifndef __OLIM26_IMPL_HPP__
 #define __OLIM26_IMPL_HPP__
 
+#include <src/config.hpp>
+
 #include <algorithm>
-#include <cstdio>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 #include "common.macros.hpp"
 #include "olim26.defs.hpp"
@@ -50,6 +54,10 @@ void olim26<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
+
+#if PRINT_UPDATES
+  printf("olim26::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
   for (int l = 0; l < 26; ++l) {
     this->stage(i + di[l], j + dj[l], k + dk[l]);
@@ -105,6 +113,10 @@ template <class node, class update_rules>
 void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   using namespace olim26_defs;
   using std::min;
+
+#ifdef PRINT_UPDATES
+  printf("olim26::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
   abstract_node * nb[26];
   memset(nb, 0x0, 26*sizeof(abstract_node *));
@@ -224,6 +236,10 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
       }
     }
   }
+
+#ifdef PRINT_UPDATES
+  printf("olim26::update_impl: T <- %g\n", T);
+#endif
 }
 
 #endif // __OLIM26_IMPL_HPP__

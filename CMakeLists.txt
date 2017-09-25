@@ -2,7 +2,6 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.0)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 
 enable_language (Fortran)
@@ -11,6 +10,15 @@ option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES
   "Output individual updates for debugging." OFF)
+
+# If we have a macro like PRINT_UPDATES defined, because of the way
+# the preprocessor works, it's helpful to turn this warning on to make
+# sure that we're using PRINT_UPDATES correctly. If we don't have it
+# defined, then turning this warning on just spams us during our
+# builds.
+if (${PRINT_UPDATES})
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
+endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)
 include_directories (${PROJECT_BINARY_DIR})

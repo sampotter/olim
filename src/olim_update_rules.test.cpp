@@ -95,10 +95,21 @@ void tetra111_is_symmetric() {
 }
 
 void tetra111_works() {
+  // basic tests:
   IS_APPROX_EQUAL(updates.tetra111(1, 0, 0, 1, 1, 1, 1, 1), 1.0);
   IS_APPROX_EQUAL(updates.tetra111(0, 1, 0, 1, 1, 1, 1, 1), 1.0);
   IS_APPROX_EQUAL(updates.tetra111(0, 0, 1, 1, 1, 1, 1, 1), 1.0);
   IS_APPROX_EQUAL(updates.tetra111(0, 0, 0, 1, 1, 1, 1, 1), sqrt(3)/3);
+
+  // more particular tests (e.g., examples gotten from debugging):
+  {
+    double u0 = 1.747747429360982;
+    double u1 = 1.747767960250352;
+    double u2 = 1.769848679685869;
+    double s = 1.0;
+    double h = 0.142857;
+    IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), 1.8309);
+  }
 }
 
 void tetra122_is_symmetric() {

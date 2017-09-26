@@ -33,7 +33,11 @@ namespace test {
                        T tol = 1e-7) {
     static_assert(std::is_floating_point<T>::value);
     T const val = std::fabs(t - t_hat)/std::fabs(t);
-    if (val > tol) {
+    if (std::isnan(val)) {
+      fprintf(stdout, "failure (%s:%d): |%g - %g| == %g > %g\n",
+              filename, line, t, t_hat, val, tol);
+      std::abort();
+    } else if (val > tol) {
       fprintf(stdout, "failure (%s:%d): %g > %g\n", filename, line, val, tol);
       std::abort();
     }

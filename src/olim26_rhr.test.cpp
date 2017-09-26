@@ -209,7 +209,7 @@ void planes_are_correct() {
 }
 
 void result_is_symmetric() {
-  int n = 5;
+  int n = 7;
   double x0 = (n - 1.0)/2.0, y0 = x0, z0 = x0;
   olim26_rhr_arma m {n, n, n, 1.0, default_speed_func_3d, x0, y0, z0};
   m.add_boundary_node(n/2, n/2, n/2);

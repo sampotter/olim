@@ -253,13 +253,14 @@ void two_by_two_by_three_cells_are_correct() {
 void agrees_with_basic_marcher_3d() {
   int n = 15;
   double h = 2.0/(n - 1);
+  int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
   basic_marcher_3d m3d {n, n, n, h, default_speed_func_3d, 1, 1, 1};
-  m3d.add_boundary_node((n - 1)/2, (n - 1)/2, (n - 1)/2);
+  m3d.add_boundary_node(i0, j0, k0);
   m3d.run();
 
   olim6_rhr_arma m6 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
-  m6.add_boundary_node((n - 1)/2, (n - 1)/2, (n - 1)/2);
+  m6.add_boundary_node(i0, j0, k0);
   m6.run();
 
   for (int i = 0; i < n; ++i) {

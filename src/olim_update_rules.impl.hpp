@@ -100,17 +100,30 @@ double olim3d_rhr_update_rules<rootfinder>::tri13(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, alpha_sq = alpha*alpha;
+  double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
   if (alpha_sq > 2) {
     return std::numeric_limits<double>::infinity();
   }
-  double lam = std::max(0.0, std::min(1.0, alpha/sqrt(2*(2 - alpha_sq))));
+  double lam = alpha/sqrt(2*(2 - alpha_sq)), l = sqrt(1 + 2*lam*lam);
+  if (fabs(du*l + 2*sh*lam) < 1e-13) {
+    if (lam < 0 || lam > 1) {
+      return std::numeric_limits<double>::infinity();
+    }
+  } else {
+    lam = -lam;
+    l = sqrt(1 + 2*lam*lam);
+  }
+  if (fabs(du*l + 2*sh*lam) < 1e-13) {
+    if (lam < 0 || lam > 1) {
+      return std::numeric_limits<double>::infinity();
+    }
+  }
 #if PRINT_UPDATES
-  double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
+  double tmp = (1 - lam)*u0 + lam*u1 + sh*l;
   printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
   return tmp;
 #else
-  return (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);
+  return (1 - lam)*u0 + lam*u1 + sh*l;
 #endif
 }
 
@@ -147,17 +160,30 @@ double olim3d_rhr_update_rules<rootfinder>::tri23(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
-  double sh = s*h, alpha = fabs(u1 - u0)/sh, alpha_sq = alpha*alpha;
+  double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
   if (alpha_sq > 1) {
     return std::numeric_limits<double>::infinity();
   }
-  double lam = std::max(0.0, std::min(1.0, sqrt2*alpha/sqrt(1 - alpha_sq)));
+  double lam = sqrt2*alpha/sqrt(1 - alpha_sq), l = sqrt(2 + lam*lam);
+  if (fabs(du*l + sh*lam) < 1e-13) {
+    if (lam < 0 || lam > 1) {
+      return std::numeric_limits<double>::infinity();
+    }
+  } else {
+    lam = -lam;
+    l = sqrt(2 + lam*lam);
+  }
+  if (fabs(du*l + sh*lam) < 1e-13) {
+    if (lam < 0 || lam > 1) {
+      return std::numeric_limits<double>::infinity();
+    }
+  }
 #if PRINT_UPDATES
-  double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
+  double tmp = (1 - lam)*u0 + lam*u1 + sh*l;
   printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
   return tmp;
 #else
-  return (1 - lam)*u0 + lam*u1 + sh*sqrt(2 + lam*lam);
+  return (1 - lam)*u0 + lam*u1 + sh*l;
 #endif
 }
 

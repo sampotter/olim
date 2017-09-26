@@ -131,7 +131,7 @@ void quadrants_are_correct() {
   }
 }
 
-void octants_are_correct() {
+void two_by_two_by_two_octants_are_correct() {
   int n = 2;
   double h = 1;
   for (int i = 0; i < 2; ++i) {
@@ -156,7 +156,7 @@ void octants_are_correct() {
 }
 
 void planes_are_correct() {
-  int n = 21;
+  int n = 3;
   double h = 1.0/(n/2);
   
   olim8_rhr m8 {n, n, h, default_speed_func, 1, 1};
@@ -209,8 +209,9 @@ void planes_are_correct() {
 }
 
 void result_is_symmetric() {
-  int n = 11;
-  olim26_rhr_arma m {n, n, n, 1.0, default_speed_func_3d, 1.0, 1.0, 1.0};
+  int n = 5;
+  double x0 = (n - 1.0)/2.0, y0 = x0, z0 = x0;
+  olim26_rhr_arma m {n, n, n, 1.0, default_speed_func_3d, x0, y0, z0};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
@@ -281,11 +282,11 @@ void plane_boundaries_are_correct() {
 
 int main() {
   quadrants_are_correct();
-  octants_are_correct();
-  // planes_are_correct();
-  // result_is_symmetric();
-  // two_by_two_by_three_cells_are_correct();
-  // plane_boundaries_are_correct();
+  two_by_two_by_two_octants_are_correct();
+  planes_are_correct();
+  result_is_symmetric();
+  two_by_two_by_three_cells_are_correct();
+  plane_boundaries_are_correct();
 }
 
 // Local Variables:

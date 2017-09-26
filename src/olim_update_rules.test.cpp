@@ -148,6 +148,10 @@ void tetra222_works() {
   IS_APPROX_EQUAL(updates.tetra222(0, 0, 0, 1, 1, 1, 1, 1), 2.0/sqrt(3));
 }
 
+void tetra123_works() {
+  IS_APPROX_EQUAL(updates.tetra123(0, 0, 0, 1, 1, 1, 1, 1), 1.0);
+}
+
 int main() {
   line1_works();
   line2_works();
@@ -162,6 +166,7 @@ int main() {
   tetra111_is_symmetric();
   tetra111_works();
   tetra122_is_symmetric();
+  tetra123_works();
   tetra222_is_symmetric();
   tetra222_works();
 }

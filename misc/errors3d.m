@@ -10,9 +10,10 @@ f1 = @(x, y, z) cos(sqrt(x.^2 + y.^2 + z.^2)) + sqrt(x.^2 + y.^2 + z.^2) - 1;
 S = {s1};
 F = {f1};
 
-minMpower = 2;
-maxMpower = 6;
-Ms = (2.^(minMpower:maxMpower)) + 1;
+% minMpower = 1;
+% maxMpower = 5;
+% Ms = (2.^(minMpower:maxMpower)) + 1;
+Ms = 3:2:21;
 
 n = 1;
 s = S{n};

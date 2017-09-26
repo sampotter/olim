@@ -1,7 +1,12 @@
 #ifndef __OLIM6_IMPL_HPP__
 #define __OLIM6_IMPL_HPP__
 
+#include <src/config.hpp>
+
 #include <algorithm>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 #include "common.macros.hpp"
 #include "olim6.defs.hpp"
@@ -10,6 +15,10 @@ template <class update_rules>
 void olim6<update_rules>::update_impl(int i, int j, int k, double & T) {
   using namespace olim6_defs;
   using std::min;
+
+#ifdef PRINT_UPDATES
+  printf("olim6::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, k, nb);
@@ -46,6 +55,10 @@ void olim6<update_rules>::update_impl(int i, int j, int k, double & T) {
     T = min(T, this->tetra111(
       VAL(1), VAL(3), VAL(5), s, s_[1], s_[3], s_[5], h));
   }
+
+#ifdef PRINT_UPDATES
+  printf("olim6::update_impl: T <- %g\n", T);
+#endif
 }
 
 #endif // __OLIM6_IMPL_HPP__

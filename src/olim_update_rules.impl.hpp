@@ -208,9 +208,6 @@ double olim3d_rhr_update_rules<rootfinder>::tetra111(
 
   int n = 0;
   double isects[8];
-  for (int i = 0; i < 8; ++i) {
-    isects[i] = -1;
-  }
   this->intersect_conics(AQ1, AQ2, isects, n);
 
   double T = std::numeric_limits<double>::infinity();
@@ -352,9 +349,6 @@ double olim3d_rhr_update_rules<rootfinder>::tetra222(
 
   int n = 0;
   double isects[8];
-  for (int i = 0; i < 8; ++i) {
-    isects[i] = -1;
-  }
   this->intersect_conics(AQ1, AQ2, isects, n);
 
   double T = std::numeric_limits<double>::infinity();

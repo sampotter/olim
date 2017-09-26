@@ -312,7 +312,7 @@ double olim3d_rhr_update_rules<rootfinder>::tetra123(
 
   double T = std::numeric_limits<double>::infinity();
   double lam1, lam2, l;
-  for (int i = 0; i < n; i += 2) {
+  for (int i = 0; i < 2*n; i += 2) {
     lam1 = isects[i];
     lam2 = isects[i + 1];
     l = sqrt(lam1*lam1 + 2*lam2*lam1 + 2*lam2*lam2 + 1);

@@ -101,7 +101,9 @@ double olim3d_rhr_update_rules<rootfinder>::tri13(
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, alpha = fabs(u1 - u0)/sh, alpha_sq = alpha*alpha;
-  assert(2 >= alpha_sq);
+  if (alpha_sq > 2) {
+    return std::numeric_limits<double>::infinity();
+  }
   double lam = std::max(0.0, std::min(1.0, alpha/sqrt(2*(2 - alpha_sq))));
 #if PRINT_UPDATES
   double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(1 + 2*lam*lam);

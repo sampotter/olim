@@ -125,7 +125,7 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   memset(nb, 0x0, 26*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k), Tnew;
+  double h = this->get_h(), s = this->speed(i, j, k);
   int l, l0, l1, l2, a, b, * is;
 
   double s_[26];
@@ -216,25 +216,11 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
            ++b, l1 = is[b % 6], l2 = is[(b + 1) % 6]) {
         if (nb[l1] && nb[l2]) {
           if (b % 2 == 0) {
-            Tnew = this->tetra123(
-              VAL(l1), VAL(l2), VAL(l0), s, s_[l1], s_[l2], s_[l0], h);
-            if (std::isinf(Tnew)) {
-              T = min(T, this->tri12(VAL(l1), VAL(l2), s, s_[l1], s_[l2], h));
-              T = min(T, this->tri13(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
-              T = min(T, this->tri23(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
-            } else {
-              T = min(T, Tnew);
-            }
+            T = min(T, this->tetra123(
+              VAL(l1), VAL(l2), VAL(l0), s, s_[l1], s_[l2], s_[l0], h));
           } else {
-            Tnew = this->tetra123(
-              VAL(l2), VAL(l1), VAL(l0), s, s_[l2], s_[l1], s_[l0], h);
-            if (std::isinf(Tnew)) {
-              T = min(T, this->tri12(VAL(l2), VAL(l1), s, s_[l2], s_[l1], h));
-              T = min(T, this->tri13(VAL(l2), VAL(l0), s, s_[l2], s_[l0], h));
-              T = min(T, this->tri23(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
-            } else {
-              T = min(T, Tnew);
-            }
+            T = min(T, this->tetra123(
+              VAL(l2), VAL(l1), VAL(l0), s, s_[l2], s_[l1], s_[l0], h));
           }
         }
       }

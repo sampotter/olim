@@ -63,46 +63,50 @@ target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 target_link_libraries (fmm rpoly)
 target_link_libraries (fmm ${GSL_LIBRARIES})
 
-add_executable (rpoly.test src/rpoly.test.cpp)
-target_link_libraries (rpoly.test rpoly)
-add_test (rpoly rpoly.test)
+# We don't use any of these test targets when we're building our
+# Release build, so save time by skipping them.
+if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  add_executable (rpoly.test src/rpoly.test.cpp)
+  target_link_libraries (rpoly.test rpoly)
+  add_test (rpoly rpoly.test)
 
-set (tests
-  basic_marcher
-  basic_marcher_3d
-  conics
-  heap
-  olim_update_rules
-  olim4_rhr_lut
-  olim6_rhr
-  olim8_mp0
-  olim8_mp1
-  olim8_rhr
-  olim18_rhr
-  olim26_rhr
-  qroots
-  solim4_mp0
-  test_graph_marcher)
+  set (tests
+	basic_marcher
+	basic_marcher_3d
+	conics
+	heap
+	olim_update_rules
+	olim4_rhr_lut
+	olim6_rhr
+	olim8_mp0
+	olim8_mp1
+	olim8_rhr
+	olim18_rhr
+	olim26_rhr
+	qroots
+	solim4_mp0
+	test_graph_marcher)
 
-foreach (test ${tests})
-  add_executable (${test}.test src/${test}.test.cpp)
-  target_link_libraries (${test}.test fmm)
-  add_test (
-	NAME ${test} COMMAND ${CMAKE_COMMAND}
-	-DTEST_PROG=$<TARGET_FILE:${test}.test>
-	-DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
-	-P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
-endforeach ()
+  foreach (test ${tests})
+	add_executable (${test}.test src/${test}.test.cpp)
+	target_link_libraries (${test}.test fmm)
+	add_test (
+	  NAME ${test} COMMAND ${CMAKE_COMMAND}
+	  -DTEST_PROG=$<TARGET_FILE:${test}.test>
+	  -DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
+	  -P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
+  endforeach ()
 
-set (speed_tests
-  basic_marcher
-  olim4_rhr_lut
-  olim8_mp1)
+  set (speed_tests
+	basic_marcher
+	olim4_rhr_lut
+	olim8_mp1)
 
-foreach (speed_test ${speed_tests})
-  add_executable (${speed_test}.speed src/${speed_test}.speed.cpp)
-  target_link_libraries (${speed_test}.speed fmm)
-endforeach ()
+  foreach (speed_test ${speed_tests})
+	add_executable (${speed_test}.speed src/${speed_test}.speed.cpp)
+	target_link_libraries (${speed_test}.speed fmm)
+  endforeach ()
+endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 # See this link about maybe improving the way we're doing this:
 # http://public.kitware.com/pipermail/cmake/2015-April/060350.html

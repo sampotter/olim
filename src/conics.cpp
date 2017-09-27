@@ -19,7 +19,10 @@ static arma::mat conic_matrix_from_coefs(double const * Q) {
   return A;
 }
 
-static arma::mat sym_adjoint(arma::mat const & A) {
+#ifndef EIKONAL_DEBUG
+static
+#endif
+arma::mat sym_adjoint(arma::mat const & A) {
   assert(A.n_rows == 3);
   assert(A.n_cols == 3);
   arma::mat B(3, 3);
@@ -51,7 +54,10 @@ static arma::mat cross_matrix(arma::vec const & p) {
   return A;
 }
 
-static bool split_deg_conic(arma::mat const & A, arma::vec & m, arma::vec & l) {
+#ifndef EIKONAL_DEBUG
+static
+#endif
+bool split_deg_conic(arma::mat const & A, arma::vec & m, arma::vec & l) {
   int argmax;
   arma::mat B;
 

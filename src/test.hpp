@@ -32,7 +32,19 @@ namespace test {
   void is_approx_equal(T t, T t_hat, char const * filename, int line,
                        T tol = 1e-7) {
     static_assert(std::is_floating_point<T>::value);
+
+    // Handle the case where both t and t_hat are +/- infinity.
+    if (std::isinf(t) && std::isinf(t_hat)) {
+      if ((t > 0 && t_hat) < 0 || (t < 0 && t_hat > 0)) {
+        fprintf(stdout, "failure (%s:%d): |%g - %g| == %g\n",
+                filename, line, t, t_hat, t - t_hat);
+      } else {
+        return;
+      }
+    }
+
     T const val = std::fabs(t - t_hat)/std::fabs(t);
+
     if (std::isnan(val)) {
       fprintf(stdout, "failure (%s:%d): |%g - %g| == %g > %g\n",
               filename, line, t, t_hat, val, tol);

@@ -128,7 +128,19 @@ bool intersect_conics(double const * Q1, double const * Q2, double * P, int & n)
     double const c = det(X);
 
     double roots[3];
-    int nroots = gsl_poly_solve_cubic(a, b, c, &roots[0], &roots[1], &roots[2]);
+    int nroots = 0;
+    {
+      double coefs[4] = {c, b, a, 1};
+      double z[6];
+      gsl_poly_complex_workspace * w = gsl_poly_complex_workspace_alloc(4);
+      gsl_poly_complex_solve(coefs, 4, w, z);
+      gsl_poly_complex_workspace_free(w);
+      for (int i = 0; i < 3; ++i) {
+        if (fabs(z[2*i + 1]) < 1e-13) {
+          roots[nroots++] = z[2*i];
+        }
+      }
+    }
 
     int i = 0;
     do {

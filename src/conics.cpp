@@ -33,8 +33,8 @@ static arma::mat sym_adjoint(arma::mat const & A) {
   B(1, 0) = B(0, 1);
   B(1, 1) = a*f - d*d;
   B(1, 2) = -a*e + b*d;
-  B(2, 0) = A(0, 2);
-  B(2, 1) = A(1, 2);
+  B(2, 0) = B(0, 2);
+  B(2, 1) = B(1, 2);
   B(2, 2) = a*c - b*b;
 
   return B;

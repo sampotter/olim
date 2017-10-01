@@ -81,34 +81,6 @@ void olim18<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
 static int eqdirs[4] = {
   olim18_defs::N, olim18_defs::E, olim18_defs::S, olim18_defs::W};
 
-// Look-up table for triangles incident on 1-lines:
-// TODO: change these to use olim18_defs::dir enum
-static int line1tris[6][4] = {
-  {10, 11, 14, 15}, // N
-  {8,  9,  13, 14}, // E
-  {9,  10, 16, 17}, // U
-  {6,  12, 13, 17}, // S
-  {7,  12, 15, 16}, // W
-  {6,  7,  8,  11}, // D
-};
-
-// Look-up table for triangles incident on 2-lines:
-// TODO: change these to use olim18_defs::dir enum
-static int line2tris[12][6] = {
-  {3, 5, 7,  8,  12, 13}, // DS
-  {4, 5, 6,  11, 12, 15}, // DW
-  {1, 5, 6,  11, 13, 14}, // DE
-  {1, 2, 10, 17, 13, 14}, // UE
-  {0, 2, 9,  16, 14, 15}, // UN
-  {0, 5, 7,  8,  14, 15}, // DN
-  {3, 4, 6,  7,  16, 17}, // SW
-  {1, 3, 6,  8,  9,  17}, // SE
-  {0, 1, 8,  9,  10, 11}, // NE
-  {0, 4, 7,  10, 11, 16}, // NW
-  {2, 4, 10, 17, 12, 15}, // UW
-  {2, 3, 9,  16, 12, 13}, // US
-};
-
 /**
  * Hash a pair of directions in {N, E, U, S, W, D} uniquely into the
  * range [6, 18). This assumes that i < j. The result corresponds to
@@ -143,15 +115,12 @@ void olim18<node, update_rules>::update_impl(int i, int j, int k, double & T) {
    * line updates (degree 1 and 2)
    */
   for (l = 0; l < 6; ++l) {
-    if (nb[l] && !(nb[line1tris[l][0]] || nb[line1tris[l][1]] ||
-                   nb[line1tris[l][2]] || nb[line1tris[l][3]])) {
+    if (nb[l]) {
       T = min(T, this->line1(VAL(l), s, s_[l], h));
     }
   }
   for (l = 6, l0 = 0; l < 18; ++l, ++l0) {
-    if (nb[l] && !(nb[line2tris[l0][0]] || nb[line2tris[l0][1]] ||
-                   nb[line2tris[l0][2]] || nb[line2tris[l0][3]] ||
-                   nb[line2tris[l0][4]] || nb[line2tris[l0][5]])) {
+    if (nb[l]) {
       T = min(T, this->line2(VAL(l), s, s_[l], h));
     }
   }

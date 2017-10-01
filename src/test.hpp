@@ -1,6 +1,7 @@
 #ifndef __TEST_HPP__
 #define __TEST_HPP__
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -43,7 +44,14 @@ namespace test {
       }
     }
 
-    T const val = std::fabs(t - t_hat)/std::fabs(t);
+    // Handle the case where both t and t_hat are zeros.
+    if (t == 0 && t_hat == 0) {
+      return;
+    }
+
+    T const val = std::max(
+      std::fabs(t - t_hat)/std::fabs(t),
+      std::fabs(t_hat - t)/std::fabs(t_hat));
 
     if (std::isnan(val)) {
       fprintf(stdout, "failure (%s:%d): |%g - %g| == %g > %g\n",

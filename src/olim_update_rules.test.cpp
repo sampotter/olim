@@ -33,20 +33,25 @@ void tri11_works() {
 }
 
 void tri12_works() {
+  // TODO: add interior point test
   IS_APPROX_EQUAL(updates.tri12(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
   IS_APPROX_EQUAL(updates.tri12(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
 }
 
 void tri13_works() {
-  double val = 1 - cos(pi/4) + sqrt(1 + 2*cos(pi/4)*cos(pi/4));
-  IS_APPROX_EQUAL(updates.tri13(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), val);
-  IS_APPROX_EQUAL(updates.tri13(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  // TODO: add interior point test
+  IS_APPROX_EQUAL(updates.tri13(1.0, 0.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
+  IS_APPROX_EQUAL(updates.tri13(0.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
 }
 
 void tri22_works() {
   IS_APPROX_EQUAL(updates.tri22(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(6)/2);
-  IS_APPROX_EQUAL(updates.tri22(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
-  IS_APPROX_EQUAL(updates.tri22(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+  IS_APPROX_EQUAL(updates.tri22(0.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
+  IS_APPROX_EQUAL(updates.tri22(1.0, 0.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
 }
 
 void tri22_is_symmetric() {
@@ -57,8 +62,10 @@ void tri22_is_symmetric() {
 }
 
 void tri23_works() {
-  IS_APPROX_EQUAL(updates.tri23(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt(3));
-  IS_APPROX_EQUAL(updates.tri23(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), sqrt(2));
+  IS_APPROX_EQUAL(updates.tri23(1.0, 0.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
+  IS_APPROX_EQUAL(updates.tri23(0.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+                  std::numeric_limits<double>::infinity());
 }
 
 void tetra111_is_symmetric() {
@@ -95,20 +102,14 @@ void tetra111_is_symmetric() {
 }
 
 void tetra111_works() {
-  // basic tests:
-  IS_APPROX_EQUAL(updates.tetra111(1, 0, 0, 1, 1, 1, 1, 1), 1.0);
-  IS_APPROX_EQUAL(updates.tetra111(0, 1, 0, 1, 1, 1, 1, 1), 1.0);
-  IS_APPROX_EQUAL(updates.tetra111(0, 0, 1, 1, 1, 1, 1, 1), 1.0);
-  IS_APPROX_EQUAL(updates.tetra111(0, 0, 0, 1, 1, 1, 1, 1), sqrt(3)/3);
-
-  // more particular tests (e.g., examples gotten from debugging):
   {
-    double u0 = 1.747747429360982;
-    double u1 = 1.747767960250352;
-    double u2 = 1.769848679685869;
+    double u0 = 1.867422661146497;
+    double u1 = 1.872030476918322;
+    double u2 = 1.874601455103048;
     double s = 1.0;
-    double h = 0.142857;
-    IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), 1.8309);
+    double h = 1.0/7.0;
+    double uhat = 1.95377665722661;
+    IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), uhat);
   }
 }
 

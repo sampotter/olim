@@ -55,6 +55,7 @@ double olim3d_rhr_update_rules<rootfinder>::line3(
 #endif
 }
 
+// TODO: make this solve the unconstrained problem
 template <class rootfinder>
 double olim3d_rhr_update_rules<rootfinder>::tri11(
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -73,6 +74,7 @@ double olim3d_rhr_update_rules<rootfinder>::tri11(
 #endif
 }
 
+// TODO: make this solve the unconstrained problem
 template <class rootfinder>
 double olim3d_rhr_update_rules<rootfinder>::tri12(
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -101,30 +103,20 @@ double olim3d_rhr_update_rules<rootfinder>::tri13(
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
+  double T = std::numeric_limits<double>::infinity();
   if (alpha_sq > 2) {
-    return std::numeric_limits<double>::infinity();
+    return T;
   }
   double lam = alpha/sqrt(2*(2 - alpha_sq)), l = sqrt(1 + 2*lam*lam);
-  if (fabs(du*l + 2*sh*lam) < 1e-13) {
-    if (lam < 0 || lam > 1) {
-      return std::numeric_limits<double>::infinity();
-    }
-  } else {
-    lam = -lam;
-    l = sqrt(1 + 2*lam*lam);
-  }
-  if (fabs(du*l + 2*sh*lam) < 1e-13) {
-    if (lam < 0 || lam > 1) {
-      return std::numeric_limits<double>::infinity();
-    }
+  if (0 <= lam && lam <= 1 && fabs(du*l + sh*lam) < 1e-13) {
+    T = (1 - lam)*u0 + lam*u1 + sh*l;
+  } else if (0 <= -lam && -lam <= 1 && fabs(du*l - sh*lam) < 1e-13) {
+    T = (1 + lam)*u0 - lam*u1 + sh*l;
   }
 #if PRINT_UPDATES
-  double tmp = (1 - lam)*u0 + lam*u1 + sh*l;
-  printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
-  return tmp;
-#else
-  return (1 - lam)*u0 + lam*u1 + sh*l;
+  printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, T);
 #endif
+  return T;
 }
 
 template <class rootfinder>
@@ -136,19 +128,25 @@ double olim3d_rhr_update_rules<rootfinder>::tri22(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
-  double du = u1 - u0, sh = s*h, alpha = du/sh, alpha_sq = alpha*alpha;
-  double disc = 1 - 2*(2*alpha_sq - 1)/(alpha_sq - 2);
-  assert(disc >= 0);
-  double lam = std::max(
-    0.0, std::min(1.0, (1 + (u0 > u1 ? 1 : -1)*std::sqrt(disc))/2));
-  double llam = sqrt(2*(lam*(lam - 1) + 1));
+  double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
+  double T = std::numeric_limits<double>::infinity();
+  if (alpha_sq > 2) {
+    return T;
+  }
+  double rhs = sqrt3*alpha/(2*sqrt(4 - alpha_sq));
+  double lam = 0.5 - rhs, l = sqrt(2*(1 - lam*(1 - lam)));
+  if (0 <= lam && lam <= 1 && fabs(du*l + sh*lam) < 1e-13) {
+    T = (1 - lam)*u0 + lam*u1 + sh*l;
+  } else {
+    lam = 0.5 + rhs, l = sqrt(2*(1 - lam*(1 - lam)));
+    if (0 <= lam && lam <= 1 && fabs(du*l * sh*lam) < 1e-13) {
+      T = (1 - lam)*u0 + lam*u1 + sh*l;
+    }
+  }
 #if PRINT_UPDATES
-  double tmp = (1 - lam)*u0 + lam*u1 + sh*llam;
-  printf("tri22(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
-  return tmp;
-#else
-  return (1 - lam)*u0 + lam*u1 + sh*llam;
+  printf("tri22(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, T);
 #endif
+  return T;
 }
 
 template <class rootfinder>
@@ -161,30 +159,20 @@ double olim3d_rhr_update_rules<rootfinder>::tri23(
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
+  double T = std::numeric_limits<double>::infinity();
   if (alpha_sq > 1) {
-    return std::numeric_limits<double>::infinity();
+    return T;
   }
   double lam = sqrt2*alpha/sqrt(1 - alpha_sq), l = sqrt(2 + lam*lam);
-  if (fabs(du*l + sh*lam) < 1e-13) {
-    if (lam < 0 || lam > 1) {
-      return std::numeric_limits<double>::infinity();
-    }
-  } else {
-    lam = -lam;
-    l = sqrt(2 + lam*lam);
-  }
-  if (fabs(du*l + sh*lam) < 1e-13) {
-    if (lam < 0 || lam > 1) {
-      return std::numeric_limits<double>::infinity();
-    }
+  if (0 <= lam && lam <= 1 && fabs(du*l + sh*lam) < 1e-13) {
+    T = (1 - lam)*u0 + lam*u1 + sh*l;
+  } else if (0 <= -lam && -lam <= 1 && fabs(du*l - sh*lam) < 1e-13) {
+    T = (1 + lam)*u0 - lam*u1 + sh*l;
   }
 #if PRINT_UPDATES
-  double tmp = (1 - lam)*u0 + lam*u1 + sh*l;
-  printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
-  return tmp;
-#else
-  return (1 - lam)*u0 + lam*u1 + sh*l;
+  printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, T);
 #endif
+  return T;
 }
 
 template <class rootfinder>
@@ -222,13 +210,13 @@ double olim3d_rhr_update_rules<rootfinder>::tetra111(
     l = sqrt(lam0*lam0 + lam1*lam1 + lam2*lam2);
     lhs1 = 2*lam1 + lam2 - 1 + du1*l/sh;
     lhs2 = lam1 + 2*lam2 - 1 + du2*l/sh;
-    if (fabs(lhs1) < 1e-13 && fabs(lhs2) < 1e-13) {
+    if (fabs(lhs1) < 1e-8 && fabs(lhs2) < 1e-8) {
       T = std::min(T, lam0*u0 + lam1*u1 + lam2*u2 + sh*l);
     }
   }
 #if PRINT_UPDATES
-  printf("tetra111(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
-         u0, u1, u2, s, h, T);
+  printf("tetra111(u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, "
+         "h = %0.16g) -> %g\n", u0, u1, u2, s, h, T);
 #endif
   return T;
 }

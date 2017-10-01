@@ -251,7 +251,7 @@ void two_by_two_by_three_cells_are_correct() {
 }
 
 void agrees_with_basic_marcher_3d() {
-  int n = 15;
+  int n = 21;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 

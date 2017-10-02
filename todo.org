@@ -6,6 +6,11 @@
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
 * Ideas
+** Exact integration using MP0
+   - Is it possible to integrate using MP0 exact if we use information
+     about the speed function?
+   - Could we then come up with a heuristic to integrate better for an
+     unknown speed function?
 ** Regular mesh triangular updates
    - There are two types of "regular mesh triangular updates" (RMTUs)
      in 2D and three in 3D. It's easy to identify these with ways of

@@ -3,6 +3,8 @@ project (fastmarching)
 cmake_minimum_required (VERSION 3.0)
 
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
+set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
+  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG")
 
 enable_language (Fortran)
 

@@ -7,6 +7,7 @@
 #include "olim4_mp0.hpp"
 #include "olim4_rhr.hpp"
 #include "olim4_rhr_lut.hpp"
+#include "olim6_mp0.hpp"
 #include "olim6_rhr.hpp"
 #include "olim8_mp0.hpp"
 #include "olim8_mp1.hpp"
@@ -74,6 +75,8 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
   if (S == nullptr) {
     if (type == BASIC) {
       m = std::make_unique<basic_marcher_3d>(M1, M2, M3, h);
+    } else if (type == OLIM6_MP0) {
+      m = std::make_unique<olim6_mp0>(M1, M2, M3, h);
     } else if (type == OLIM6_RHR) {
       m = std::make_unique<olim6_rhr>(M1, M2, M3, h);
     } else if (type == OLIM18_RHR) {
@@ -82,6 +85,8 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
   } else {
     if (type == BASIC) {
       m = std::make_unique<basic_marcher_3d>(M1, M2, M3, h, S);
+    } else if (type == OLIM6_MP0) {
+      m = std::make_unique<olim6_mp0>(M1, M2, M3, h);
     } else if (type == OLIM6_RHR) {
       m = std::make_unique<olim6_rhr>(M1, M2, M3, h);
     } else if (type == OLIM18_RHR) {

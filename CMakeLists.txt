@@ -63,6 +63,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	heap
 	olim_update_rules
 	olim4_rhr_lut
+	olim6_mp0
 	olim6_rhr
 	olim8_mp0
 	olim8_mp1

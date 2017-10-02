@@ -4,7 +4,7 @@ path(path, '../build/Release');
 
 marks = {'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '<', '>', 'p', 'h'};
 
-ns = 2.^(2:9) + 1;
+ns = 2.^(2:8) + 1;
 % ns = 5:2:31;
 
 relerr = @(x, y, p) max(norm(x(:) - y(:), p)/norm(x(:), p), ...

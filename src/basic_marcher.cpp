@@ -4,27 +4,26 @@
 #include <cassert>
 #include <cmath>
 
+#include "common.macros.hpp"
+
 void basic_marcher::update_impl(int i, int j, double & T) {
+  using std::min;
+
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(i, j, nb);
   double sh = get_h()*speed(i, j);
 
-  double T1 = std::min(
-    nb[0] ? nb[0]->get_value() : std::numeric_limits<double>::infinity(),
-    nb[2] ? nb[2]->get_value() : std::numeric_limits<double>::infinity());
-
-  double T2 = std::min(
-    nb[1] ? nb[1]->get_value() : std::numeric_limits<double>::infinity(),
-    nb[3] ? nb[3]->get_value() : std::numeric_limits<double>::infinity());
+  double T1 = min(nb[0] ? VAL(0) : INF(T1), nb[2] ? VAL(2) : INF(T1));
+  double T2 = min(nb[1] ? VAL(1) : INF(T2), nb[3] ? VAL(3) : INF(T2));
 
   bool T1_inf = std::isinf(T1), T2_inf = std::isinf(T2);
 
   if (!T1_inf && !T2_inf) {
     double diff = T1 - T2, disc = 2*sh*sh - diff*diff;
     T = disc > 0 ? std::min(T, (T1 + T2 + std::sqrt(disc))/2) : T;
-  } else if (std::isinf(T1)) {
+  } else if (T1_inf) {
     T = std::min(T, T2 + sh);
-  } else if (std::isinf(T2)) {
+  } else if (T2_inf) {
     T = std::min(T, T1 + sh);
   } else {
     assert(false);

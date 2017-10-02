@@ -82,6 +82,7 @@ for M = Ms
     end
     u(isnan(u)) = 0;
 
+    U_basic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', 1, 'y0', 1);
     U_olim4_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_rhr', 'x0', 1, 'y0', 1);
     U_olim4_mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim4_mp0', 'x0', 1, 'y0', 1);
     U_olim8_rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim8_rhr', 'x0', 1, 'y0', 1);
@@ -90,12 +91,14 @@ for M = Ms
 
     relerr = @(U, p) norm(u(:) - U(:), p)/norm(u(:), p);
 
+    E_basic_inf(k) = relerr(U_basic, 'inf');
     E_olim4_rhr_inf(k) = relerr(U_olim4_rhr, 'inf');
     E_olim4_mp0_inf(k) = relerr(U_olim4_mp0, 'inf');
     E_olim8_rhr_inf(k) = relerr(U_olim8_rhr, 'inf');
     E_olim8_mp0_inf(k) = relerr(U_olim8_mp0, 'inf');
     E_olim8_mp1_inf(k) = relerr(U_olim8_mp1, 'inf');
 
+    E_basic_2(k) = relerr(U_basic, 2);
     E_olim4_rhr_2(k) = relerr(U_olim4_rhr, 2);
     E_olim4_mp0_2(k) = relerr(U_olim4_mp0, 2);
     E_olim8_rhr_2(k) = relerr(U_olim8_rhr, 2);
@@ -111,32 +114,36 @@ set(gcf, 'Name', 'Relative Error', 'NumberTitle', 'off');
 getplotsymb = @(index) strcat('-', marks{index});
 
 subplot(1, 2, 1);
-loglog(Ms, E_olim4_rhr_inf, getplotsymb(1)); hold on;
-loglog(Ms, E_olim4_mp0_inf, getplotsymb(2)); hold on;
-loglog(Ms, E_olim8_rhr_inf, getplotsymb(3)); hold on;
-loglog(Ms, E_olim8_mp0_inf, getplotsymb(4)); hold on;
-loglog(Ms, E_olim8_mp1_inf, getplotsymb(5)); hold on;
+loglog(Ms, E_basic_inf, getplotsymb(1)); hold on;
+loglog(Ms, E_olim4_rhr_inf, getplotsymb(2)); hold on;
+loglog(Ms, E_olim4_mp0_inf, getplotsymb(3)); hold on;
+loglog(Ms, E_olim8_rhr_inf, getplotsymb(4)); hold on;
+loglog(Ms, E_olim8_mp0_inf, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp1_inf, getplotsymb(6)); hold on;
 title('l_\infty');
 ylabel('||u - U||_\infty/||u||_\infty');
 xlabel('n');
 xlim([min(Ms), max(Ms)]);
-legend('olim4\_rhr', ...
+legend('basic', ...
+       'olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
        'olim8\_mp0', ...
        'olim8\_mp1');
 
 subplot(1, 2, 2);
-loglog(Ms, E_olim4_rhr_2, getplotsymb(1)); hold on;
-loglog(Ms, E_olim4_mp0_2, getplotsymb(2)); hold on;
-loglog(Ms, E_olim8_rhr_2, getplotsymb(3)); hold on;
-loglog(Ms, E_olim8_mp0_2, getplotsymb(4)); hold on;
-loglog(Ms, E_olim8_mp1_2, getplotsymb(5)); hold on;
+loglog(Ms, E_basic_2, getplotsymb(1)); hold on;
+loglog(Ms, E_olim4_rhr_2, getplotsymb(2)); hold on;
+loglog(Ms, E_olim4_mp0_2, getplotsymb(3)); hold on;
+loglog(Ms, E_olim8_rhr_2, getplotsymb(4)); hold on;
+loglog(Ms, E_olim8_mp0_2, getplotsymb(5)); hold on;
+loglog(Ms, E_olim8_mp1_2, getplotsymb(6)); hold on;
 title('l_2');
 ylabel('||u - U||_2/||u||_2');
 xlabel('n');
 xlim([min(Ms), max(Ms)]);
-legend('olim4\_rhr', ...
+legend('basic', ...
+       'olim4\_rhr', ...
        'olim4\_mp0', ...
        'olim8\_rhr', ...
        'olim8\_mp0', ...
@@ -155,7 +162,16 @@ colorbar;
 figure;
 set(gcf, 'Name', 'Pointwise Error', 'NumberTitle', 'off');
 
-subplot(3, 2, 1); 
+subplot(3, 2, 1);
+imagesc(U_basic - u);
+title('basic'); 
+set(gca, 'XTick', [1 M/2 M]);
+set(gca, 'XTickLabels', [-1 0 1]);
+set(gca, 'YTick', [1 M/2 M]);
+set(gca, 'YTickLabels', [-1 0 1]);
+colorbar;
+
+subplot(3, 2, 2);
 imagesc(U_olim4_rhr - u);
 title('olim4\_rhr'); 
 set(gca, 'XTick', [1 M/2 M]);
@@ -164,7 +180,7 @@ set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
-subplot(3, 2, 2); 
+subplot(3, 2, 3);
 imagesc(U_olim4_mp0 - u);
 title('olim4\_mp0'); 
 set(gca, 'XTick', [1 M/2 M]);
@@ -173,7 +189,7 @@ set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
-subplot(3, 2, 3); 
+subplot(3, 2, 4);
 imagesc(U_olim8_rhr - u);
 title('olim8\_rhr'); 
 set(gca, 'XTick', [1 M/2 M]);
@@ -182,7 +198,7 @@ set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
-subplot(3, 2, 4); 
+subplot(3, 2, 5);
 imagesc(U_olim8_mp0 - u);
 title('olim8\_mp0');
 set(gca, 'XTick', [1 M/2 M]);
@@ -191,7 +207,7 @@ set(gca, 'YTick', [1 M/2 M]);
 set(gca, 'YTickLabels', [-1 0 1]);
 colorbar;
 
-subplot(3, 2, 5);
+subplot(3, 2, 6)
 imagesc(U_olim8_mp1 - u);
 title('olim8\_mp1');
 set(gca, 'XTick', [1 M/2 M]);

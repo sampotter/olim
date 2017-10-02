@@ -41,6 +41,7 @@ set (FMM_SRC_FILES
   src/olim8_rhr.cpp
   src/qroots.cpp
   src/solim4_mp0.cpp
+  src/speed_estimates.cpp
   src/speed_func_cache.cpp
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)

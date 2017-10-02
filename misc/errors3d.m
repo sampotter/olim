@@ -43,10 +43,10 @@ end
 
 % Plot errors
 figure;
-loglog(ns, Ebasic, '*');
+loglog(ns, Ebasic, '-*');
 hold on;
-loglog(ns, E6, '+');
-loglog(ns, E18, 'o');
-loglog(ns, E26, 'x');
+loglog(ns, E6, '-+');
+loglog(ns, E18, '-o');
+loglog(ns, E26, '-x');
 legend('Basic', 'OLIM6 (right-hand rule)', 'OLIM18 (right-hand rule)', ...
        'OLIM26 (right-hand rule)');

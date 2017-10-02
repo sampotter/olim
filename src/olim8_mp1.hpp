@@ -14,7 +14,6 @@ struct olim8_mp1_update_rules: public rootfinder {
 
 using olim8_mp1_bsearch = olim8<olim8_mp1_update_rules<bsearch_rootfinder>>;
 using olim8_mp1_gsl = olim8<olim8_mp1_update_rules<gsl_rootfinder>>;
-using olim8_mp1_rpoly = olim8<olim8_mp1_update_rules<rpoly_rootfinder>>;
 
 #include "olim8_mp1.impl.hpp"
 

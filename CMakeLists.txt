@@ -56,7 +56,6 @@ else ()
   add_library (fmm SHARED ${FMM_SRC_FILES})
 endif ()
 
-target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 target_link_libraries (fmm ${GSL_LIBRARIES})
 
 # We don't use any of these test targets when we're building our

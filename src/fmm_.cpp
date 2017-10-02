@@ -32,8 +32,6 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim8_mp1_bsearch>(M, N, h);
     } else if (type == OLIM8_MP1_GSL) {
       m = std::make_unique<olim8_mp1_gsl>(M, N, h);
-    } else if (type == OLIM8_MP1_RPOLY) {
-      m = std::make_unique<olim8_mp1_rpoly>(M, N, h);
     } else if (type == OLIM8_RHR) {
       m = std::make_unique<olim8_rhr>(M, N, h);
     }
@@ -52,8 +50,6 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim8_mp1_bsearch>(M, N, h, S);
     } else if (type == OLIM8_MP1_GSL) {
       m = std::make_unique<olim8_mp1_gsl>(M, N, h, S);
-    } else if (type == OLIM8_MP1_RPOLY) {
-      m = std::make_unique<olim8_mp1_rpoly>(M, N, h, S);
     } else if (type == OLIM8_RHR) {
       m = std::make_unique<olim8_rhr>(M, N, h, S);
     }

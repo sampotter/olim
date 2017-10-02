@@ -12,14 +12,18 @@ f1 = @(x, y, z) r(x, y, z);
 s2 = @(x, y, z) 1 - sin(r(x, y, z));
 f2 = @(x, y, z) cos(r(x, y, z)) + r(x, y, z) - 1;
 
-ns = 2.^(2:7) + 1;
+S = {s1, s2};
+F = {s2, f2};
+
+n = 1;
+s = S{n};
+f = F{n};
+
+ns = 2.^(2:6) + 1;
 % ns = 5:2:31;
 
 relerr = @(x, y, p) max(norm(x(:) - y(:), p)/norm(x(:), p), ...
                         norm(x(:) - y(:), p)/norm(y(:), p));
-
-s = s1;
-f = f1;
 
 k = 1;
 for n = ns
@@ -41,8 +45,10 @@ for n = ns
     if islogical(s) && s
         Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', ...
                      1, 'z0', 1);
-        U6 = fmm(B, 'h', h, 'Method', 'olim6_rhr', 'x0', 1, ...
-                 'y0', 1, 'z0', 1);
+        U6mp0 = fmm(B, 'h', h, 'Method', 'olim6_mp0', 'x0', 1, ...
+                    'y0', 1, 'z0', 1);
+        U6rhr = fmm(B, 'h', h, 'Method', 'olim6_rhr', 'x0', 1, ...
+                    'y0', 1, 'z0', 1);
         U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr', 'x0', 1, ...
                   'y0', 1, 'z0', 1);
         U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr', 'x0', 1, ...
@@ -50,7 +56,9 @@ for n = ns
     else
         Ubasic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', ...
                      1, 'y0', 1, 'z0', 1);
-        U6 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr', 'x0', ...
+        U6mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_mp0', 'x0', ...
+                 1, 'y0', 1, 'z0', 1);
+        U6rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr', 'x0', ...
                  1, 'y0', 1, 'z0', 1);
         U18 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr', ...
                   'x0', 1, 'y0', 1, 'z0', 1);
@@ -60,7 +68,8 @@ for n = ns
 
     % Compute relative errors
     Ebasic(k) = relerr(Ubasic, u, 'inf');
-    E6(k) = relerr(U6, u, 'inf');
+    E6mp0(k) = relerr(U6mp0, u, 'inf');
+    E6rhr(k) = relerr(U6rhr, u, 'inf');
     E18(k) = relerr(U18, u, 'inf');
     E26(k) = relerr(U26, u, 'inf');
     
@@ -71,8 +80,8 @@ end
 figure;
 loglog(ns, Ebasic, '-*');
 hold on;
-loglog(ns, E6, '-+');
+loglog(ns, E6mp0, '-+');
+loglog(ns, E6rhr, '-s');
 loglog(ns, E18, '-o');
 loglog(ns, E26, '-x');
-legend('Basic', 'OLIM6 (right-hand rule)', 'OLIM18 (right-hand rule)', ...
-       'OLIM26 (right-hand rule)');
+legend('Basic', 'OLIM6 (mp0)', 'OLIM6 (rhr)', 'OLIM18 (rhr)', 'OLIM26 (rhr)');

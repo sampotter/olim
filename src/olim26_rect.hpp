@@ -5,7 +5,7 @@
 #include "node_3d.hpp"
 
 template <class node, class update_rules>
-struct olim26: public marcher_3d<node>, public update_rules {
+struct olim26_rect: public marcher_3d<node>, public update_rules {
   using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
@@ -17,7 +17,7 @@ private:
   virtual void update_impl(int i, int j, int k, double & T);
 };
 
-#include "olim26.impl.hpp"
+#include "olim26_rect.impl.hpp"
 
 #endif // __OLIM26_HPP__
 

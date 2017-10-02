@@ -1,7 +1,7 @@
 #ifndef __OLIM26_DEFS_HPP_HPP__
 #define __OLIM26_DEFS_HPP_HPP__
 
-namespace olim26_defs {
+namespace olim26 {
   enum dir {
     N, E, U, S, W, D, // degree 1
  // 0  1  2  3  4  5

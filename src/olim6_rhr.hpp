@@ -1,10 +1,10 @@
 #ifndef __OLIM6_RHR_HPP__
 #define __OLIM6_RHR_HPP__
 
-#include "olim6.hpp"
+#include "olim6_rect.hpp"
 #include "olim_update_rules.hpp"
 
-using olim6_rhr = olim6<olim3d_rhr_update_rules>;
+using olim6_rhr = olim6_rect<olim_rect_update_rules>;
 
 #endif // __OLIM6_RHR_HPP__
 

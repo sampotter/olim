@@ -5,7 +5,7 @@
 #include "node_3d.hpp"
 
 template <class node, class update_rules>
-struct olim18: public marcher_3d<node>, public update_rules {
+struct olim18_rect: public marcher_3d<node>, public update_rules {
   using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
@@ -17,15 +17,13 @@ private:
   virtual void update_impl(int i, int j, int k, double & T);
   void do_tri12_updates(
     abstract_node const * const * nb, int const * dirs,
-    double s, double const * s_cache, double h,
-    double & T) const;
+    double s, double h, double & T) const;
   void do_tri22_updates(
     abstract_node const * const * nb, int const * dirs,
-    double s, double const * s_cache, double h,
-    double & T) const;
+    double s, double h, double & T) const;
 };
 
-#include "olim18.impl.hpp"
+#include "olim18_rect.impl.hpp"
 
 #endif // __OLIM18_HPP__
 

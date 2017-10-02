@@ -6,13 +6,13 @@
 #include "olim_update_rules.hpp"
 
 template <class update_rules>
-struct olim6: public neumann_marcher_3d<node_3d>, public update_rules {
+struct olim6_rect: public neumann_marcher_3d<node_3d>, public update_rules {
   using neumann_marcher_3d::neumann_marcher_3d;
 private:
   virtual void update_impl(int i, int j, int k, double & T);
 };
 
-#include "olim6.impl.hpp"
+#include "olim6_rect.impl.hpp"
 
 #endif // __OLIM6_HPP_HPP__
 

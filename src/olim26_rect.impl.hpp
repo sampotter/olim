@@ -1,5 +1,5 @@
-#ifndef __OLIM26_IMPL_HPP__
-#define __OLIM26_IMPL_HPP__
+#ifndef __OLIM26_RECT_IMPL_HPP__
+#define __OLIM26_RECT_IMPL_HPP__
 
 #include <src/config.hpp>
 
@@ -20,29 +20,29 @@
 //           18,  19,  20,  21,  22,  23,  24,  25
 
 template <class node, class update_rules>
-int olim26<node, update_rules>::di[] = {
+int olim26_rect<node, update_rules>::di[] = {
   1, 0, 0, -1, 0, 0,
   1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
   1, -1, -1, 1, 1, -1, -1, 1
 };
 
 template <class node, class update_rules>
-int olim26<node, update_rules>::dj[] = {
+int olim26_rect<node, update_rules>::dj[] = {
   0, 1, 0, 0, -1, 0,
   0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
   1, 1, -1, -1, 1, 1, -1, -1
 };
 
 template <class node, class update_rules>
-int olim26<node, update_rules>::dk[] = {
+int olim26_rect<node, update_rules>::dk[] = {
   0, 0, 1, 0, 0, -1,
   1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
   1, 1, 1, 1, -1, -1, -1, -1
 };
 
 template <class node, class update_rules>
-void olim26<node, update_rules>::get_valid_neighbors(int i, int j, int k,
-                                                abstract_node ** nb) {
+void olim26_rect<node, update_rules>::get_valid_neighbors(int i, int j, int k,
+                                                          abstract_node ** nb) {
   int a, b, c;
   for (int l = 0; l < 26; ++l) {
     a = i + di[l], b = j + dj[l], c = k + dk[l];
@@ -53,13 +53,13 @@ void olim26<node, update_rules>::get_valid_neighbors(int i, int j, int k,
 }
 
 template <class node, class update_rules>
-void olim26<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
+void olim26_rect<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
 
 #if PRINT_UPDATES
-  printf("olim26::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim26_rect::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   for (int l = 0; l < 26; ++l) {
@@ -75,7 +75,7 @@ void olim26<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
   }
 }
 
-namespace olim26_defs {
+namespace olim26 {
   int line1tris[6][8] = {
     {UN, UNE, NE, DNE, DN, DNW, NW, UNW}, // N
     {UE, USE, SE, DSE, DE, DNE, NE, UNE}, // E
@@ -113,12 +113,12 @@ namespace olim26_defs {
 }
 
 template <class node, class update_rules>
-void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
-  using namespace olim26_defs;
+void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & T) {
+  using namespace olim26;
   using std::min;
 
 #ifdef PRINT_UPDATES
-  printf("olim26::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim26_rect::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   abstract_node * nb[26];
@@ -128,63 +128,56 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   double h = this->get_h(), s = this->speed(i, j, k);
   int l, l0, l1, l2, a, b, * is;
 
-  double s_[26];
-  for (l = 0; l < 26; ++l) {
-    if (nb[l]) {
-      s_[l] = this->speed(i + di[l], j + dj[l], k + dk[l]);
-    }
-  }
-
   /**
    * Degree 1 line updates
    */
   for (l = 0; l < 6; ++l) {
-    is = olim26_defs::line1tris[l];
+    is = olim26::line1tris[l];
     if (!nb[l])
       continue;
     if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]] ||
         nb[is[4]] || nb[is[5]] || nb[is[6]] || nb[is[7]])
       continue;
-    T = min(T, this->line1(VAL(l), s, s_[l], h));
+    T = min(T, this->line1(VAL(l), s, h));
   }
 
   /**
    * Degree 2 line updates
    */
   for (; l < 18; ++l) {
-    is = olim26_defs::line2tris[l - 6];
+    is = olim26::line2tris[l - 6];
     if (!nb[l])
       continue;
     if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]])
       continue;
-    T = min(T, this->line2(VAL(l), s, s_[l], h));
+    T = min(T, this->line2(VAL(l), s, h));
   }
 
   /**
    * Degree 3 line updates
    */
   for (; l < 26; ++l) {
-    is = olim26_defs::line3tris[l - 18];
+    is = olim26::line3tris[l - 18];
     if (!nb[l])
       continue;
     if (nb[is[0]] || nb[is[1]] || nb[is[2]] ||
         nb[is[3]] || nb[is[4]] || nb[is[5]])
       continue;
-    T = min(T, this->line3(VAL(l), s, s_[l], h));
+    T = min(T, this->line3(VAL(l), s, h));
   }
 
   /**
    * Degree (1, 2) and (1, 3) triangle updates
    */
   for (l0 = 0; l0 < 6; ++l0) {
-    is = olim26_defs::line1tris[l0];
+    is = olim26::line1tris[l0];
     if (nb[l0]) {
       for (a = 0, l1 = *is; a < 8; l1 = is[++a]) {
         if (nb[l1]) {
           if (a % 2 == 0) {
-            T = min(T, this->tri12(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
+            T = min(T, this->tri12(VAL(l0), VAL(l1), s, h));
           } else {
-            T = min(T, this->tri13(VAL(l1), VAL(l0), s, s_[l1], s_[l0], h));
+            T = min(T, this->tri13(VAL(l1), VAL(l0), s, h));
           }
         }
       }
@@ -195,11 +188,11 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
    * Degree (2, 3) triangle updates
    */
   for (a = 0, l0 = 18; a < 8; ++a, ++l0) {
-    is = olim26_defs::line3tris[a];
+    is = olim26::line3tris[a];
     if (nb[l0]) {
       for (b = 3, l1 = is[b]; b < 6; l1 = is[++b]) {
         if (nb[l1]) {
-          T = min(T, this->tri23(VAL(l0), VAL(l1), s, s_[l0], s_[l1], h));
+          T = min(T, this->tri23(VAL(l0), VAL(l1), s, h));
         }
       }
     }
@@ -209,18 +202,16 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
    * Degree (1, 2, 3) tetrahedron updates
    */
   for (a = 0, l0 = 18; a < 8; ++a, ++l0) {
-    is = olim26_defs::line3tris[a];
+    is = olim26::line3tris[a];
     if (nb[l0]) {
       for (b = 0, l1 = is[0], l2 = is[1];
            b < 6;
            ++b, l1 = is[b % 6], l2 = is[(b + 1) % 6]) {
         if (nb[l1] && nb[l2]) {
           if (b % 2 == 0) {
-            T = min(T, this->tetra123(
-              VAL(l1), VAL(l2), VAL(l0), s, s_[l1], s_[l2], s_[l0], h));
+            T = min(T, this->tetra123(VAL(l1), VAL(l2), VAL(l0), s, h));
           } else {
-            T = min(T, this->tetra123(
-              VAL(l2), VAL(l1), VAL(l0), s, s_[l2], s_[l1], s_[l0], h));
+            T = min(T, this->tetra123(VAL(l2), VAL(l1), VAL(l0), s, h));
           }
         }
       }
@@ -228,11 +219,11 @@ void olim26<node, update_rules>::update_impl(int i, int j, int k, double & T) {
   }
 
 #ifdef PRINT_UPDATES
-  printf("olim26::update_impl: T <- %g\n", T);
+  printf("olim26_rect::update_impl: T <- %g\n", T);
 #endif
 }
 
-#endif // __OLIM26_IMPL_HPP__
+#endif // __OLIM26_RECT_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

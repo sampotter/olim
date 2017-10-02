@@ -13,10 +13,9 @@
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
 
-double olim3d_rhr_update_rules::line1(double u0, double s, double s0, double h)
+double olim_rect_update_rules::line1(double u0, double s, double h)
   const
 {
-  (void) s0;
 #if PRINT_UPDATES
   double tmp = u0 + s*h;
   printf("line1(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
@@ -26,10 +25,9 @@ double olim3d_rhr_update_rules::line1(double u0, double s, double s0, double h)
 #endif
 }
 
-double olim3d_rhr_update_rules::line2(double u0, double s, double s0, double h)
+double olim_rect_update_rules::line2(double u0, double s, double h)
   const
 {
-  (void) s0;
 #if PRINT_UPDATES
   double tmp = u0 + s*h*sqrt2;
   printf("line2(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
@@ -39,10 +37,9 @@ double olim3d_rhr_update_rules::line2(double u0, double s, double s0, double h)
 #endif
 }
 
-double olim3d_rhr_update_rules::line3(double u0, double s, double s0, double h)
+double olim_rect_update_rules::line3(double u0, double s, double h)
   const
 {
-  (void) s0;
 #if PRINT_UPDATES
   double tmp = u0 + s*h*sqrt3;
   printf("line3(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
@@ -53,11 +50,9 @@ double olim3d_rhr_update_rules::line3(double u0, double s, double s0, double h)
 }
 
 // TODO: make this solve the unconstrained problem
-double olim3d_rhr_update_rules::tri11(
-  double u0, double u1, double s, double s0, double s1, double h) const
+double olim_rect_update_rules::tri11(
+  double u0, double u1, double s, double h) const
 {
-  (void) s0;
-  (void) s1;
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
@@ -71,11 +66,9 @@ double olim3d_rhr_update_rules::tri11(
 }
 
 // TODO: make this solve the unconstrained problem
-double olim3d_rhr_update_rules::tri12(
-  double u0, double u1, double s, double s0, double s1, double h) const
+double olim_rect_update_rules::tri12(double u0, double u1, double s, double h)
+  const
 {
-  (void) s0;
-  (void) s1;
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
@@ -88,11 +81,9 @@ double olim3d_rhr_update_rules::tri12(
 #endif
 }
 
-double olim3d_rhr_update_rules::tri13(
-  double u0, double u1, double s, double s0, double s1, double h) const
+double olim_rect_update_rules::tri13(double u0, double u1, double s, double h)
+  const
 {
-  (void) s0;
-  (void) s1;
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
@@ -113,11 +104,9 @@ double olim3d_rhr_update_rules::tri13(
   return T;
 }
 
-double olim3d_rhr_update_rules::tri22(
-  double u0, double u1, double s, double s0, double s1, double h) const
+double olim_rect_update_rules::tri22(double u0, double u1, double s, double h)
+  const
 {
-  (void) s0;
-  (void) s1;
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
@@ -142,11 +131,9 @@ double olim3d_rhr_update_rules::tri22(
   return T;
 }
 
-double olim3d_rhr_update_rules::tri23(
-  double u0, double u1, double s, double s0, double s1, double h) const
+double olim_rect_update_rules::tri23(double u0, double u1, double s, double h)
+  const
 {
-  (void) s0;
-  (void) s1;
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
@@ -167,15 +154,10 @@ double olim3d_rhr_update_rules::tri23(
   return T;
 }
 
-double olim3d_rhr_update_rules::tetra111(
-  double u0, double u1, double u2,
-  double s, double s0, double s1, double s2, double h) const
+double olim_rect_update_rules::tetra111(
+  double u0, double u1, double u2, double s, double h) const
 {
   using std::max;
-
-  (void) s0;
-  (void) s1;
-  (void) s2;
 
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, h, s);
@@ -252,16 +234,11 @@ double olim3d_rhr_update_rules::tetra111(
   return T;
 }
 
-double olim3d_rhr_update_rules::tetra122(
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+double olim_rect_update_rules::tetra122(
+  double u0, double u1, double u2, double s, double h) const
 {
   using std::min;
   using std::sqrt;
-
-  (void) s0;
-  (void) s1;
-  (void) s2;
 
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, s, h);
@@ -302,15 +279,10 @@ double olim3d_rhr_update_rules::tetra122(
   return T;
 }
 
-double olim3d_rhr_update_rules::tetra123(
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+double olim_rect_update_rules::tetra123(
+  double u0, double u1, double u2, double s, double h) const
 {
   using std::max;
-
-  (void) s0;
-  (void) s1;
-  (void) s2;
 
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, s, h);
@@ -386,15 +358,10 @@ double olim3d_rhr_update_rules::tetra123(
   return T;
 }
 
-double olim3d_rhr_update_rules::tetra222(
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+double olim_rect_update_rules::tetra222(
+  double u0, double u1, double u2, double s, double h) const
 {
   using std::max;
-
-  (void) s0;
-  (void) s1;
-  (void) s2;
 
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, s, h);

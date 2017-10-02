@@ -2,10 +2,10 @@
 #define __OLIM26_RHR_HPP__
 
 #include "node_3d.hpp"
-#include "olim26.hpp"
+#include "olim26_rect.hpp"
 #include "olim_update_rules.hpp"
 
-using olim26_rhr = olim26<node_3d, olim3d_rhr_update_rules>;
+using olim26_rhr = olim26_rect<node_3d, olim_rect_update_rules>;
 
 #endif // __OLIM26_RHR_HPP__
 

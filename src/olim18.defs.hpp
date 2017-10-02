@@ -1,7 +1,7 @@
 #ifndef __OLIM18_DEFS_HPP__
 #define __OLIM18_DEFS_HPP__
 
-namespace olim18_defs {
+namespace olim18 {
   enum dir {
     N, E, U, S, W, D, // degree 1
  // 0  1  2  3  4  5

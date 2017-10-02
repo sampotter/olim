@@ -214,8 +214,10 @@ double olim3d_rhr_update_rules::tetra111(
       double b = tmp1*tmp2;
       double c = tmp2*tmp2 - delta*(tmp3*tmp3 + x*x + y*y);
       double disc = b*b - 4*a*c;
+      if (disc < 0) {
+        goto coda;
+      }
 
-      assert(disc >= 0);
       double lhs = -b/(2*a);
       double rhs = sqrt(disc)/(2*a);
       alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
@@ -314,19 +316,59 @@ double olim3d_rhr_update_rules::tetra123(
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
 
   double T = std::numeric_limits<double>::infinity();
-  double x = 0, y = 0, dx, dy, err;
+  double x = 0, y = 0, p1, p2, err, alpha;
+
+  int niters = 0;
   do {
     double l = sqrt(x*x + 2*x*y + 2*y*y + 1);
     double c = l/sh;
     double H11 = c*(2 + x*x), H12 = c*(x*y - 1), H22 = c*(1 + y*y);
     double G1 = du1 + (x + y)/c, G2 = du2 + (x + 2*y)/c;
 
-    dx = -(H11*G1 + H12*G2); x += dx;
-    dy = -(H12*G1 + H22*G2), y += dy;
+    p1 = H11*G1 + H12*G2;
+    p2 = H12*G1 + H22*G2;
+
+    // compute step size---clean this up later
+    if (fabs(p1) <= std::numeric_limits<double>::epsilon() &&
+        fabs(p2) <= std::numeric_limits<double>::epsilon()) {
+      break;
+    } else {
+      double du_dot_p = du1*p1 + du2*p2;
+      double delta = 2*du_dot_p/sh;
+      delta *= delta;
+
+      double pMp = p1*(2*p1 + 2*p2) + p2*(2*p1 + 4*p2);
+      double lMp = p1*(2*x + 2*y) + p2*(2*x + 4*y);
+
+      double tmp1 = 2*pMp - delta;
+      double a = pMp*tmp1/2;
+      double b = tmp1*lMp;
+      double c = lMp*lMp - delta*(x*x + 2*x*y + 2*y*y + 1);
+      double disc = b*b - 4*a*c;
+      if (disc < 0) {
+        goto coda;
+      }
+
+      double lhs = -b/(2*a);
+      double rhs = sqrt(disc)/(2*a);
+      alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
+    }
+    if (fabs(alpha) <= std::numeric_limits<double>::epsilon()) {
+      break;
+    }
+
+    x += alpha*p1 , y += alpha*p2;
     if (x < 0 || y < 0 || 1 - x - y < 0) {
       goto coda;
     }
-    err = max(fabs(dx), fabs(dy))/max(fabs(x), fabs(y));
+    err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
+    ++niters;
+    if (niters > 10) {
+      break;
+      // printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
+      //        u0, u1, u2, s, h);
+      // std::abort();
+    }
   } while (err > 1e-15);
   T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(x*x + 2*x*y + 2*y*y + 1);
 
@@ -354,20 +396,62 @@ double olim3d_rhr_update_rules::tetra222(
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double T = std::numeric_limits<double>::infinity();
-  double x = 1./3., y = 1./3., dx, dy, err;
+  double x = 1./3., y = 1./3., p1, p2, err, alpha;
+
+  int niters = 0;
   do {
-    double l = sqrt(2*(1 + x*x + x*(y - 1) - y + y*y));
+    double l = sqrt((1 - x)*(1 - x) + (1 - y)*(1 - y) + (x + y)*(x + y));
     double c = l/sh;
     double H11 = c*(3 + x*(3*x - 2))/4.0, H12 = c*(x*(3*y - 1) - y - 1)/4.0,
       H22 = c*(3 + y*(3*y - 2))/4.0;
     double G1 = du1 + (2*x + y - 1)/c, G2 = du2 + (x + 2*y - 1)/c;
 
-    dx = -(H11*G1 + H12*G2); x += dx;
-    dy = -(H12*G1 + H22*G2), y += dy;
+    p1 = H11*G1 + H12*G2;
+    p2 = H12*G1 + H22*G2;
+
+    // compute step size---clean this up later
+    if (fabs(p1) <= std::numeric_limits<double>::epsilon() &&
+        fabs(p2) <= std::numeric_limits<double>::epsilon()) {
+      break;
+    } else {
+      double du_dot_p = du1*p1 + du2*p2;
+      double delta = 2*du_dot_p/sh;
+      delta *= delta;
+
+      double pMp = p1*(4*p1 + 2*p2) + p2*(2*p1 + 4*p2);
+      double lMp = p1*(4*x + 2*y) + p2*(2*x + 4*y);
+      double edotp = -2*(p1 + p2);
+
+      double tmp1 = 2*pMp - delta, tmp2 = lMp + edotp;
+      double a = pMp*tmp1/2;
+      double b = tmp1*tmp2;
+      double c = tmp2*tmp2 -
+        delta*((1 - x)*(1 - x) + (1 - y)*(1 - y) + (x + y)*(x + y));
+      double disc = b*b - 4*a*c;
+      if (disc < 0) {
+        goto coda;
+      }
+
+      double lhs = -b/(2*a);
+      double rhs = sqrt(disc)/(2*a);
+      alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
+    }
+    if (fabs(alpha) <= std::numeric_limits<double>::epsilon()) {
+      break;
+    }
+
+    x += alpha*p1 , y += alpha*p2;
     if (x < 0 || y < 0 || 1 - x - y < 0) {
       goto coda;
     }
-    err = max(fabs(dx), fabs(dy))/max(fabs(x), fabs(y));
+    err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
+    ++niters;
+    if (niters > 10) {
+      break;
+      // printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
+      //        u0, u1, u2, s, h);
+      // std::abort();
+    }
   } while (err > 1e-15);
   T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(2*(1 + x*x + x*(y - 1) - y + y*y));
 

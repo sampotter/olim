@@ -14,7 +14,7 @@ void quadrants_are_correct() {
    * Tests for quadrants in the x-y plane:
    */
   {
-    olim26_rhr_arma m {n, n, 1, h, default_speed_func_3d, 0, 0, 0};
+    olim26_rhr m {n, n, 1, h, default_speed_func_3d, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
@@ -23,7 +23,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 1, 0), sqrt(2));
   }
   {
-    olim26_rhr_arma m {n, n, 1, h, default_speed_func_3d, 1, 0, 0};
+    olim26_rhr m {n, n, 1, h, default_speed_func_3d, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -32,7 +32,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
   }
   {
-    olim26_rhr_arma m {n, n, 1, h, default_speed_func_3d, 0, 1, 0};
+    olim26_rhr m {n, n, 1, h, default_speed_func_3d, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -41,7 +41,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
   }
   {
-    olim26_rhr_arma m {n, n, 1, h, default_speed_func_3d, 1, 1, 0};
+    olim26_rhr m {n, n, 1, h, default_speed_func_3d, 1, 1, 0};
     m.add_boundary_node(1, 1, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
@@ -54,7 +54,7 @@ void quadrants_are_correct() {
    * Tests for quadrants in the x-z plane:
    */
   {
-    olim26_rhr_arma m {n, 1, n, h, default_speed_func_3d, 0, 0, 0};
+    olim26_rhr m {n, 1, n, h, default_speed_func_3d, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
@@ -63,7 +63,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 0, 1), sqrt(2));
   }
   {
-    olim26_rhr_arma m {n, 1, n, h, default_speed_func_3d, 0, 1, 0};
+    olim26_rhr m {n, 1, n, h, default_speed_func_3d, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -72,7 +72,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {n, 1, n, h, default_speed_func_3d, 0, 0, 1};
+    olim26_rhr m {n, 1, n, h, default_speed_func_3d, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -81,7 +81,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {n, 1, n, h, default_speed_func_3d, 0, 1, 1};
+    olim26_rhr m {n, 1, n, h, default_speed_func_3d, 0, 1, 1};
     m.add_boundary_node(1, 0, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
@@ -94,7 +94,7 @@ void quadrants_are_correct() {
    * Tests for quadrants in the y-z plane:
    */
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
@@ -103,7 +103,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), sqrt(2));
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -112,7 +112,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -121,7 +121,7 @@ void quadrants_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
     m.add_boundary_node(0, 1, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
@@ -138,7 +138,7 @@ void two_by_two_by_two_octants_are_correct() {
     for (int j = 0; j < 2; ++j) {
       for (int k = 0; k < 2; ++k) {
         double x0 = j, y0 = i, z0 = k;
-        olim26_rhr_arma m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
+        olim26_rhr m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
         m.add_boundary_node(i, j, k);
         m.run();
         IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
@@ -163,7 +163,7 @@ void planes_are_correct() {
   m8.add_boundary_node(n/2, n/2);
   m8.run();
   
-  olim26_rhr_arma m26 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
+  olim26_rhr m26 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
   m26.add_boundary_node(n/2, n/2, n/2);
   m26.run();
 
@@ -171,7 +171,7 @@ void planes_are_correct() {
    * Tests for quadrants in the y-z plane:
    */
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
@@ -180,7 +180,7 @@ void planes_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), sqrt(2));
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -189,7 +189,7 @@ void planes_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
@@ -198,7 +198,7 @@ void planes_are_correct() {
     IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim26_rhr_arma m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
+    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
     m.add_boundary_node(0, 1, 1);
     m.run();
     IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
@@ -211,7 +211,7 @@ void planes_are_correct() {
 void result_is_symmetric() {
   int n = 7;
   double x0 = (n - 1.0)/2.0, y0 = x0, z0 = x0;
-  olim26_rhr_arma m {n, n, n, 1.0, default_speed_func_3d, x0, y0, z0};
+  olim26_rhr m {n, n, n, 1.0, default_speed_func_3d, x0, y0, z0};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
@@ -227,7 +227,7 @@ void result_is_symmetric() {
 void two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
-  olim26_rhr_arma m_gt {3, 2, 2, 1, default_speed_func_3d, 0, 0, 0};
+  olim26_rhr m_gt {3, 2, 2, 1, default_speed_func_3d, 0, 0, 0};
   m_gt.add_boundary_node(0, 0, 0);
   m_gt.run();
 
@@ -242,7 +242,7 @@ void two_by_two_by_three_cells_are_correct() {
       int k0 = (kmax - 1)*((corner & 4) >> 2);
 
       double x0 = j0, y0 = i0, z0 = k0;
-      olim26_rhr_arma m {imax, jmax, kmax, 1, default_speed_func_3d, x0, y0, z0};
+      olim26_rhr m {imax, jmax, kmax, 1, default_speed_func_3d, x0, y0, z0};
       m.add_boundary_node(i0, j0, k0);
       m.run();
 
@@ -266,7 +266,7 @@ void two_by_two_by_three_cells_are_correct() {
 void plane_boundaries_are_correct() {
   int n = 2;
   double h = 1;
-  olim26_rhr_arma m {n, n, n, h, default_speed_func_3d, 0, 0, 0};
+  olim26_rhr m {n, n, n, h, default_speed_func_3d, 0, 0, 0};
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
       m.add_boundary_node(i, j, 0);

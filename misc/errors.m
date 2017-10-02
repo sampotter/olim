@@ -4,8 +4,10 @@ path(path, '../build/Release');
 
 marks = {'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '<', '>', 'p', 'h'};
 
-s1 = @(x, y) 1 - sin(sqrt(x.^2 + y.^2));
-f1 = @(x, y) cos(sqrt(x.^2 + y.^2)) + sqrt(x.^2 + y.^2) - 1;
+r = @(x, y) sqrt(x.^2 + y.^2);
+
+s1 = @(x, y) 1 - sin(r(x, y));
+f1 = @(x, y) cos(r(x, y)) + r(x, y) - 1;
 
 s2 = @(x, y) abs(x + y);
 f2 = @(x, y) ((x + y).^2)/(2*sqrt(2));
@@ -38,7 +40,7 @@ s10 = @(x, y) star_s(x, y);
 S = {s1 s2 s3 s4 s5 s6 s7 s8 s9, s10};
 F = {f1 f2 f3 f4 f5 f6 f7 f8 f9, false};
 
-n = 1;
+n = 4;
 
 maxMpower = 10;
 Ms = (2.^(3:maxMpower)) + 1;

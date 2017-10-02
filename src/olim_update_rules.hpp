@@ -1,8 +1,7 @@
 #ifndef __OLIM_UPDATE_RULES_HPP__
 #define __OLIM_UPDATE_RULES_HPP__
 
-template <class rootfinder>
-struct olim3d_rhr_update_rules: rootfinder {
+struct olim3d_rhr_update_rules {
   double line1(double u0, double s, double s0, double h) const;
   double line2(double u0, double s, double s0, double h) const;
   double line3(double u0, double s, double s0, double h) const;
@@ -25,8 +24,6 @@ struct olim3d_rhr_update_rules: rootfinder {
   double tetra222(double u0, double u1, double u2, double s,
                   double s0, double s1, double s2, double h) const;
 };
-
-#include "olim_update_rules.impl.hpp"
 
 #endif // __OLIM_UPDATE_RULES_HPP__
 

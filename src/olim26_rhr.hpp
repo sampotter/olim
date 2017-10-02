@@ -6,8 +6,7 @@
 #include "olim26.hpp"
 #include "olim_update_rules.hpp"
 
-using olim26_rhr_arma = olim26<
-  node_3d, olim3d_rhr_update_rules<arma_rootfinder>>;
+using olim26_rhr_arma = olim26<node_3d, olim3d_rhr_update_rules>;
 
 #endif // __OLIM26_RHR_HPP__
 

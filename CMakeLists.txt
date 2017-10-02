@@ -40,6 +40,7 @@ set (FMM_SRC_FILES
   src/basic_marcher_3d.cpp
   src/conics.cpp
   src/fmm_.cpp
+  src/olim_update_rules.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp

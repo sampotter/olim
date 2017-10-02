@@ -9,6 +9,9 @@ double default_speed_func_3d(double x, double y, double z);
 double s1(double x, double y);
 double f1(double x, double y);
 
+double s1(double x, double y, double z);
+double f1(double x, double y, double z);
+
 double s2(double x, double y);
 double f2(double x, double y);
 

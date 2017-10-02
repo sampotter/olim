@@ -4,6 +4,14 @@
 
 #include "common.defs.hpp"
 
+static double r(double x, double y) {
+  return std::sqrt(x*x + y*y);
+}
+
+static double r(double x, double y, double z) {
+  return std::sqrt(x*x + y*y + z*z);
+}
+
 double default_speed_func(double x, double y) {
   (void) x;
   (void) y;
@@ -18,15 +26,23 @@ double default_speed_func_3d(double x, double y, double z) {
 }
 
 double default_speed_func_soln(double x, double y) {
-  return std::sqrt(x*x + y*y);
+  return r(x, y);
 }
 
 double s1(double x, double y) {
-  return 1 - std::sin(std::sqrt(x*x + y*y));
+  return 1 - std::sin(r(x, y));
 }
 
 double f1(double x, double y) {
-  return std::cos(std::sqrt(x*x + y*y)) + std::sqrt(x*x + y*y) - 1;
+  return std::cos(r(x, y)) + r(x, y) - 1;
+}
+
+double s1(double x, double y, double z) {
+  return 1 - std::sin(r(x, y, z));
+}
+
+double f1(double x, double y, double z) {
+  return std::cos(r(x, y, z)) + r(x, y, z) - 1;
 }
 
 double s2(double x, double y) {

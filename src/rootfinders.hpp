@@ -9,10 +9,6 @@ struct gsl_rootfinder {
   void find_roots(double const * a, double * roots) const;
 };
 
-struct rpoly_rootfinder {
-  void find_roots(double const * a, double * roots) const;
-};
-
 #endif // __ROOTFINDERS_HPP__
 
 // Local Variables:

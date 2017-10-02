@@ -29,10 +29,6 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 find_package (GSL REQUIRED)
 
-set (RPOLY_SRC_FILES src/rpoly.f src/rpoly.cpp)
-
-add_library (rpoly ${RPOLY_SRC_FILES})
-
 set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
@@ -61,16 +57,11 @@ else ()
 endif ()
 
 target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
-target_link_libraries (fmm rpoly)
 target_link_libraries (fmm ${GSL_LIBRARIES})
 
 # We don't use any of these test targets when we're building our
 # Release build, so save time by skipping them.
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
-  add_executable (rpoly.test src/rpoly.test.cpp)
-  target_link_libraries (rpoly.test rpoly)
-  add_test (rpoly rpoly.test)
-
   set (tests
 	basic_marcher
 	basic_marcher_3d

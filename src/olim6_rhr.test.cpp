@@ -3,6 +3,7 @@
 #include "basic_marcher_3d.hpp"
 #include "olim4_rhr.hpp"
 #include "olim6_rhr.hpp"
+#include "speed_funcs.hpp"
 
 void quadrants_are_correct() {
   int n = 2;
@@ -266,7 +267,29 @@ void agrees_with_basic_marcher_3d() {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        IS_APPROX_EQUAL(m3d.get_value(i, j, k), m6.get_value(i, j, k));
+        IS_APPROX_EQUAL(m3d.get_value(i, j, k), m6.get_value(i, j, k), 1e-13);
+      }
+    }
+  }
+}
+
+void agrees_with_basic_marcher_3d_for_nontrivial_speed_function() {
+  int n = 15;
+  double h = 2.0/(n - 1);
+  int i0 = (n - 1)/2, j0 = i0, k0 = i0;
+
+  basic_marcher_3d m3d {n, n, n, h, s1, 1, 1, 1};
+  m3d.add_boundary_node(i0, j0, k0);
+  m3d.run();
+
+  olim6_rhr m6 {n, n, n, h, s1, 1, 1, 1};
+  m6.add_boundary_node(i0, j0, k0);
+  m6.run();
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      for (int k = 0; k < n; ++k) {
+        IS_APPROX_EQUAL(m3d.get_value(i, j, k), m6.get_value(i, j, k), 1e-13);
       }
     }
   }
@@ -290,13 +313,14 @@ void plane_boundaries_are_correct() {
 }
 
 int main() {
-  quadrants_are_correct();
-  octants_are_correct();
-  planes_are_correct();
-  result_is_symmetric();
-  two_by_two_by_three_cells_are_correct();
-  agrees_with_basic_marcher_3d();
-  plane_boundaries_are_correct();
+  // quadrants_are_correct();
+  // octants_are_correct();
+  // planes_are_correct();
+  // result_is_symmetric();
+  // two_by_two_by_three_cells_are_correct();
+  // agrees_with_basic_marcher_3d();
+  agrees_with_basic_marcher_3d_for_nontrivial_speed_function();
+  // plane_boundaries_are_correct();
 }
 
 // Local Variables:

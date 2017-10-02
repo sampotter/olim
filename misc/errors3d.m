@@ -4,11 +4,22 @@ path(path, '../build/Release');
 
 marks = {'o', '+', '*', '.', 'x', 's', 'd', '^', 'v', '<', '>', 'p', 'h'};
 
-ns = 2.^(2:8) + 1;
+r = @(x, y, z) sqrt(x.^2 + y.^2 + z.^2);
+
+s1 = true;
+f1 = @(x, y, z) r(x, y, z);
+
+s2 = @(x, y, z) 1 - sin(r(x, y, z));
+f2 = @(x, y, z) cos(r(x, y, z)) + r(x, y, z) - 1;
+
+ns = 2.^(2:7) + 1;
 % ns = 5:2:31;
 
 relerr = @(x, y, p) max(norm(x(:) - y(:), p)/norm(x(:), p), ...
                         norm(x(:) - y(:), p)/norm(y(:), p));
+
+s = s1;
+f = f1;
 
 k = 1;
 for n = ns
@@ -24,13 +35,28 @@ for n = ns
     % Compute ground truth solution
     L = linspace(-1, 1, n);
     [x y z] = meshgrid(L, L, L);
-    u = sqrt(x.^2 + y.^2 + z.^2);
+    u = f(x, y, z);
     
     % Compute solutions using different methods
-    Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', 1, 'z0', 1);
-    U6 = fmm(B, 'h', h, 'Method', 'olim6_rhr_arma', 'x0', 1, 'y0', 1, 'z0', 1);
-    U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr_arma', 'x0', 1, 'y0', 1, 'z0', 1);
-    U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr_arma', 'x0', 1, 'y0', 1, 'z0', 1);
+    if islogical(s) && s
+        Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', ...
+                     1, 'z0', 1);
+        U6 = fmm(B, 'h', h, 'Method', 'olim6_rhr_arma', 'x0', 1, ...
+                 'y0', 1, 'z0', 1);
+        U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr_arma', 'x0', 1, ...
+                  'y0', 1, 'z0', 1);
+        U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr_arma', 'x0', 1, ...
+                  'y0', 1, 'z0', 1);
+    else
+        Ubasic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', ...
+                     1, 'y0', 1, 'z0', 1);
+        U6 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr_arma', 'x0', ...
+                 1, 'y0', 1, 'z0', 1);
+        U18 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr_arma', ...
+                  'x0', 1, 'y0', 1, 'z0', 1);
+        U26 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim26_rhr_arma', ...
+                  'x0', 1, 'y0', 1, 'z0', 1);
+    end
 
     % Compute relative errors
     Ebasic(k) = relerr(Ubasic, u, 'inf');

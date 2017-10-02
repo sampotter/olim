@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-static olim3d_rhr_update_rules<arma_rootfinder> updates;
+static olim3d_rhr_update_rules updates;
 
 void line1_works() {
   IS_APPROX_EQUAL(updates.line1(0.0, 1.0, 1.0, 1.0), 1.0);
@@ -109,6 +109,24 @@ void tetra111_works() {
     double s = 1.0;
     double h = 1.0/7.0;
     double uhat = 1.95377665722661;
+    IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), uhat);
+  }
+  {
+    double u0 = 0.6714002359494359;
+    double u1 = 0.667974148883546;
+    double u2 = 0.652837863557498;
+    double s = 1;
+    double h = 0.02040816326530612;
+    double uhat = 0.6726606175825081;
+    IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), uhat);
+  }
+  {
+    double u0 = 0.8701508258299168;
+    double u1 = 0.9034596879080383;
+    double u2 = 0.8999244233472412;
+    double s = 1;
+    double h = 0.03703703703703703;
+    double uhat = 0.9064782064785435;
     IS_APPROX_EQUAL(updates.tetra111(u0, u1, u2, s, s, s, s, h), uhat);
   }
 }

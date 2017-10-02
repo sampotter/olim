@@ -313,14 +313,14 @@ void plane_boundaries_are_correct() {
 }
 
 int main() {
-  // quadrants_are_correct();
-  // octants_are_correct();
-  // planes_are_correct();
-  // result_is_symmetric();
-  // two_by_two_by_three_cells_are_correct();
-  // agrees_with_basic_marcher_3d();
+  quadrants_are_correct();
+  octants_are_correct();
+  planes_are_correct();
+  result_is_symmetric();
+  two_by_two_by_three_cells_are_correct();
+  agrees_with_basic_marcher_3d();
   agrees_with_basic_marcher_3d_for_nontrivial_speed_function();
-  // plane_boundaries_are_correct();
+  plane_boundaries_are_correct();
 }
 
 // Local Variables:

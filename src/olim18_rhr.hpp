@@ -1,7 +1,6 @@
 #ifndef __OLIM18_RHR_HPP__
 #define __OLIM18_RHR_HPP__
 
-#include "conics.hpp"
 #include "node_3d.hpp"
 #include "olim18.hpp"
 #include "olim_update_rules.hpp"

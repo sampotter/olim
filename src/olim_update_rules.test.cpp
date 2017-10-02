@@ -1,5 +1,4 @@
 #include "common.defs.hpp"
-#include "conics.hpp"
 #include "test.hpp"
 #include "olim_update_rules.hpp"
 

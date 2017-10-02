@@ -1,7 +1,6 @@
 #ifndef __OLIM6_RHR_HPP__
 #define __OLIM6_RHR_HPP__
 
-#include "conics.hpp"
 #include "olim6.hpp"
 #include "olim_update_rules.hpp"
 

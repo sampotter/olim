@@ -2,7 +2,7 @@
 #include "speed_funcs.hpp"
 
 int main() {
-  olim8_mp1_bsearch m(201, 201, 0.01, s1, 1.0, 1.0);
+  olim8_mp1 m(201, 201, 0.01, s1, 1.0, 1.0);
   m.add_boundary_node(100, 100);
   m.run();
 }

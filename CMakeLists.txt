@@ -27,8 +27,6 @@ include_directories (${PROJECT_BINARY_DIR})
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
-find_package (GSL REQUIRED)
-
 set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
@@ -42,7 +40,6 @@ set (FMM_SRC_FILES
   src/olim8_mp0.cpp
   src/olim8_rhr.cpp
   src/qroots.cpp
-  src/rootfinders.cpp
   src/solim4_mp0.cpp
   src/speed_func_cache.cpp
   src/speed_funcs.cpp
@@ -55,8 +52,6 @@ elseif (${WIN32})
 else ()
   add_library (fmm SHARED ${FMM_SRC_FILES})
 endif ()
-
-target_link_libraries (fmm ${GSL_LIBRARIES})
 
 # We don't use any of these test targets when we're building our
 # Release build, so save time by skipping them.

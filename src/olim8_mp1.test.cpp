@@ -3,21 +3,21 @@
 #include "test.hpp"
 
 void trivial_case_works() {
-  olim8_mp1_bsearch m {1, 1};
+  olim8_mp1 m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
   IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
 }
 
 void adjacent_update_works() {
-  olim8_mp1_bsearch m {2, 1, 0.5};
+  olim8_mp1 m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
   IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
 }
 
 void neighboring_values_are_correct() {
-  olim8_mp1_bsearch m {3, 3, 1};
+  olim8_mp1 m {3, 3, 1};
   m.add_boundary_node(1, 1);
   m.run();
   double gt[] = {sqrt2, 1, sqrt2, 1, 0, 1, sqrt2, 1, sqrt2};
@@ -32,7 +32,7 @@ void neighboring_values_are_correct() {
 void origin_test() {
   int M = 5, N = 5;
   double h = 0.1, x0 = h*(N - 1)/2., y0 = h*(M - 1)/2.;
-  olim8_mp1_bsearch m {M, N, h, default_speed_func, x0, y0};
+  olim8_mp1 m {M, N, h, default_speed_func, x0, y0};
   m.add_boundary_node(2, 2);
   m.run();
   for (int i = 0; i < 5; ++i) {
@@ -46,7 +46,7 @@ void origin_test() {
 void s1_single_row_test() {
   int N = 1001;
   double h = 1.0/(N - 1);
-  olim8_mp1_bsearch m {1, N, h, s1};
+  olim8_mp1 m {1, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
   for (int j = N - 10; j < N; ++j) {
@@ -59,7 +59,7 @@ void s1_single_row_test() {
 void s1_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s1};
+  olim8_mp1 m {M, N, h, s1};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {
@@ -74,7 +74,7 @@ void s1_test() {
 void s2_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s2};
+  olim8_mp1 m {M, N, h, s2};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {
@@ -89,7 +89,7 @@ void s2_test() {
 void s3_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s3};
+  olim8_mp1 m {M, N, h, s3};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {
@@ -104,7 +104,7 @@ void s3_test() {
 void s4_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s4};
+  olim8_mp1 m {M, N, h, s4};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {
@@ -119,7 +119,7 @@ void s4_test() {
 void s5_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s5};
+  olim8_mp1 m {M, N, h, s5};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {
@@ -134,7 +134,7 @@ void s5_test() {
 void s6_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1_bsearch m {M, N, h, s6};
+  olim8_mp1 m {M, N, h, s6};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {

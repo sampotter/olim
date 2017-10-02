@@ -21,16 +21,12 @@ function march(boundary::Array{Bool, 2};
         methodnum = 3
     elseif method == "olim8mp0"
         methodnum = 4
-    elseif method == "olim8mp1bsearch"
+    elseif method == "olim8mp1"
         methodnum = 5
-    elseif method == "olim8mp1gsl"
-        methodnum = 6
-    elseif method == "olim8mp1secant"
-        methodnum = 7
     elseif method == "olim8rhr"
-        methodnum = 8
+        methodnum = 6
     elseif method == "solim4mp0"
-        methodnum = 9
+        methodnum = 7
     else
         error("unknown marcher method")
     end

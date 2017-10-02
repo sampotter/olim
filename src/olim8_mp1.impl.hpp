@@ -3,23 +3,21 @@
 
 #include "common.defs.hpp"
 #include "olim_util.hpp"
+#include "qroots.hpp"
 
-template <class Rootfinder>
-double olim8_mp1_update_rules<Rootfinder>::adj1pt(
-  double u0, double s, double s0, double h) const
+double olim8_mp1_update_rules::adj1pt(double u0, double s, double s0, double h)
+  const
 {
   return u0 + h*(s + s0)/2;
 }
 
-template <class Rootfinder>
-double olim8_mp1_update_rules<Rootfinder>::diag1pt(
-  double u0, double s, double s0, double h) const
+double olim8_mp1_update_rules::diag1pt(double u0, double s, double s0, double h)
+  const
 {
   return u0 + h*(s + s0)*sqrt2/2;
 }
 
-template <class Rootfinder>
-double olim8_mp1_update_rules<Rootfinder>::adj2pt(
+double olim8_mp1_update_rules::adj2pt(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
@@ -41,7 +39,7 @@ double olim8_mp1_update_rules<Rootfinder>::adj2pt(
 
   double lam, Tnew, argmin, roots[4] = {-1, -1, -1, -1},
     T = std::numeric_limits<double>::infinity(), lhs, rhs;
-  this->find_roots(a, roots);
+  qroots(a, roots);
 
   int i = 0;
   while ((lam = roots[i++]) != -1) {
@@ -62,8 +60,7 @@ double olim8_mp1_update_rules<Rootfinder>::adj2pt(
   return T;
 }
 
-template <class Rootfinder>
-double olim8_mp1_update_rules<Rootfinder>::diag2pt(
+double olim8_mp1_update_rules::diag2pt(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
@@ -83,7 +80,7 @@ double olim8_mp1_update_rules<Rootfinder>::diag2pt(
 
   double lam, Tnew, argmin, roots[4] = {-1, -1, -1, -1},
     T = std::numeric_limits<double>::infinity(), lhs, rhs;
-  this->find_roots(a, roots);
+  qroots(a, roots);
 
   int i = 0;
   while ((lam = roots[i++]) != -1) {

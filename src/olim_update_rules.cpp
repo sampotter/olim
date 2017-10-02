@@ -233,10 +233,13 @@ double olim3d_rhr_update_rules::tetra111(
     err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
     ++niters;
     if (niters > 10) {
+#ifdef EIKONAL_DEBUG
+      printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
+             u0, u1, u2, s, h);
+      std::abort();
+#else
       break;
-      // printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
-      //        u0, u1, u2, s, h);
-      // std::abort();
+#endif
     }
   } while (err > 1e-15);
   T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(pow(1 - x - y, 2) + x*x + y*y);
@@ -364,10 +367,13 @@ double olim3d_rhr_update_rules::tetra123(
     err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
     ++niters;
     if (niters > 10) {
+#ifdef EIKONAL_DEBUG
+      printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
+             u0, u1, u2, s, h);
+      std::abort();
+#else
       break;
-      // printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
-      //        u0, u1, u2, s, h);
-      // std::abort();
+#endif
     }
   } while (err > 1e-15);
   T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(x*x + 2*x*y + 2*y*y + 1);
@@ -447,10 +453,13 @@ double olim3d_rhr_update_rules::tetra222(
     err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
     ++niters;
     if (niters > 10) {
+#ifdef EIKONAL_DEBUG
+      printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
+             u0, u1, u2, s, h);
+      std::abort();
+#else
       break;
-      // printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
-      //        u0, u1, u2, s, h);
-      // std::abort();
+#endif
     }
   } while (err > 1e-15);
   T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(2*(1 + x*x + x*(y - 1) - y + y*y));

@@ -103,7 +103,7 @@ double olim_rect_update_rules::tri13(double u0, double u1, double s, double h)
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
-  double T = std::numeric_limits<double>::infinity();
+  double T = INF(double);
   if (alpha_sq > 2) {
     return T;
   }
@@ -126,7 +126,7 @@ double olim_rect_update_rules::tri22(double u0, double u1, double s, double h)
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
-  double T = std::numeric_limits<double>::infinity();
+  double T = INF(double);
   if (alpha_sq > 2) {
     return T;
   }
@@ -153,7 +153,7 @@ double olim_rect_update_rules::tri23(double u0, double u1, double s, double h)
   check_params(u0, u1, h, s);
 #endif
   double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
-  double T = std::numeric_limits<double>::infinity();
+  double T = INF(double);
   if (alpha_sq > 1) {
     return T;
   }
@@ -317,7 +317,7 @@ double olim_rect_update_rules::tetra122(
   check_params(u0, u1, u2, s, h);
 #endif
 
-  double T = std::numeric_limits<double>::infinity();
+  double T = INF(double);
 
   double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
   double alpha1 = fabs(du1/sh), alpha1_sq = alpha1*alpha1;

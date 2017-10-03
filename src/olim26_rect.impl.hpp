@@ -161,7 +161,7 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
   for (l0 = 0; l0 < 6; ++l0) {
     is = olim26::line1tris[l0];
     if (nb[l0]) {
-      for (a = 0, l1 = *is; a < 8; l1 = is[++a]) {
+      for (a = 0, l1 = is[0]; a < 8; l1 = is[++a]) {
         if (nb[l1]) {
           if (a % 2 == 0) {
             T = min(T, this->tri12(VAL(l0), VAL(l1), s, h));

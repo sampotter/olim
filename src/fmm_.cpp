@@ -86,13 +86,13 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
     if (type == BASIC) {
       m = std::make_unique<basic_marcher_3d>(M1, M2, M3, h, S);
     } else if (type == OLIM6_MP0) {
-      m = std::make_unique<olim6_mp0>(M1, M2, M3, h);
+      m = std::make_unique<olim6_mp0>(M1, M2, M3, h, S);
     } else if (type == OLIM6_RHR) {
-      m = std::make_unique<olim6_rhr>(M1, M2, M3, h);
+      m = std::make_unique<olim6_rhr>(M1, M2, M3, h, S);
     } else if (type == OLIM18_RHR) {
-      m = std::make_unique<olim18_rhr>(M1, M2, M3, h);
+      m = std::make_unique<olim18_rhr>(M1, M2, M3, h, S);
     } else if (type == OLIM26_RHR) {
-      m = std::make_unique<olim26_rhr>(M1, M2, M3, h);
+      m = std::make_unique<olim26_rhr>(M1, M2, M3, h, S);
     }
   }
 

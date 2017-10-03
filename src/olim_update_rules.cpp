@@ -50,36 +50,50 @@ double olim_rect_update_rules::line3(double u0, double s, double h)
 #endif
 }
 
-// TODO: make this solve the unconstrained problem
 double olim_rect_update_rules::tri11(
   double u0, double u1, double s, double h) const
 {
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
+  double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
+  double T = INF(double);
+  if (alpha_sq > 2) {
+    return T;
+  }
+  double sgn = du < 0 ? 1 : -1;
+  double lam = 0.5 + sgn*alpha/(2*sqrt(2 - alpha_sq));
+  double l = sqrt(2*lam*(lam - 1) + 1);
+  if (0 <= lam && lam <= 1) {
+    T = (1 - lam)*u0 + lam*u1 + sh*l;
+  }
 #if PRINT_UPDATES
-  double tmp = rhr_adj(u0, u1, s, h);
-  printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
-  return tmp;
-#else
-  return rhr_adj(u0, u1, s, h);
+  printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, T);
 #endif
+  return T;
 }
 
-// TODO: make this solve the unconstrained problem
 double olim_rect_update_rules::tri12(double u0, double u1, double s, double h)
   const
 {
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, h, s);
 #endif
+  double sh = s*h, du = u1 - u0, alpha = fabs(du)/sh, alpha_sq = alpha*alpha;
+  double T = INF(double);
+  if (alpha_sq > 1) {
+    return T;
+  }
+  double lam = alpha/sqrt(1 - alpha_sq), l = sqrt(lam*lam + 1);
+  if (0 <= lam && lam <= 1 && fabs(du*l + sh*lam) < 1e-13) {
+    T = (1 - lam)*u0 + lam*u1 + sh*l;
+  } else if (0 <= -lam && -lam <= 1 && fabs(du*l - sh*lam) < 1e-13) {
+    T = (1 + lam)*u0 - lam*u1 + sh*l;
+  }
 #if PRINT_UPDATES
-  double tmp = rhr_diag(u0, u1, s, h);
-  printf("tri12(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, tmp);
-  return tmp;
-#else
-  return rhr_diag(u0, u1, s, h);
+  printf("tri12(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n", u0, u1, s, h, T);
 #endif
+  return T;
 }
 
 double olim_rect_update_rules::tri13(double u0, double u1, double s, double h)

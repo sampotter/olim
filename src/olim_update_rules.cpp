@@ -155,16 +155,22 @@ double olim_rect_update_rules::tri23(double u0, double u1, double s, double h)
   return T;
 }
 
+template <int M11, int M12, int M22, int E1, int E2, int F>
+static double eval_Q(double lam1, double lam2) {
+  return M11*lam1*lam1 + 2*M12*lam1*lam2 + M22*lam2*lam2 +
+    2*E1*lam1 + 2*E2*lam2 + F;
+}
+
 /**
  * Compute the exact minimizing step size for the relaxed Newton's
  * method used to solve the minimization problem needed to do the
  * tetrahedral updates.
  */
-template <int M11, int M12, int M22, int e1, int e2>
+template <int M11, int M12, int M22, int E1, int E2, int F>
 static
 double compute_step_size(
   double p1, double p2, double du1, double du2,
-  double lam1, double lam2, double sh, double Q, bool & failure)
+  double lam1, double lam2, double sh, bool & failure)
 {
   failure = false;
   if (fabs(p1) <= EPS(double) && fabs(p2) <= EPS(double)) {
@@ -174,11 +180,11 @@ double compute_step_size(
   double delta = std::pow(2*du_dot_p/sh, 2);
   double pMp = 2*(p1*(M11*p1 + M12*p2) + p2*(M12*p1 + M22*p2));
   double lMp = 2*(p1*(M11*lam1 + M12*lam2) + p2*(M12*lam1 + M22*lam2));
-  double edotp = 2*(e1*p1 + e2*p2);
+  double edotp = 2*(E1*p1 + E2*p2);
   double tmp1 = 2*pMp - delta, tmp2 = lMp + edotp;
   double a = pMp*tmp1/2;
   double b = tmp1*tmp2;
-  double c = tmp2*tmp2 - delta*Q;
+  double c = tmp2*tmp2 - delta*eval_Q<M11, M12, M22, E1, E2, F>(lam1, lam2);
   double disc = b*b - 4*a*c;
   if (disc < 0) {
     failure = true;
@@ -186,19 +192,17 @@ double compute_step_size(
   }
   double lhs = -b/(2*a);
   double rhs = sqrt(disc)/(2*a);
-  assert(!(lhs + rhs <= 0) && !(lhs - rhs <= 0));
   return lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
 }
 
-using conic_func = double(*)(double, double);
 using compute_p_func =
   void(*)(double, double, double, double, double, double &, double &);
 
-template <int M11, int M12, int M22, int e1, int e2>
+template <int M11, int M12, int M22, int E1, int E2, int F>
 static
 double tetra_newton(
   double lam1init, double lam2init, double u0, double u1, double u2, double sh,
-  conic_func compute_Q, compute_p_func compute_p)
+  compute_p_func compute_p)
 {
   using std::max;
   double du1 = u1 - u0, du2 = u2 - u0;
@@ -215,10 +219,10 @@ double tetra_newton(
     /**
      * Compute the iteration step, including exact step size.
      */
-    Q = compute_Q(lam1, lam2);
+    Q = eval_Q<M11, M12, M22, E1, E2, F>(lam1, lam2);
     compute_p(lam1, lam2, du1, du2, sqrt(Q)/sh, p1, p2);
-    alpha = compute_step_size<M11, M12, M22, e1, e2>(
-      p1, p2, du1, du2, lam1, lam2, sh, Q, failure);
+    alpha = compute_step_size<M11, M12, M22, E1, E2, F>(
+      p1, p2, du1, du2, lam1, lam2, sh, failure);
     if (failure) return INF(double);
     if (fabs(alpha) <= EPS(double)) break;
 
@@ -245,7 +249,6 @@ double tetra_newton(
              u0, u1, u2, s, h);
       std::abort();
 #else
-      // printf("p1 = %g, p2 = %g, alpha = %g\n", p1, p2, alpha);
       break;
 #endif
     }
@@ -254,13 +257,8 @@ double tetra_newton(
   /**
    * Compute the minimized quantity and return it.
    */
-  Q = compute_Q(lam1, lam2);
+  Q = eval_Q<M11, M12, M22, E1, E2, F>(lam1, lam2);
   return (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*sqrt(Q);
-}
-
-static double Q111(double lam1, double lam2) {
-  double lam0 = 1 - lam1 - lam2;
-  return lam0*lam0 + lam1*lam1 + lam2*lam2;
 }
 
 static void p111(double lam1, double lam2, double du1, double du2,
@@ -280,14 +278,13 @@ double olim_rect_update_rules::tetra111(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, h, s);
 #endif
-  double T = tetra_newton<2, 1, 2, -1, -1>(
+  double T = tetra_newton<2, 1, 2, -1, -1, 1>(
     1.0/3.0, // lam1init
     1.0/3.0, // lam1init
     u0,      // u0
     u1,      // u1
     u2,      // u2
     s*h,     // sh
-    Q111,    // compute_Q
     p111);   // compute_p
 #if PRINT_UPDATES
   printf("tetra111(u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, "
@@ -341,10 +338,6 @@ double olim_rect_update_rules::tetra122(
   return T;
 }
 
-static double Q123(double lam1, double lam2) {
-  return lam1*lam1 + 2*lam1*lam2 + 2*lam2*lam2 + 1;
-}
-
 static void p123(double lam1, double lam2, double du1, double du2,
                  double delta, double & p1, double & p2) {
   double H11 = delta*(2 + lam1*lam1);
@@ -362,25 +355,19 @@ double olim_rect_update_rules::tetra123(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, s, h);
 #endif
-  double T = tetra_newton<1, 1, 2, 0, 0>(
+  double T = tetra_newton<1, 1, 2, 0, 0, 1>(
     0.0,   // lam1init
     0.0,   // lam2init
     u0,    // u0
     u1,    // u1
     u2,    // u2
     s*h,   // sh
-    Q123,  // compute_Q
     p123); // compute_p
 #if PRINT_UPDATES
   printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
          u0, u1, u2, s, h, T);
 #endif
   return T;
-}
-
-static double Q222(double lam1, double lam2) {
-  return (1 - lam1)*(1 - lam1) + (1 - lam2)*(1 - lam2) +
-    (lam1 + lam2)*(lam1 + lam2);
 }
 
 static void p222(double lam1, double lam2, double du1, double du2,
@@ -400,14 +387,13 @@ double olim_rect_update_rules::tetra222(
 #ifdef EIKONAL_DEBUG
   check_params(u0, u1, u2, s, h);
 #endif
-  double T = tetra_newton<1, 1, 2, 0, 0>(
+  double T = tetra_newton<2, 1, 2, -1, -1, 2>(
     1.0/3.0, // lam1init
     1.0/3.0, // lam2init
     u0,      // u0
     u1,      // u1
     u2,      // u2
     s*h,     // sh
-    Q222,    // compute_Q
     p222);   // compute_p
 #if PRINT_UPDATES
   printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",

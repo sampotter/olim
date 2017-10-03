@@ -13,8 +13,8 @@ void basic_marcher::update_impl(int i, int j, double & T) {
   get_valid_neighbors(i, j, nb);
   double sh = get_h()*speed(i, j);
 
-  double T1 = min(nb[0] ? VAL(0) : INF(T1), nb[2] ? VAL(2) : INF(T1));
-  double T2 = min(nb[1] ? VAL(1) : INF(T2), nb[3] ? VAL(3) : INF(T2));
+  double T1 = min(nb[0] ? VAL(0) : INF(double), nb[2] ? VAL(2) : INF(double));
+  double T2 = min(nb[1] ? VAL(1) : INF(double), nb[3] ? VAL(3) : INF(double));
 
   bool T1_inf = std::isinf(T1), T2_inf = std::isinf(T2);
 

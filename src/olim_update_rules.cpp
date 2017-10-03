@@ -10,6 +10,7 @@
 #endif
 
 #include "common.defs.hpp"
+#include "common.macros.hpp"
 #include "olim_update_rules.hpp"
 #include "olim_util.hpp"
 
@@ -154,6 +155,41 @@ double olim_rect_update_rules::tri23(double u0, double u1, double s, double h)
   return T;
 }
 
+/**
+ * Compute the exact minimizing step size for the relaxed Newton's
+ * method used to solve the minimization problem needed to do the
+ * tetrahedral updates.
+ */
+template <int M11, int M12, int M22, int e1, int e2>
+static
+double compute_step_size(
+  double p1, double p2, double du1, double du2,
+  double lam1, double lam2, double sh, double Q, bool & failure)
+{
+  failure = false;
+  if (fabs(p1) <= EPS(double) && fabs(p2) <= EPS(double)) {
+    return 0;
+  }
+  double du_dot_p = du1*p1 + du2*p2;
+  double delta = std::pow(2*du_dot_p/sh, 2);
+  double pMp = 2*(p1*(M11*p1 + M12*p2) + p2*(M12*p1 + M22*p2));
+  double lMp = 2*(p1*(M11*lam1 + M12*lam2) + p2*(M12*lam1 + M22*lam2));
+  double edotp = 2*(e1*p1 + e2*p2);
+  double tmp1 = 2*pMp - delta, tmp2 = lMp + edotp;
+  double a = pMp*tmp1/2;
+  double b = tmp1*tmp2;
+  double c = tmp2*tmp2 - delta*Q;
+  double disc = b*b - 4*a*c;
+  if (disc < 0) {
+    failure = true;
+    return INF(double);
+  }
+  double lhs = -b/(2*a);
+  double rhs = sqrt(disc)/(2*a);
+  assert(!(lhs + rhs <= 0) && !(lhs - rhs <= 0));
+  return lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
+}
+
 double olim_rect_update_rules::tetra111(
   double u0, double u1, double u2, double s, double h) const
 {
@@ -163,56 +199,38 @@ double olim_rect_update_rules::tetra111(
   check_params(u0, u1, u2, h, s);
 #endif
 
-  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
-  double T = std::numeric_limits<double>::infinity();
-  double x = 1./3., y = 1./3., p1, p2, err, alpha;
+  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0, T = INF(double),
+    lam1 = 1./3., lam2 = 1./3., p1, p2, relerr, alpha, Q, c,
+    H11, H12, H22, G1, G2;
 
   int niters = 0;
+  bool failure = false;
   do {
-    double l = sqrt(pow(1 - x - y, 2) + x*x + y*y);
-    double c = l/sh;
-    double H11 = c*(1 + x*(3*x - 2)), H12 = c*(x*(3*y - 1) - y),
-      H22 = c*(1 + y*(3*y - 2));
-    double G1 = du1 + (2*x + y - 1)/c, G2 = du2 + (x + 2*y - 1)/c;
-
+    Q = pow(1 - lam1 - lam2, 2) + lam1*lam1 + lam2*lam2;
+    c = sqrt(Q)/sh;
+    H11 = c*(1 + lam1*(3*lam1 - 2));
+    H12 = c*(lam1*(3*lam2 - 1) - lam2);
+    H22 = c*(1 + lam2*(3*lam2 - 2));
+    G1 = du1 + (2*lam1 + lam2 - 1)/c;
+    G2 = du2 + (lam1 + 2*lam2 - 1)/c;
     p1 = H11*G1 + H12*G2;
     p2 = H12*G1 + H22*G2;
 
-    // compute step size---clean this up later
-    if (fabs(p1) <= std::numeric_limits<double>::epsilon() &&
-        fabs(p2) <= std::numeric_limits<double>::epsilon()) {
-      break;
-    } else {
-      double du_dot_p = du1*p1 + du2*p2;
-      double delta = 2*du_dot_p/sh;
-      delta *= delta;
-
-      double pMp = p1*(4*p1 + 2*p2) + p2*(2*p1 + 4*p2);
-      double lMp = p1*(4*x + 2*y) + p2*(2*x + 4*y);
-      double edotp = -2*(p1 + p2);
-
-      double tmp1 = 2*pMp - delta, tmp2 = lMp + edotp, tmp3 = 1 - x - y;
-      double a = pMp*tmp1/2;
-      double b = tmp1*tmp2;
-      double c = tmp2*tmp2 - delta*(tmp3*tmp3 + x*x + y*y);
-      double disc = b*b - 4*a*c;
-      if (disc < 0) {
-        goto coda;
-      }
-
-      double lhs = -b/(2*a);
-      double rhs = sqrt(disc)/(2*a);
-      alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
-    }
-    if (fabs(alpha) <= std::numeric_limits<double>::epsilon()) {
-      break;
-    }
-
-    x += alpha*p1 , y += alpha*p2;
-    if (x < 0 || y < 0 || 1 - x - y < 0) {
+    alpha = compute_step_size<2, 1, 2, -1, -1>(
+      p1, p2, du1, du2, lam1, lam2, sh, Q, failure);
+    if (failure) {
       goto coda;
     }
-    err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
+    if (fabs(alpha) <= EPS(double)) {
+      break;
+    }
+
+    lam1 += alpha*p1 , lam2 += alpha*p2;
+    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+      goto coda;
+    }
+    relerr = max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2));
+
     ++niters;
     if (niters > 10) {
 #ifdef EIKONAL_DEBUG
@@ -220,11 +238,14 @@ double olim_rect_update_rules::tetra111(
              u0, u1, u2, s, h);
       std::abort();
 #else
+      // printf("p1 = %g, p2 = %g, alpha = %g\n", p1, p2, alpha);
       break;
 #endif
     }
-  } while (err > 1e-15);
-  T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(pow(1 - x - y, 2) + x*x + y*y);
+  } while (relerr > 1e-15);
+
+  Q = pow(1 - lam1 - lam2, 2) + lam1*lam1 + lam2*lam2;
+  T = (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*sqrt(Q);
 
   coda:
 #if PRINT_UPDATES
@@ -288,55 +309,36 @@ double olim_rect_update_rules::tetra123(
   check_params(u0, u1, u2, s, h);
 #endif
 
-  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
-
-  double T = std::numeric_limits<double>::infinity();
-  double x = 0, y = 0, p1, p2, err, alpha;
+  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0, T = INF(double),
+    lam1 = 0, lam2 = 0, p1, p2, err, alpha, Q, c, H11, H12, H22, G1, G2;
 
   int niters = 0;
+  bool failure = false;
   do {
-    double l = sqrt(x*x + 2*x*y + 2*y*y + 1);
-    double c = l/sh;
-    double H11 = c*(2 + x*x), H12 = c*(x*y - 1), H22 = c*(1 + y*y);
-    double G1 = du1 + (x + y)/c, G2 = du2 + (x + 2*y)/c;
-
+    Q = lam1*lam1 + 2*lam1*lam2 + 2*lam2*lam2 + 1;
+    c = sqrt(Q)/sh;
+    H11 = c*(2 + lam1*lam1);
+    H12 = c*(lam1*lam2 - 1);
+    H22 = c*(1 + lam2*lam2);
+    G1 = du1 + (lam1 + lam2)/c;
+    G2 = du2 + (lam1 + 2*lam2)/c;
     p1 = H11*G1 + H12*G2;
     p2 = H12*G1 + H22*G2;
 
-    // compute step size---clean this up later
-    if (fabs(p1) <= std::numeric_limits<double>::epsilon() &&
-        fabs(p2) <= std::numeric_limits<double>::epsilon()) {
-      break;
-    } else {
-      double du_dot_p = du1*p1 + du2*p2;
-      double delta = 2*du_dot_p/sh;
-      delta *= delta;
-
-      double pMp = p1*(2*p1 + 2*p2) + p2*(2*p1 + 4*p2);
-      double lMp = p1*(2*x + 2*y) + p2*(2*x + 4*y);
-
-      double tmp1 = 2*pMp - delta;
-      double a = pMp*tmp1/2;
-      double b = tmp1*lMp;
-      double c = lMp*lMp - delta*(x*x + 2*x*y + 2*y*y + 1);
-      double disc = b*b - 4*a*c;
-      if (disc < 0) {
-        goto coda;
-      }
-
-      double lhs = -b/(2*a);
-      double rhs = sqrt(disc)/(2*a);
-      alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
-    }
-    if (fabs(alpha) <= std::numeric_limits<double>::epsilon()) {
-      break;
-    }
-
-    x += alpha*p1 , y += alpha*p2;
-    if (x < 0 || y < 0 || 1 - x - y < 0) {
+    alpha = compute_step_size<1, 1, 2, 0, 0>(
+      p1, p2, du1, du2, lam1, lam2, sh, Q, failure);
+    if (failure) {
       goto coda;
     }
-    err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
+    if (fabs(alpha) <= EPS(double)) {
+      break;
+    }
+
+    lam1 += alpha*p1 , lam2 += alpha*p2;
+    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+      goto coda;
+    }
+    err = max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2));
     ++niters;
     if (niters > 10) {
 #ifdef EIKONAL_DEBUG
@@ -344,11 +346,14 @@ double olim_rect_update_rules::tetra123(
              u0, u1, u2, s, h);
       std::abort();
 #else
+      // printf("p1 = %g, p2 = %g, alpha = %g\n", p1, p2, alpha);
       break;
 #endif
     }
   } while (err > 1e-15);
-  T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(x*x + 2*x*y + 2*y*y + 1);
+
+  Q = lam1*lam1 + 2*lam1*lam2 + 2*lam2*lam2 + 1;
+  T = (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*sqrt(Q);
 
   coda:
 #if PRINT_UPDATES
@@ -367,57 +372,38 @@ double olim_rect_update_rules::tetra222(
   check_params(u0, u1, u2, s, h);
 #endif
 
-  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0;
-  double T = std::numeric_limits<double>::infinity();
-  double x = 1./3., y = 1./3., p1, p2, err, alpha;
+  double sh = s*h, du1 = u1 - u0, du2 = u2 - u0, T = INF(double),
+    lam1 = 1./3., lam2 = 1./3., p1, p2, relerr, alpha, Q, c,
+    H11, H12, H22, G1, G2;
 
   int niters = 0;
+  bool failure = false;
   do {
-    double l = sqrt((1 - x)*(1 - x) + (1 - y)*(1 - y) + (x + y)*(x + y));
-    double c = l/sh;
-    double H11 = c*(3 + x*(3*x - 2))/4.0, H12 = c*(x*(3*y - 1) - y - 1)/4.0,
-      H22 = c*(3 + y*(3*y - 2))/4.0;
-    double G1 = du1 + (2*x + y - 1)/c, G2 = du2 + (x + 2*y - 1)/c;
-
+    Q = (1 - lam1)*(1 - lam1) + (1 - lam2)*(1 - lam2) +
+      (lam1 + lam2)*(lam1 + lam2);
+    c = sqrt(Q)/sh;
+    H11 = c*(3 + lam1*(3*lam1 - 2))/4.0;
+    H12 = c*(lam1*(3*lam2 - 1) - lam2 - 1)/4.0;
+    H22 = c*(3 + lam2*(3*lam2 - 2))/4.0;
+    G1 = du1 + (2*lam1 + lam2 - 1)/c;
+    G2 = du2 + (lam1 + 2*lam2 - 1)/c;
     p1 = H11*G1 + H12*G2;
     p2 = H12*G1 + H22*G2;
 
-    // compute step size---clean this up later
-    if (fabs(p1) <= std::numeric_limits<double>::epsilon() &&
-        fabs(p2) <= std::numeric_limits<double>::epsilon()) {
-      break;
-    } else {
-      double du_dot_p = du1*p1 + du2*p2;
-      double delta = 2*du_dot_p/sh;
-      delta *= delta;
-
-      double pMp = p1*(4*p1 + 2*p2) + p2*(2*p1 + 4*p2);
-      double lMp = p1*(4*x + 2*y) + p2*(2*x + 4*y);
-      double edotp = -2*(p1 + p2);
-
-      double tmp1 = 2*pMp - delta, tmp2 = lMp + edotp;
-      double a = pMp*tmp1/2;
-      double b = tmp1*tmp2;
-      double c = tmp2*tmp2 -
-        delta*((1 - x)*(1 - x) + (1 - y)*(1 - y) + (x + y)*(x + y));
-      double disc = b*b - 4*a*c;
-      if (disc < 0) {
-        goto coda;
-      }
-
-      double lhs = -b/(2*a);
-      double rhs = sqrt(disc)/(2*a);
-      alpha = lhs + rhs <= 0 ? lhs + rhs : lhs - rhs;
+    alpha = compute_step_size<2, 1, 2, -1, -1>(
+      p1, p2, du1, du2, lam1, lam2, sh, Q, failure);
+    if (failure) {
+      goto coda;
     }
     if (fabs(alpha) <= std::numeric_limits<double>::epsilon()) {
       break;
     }
 
-    x += alpha*p1 , y += alpha*p2;
-    if (x < 0 || y < 0 || 1 - x - y < 0) {
+    lam1 += alpha*p1 , lam2 += alpha*p2;
+    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
       goto coda;
     }
-    err = max(fabs(p1), fabs(p2))/max(fabs(x), fabs(y));
+    relerr = max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2));
     ++niters;
     if (niters > 10) {
 #ifdef EIKONAL_DEBUG
@@ -425,11 +411,15 @@ double olim_rect_update_rules::tetra222(
              u0, u1, u2, s, h);
       std::abort();
 #else
+      // printf("p1 = %g, p2 = %g, alpha = %g\n", p1, p2, alpha);
       break;
 #endif
     }
-  } while (err > 1e-15);
-  T = (1 - x - y)*u0 + x*u1 + y*u2 + sh*sqrt(2*(1 + x*x + x*(y - 1) - y + y*y));
+  } while (relerr > 1e-15);
+
+  Q = (1 - lam1)*(1 - lam1) + (1 - lam2)*(1 - lam2) +
+    (lam1 + lam2)*(lam1 + lam2);
+  T = (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + sh*sqrt(Q);
 
   coda:
 #if PRINT_UPDATES

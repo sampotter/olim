@@ -132,38 +132,27 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
    * Degree 1 line updates
    */
   for (l = 0; l < 6; ++l) {
-    is = olim26::line1tris[l];
-    if (!nb[l])
-      continue;
-    if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]] ||
-        nb[is[4]] || nb[is[5]] || nb[is[6]] || nb[is[7]])
-      continue;
-    T = min(T, this->line1(VAL(l), s, h));
+    if (nb[l]) {
+      T = min(T, this->line1(VAL(l), s, h));
+    }
   }
 
   /**
    * Degree 2 line updates
    */
   for (; l < 18; ++l) {
-    is = olim26::line2tris[l - 6];
-    if (!nb[l])
-      continue;
-    if (nb[is[0]] || nb[is[1]] || nb[is[2]] || nb[is[3]])
-      continue;
-    T = min(T, this->line2(VAL(l), s, h));
+    if (nb[l]) {
+      T = min(T, this->line2(VAL(l), s, h));
+    }
   }
 
   /**
    * Degree 3 line updates
    */
   for (; l < 26; ++l) {
-    is = olim26::line3tris[l - 18];
-    if (!nb[l])
-      continue;
-    if (nb[is[0]] || nb[is[1]] || nb[is[2]] ||
-        nb[is[3]] || nb[is[4]] || nb[is[5]])
-      continue;
-    T = min(T, this->line3(VAL(l), s, h));
+    if (nb[l]) {
+      T = min(T, this->line3(VAL(l), s, h));
+    }
   }
 
   /**

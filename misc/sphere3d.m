@@ -5,7 +5,7 @@ clear;
 
 path(path, '../build/Release');
 
-M = 7;
+M = 5;
 n = 2^M + 1;
 B = zeros(n, n, n, 'logical');
 B((n + 1)/2, (n + 1)/2, (n + 1)/2) = 1;

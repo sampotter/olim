@@ -15,11 +15,11 @@ f2 = @(x, y, z) cos(r(x, y, z)) + r(x, y, z) - 1;
 S = {s1, s2};
 F = {f1, f2};
 
-n = 1;
+n = 2;
 s = S{n};
 f = F{n};
 
-ns = 2.^(2:7) + 1;
+ns = 2.^(2:6) + 1;
 % ns = 5:2:31;
 
 relerr = @(x, y, p) max(norm(x(:) - y(:), p)/norm(x(:), p), ...

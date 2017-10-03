@@ -78,8 +78,7 @@ void olim18_rect<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
 }
 
 // Directions lying on the "equator" of the stencil:
-static int eqdirs[4] = {
-  olim18::N, olim18::E, olim18::S, olim18::W};
+static int eqdirs[4] = {olim18::N, olim18::E, olim18::S, olim18::W};
 
 /**
  * Hash a pair of directions in {N, E, U, S, W, D} uniquely into the

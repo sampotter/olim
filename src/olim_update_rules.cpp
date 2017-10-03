@@ -259,8 +259,8 @@ double tetra_newton(
     ++niters;
     if (niters > 10) {
 #ifdef EIKONAL_DEBUG
-      printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, h = %0.16g\n",
-             u0, u1, u2, s, h);
+      printf("u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, sh = %0.16g\n",
+             u0, u1, u2, sh);
       std::abort();
 #else
       break;

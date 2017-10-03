@@ -19,7 +19,7 @@ n = 1;
 s = S{n};
 f = F{n};
 
-ns = 2.^(2:6) + 1;
+ns = 2.^(2:7) + 1;
 % ns = 5:2:31;
 
 relerr = @(x, y, p) max(norm(x(:) - y(:), p)/norm(x(:), p), ...
@@ -43,27 +43,17 @@ for n = ns
     
     % Compute solutions using different methods
     if islogical(s) && s
-        Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', ...
-                     1, 'z0', 1);
-        U6mp0 = fmm(B, 'h', h, 'Method', 'olim6_mp0', 'x0', 1, ...
-                    'y0', 1, 'z0', 1);
-        U6rhr = fmm(B, 'h', h, 'Method', 'olim6_rhr', 'x0', 1, ...
-                    'y0', 1, 'z0', 1);
-        U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr', 'x0', 1, ...
-                  'y0', 1, 'z0', 1);
-        U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr', 'x0', 1, ...
-                  'y0', 1, 'z0', 1);
+        Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', 1, 'z0', 1);
+        U6mp0 = fmm(B, 'h', h, 'Method', 'olim6_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
+        U6rhr = fmm(B, 'h', h, 'Method', 'olim6_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
     else
-        Ubasic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', ...
-                     1, 'y0', 1, 'z0', 1);
-        U6mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_mp0', 'x0', ...
-                 1, 'y0', 1, 'z0', 1);
-        U6rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr', 'x0', ...
-                 1, 'y0', 1, 'z0', 1);
-        U18 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr', ...
-                  'x0', 1, 'y0', 1, 'z0', 1);
-        U26 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim26_rhr', ...
-                  'x0', 1, 'y0', 1, 'z0', 1);
+        Ubasic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', 1, 'y0', 1, 'z0', 1);
+        U6mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
+        U6rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U26 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim26_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
     end
 
     % Compute relative errors

@@ -14,7 +14,7 @@ getU = @(method) fmm(B, 'Method', method, 'h', h, 'x0', 1, 'y0', 1, 'z0', 1);
 
 [x y z] = meshgrid(linspace(-1, 1, n), linspace(-1, 1, n), linspace(-1, 1, n));
 
-methodnames = {'basic', 'olim6_rhr_arma', 'olim18_rhr_arma', 'olim26_rhr_arma'};
+methodnames = {'basic', 'olim6_rhr', 'olim18_rhr', 'olim26_rhr'};
 
 rows = 2;
 cols = 2;

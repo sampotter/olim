@@ -13,7 +13,7 @@ s2 = @(x, y, z) 1 - sin(r(x, y, z));
 f2 = @(x, y, z) cos(r(x, y, z)) + r(x, y, z) - 1;
 
 S = {s1, s2};
-F = {s2, f2};
+F = {f1, f2};
 
 n = 1;
 s = S{n};
@@ -31,7 +31,8 @@ for n = ns
 
     % Compute grid
     B = zeros(n, n, n, 'logical');
-    B((n + 1)/2, (n + 1)/2, (n + 1)/2) = 1;
+    i0 = (n + 1)/2;
+    B(i0, i0, i0) = 1;
 
     % Compute other parameters
     h = 2/(n - 1);

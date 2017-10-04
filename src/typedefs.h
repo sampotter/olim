@@ -11,6 +11,7 @@ enum marcher_type {
   OLIM8_MP0,
   OLIM8_MP1,
   OLIM8_RHR,
+  OLIM18_MP0,
   OLIM18_RHR,
   OLIM26_RHR,
   SOLIM4_MP0

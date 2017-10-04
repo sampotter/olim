@@ -41,6 +41,10 @@
     T = min(T, this->tetra122(VAL(i), VAL(j), VAL(k), SPD(i, j, k), h)); \
   } while (0)
 
+#define RECT_TETRA123(i, j, k) do {                                     \
+    T = min(T, this->tetra123(VAL(i), VAL(j), VAL(k), SPD(i, j, k), h)); \
+  } while (0)
+
 #define RECT_TETRA222(i, j, k) do {                                     \
     T = min(T, this->tetra222(VAL(i), VAL(j), VAL(k), SPD(i, j, k), h)); \
   } while (0)

@@ -12,10 +12,13 @@ f1 = @(x, y, z) r(x, y, z);
 s2 = @(x, y, z) 1 - sin(r(x, y, z));
 f2 = @(x, y, z) cos(r(x, y, z)) + r(x, y, z) - 1;
 
-S = {s1, s2};
-F = {f1, f2};
+s3 = @(x, y, z) abs(x + y + z);
+f3 = @(x, y, z) ((x + y + z).^2)/(2*sqrt(3));
 
-n = 2;
+S = {s1, s2, s3};
+F = {f1, f2, f3};
+
+n = 3;
 s = S{n};
 f = F{n};
 

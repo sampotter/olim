@@ -4,8 +4,9 @@
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
 
-template <class node, class update_rules>
-struct olim18_rect: public marcher_3d<node>, public update_rules {
+template <class node, class update_rules, class speed_estimate>
+struct olim18_rect: public marcher_3d<node>, public update_rules,
+                    public speed_estimate {
   using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
@@ -17,10 +18,10 @@ private:
   virtual void update_impl(int i, int j, int k, double & T);
   void do_tri12_updates(
     abstract_node const * const * nb, int const * dirs,
-    double s, double h, double & T) const;
+    double const * s_, double s, double h, double & T) const;
   void do_tri22_updates(
     abstract_node const * const * nb, int const * dirs,
-    double s, double h, double & T) const;
+    double const * s_, double s, double h, double & T) const;
 };
 
 #include "olim18_rect.impl.hpp"

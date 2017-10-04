@@ -8,6 +8,7 @@
 #endif
 
 #include "common.macros.hpp"
+#include "olim3d.macros.hpp"
 #include "olim18.defs.hpp"
 
 // neighbor order:
@@ -18,33 +19,34 @@
 // the order of the degree 2 neighbors is critically
 // important for the hash function DEG2NB to work
 
-template <class node, class update_rules>
-int olim18_rect<node, update_rules>::di[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim18_rect<node, update_rules, speed_estimates>::di[] = {
 // N, E, U,  S, W, D
    1, 0, 0, -1, 0, 0,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    -1, 0,  0,  0,  1,  1, -1, -1,  1,  1,  0,  -1
 };
 
-template <class node, class update_rules>
-int olim18_rect<node, update_rules>::dj[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim18_rect<node, update_rules, speed_estimates>::dj[] = {
 // N, E, U, S, W,  D
    0, 1, 0, 0, -1, 0,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    0,  -1, 1,  1,  0,  0,  -1, 1,  1,  -1, -1, 0
 };
 
-template <class node, class update_rules>
-int olim18_rect<node, update_rules>::dk[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim18_rect<node, update_rules, speed_estimates>::dk[] = {
 // N, E, U, S, W, D
    0, 0, 1, 0, 0, -1,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    -1, -1, -1, 1,  1,  -1, 0,  0,  0,  0,  1,  1
 };
 
-template <class node, class update_rules>
-void olim18_rect<node, update_rules>::get_valid_neighbors(int i, int j, int k,
-                                                          abstract_node ** nb) {
+template <class node, class update_rules, class speed_estimates>
+void olim18_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
+  int i, int j, int k, abstract_node ** nb)
+{
   int a, b, c;
   for (int l = 0; l < 18; ++l) {
     a = i + di[l], b = j + dj[l], c = k + dk[l];
@@ -54,8 +56,10 @@ void olim18_rect<node, update_rules>::get_valid_neighbors(int i, int j, int k,
   }
 }
 
-template <class node, class update_rules>
-void olim18_rect<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
+template <class node, class update_rules, class speed_estimates>
+void olim18_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
+  abstract_node * n)
+{
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
@@ -87,8 +91,10 @@ static int eqdirs[4] = {olim18::N, olim18::E, olim18::S, olim18::W};
  */
 #define DEG2NB(i, j) ((5*i*i + 8*i*j + 4*i + 9*j) % 13 + 5)
 
-template <class node, class update_rules>
-void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & T) {
+template <class node, class update_rules, class speed_estimates>
+void olim18_rect<node, update_rules, speed_estimates>::update_impl(
+  int i, int j, int k, double & T)
+{
   using namespace olim18;
   using std::min;
   using std::max;
@@ -101,37 +107,35 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
   memset(nb, 0x0, 18*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k);
+  double h = this->get_h(), s = this->speed(i, j, k), s_[18];
+  for (int l = 0; l < 18; ++l) {
+    if (nb[l]) {
+      s_[l] = this->speed(i + di[l], j + dj[l], k + dk[l]);
+    }
+  }
+  
   int l, l0, l1, l2, l01, l02, l12;
 
   /**
    * line updates (degree 1 and 2)
    */
-  for (l = 0; l < 6; ++l) {
-    if (nb[l]) {
-      T = min(T, this->line1(VAL(l), s, h));
-    }
-  }
-  for (l = 6, l0 = 0; l < 18; ++l, ++l0) {
-    if (nb[l]) {
-      T = min(T, this->line2(VAL(l), s, h));
-    }
-  }
+  for (l = 0; l < 6; ++l) if (nb[l]) RECT_LINE1(l);
+  for (l = 6, l0 = 0; l < 18; ++l, ++l0) if (nb[l]) RECT_LINE2(l);
   
   /**
    * (1, 2) triangular updates
    */
   {
     int dirs[8] = {U, UN, N, DN, D, DS, S, US};
-    do_tri12_updates(nb, dirs, s, h, T);
+    do_tri12_updates(nb, dirs, s_, s, h, T);
 
     dirs[1] = UE, dirs[2] = E, dirs[3] = DE, dirs[4] = D, dirs[5] = DW,
       dirs[6] = W, dirs[7] = UW;
-    do_tri12_updates(nb, dirs, s, h, T);
+    do_tri12_updates(nb, dirs, s_, s, h, T);
 
     dirs[0] = N, dirs[1] = NE, dirs[3] = SE, dirs[4] = S, dirs[5] = SW,
       dirs[7] = NW;
-    do_tri12_updates(nb, dirs, s, h, T);
+    do_tri12_updates(nb, dirs, s_, s, h, T);
   }
 
   /**
@@ -139,22 +143,22 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
    */
   {
     int dirs[4] = {UN, UE, US, UW};
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
 
     dirs[1] = NE, dirs[2] = DN, dirs[3] = NW;
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
 
     dirs[0] = UW, dirs[1] = SW, dirs[2] = DW;
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
 
     dirs[0] = US, dirs[2] = DS, dirs[3] = SE;
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
 
     dirs[0] = UE, dirs[1] = NE, dirs[2] = DE;
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
 
     dirs[0] = DW, dirs[1] = DN, dirs[3] = DS;
-    do_tri22_updates(nb, dirs, s, h, T);
+    do_tri22_updates(nb, dirs, s_, s, h, T);
   }
 
   // TODO: eliminate the code duplication below
@@ -166,6 +170,10 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
   for (l = 0, l1 = N, l2 = E;
        l < 4;
        ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
+    /**
+     * Sort l0, l1, and l2 indices and hash them to obtain indices to
+     * degree 2 neighbors.
+     */
     l01 = DEG2NB(min(l0, l1), max(l0, l1));
     l02 = DEG2NB(min(l0, l2), max(l0, l2));
     l12 = DEG2NB(min(l1, l2), max(l1, l2));
@@ -173,24 +181,16 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
     /*
      * (1, 2, 2) 3-pt updates
      */
-    if (nb[l0] && nb[l01] && nb[l02]) {
-      T = min(T, this->tetra122(VAL(l0), VAL(l01), VAL(l02), s, h));
-    }
+    if (nb[l0] && nb[l01] && nb[l02]) RECT_TETRA122(l0, l01, l02);
     if (nb[l12]) {
-      if (nb[l1] && nb[l01]) {
-        T = min(T, this->tetra122(VAL(l1), VAL(l01), VAL(l12), s, h));
-      }
-      if (nb[l2] && nb[l02]) {
-        T = min(T, this->tetra122(VAL(l2), VAL(l02), VAL(l12), s, h));
-      }
+      if (nb[l1] && nb[l01]) RECT_TETRA122(l1, l01, l12);
+      if (nb[l2] && nb[l02]) RECT_TETRA122(l2, l02, l12);
     }
 
     /*
      * (2, 2, 2) 3-pt update
      */
-    if (nb[l01] && nb[l02] && nb[l12]) {
-      T = min(T, this->tetra222(VAL(l01), VAL(l02), VAL(l12), s, h));
-    }
+    if (nb[l01] && nb[l02] && nb[l12]) RECT_TETRA222(l01, l02, l12);
   }
 
   /**
@@ -200,6 +200,10 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
   for (l = 0, l1 = N, l2 = E;
        l < 4;
        ++l, l1 = eqdirs[l], l2 = eqdirs[(l + 1) % 4]) {
+    /**
+     * Sort l0, l1, and l2 indices and hash them to obtain indices to
+     * degree 2 neighbors.
+     */
     l01 = DEG2NB(min(l0, l1), max(l0, l1));
     l02 = DEG2NB(min(l0, l2), max(l0, l2));
     l12 = DEG2NB(min(l1, l2), max(l1, l2));
@@ -207,24 +211,16 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
     /*
      * (1, 2, 2) 3-pt updates
      */
-    if (nb[l0] && nb[l01] && nb[l02]) {
-      T = min(T, this->tetra122(VAL(l0), VAL(l01), VAL(l02), s, h));
-    }
+    if (nb[l0] && nb[l01] && nb[l02]) RECT_TETRA122(l0, l01, l02);
     if (nb[l12]) {
-      if (nb[l1] && nb[l01]) {
-        T = min(T, this->tetra122(VAL(l1), VAL(l01), VAL(l12), s, h));
-      }
-      if (nb[l2] && nb[l02]) {
-        T = min(T, this->tetra122(VAL(l2), VAL(l02), VAL(l12), s, h));
-      }
+      if (nb[l1] && nb[l01]) RECT_TETRA122(l1, l01, l12);
+      if (nb[l2] && nb[l02]) RECT_TETRA122(l2, l02, l12);
     }
 
     /*
      * (2, 2, 2) 3-pt update
      */
-    if (nb[l01] && nb[l02] && nb[l12]) {
-      T = min(T, this->tetra222(VAL(l01), VAL(l02), VAL(l12), s, h));
-    }
+    if (nb[l01] && nb[l02] && nb[l12]) RECT_TETRA222(l01, l02, l12);
   }
 
 #ifdef PRINT_UPDATES
@@ -232,36 +228,32 @@ void olim18_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
 #endif
 }
 
-template <class node, class update_rules>
-void olim18_rect<node, update_rules>::do_tri12_updates(
-  abstract_node const * const * nb, int const * dirs, double s,
-  double h, double & T)
+template <class node, class update_rules, class speed_estimates>
+void olim18_rect<node, update_rules, speed_estimates>::do_tri12_updates(
+  abstract_node const * const * nb, int const * dirs, 
+  double const * s_, double s, double h, double & T)
   const
 {
   using std::min;
   int l0, l1;
   for (int i = 0, j = 1; i < 8; j = (++i + 1) % 8) {
     if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) {
-      if (i % 2 == 0) {
-        T = min(T, this->tri12(VAL(l0), VAL(l1), s, h));
-      } else {
-        T = min(T, this->tri12(VAL(l1), VAL(l0), s, h));
-      }
+      if (i % 2 == 0) RECT_TRI12(l0, l1);
+      else RECT_TRI12(l1, l0);
     }
   }
 }
 
-template <class node, class update_rules>
-void olim18_rect<node, update_rules>::do_tri22_updates(
-  abstract_node const * const * nb, int const * dirs, double s,
-  double h, double & T) const
+template <class node, class update_rules, class speed_estimates>
+void olim18_rect<node, update_rules, speed_estimates>::do_tri22_updates(
+  abstract_node const * const * nb, int const * dirs,
+  double const * s_, double s, double h, double & T)
+  const
 {
   using std::min;
   int l0, l1;
   for (int i = 0, j = 1; i < 4; j = (++i + 1) % 4) {
-    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) {
-      T = min(T, this->tri22(VAL(l0), VAL(l1), s, h));
-    }
+    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) RECT_TRI22(l0, l1);
   }
 }
 

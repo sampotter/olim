@@ -47,13 +47,15 @@ for n = ns
         Ubasic = fmm(B, 'h', h, 'Method', 'basic', 'x0', 1, 'y0', 1, 'z0', 1);
         U6mp0 = fmm(B, 'h', h, 'Method', 'olim6_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
         U6rhr = fmm(B, 'h', h, 'Method', 'olim6_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
-        U18 = fmm(B, 'h', h, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18mp0 = fmm(B, 'h', h, 'Method', 'olim18_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18rhr = fmm(B, 'h', h, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
         U26 = fmm(B, 'h', h, 'Method', 'olim26_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
     else
         Ubasic = fmm(B, 'h', h, 'Speed', s, 'Method', 'basic', 'x0', 1, 'y0', 1, 'z0', 1);
         U6mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
         U6rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim6_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
-        U18 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18mp0 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_mp0', 'x0', 1, 'y0', 1, 'z0', 1);
+        U18rhr = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim18_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
         U26 = fmm(B, 'h', h, 'Speed', s, 'Method', 'olim26_rhr', 'x0', 1, 'y0', 1, 'z0', 1);
     end
 
@@ -61,18 +63,25 @@ for n = ns
     Ebasic(k) = relerr(Ubasic, u, 'inf');
     E6mp0(k) = relerr(U6mp0, u, 'inf');
     E6rhr(k) = relerr(U6rhr, u, 'inf');
-    E18(k) = relerr(U18, u, 'inf');
+    E18mp0(k) = relerr(U18mp0, u, 'inf');
+    E18rhr(k) = relerr(U18rhr, u, 'inf');
     E26(k) = relerr(U26, u, 'inf');
     
     k = k + 1;
 end
 
+getplotsymb = @(index) strcat('-', marks{index});
+
 % Plot errors
 figure;
-loglog(ns, Ebasic, '-*');
+loglog(ns, Ebasic, getplotsymb(1));
 hold on;
-loglog(ns, E6mp0, '-+');
-loglog(ns, E6rhr, '-s');
-loglog(ns, E18, '-o');
-loglog(ns, E26, '-x');
-legend('Basic', 'OLIM6 (mp0)', 'OLIM6 (rhr)', 'OLIM18 (rhr)', 'OLIM26 (rhr)');
+loglog(ns, E6mp0, getplotsymb(2));
+loglog(ns, E6rhr, getplotsymb(3));
+loglog(ns, E18mp0, getplotsymb(4));
+loglog(ns, E18rhr, getplotsymb(5));
+loglog(ns, E26, getplotsymb(6));
+ylabel('||u - U||_\inf/||u||_\inf');
+xlabel('n (s.t. # nodes = n^3)');
+legend('Basic', 'OLIM6 (mp0)', 'OLIM6 (rhr)', 'OLIM18 (mp0)', ...
+       'OLIM18 (rhr)', 'OLIM26 (rhr)');

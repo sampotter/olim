@@ -14,6 +14,7 @@
 #include "olim8_rhr.hpp"
 #include "olim18_mp0.hpp"
 #include "olim18_rhr.hpp"
+#include "olim26_mp0.hpp"
 #include "olim26_rhr.hpp"
 
 void fmm(double * out, bool * in, int M, int N, double h, double * S,
@@ -84,6 +85,10 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
       m = std::make_unique<olim18_mp0>(M1, M2, M3, h);
     } else if (type == OLIM18_RHR) {
       m = std::make_unique<olim18_rhr>(M1, M2, M3, h);
+    } else if (type == OLIM26_MP0) {
+      m = std::make_unique<olim26_mp0>(M1, M2, M3, h);
+    } else if (type == OLIM26_RHR) {
+      m = std::make_unique<olim26_rhr>(M1, M2, M3, h);
     }
   } else {
     if (type == BASIC) {
@@ -96,6 +101,8 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
       m = std::make_unique<olim18_mp0>(M1, M2, M3, h, S);
     } else if (type == OLIM18_RHR) {
       m = std::make_unique<olim18_rhr>(M1, M2, M3, h, S);
+    } else if (type == OLIM26_MP0) {
+      m = std::make_unique<olim26_mp0>(M1, M2, M3, h, S);
     } else if (type == OLIM26_RHR) {
       m = std::make_unique<olim26_rhr>(M1, M2, M3, h, S);
     }

@@ -19,30 +19,31 @@
 // degree 3: UNE, USE, USW, UNW, DNE, DSE, DSW, DNW
 //           18,  19,  20,  21,  22,  23,  24,  25
 
-template <class node, class update_rules>
-int olim26_rect<node, update_rules>::di[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim26_rect<node, update_rules, speed_estimates>::di[] = {
   1, 0, 0, -1, 0, 0,
   1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
   1, -1, -1, 1, 1, -1, -1, 1
 };
 
-template <class node, class update_rules>
-int olim26_rect<node, update_rules>::dj[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim26_rect<node, update_rules, speed_estimates>::dj[] = {
   0, 1, 0, 0, -1, 0,
   0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
   1, 1, -1, -1, 1, 1, -1, -1
 };
 
-template <class node, class update_rules>
-int olim26_rect<node, update_rules>::dk[] = {
+template <class node, class update_rules, class speed_estimates>
+int olim26_rect<node, update_rules, speed_estimates>::dk[] = {
   0, 0, 1, 0, 0, -1,
   1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
   1, 1, 1, 1, -1, -1, -1, -1
 };
 
-template <class node, class update_rules>
-void olim26_rect<node, update_rules>::get_valid_neighbors(int i, int j, int k,
-                                                          abstract_node ** nb) {
+template <class node, class update_rules, class speed_estimates>
+void olim26_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
+  int i, int j, int k, abstract_node ** nb)
+{
   int a, b, c;
   for (int l = 0; l < 26; ++l) {
     a = i + di[l], b = j + dj[l], c = k + dk[l];
@@ -52,8 +53,10 @@ void olim26_rect<node, update_rules>::get_valid_neighbors(int i, int j, int k,
   }
 }
 
-template <class node, class update_rules>
-void olim26_rect<node, update_rules>::stage_neighbors_impl(abstract_node * n) {
+template <class node, class update_rules, class speed_estimates>
+void olim26_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
+  abstract_node * n)
+{
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
@@ -112,8 +115,10 @@ namespace olim26 {
   };
 }
 
-template <class node, class update_rules>
-void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & T) {
+template <class node, class update_rules, class speed_estimates>
+void olim26_rect<node, update_rules, speed_estimates>::update_impl(
+  int i, int j, int k, double & T)
+{
   using namespace olim26;
   using std::min;
 
@@ -125,35 +130,21 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
   memset(nb, 0x0, 26*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k);
+  double h = this->get_h(), s = this->speed(i, j, k), s_[26];
+  for (int l = 0; l < 26; ++l) {
+    if (nb[l]) {
+      s_[l] = this->speed(i + di[l], j + dj[l], k + dk[l]);
+    }
+  }
+  
   int l, l0, l1, l2, a, b, * is;
 
   /**
-   * Degree 1 line updates
+   * Line updates (degrees 1, 2, and 3)
    */
-  for (l = 0; l < 6; ++l) {
-    if (nb[l]) {
-      T = min(T, this->line1(VAL(l), s, h));
-    }
-  }
-
-  /**
-   * Degree 2 line updates
-   */
-  for (; l < 18; ++l) {
-    if (nb[l]) {
-      T = min(T, this->line2(VAL(l), s, h));
-    }
-  }
-
-  /**
-   * Degree 3 line updates
-   */
-  for (; l < 26; ++l) {
-    if (nb[l]) {
-      T = min(T, this->line3(VAL(l), s, h));
-    }
-  }
+  for (l = 0; l < 6; ++l) if (nb[l]) RECT_LINE1(l);
+  for (; l < 18; ++l) if (nb[l]) RECT_LINE2(l);
+  for (; l < 26; ++l) if (nb[l]) RECT_LINE3(l);
 
   /**
    * Degree (1, 2) and (1, 3) triangle updates
@@ -163,11 +154,8 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
     if (nb[l0]) {
       for (a = 0, l1 = is[0]; a < 8; l1 = is[++a]) {
         if (nb[l1]) {
-          if (a % 2 == 0) {
-            T = min(T, this->tri12(VAL(l0), VAL(l1), s, h));
-          } else {
-            T = min(T, this->tri13(VAL(l1), VAL(l0), s, h));
-          }
+          if (a % 2 == 0) RECT_TRI12(l0, l1);
+          else RECT_TRI13(l1, l0);
         }
       }
     }
@@ -180,9 +168,7 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
     is = olim26::line3tris[a];
     if (nb[l0]) {
       for (b = 3, l1 = is[b]; b < 6; l1 = is[++b]) {
-        if (nb[l1]) {
-          T = min(T, this->tri23(VAL(l0), VAL(l1), s, h));
-        }
+        if (nb[l1]) RECT_TRI23(l0, l1);
       }
     }
   }
@@ -197,11 +183,8 @@ void olim26_rect<node, update_rules>::update_impl(int i, int j, int k, double & 
            b < 6;
            ++b, l1 = is[b % 6], l2 = is[(b + 1) % 6]) {
         if (nb[l1] && nb[l2]) {
-          if (b % 2 == 0) {
-            T = min(T, this->tetra123(VAL(l1), VAL(l2), VAL(l0), s, h));
-          } else {
-            T = min(T, this->tetra123(VAL(l2), VAL(l1), VAL(l0), s, h));
-          }
+          if (b % 2 == 0) RECT_TETRA123(l1, l2, l0);
+          else RECT_TETRA123(l2, l1, l0);
         }
       }
     }

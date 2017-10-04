@@ -6,8 +6,6 @@ set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG")
 
-enable_language (Fortran)
-
 option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES

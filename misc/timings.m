@@ -2,8 +2,6 @@ clear;
 
 path(path, '../build/Release');
 
-s1 = @(x, y) 1 - sin(sqrt(x.^2 + y.^2));
-
 ntrials = 10;
 mnum = 1;
 % Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;

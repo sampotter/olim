@@ -23,6 +23,9 @@ endif ()
 configure_file (src/config.hpp.in src/config.hpp)
 include_directories (${PROJECT_BINARY_DIR})
 
+configure_file (${CMAKE_SOURCE_DIR}/CTestCustom.cmake.in
+  ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 set (FMM_SRC_FILES

@@ -5,6 +5,65 @@
    3. "Smart mesh"
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
+* OLIM
+  - [X] Get olim6_rhr_arma working in release mode (wtf?)
+  - [X] Debug olim6_rhr_arma
+  - [X] finite diff 3d tests:
+    - [X] quadrant
+    - [X] octant
+    - [X] 2x2x3
+    - [X] symmetry
+  - [X] olim6 tests
+    - [X] quadrant tests
+    - [X] octant tests
+    - [X] 2x2x3
+    - [X] symmetry tests
+  - [X] Rewrite olim18 using a loop
+    - [X] initial rewrite
+    - [X] quadrant tests
+    - [X] octant tests
+    - [X] 2x2x3
+    - [X] symmetry tests
+  - [X] Rewrite olim26 using a loop
+    - [X] initial rewrite
+    - [X] quadrant tests
+    - [X] octant tests
+    - [X] 2x2x3
+    - [X] symmetry tests
+  - [X] Go back and turn olim26 into the unconstrained algorithm
+  - [X] Get OLIM6 working with speed functions
+    - [X] Write tests to compare with basic3d
+  - [X] use macros to simplify OLIM6/18/26 update calls (e.g. TETRA111UPDATE)
+  - [ ] add default speed function to errors (in the same way as errors3d)
+  - [ ] fix pernicious 3D OLIM bug
+  - [ ] implement OLIM6/18/26 MP1
+  - [ ] add the rest of the speed functions in 3D
+  - [ ] large scale 3D tests
+    - run large 3D errors and 3D timings test on computer at work or
+      on cluster
+    - do automatically for all different speed functions
+    - TRY to get up to n = 1025
+  - [ ] exact update for tetra111 and tetra222
+  - [ ] make a template class encapsulating 3D tests
+  - [ ] need to go through and rigorously separate "constrained"
+    optimizers from "unconstrained" optimizers
+  - [X] Make errors3d
+  - [X] Make timings3d
+  - [ ] Make sure each of olim6/18/26_rhr has:
+    - [ ] a "constrained optimization" algorithm
+    - [ ] an "unconstrained optimization" algorithm
+  - [ ] Make sure each of olim4/8 has:
+    - [ ] contrained implementation
+    - [ ] unconstrained implementation
+      where each are conditionally compiled using SFINAE depending on a
+      compile-time constant belonging to the rootfinder
+  - [X] Implement olim6/18/26 using nonlinear optimization
+  - [X] Implement olim6/18/26 mp0
+  - [ ] Hierarchical updates
+  - [X] Make it possible to conditionally compile the adj updates in olim8
+  - [ ] olim6/18/26 LUT
+  - [ ] consolidate olim_util in olim_updates
+  - [ ] implement olim4_mp1! (missed this...)
 * Ideas
 ** Exact integration using MP0
    - Is it possible to integrate using MP0 exact if we use information

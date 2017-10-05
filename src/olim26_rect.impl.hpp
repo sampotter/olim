@@ -9,6 +9,7 @@
 #endif
 
 #include "common.macros.hpp"
+#include "olim3d.macros.hpp"
 #include "olim26.defs.hpp"
 
 // neighbor order:

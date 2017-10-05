@@ -1,6 +1,6 @@
 project (fastmarching)
 
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.4 FATAL_ERROR)
 
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
@@ -22,9 +22,6 @@ endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)
 include_directories (${PROJECT_BINARY_DIR})
-
-configure_file (${CMAKE_SOURCE_DIR}/CTestCustom.cmake.in
-  ${CMAKE_BINARY_DIR}/CTestCustom.cmake @ONLY)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
@@ -80,7 +77,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	target_link_libraries (${test}.test fmm)
 	add_test (
 	  NAME ${test} COMMAND ${CMAKE_COMMAND}
-	  -DTEST_PROG=$<TARGET_FILE:${test}.test>
+	  -DTEST_PROGRAM=$<TARGET_FILE:${test}.test>
 	  -DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
 	  -P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
   endforeach ()

@@ -10,6 +10,8 @@ option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES
   "Output individual updates for debugging." OFF)
+option (BUILD_PYTHON_BINDINGS
+  "Build Python bindings to libeikonal." ON)
 
 # If we have a macro like PRINT_UPDATES defined, because of the way
 # the preprocessor works, it's helpful to turn this warning on to make
@@ -49,6 +51,14 @@ elseif (${WIN32})
   message (FATAL_ERROR "Windows unsupported")
 else ()
   add_library (fmm SHARED ${FMM_SRC_FILES})
+endif ()
+
+# We probably aren't doing this the best way---as it is, we end up
+# recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
+# statically link the fmm target into this module.
+if (${BUILD_PYTHON_BINDINGS})
+  find_package (pybind11 REQUIRED)
+  pybind11_add_module (eikonal MODULE src/py.eikonal.cpp ${FMM_SRC_FILES})
 endif ()
 
 # We don't use any of these test targets when we're building our

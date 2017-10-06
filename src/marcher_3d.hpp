@@ -2,17 +2,18 @@
 #define __MARCHER_3D_HPP__
 
 #include "abstract_marcher.hpp"
-#include "speed_func_cache.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
 template <class Node>
-struct marcher_3d: public abstract_marcher, public speed_func_cache
+struct marcher_3d: public abstract_marcher
 {
-  marcher_3d(int height, int width, int depth, double h = 1,
-             speed_func_3d S = default_speed_func_3d,
-             double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
-  marcher_3d(int height, int width, int depth, double h, double * S_values);
+  marcher_3d(
+    int height, int width, int depth, double h = 1,
+    std::function<double(double, double, double)> speed = default_speed_func_3d,
+    double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
+  marcher_3d(int height, int width, int depth, double h,
+             std::unique_ptr<double[]> s_cache);
 
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   double get_value(int i, int j, int k) const;
@@ -34,7 +35,7 @@ private:
   void init();
 
   Node * _nodes;
-  speed_func_3d _speed {default_speed_func_3d};
+  std::unique_ptr<double[]> _s_cache {nullptr};
   double _h {1};
   double _x0 {0}, _y0 {0}, _z0 {0};
   int _height, _width, _depth;

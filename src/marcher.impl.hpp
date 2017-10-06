@@ -9,25 +9,32 @@ static inline size_t get_initial_heap_size(int width, int height) {
 }
 
 template <class Node>
-marcher<Node>::marcher(int height, int width, double h, speed_func speed,
+marcher<Node>::marcher(int height, int width, double h,
+                       std::function<double(double, double)> s,
                        double x0, double y0):
   abstract_marcher {get_initial_heap_size(width, height)},
-  speed_func_cache {width*height},
   _nodes {new Node[width*height]},
-  _speed {speed},
+  _s_cache {new double[width*height]},
   _h {h},
   _x0 {x0},
   _y0 {y0},
   _height {height},
   _width {width}
 {
+  for (int i = 0; i < height; ++i) {
+    for (int j = 0; j < width; ++j) {
+      _s_cache[i*width + j] = s(h*j - x0, h*i - y0);
+    }
+  }
+
   init();
 }
 
 template <class Node>
-marcher<Node>::marcher(int height, int width, double h, double * S_cache):
+marcher<Node>::marcher(int height, int width, double h,
+                       std::unique_ptr<double[]> s_cache):
   abstract_marcher {get_initial_heap_size(width, height)},
-  speed_func_cache {width*height, S_cache},
+  _s_cache {std::move(s_cache)},
   _nodes {new Node[width*height]},
   _h {h},
   _height {height},
@@ -90,11 +97,7 @@ bool marcher<Node>::in_bounds(int i, int j) const {
 template <class Node>
 double marcher<Node>::speed(int i, int j) {
   assert(in_bounds(i, j));
-  int k = _width*i + j;
-  if (!is_cached(k)) {
-    cache_value(k, _speed(_h*j - _x0, _h*i - _y0));
-  }
-  return cached_value(k);
+  return _s_cache[_width*i + j];
 }
 
 template <class Node>

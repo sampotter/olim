@@ -46,7 +46,7 @@ void origin_test() {
 void s1_single_row_test() {
   int N = 1001;
   double h = 1.0/(N - 1);
-  olim8_mp1 m {1, N, h, s1};
+  olim8_mp1 m {1, N, h, (speed_func) s1};
   m.add_boundary_node(0, 0);
   m.run();
   for (int j = N - 10; j < N; ++j) {
@@ -59,7 +59,7 @@ void s1_single_row_test() {
 void s1_test() {
   int M = 101, N = M;
   double h = 1.0/(M - 1);
-  olim8_mp1 m {M, N, h, s1};
+  olim8_mp1 m {M, N, h, (speed_func) s1};
   m.add_boundary_node(0, 0);
   m.run();
   for (int i = M - 3; i < M; ++i) {

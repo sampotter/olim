@@ -185,11 +185,11 @@ void planes_are_correct_for_nontrivial_speed_function() {
   int n = 11;
   double h = 1.0/(n/2);
 
-  olim4_rhr m4 {n, n, h, s1, 1, 1};
+  olim4_rhr m4 {n, n, h, (speed_func) s1, 1, 1};
   m4.add_boundary_node(n/2, n/2);
   m4.run();
 
-  olim6_rhr m6 {n, n, n, h, s1, 1, 1, 1};
+  olim6_rhr m6 {n, n, n, h, (speed_func_3d) s1, 1, 1, 1};
   m6.add_boundary_node(n/2, n/2, n/2);
   m6.run();
 
@@ -237,7 +237,7 @@ void result_is_symmetric() {
 
 void result_is_symmetric_for_nontrivial_speed_function() {
   int n = 5;
-  olim6_rhr m {n, n, n, 0.5, s1, 1.0, 1.0, 1.0};
+  olim6_rhr m {n, n, n, 0.5, (speed_func_3d) s1, 1.0, 1.0, 1.0};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
@@ -332,11 +332,11 @@ void agrees_with_basic_marcher_3d_for_nontrivial_speed_function() {
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
-  basic_marcher_3d m3d {n, n, n, h, s1, 1, 1, 1};
+  basic_marcher_3d m3d {n, n, n, h, (speed_func_3d) s1, 1, 1, 1};
   m3d.add_boundary_node(i0, j0, k0);
   m3d.run();
 
-  olim6_rhr m6 {n, n, n, h, s1, 1, 1, 1};
+  olim6_rhr m6 {n, n, n, h, (speed_func_3d) s1, 1, 1, 1};
   m6.add_boundary_node(i0, j0, k0);
   m6.run();
 

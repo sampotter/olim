@@ -2,16 +2,15 @@
 #define __MARCHER_HPP__
 
 #include "abstract_marcher.hpp"
-#include "speed_func_cache.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
 template <class Node>
-struct marcher: public abstract_marcher, public speed_func_cache {
+struct marcher: public abstract_marcher {
   marcher(int height, int width, double h = 1,
-          speed_func S = default_speed_func,
+          std::function<double(double, double)> speed = default_speed_func,
           double x0 = 0.0, double y0 = 0.0);
-  marcher(int height, int width, double h, double * S_values);
+  marcher(int height, int width, double h, std::unique_ptr<double[]> S_values);
 
   void add_boundary_node(int i, int j, double value = 0.0);
   double get_value(int i, int j) const;
@@ -33,7 +32,7 @@ private:
   void init();
 
   Node * _nodes;
-  speed_func _speed {default_speed_func};
+  std::unique_ptr<double[]> _s_cache {nullptr};
   double _h {1};
   double _x0 {0}, _y0 {0};
   int _height;

@@ -40,7 +40,6 @@ set (FMM_SRC_FILES
   src/qroots.cpp
   src/solim4_mp0.cpp
   src/speed_estimates.cpp
-  src/speed_func_cache.cpp
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)
 
@@ -92,11 +91,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	target_link_libraries (${speed_test}.speed fmm)
   endforeach ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
-
-# See this link about maybe improving the way we're doing this:
-# http://public.kitware.com/pipermail/cmake/2015-April/060350.html
-set (LIBFMM_PATH "${PROJECT_BINARY_DIR}/libfmm.so")
-configure_file (src/fmm.in.py ${PROJECT_BINARY_DIR}/fmm.py)
 
 add_custom_command (
   TARGET fmm

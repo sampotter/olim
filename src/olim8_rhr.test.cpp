@@ -128,7 +128,7 @@ void origin_test() {
 void s1_single_row_test() {
   int N = 1001;
   double h = 1.0/(N - 1);
-  olim8_rhr m {1, N, h, s1};
+  olim8_rhr m {1, N, h, (speed_func) s1};
   m.add_boundary_node(0, 0);
   m.run();
   double maxerr = 0;
@@ -143,7 +143,7 @@ void s1_single_row_test() {
 void s1_test1() {
   int M = 1001, N = M;
   double h = 1.0/(M - 1);
-  olim8_rhr m {M, N, h, s1};
+  olim8_rhr m {M, N, h, (speed_func) s1};
   m.add_boundary_node(0, 0);
   m.run();
   double maxerr = 0;
@@ -162,7 +162,7 @@ void s1_test1() {
 void s1_test2() {
   int M = 201, N = M;
   double h = 2.0/(M - 1);
-  olim8_rhr m {M, N, h, s1};
+  olim8_rhr m {M, N, h, (speed_func) s1};
   m.add_boundary_node(100, 100);
   m.run();
   double maxerr = 0;

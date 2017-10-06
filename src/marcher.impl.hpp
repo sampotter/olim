@@ -34,8 +34,8 @@ template <class Node>
 marcher<Node>::marcher(int height, int width, double h,
                        std::unique_ptr<double[]> s_cache):
   abstract_marcher {get_initial_heap_size(width, height)},
-  _s_cache {std::move(s_cache)},
   _nodes {new Node[width*height]},
+  _s_cache {std::move(s_cache)},
   _h {h},
   _height {height},
   _width {width}

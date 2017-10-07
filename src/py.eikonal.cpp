@@ -27,7 +27,19 @@ PYBIND11_MODULE(eikonal, m) {
 
   m.def("fmm3d", &fmm, "testing");
 
-  py::class_<basic_marcher>(m, "BasicMarcher")
+  py::class_<basic_marcher>(m, "BasicMarcher", py::buffer_protocol())
+    .def_buffer([] (basic_marcher & m_) -> py::buffer_info {
+        auto const format =
+          py::format_descriptor<basic_marcher::float_type>::format();
+        return {
+          m_.get_node_pointer(),                       // pointer to buffer
+          sizeof(basic_marcher::float_type),           // size of one scalar
+          format,                                      // format
+          basic_marcher::ndims,                        // number of dimensions
+          {m_.get_height(), m_.get_width()},           // buffer dimensions
+          {sizeof(node)*m_.get_height(), sizeof(node)} // stride (in bytes)
+        };
+      })
     .def(
       py::init<int, int, double, speed_function, double, double>(),
       "height"_a,

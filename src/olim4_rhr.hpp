@@ -1,5 +1,5 @@
-#ifndef __OLIM4_RHR_HPP_HPP__
-#define __OLIM4_RHR_HPP_HPP__
+#ifndef __OLIM4_RHR_HPP__
+#define __OLIM4_RHR_HPP__
 
 #include "neumann_marcher.hpp"
 #include "node.hpp"
@@ -11,7 +11,7 @@ private:
   virtual void update_impl(int i, int j, double & T);
 };
 
-#endif // __OLIM4_RHR_HPP_HPP__
+#endif // __OLIM4_RHR_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

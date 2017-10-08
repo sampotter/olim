@@ -2,36 +2,40 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.4 FATAL_ERROR)
 
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG")
+set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
-option (PRINT_UPDATES
-  "Output individual updates for debugging." OFF)
-option (BUILD_PYTHON_BINDINGS
-  "Build Python bindings to libeikonal." ON)
+
+option (PRINT_UPDATES "Output individual updates for debugging." OFF)
+
+option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." ON)
+
+option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 
 # If we have a macro like PRINT_UPDATES defined, because of the way
 # the preprocessor works, it's helpful to turn this warning on to make
 # sure that we're using PRINT_UPDATES correctly. If we don't have it
 # defined, then turning this warning on just spams us during our
 # builds.
+#
+# TODO: in the future, it would be better to turn this on and off
+# locally to avoid missing other errors related to undefined macros.
 if (${PRINT_UPDATES})
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)
-include_directories (${PROJECT_BINARY_DIR})
-
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 
 set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
-  src/fmm_.cpp
+  src/fmm.cpp
   src/olim_update_rules.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
@@ -45,20 +49,47 @@ set (FMM_SRC_FILES
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)
 
-if (${APPLE})
-  add_library (fmm ${FMM_SRC_FILES})
-elseif (${WIN32})
-  message (FATAL_ERROR "Windows unsupported")
-else ()
-  add_library (fmm SHARED ${FMM_SRC_FILES})
+add_library (fmm STATIC ${FMM_SRC_FILES})
+target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+if (${BUILD_MEX_BINDINGS})
+  add_custom_command (
+	OUTPUT fmm.mexmaci64 # TODO: need to build this on multiple
+						 # platforms and get the correct output target
+						 # name on each.
+	COMMAND
+	  mex -output fmm -outdir ${CMAKE_CURRENT_BINARY_DIR}
+	  -L${CMAKE_CURRENT_BINARY_DIR} -lfmm src/mex.fmm.cpp
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	MAIN_DEPENDENCY src/mex.fmm.cpp
+	DEPENDS ${FMM_SRC_FILES})
+  add_custom_target (mex ALL DEPENDS fmm.mexmaci64)
 endif ()
 
-# We probably aren't doing this the best way---as it is, we end up
-# recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
-# statically link the fmm target into this module.
 if (${BUILD_PYTHON_BINDINGS})
+  # We use a Python script to generate our interface file to reduce
+  # the amount of boilerplate we need to maintain manually.
+  set (GENERATE_PY_EIKONAL_CPP_SCRIPT generate_py_eikonal_cpp.py)
+  set (GENERATED_PY_EIKONAL_CPP_PATH
+	${CMAKE_CURRENT_BINARY_DIR}/src/py.eikonal.cpp)
+  add_custom_command (
+	OUTPUT src/py.eikonal.cpp
+	COMMAND ${CMAKE_COMMAND} -E copy
+	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
+	  generate_py_eikonal_cpp.py
+	COMMAND
+	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} > ${GENERATED_PY_EIKONAL_CPP_PATH}
+	DEPENDS
+	  ${CMAKE_CURRENT_SOURCE_DIR}/generate_py_eikonal_cpp.py
+	  ${FMM_SRC_FILES})
+
+  # We probably aren't doing this the best way---as it is, we end up
+  # recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
+  # statically link the fmm target into this module.
   find_package (pybind11 REQUIRED)
-  pybind11_add_module (eikonal MODULE src/py.eikonal.cpp ${FMM_SRC_FILES})
+  pybind11_add_module (eikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
+  target_link_libraries (eikonal PRIVATE fmm)
+  target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endif ()
 
 # We don't use any of these test targets when we're building our
@@ -101,12 +132,5 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	target_link_libraries (${speed_test}.speed fmm)
   endforeach ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
-
-add_custom_command (
-  TARGET fmm
-  POST_BUILD
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/build_mex.sh"
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_BUILD_TYPE})
 
 enable_testing ()

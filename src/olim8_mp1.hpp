@@ -12,8 +12,6 @@ struct olim8_mp1_update_rules {
 
 using olim8_mp1 = olim8<olim8_mp1_update_rules>;
 
-#include "olim8_mp1.impl.hpp"
-
 #endif // __OLIM8_MP1_HPP__
 
 // Local Variables:

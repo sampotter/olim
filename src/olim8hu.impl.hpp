@@ -1,16 +1,16 @@
-#ifndef __OLIM8FAST_IMPL_HPP__
-#define __OLIM8FAST_IMPL_HPP__
+#ifndef __OLIM8HU_IMPL_HPP__
+#define __OLIM8HU_IMPL_HPP__
 
 #include <algorithm>
 #include <cassert>
 
 template <class update_rules>
-void olim8fast<update_rules>::update_impl(int i, int j, double & T) {
+void olim8hu<update_rules>::update_impl(int i, int j, double & T) {
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   abstract_node * x0 = 0x0;
   abstract_node * x1 = 0x0;
   get_valid_neighbors(i, j, nb);
-  double s = S(i, j), h = get_h(), u0, Tnew;
+  double s = speed(i, j), h = get_h(), u0, Tnew;
 
   /**
    * Do every one-point update, and keep track of the index of the
@@ -57,7 +57,7 @@ void olim8fast<update_rules>::update_impl(int i, int j, double & T) {
   }
 }
 
-#endif // __OLIM8FAST_IMPL_HPP__
+#endif // __OLIM8HU_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

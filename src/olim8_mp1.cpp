@@ -1,5 +1,4 @@
-#ifndef __OLIM8_MP1_IMPL_HPP__
-#define __OLIM8_MP1_IMPL_HPP__
+#include "olim8_mp1.hpp"
 
 #include "common.defs.hpp"
 #include "olim_util.hpp"
@@ -100,8 +99,6 @@ double olim8_mp1_update_rules::diag2pt(
   
   return T;
 }
-
-#endif // __OLIM8_MP1_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

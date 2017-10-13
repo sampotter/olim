@@ -65,6 +65,17 @@
   - [ ] consolidate olim_util in olim_updates
   - [ ] implement olim4_mp1! (missed this...)
 * Ideas
+** Fast olim8_mp1 using exact Newton?
+   - Can we do the olim8_mp1 update if we use an exact Newton line
+     search?
+** "Eikonal on a manifold"
+   - Speed functions can be parametrized by the geodesic distance r,
+     or they can be parametrized by the coordinates in the ambient
+     space
+     - In the former case, would it be necessary to first select an
+       "origin" by placing a point somewhere on the manifold,
+       computing the speed function, and then using that as input for
+       the rest of the algorithm?
 ** Exact integration using MP0
    - Is it possible to integrate using MP0 exact if we use information
      about the speed function?

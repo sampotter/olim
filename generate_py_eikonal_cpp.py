@@ -4,11 +4,18 @@ from string import Template
 
 marchers = {
     'basic_marcher': 'BasicMarcher',
-    'olim4_mp0': 'OLIM4MP0',
-    'olim4_rhr': 'OLIM4RHR',
-    'olim8_mp0': 'OLIM8MP0',
-    'olim8_mp1': 'OLIM8MP1',
-    'olim8_rhr': 'OLIM8RHR'}
+    'olim4_mp0': 'Olim4Mid0',
+    'olim4_rhr': 'Olim4Rect',
+    'olim8_mp0': 'Olim8Mid0',
+    'olim8_mp1': 'Olim8Mid1',
+    'olim8_rhr': 'Olim8Rect',
+    'olim8hu_mp0': 'Olim8HierMid0',
+    'olim8hu_mp1': 'Olim8HierMid1',
+    'olim8hu_rhr': 'Olim8HierRect',
+    'olim8lut_mp0': 'Olim8LutMid0',
+    'olim8lut_mp1': 'Olim8LutMid1',
+    'olim8lut_rhr': 'Olim8LutRect',
+}
 
 marcher_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
@@ -43,12 +50,12 @@ marcher_template = Template('''
 
 marchers3d = {
     'basic_marcher_3d': 'BasicMarcher3D',
-    'olim6_mp0': 'OLIM6MP0',
-    'olim6_rhr': 'OLIM6RHR',
-    'olim18_mp0': 'OLIM18MP0',
-    'olim18_rhr': 'OLIM18RHR',
-    'olim26_mp0': 'OLIM26MP0',
-    'olim26_rhr': 'OLIM26RHR'}
+    'olim6_mp0': 'Olim6Mid0',
+    'olim6_rhr': 'Olim6Rect',
+    'olim18_mp0': 'Olim18Mid0',
+    'olim18_rhr': 'Olim18Rect',
+    'olim26_mp0': 'Olim26Mid0',
+    'olim26_rhr': 'Olim26Rect'}
 
 marcher3d_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}")

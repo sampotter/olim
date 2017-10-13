@@ -5,15 +5,16 @@
 
 #include <src/config.hpp>
 
+#include "common.macros.hpp"
+#include "olim.macros.hpp"
+
 template <class update_rules>
-void olim8<update_rules>::update_impl(int i, int j, double & T) {
+void olim8lut<update_rules>::update_impl(int i, int j, double & T) {
   using std::min;
 
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  abstract_node * x0 = 0x0;
-  abstract_node * x1 = 0x0;
   get_valid_neighbors(i, j, nb);
-  double s = speed(i, j), s0, s1, u0, u1, h = get_h();
+  double s = speed(i, j), h = get_h();
 
   // implementing constrained algorithm for now
   for (int k = 0, l = 1, m = 2; k < 8; k += 2, l = k + 1, m = (l + 1) % 8) {
@@ -22,7 +23,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       LINE2(k);
       break;
     case 4:
-      TRI2(l, m);
+      TRI12(l, m);
       break;
     case 3:
     case 6:
@@ -30,7 +31,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       break;
     case 5: 
     case 7:
-      TRI2(k, l);
+      TRI12(k, l);
       break;
     default:
       break;

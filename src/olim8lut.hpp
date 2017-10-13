@@ -11,6 +11,8 @@ private:
   virtual void update_impl(int i, int j, double & T);
 };
 
+#include "olim8lut.impl.hpp"
+
 #endif // __OLIM8LUT_HPP__
 
 // Local Variables:

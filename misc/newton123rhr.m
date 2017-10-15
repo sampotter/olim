@@ -1,4 +1,4 @@
-function newton_test_123(u0, u1, u2, s, h);
+function newton123rhr(u0, u1, u2, s, h);
     if nargin < 1
         u0 = 0;
     end

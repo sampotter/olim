@@ -13,8 +13,7 @@
 #include "olim8_mp1.hpp"
 #include "olim8_rhr.hpp"
 #include "olim18.hpp"
-#include "olim26_mp0.hpp"
-#include "olim26_rhr.hpp"
+#include "olim26.hpp"
 
 void fmm(double * out, bool * in, int M, int N, double h, double * S,
          marcher_type type) {

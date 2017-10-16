@@ -3,7 +3,7 @@
 #include <cmath>
 
 #include "olim8_rhr.hpp"
-#include "olim26_rhr.hpp"
+#include "olim26.hpp"
 
 
 void quadrants_are_correct() {

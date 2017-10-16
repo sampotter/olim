@@ -95,8 +95,7 @@ def build_src_txt():
 #include "olim8_mp1.hpp"
 #include "olim8_rhr.hpp"
 #include "olim18.hpp"
-#include "olim26_mp0.hpp"
-#include "olim26_rhr.hpp"
+#include "olim26.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;

@@ -2,7 +2,7 @@
 
 #include "basic_marcher_3d.hpp"
 #include "olim4_rhr.hpp"
-#include "olim6_rhr.hpp"
+#include "olim6.hpp"
 #include "speed_funcs.hpp"
 
 void quadrants_are_correct() {

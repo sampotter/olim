@@ -2,7 +2,7 @@
 
 #include "basic_marcher_3d.hpp"
 #include "olim4_mp0.hpp"
-#include "olim6_mp0.hpp"
+#include "olim6.hpp"
 
 void planes_are_correct() {
   int n = 11;

@@ -1,7 +1,7 @@
 #include "test.hpp"
 
 #include "olim8_rhr.hpp"
-#include "olim18_rhr.hpp"
+#include "olim18.hpp"
 
 void quadrants_are_correct() {
   int n = 2;

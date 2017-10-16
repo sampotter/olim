@@ -12,6 +12,17 @@
 #include "olim3d.macros.def.hpp"
 #include "olim26.defs.hpp"
 
+#define SPEED_ARGS(...)                         \
+  GET_MACRO_NAME_3(                             \
+    __VA_ARGS__,                                \
+    SPEED_ARGS_3,                               \
+    SPEED_ARGS_2,                               \
+    SPEED_ARGS_1)(__VA_ARGS__)
+
+#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
+#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
+#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+
 // neighbor order:
 // degree 1: N, E, U, S, W, D
 //           0, 1, 2, 3, 4, 5
@@ -143,9 +154,9 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
   /**
    * Line updates (degrees 1, 2, and 3)
    */
-  for (l = 0; l < 6; ++l) if (nb[l]) RECT_LINE1(l);
-  for (; l < 18; ++l) if (nb[l]) RECT_LINE2(l);
-  for (; l < 26; ++l) if (nb[l]) RECT_LINE3(l);
+  for (l = 0; l < 6; ++l) if (nb[l]) LINE1(l);
+  for (; l < 18; ++l) if (nb[l]) LINE2(l);
+  for (; l < 26; ++l) if (nb[l]) LINE3(l);
 
   /**
    * Degree (1, 2) and (1, 3) triangle updates
@@ -155,8 +166,8 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
     if (nb[l0]) {
       for (a = 0, l1 = is[0]; a < 8; l1 = is[++a]) {
         if (nb[l1]) {
-          if (a % 2 == 0) RECT_TRI12(l0, l1);
-          else RECT_TRI13(l1, l0);
+          if (a % 2 == 0) TRI12(l0, l1);
+          else TRI13(l1, l0);
         }
       }
     }
@@ -169,7 +180,7 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
     is = olim26::line3tris[a];
     if (nb[l0]) {
       for (b = 3, l1 = is[b]; b < 6; l1 = is[++b]) {
-        if (nb[l1]) RECT_TRI23(l0, l1);
+        if (nb[l1]) TRI23(l0, l1);
       }
     }
   }
@@ -184,8 +195,8 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
            b < 6;
            ++b, l1 = is[b % 6], l2 = is[(b + 1) % 6]) {
         if (nb[l1] && nb[l2]) {
-          if (b % 2 == 0) RECT_TETRA123(l1, l2, l0);
-          else RECT_TETRA123(l2, l1, l0);
+          if (b % 2 == 0) TETRA123(l1, l2, l0);
+          else TETRA123(l2, l1, l0);
         }
       }
     }
@@ -195,6 +206,11 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
   printf("olim26_rect::update_impl: T <- %g\n", T);
 #endif
 }
+
+#undef SPEED_ARGS
+#undef SPEED_ARGS_1
+#undef SPEED_ARGS_2
+#undef SPEED_ARGS_3
 
 #include "olim3d.macros.undef.hpp"
 

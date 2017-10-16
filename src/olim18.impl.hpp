@@ -11,6 +11,17 @@
 #include "olim3d.macros.def.hpp"
 #include "olim18.defs.hpp"
 
+#define SPEED_ARGS(...)                         \
+  GET_MACRO_NAME_3(                             \
+    __VA_ARGS__,                                \
+    SPEED_ARGS_3,                               \
+    SPEED_ARGS_2,                               \
+    SPEED_ARGS_1)(__VA_ARGS__)
+
+#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
+#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
+#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+
 // neighbor order:
 //
 // N, E, U, S, W, D, DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
@@ -119,8 +130,8 @@ void olim18_rect<node, update_rules, speed_estimates>::update_impl(
   /**
    * line updates (degree 1 and 2)
    */
-  for (l = 0; l < 6; ++l) if (nb[l]) RECT_LINE1(l);
-  for (l = 6, l0 = 0; l < 18; ++l, ++l0) if (nb[l]) RECT_LINE2(l);
+  for (l = 0; l < 6; ++l) if (nb[l]) LINE1(l);
+  for (l = 6, l0 = 0; l < 18; ++l, ++l0) if (nb[l]) LINE2(l);
   
   /**
    * (1, 2) triangular updates
@@ -181,16 +192,16 @@ void olim18_rect<node, update_rules, speed_estimates>::update_impl(
     /*
      * (1, 2, 2) 3-pt updates
      */
-    if (nb[l0] && nb[l01] && nb[l02]) RECT_TETRA122(l0, l01, l02);
+    if (nb[l0] && nb[l01] && nb[l02]) TETRA122(l0, l01, l02);
     if (nb[l12]) {
-      if (nb[l1] && nb[l01]) RECT_TETRA122(l1, l01, l12);
-      if (nb[l2] && nb[l02]) RECT_TETRA122(l2, l02, l12);
+      if (nb[l1] && nb[l01]) TETRA122(l1, l01, l12);
+      if (nb[l2] && nb[l02]) TETRA122(l2, l02, l12);
     }
 
     /*
      * (2, 2, 2) 3-pt update
      */
-    if (nb[l01] && nb[l02] && nb[l12]) RECT_TETRA222(l01, l02, l12);
+    if (nb[l01] && nb[l02] && nb[l12]) TETRA222(l01, l02, l12);
   }
 
   /**
@@ -211,16 +222,16 @@ void olim18_rect<node, update_rules, speed_estimates>::update_impl(
     /*
      * (1, 2, 2) 3-pt updates
      */
-    if (nb[l0] && nb[l01] && nb[l02]) RECT_TETRA122(l0, l01, l02);
+    if (nb[l0] && nb[l01] && nb[l02]) TETRA122(l0, l01, l02);
     if (nb[l12]) {
-      if (nb[l1] && nb[l01]) RECT_TETRA122(l1, l01, l12);
-      if (nb[l2] && nb[l02]) RECT_TETRA122(l2, l02, l12);
+      if (nb[l1] && nb[l01]) TETRA122(l1, l01, l12);
+      if (nb[l2] && nb[l02]) TETRA122(l2, l02, l12);
     }
 
     /*
      * (2, 2, 2) 3-pt update
      */
-    if (nb[l01] && nb[l02] && nb[l12]) RECT_TETRA222(l01, l02, l12);
+    if (nb[l01] && nb[l02] && nb[l12]) TETRA222(l01, l02, l12);
   }
 
 #ifdef PRINT_UPDATES
@@ -238,8 +249,8 @@ void olim18_rect<node, update_rules, speed_estimates>::do_tri12_updates(
   int l0, l1;
   for (int i = 0, j = 1; i < 8; j = (++i + 1) % 8) {
     if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) {
-      if (i % 2 == 0) RECT_TRI12(l0, l1);
-      else RECT_TRI12(l1, l0);
+      if (i % 2 == 0) TRI12(l0, l1);
+      else TRI12(l1, l0);
     }
   }
 }
@@ -253,9 +264,14 @@ void olim18_rect<node, update_rules, speed_estimates>::do_tri22_updates(
   using std::min;
   int l0, l1;
   for (int i = 0, j = 1; i < 4; j = (++i + 1) % 4) {
-    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) RECT_TRI22(l0, l1);
+    if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) TRI22(l0, l1);
   }
 }
+
+#undef SPEED_ARGS
+#undef SPEED_ARGS_1
+#undef SPEED_ARGS_2
+#undef SPEED_ARGS_3
 
 #include "olim3d.macros.undef.hpp"
 

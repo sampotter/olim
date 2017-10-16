@@ -12,6 +12,17 @@
 #include "olim3d.macros.def.hpp"
 #include "olim6.defs.hpp"
 
+#define SPEED_ARGS(...)                         \
+  GET_MACRO_NAME_3(                             \
+    __VA_ARGS__,                                \
+    SPEED_ARGS_3,                               \
+    SPEED_ARGS_2,                               \
+    SPEED_ARGS_1)(__VA_ARGS__)
+
+#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
+#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
+#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+
 template <class update_rules, class speed_estimate>
 void olim6_rect<update_rules, speed_estimate>::update_impl(
   int i, int j, int k, double & T)
@@ -36,14 +47,14 @@ void olim6_rect<update_rules, speed_estimate>::update_impl(
        l0 < 6;
        ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
     if (nb[l0]) {
-      RECT_LINE1(l0);
-      if (nb[l1]) RECT_TRI11(l0, l1);
-      if (nb[l2]) RECT_TRI11(l0, l2);
-      if (nb[l1] && nb[l2]) RECT_TETRA111(l0, l1, l2);
+      LINE1(l0);
+      if (nb[l1]) TRI11(l0, l1);
+      if (nb[l2]) TRI11(l0, l2);
+      if (nb[l1] && nb[l2]) TETRA111(l0, l1, l2);
     }
   }
-  if (nb[0] && nb[2] && nb[4]) RECT_TETRA111(0, 2, 4);
-  if (nb[1] && nb[3] && nb[5]) RECT_TETRA111(1, 3, 5);
+  if (nb[0] && nb[2] && nb[4]) TETRA111(0, 2, 4);
+  if (nb[1] && nb[3] && nb[5]) TETRA111(1, 3, 5);
 
 #ifdef PRINT_UPDATES
   printf("olim6_rect::update_impl: T <- %g\n", T);

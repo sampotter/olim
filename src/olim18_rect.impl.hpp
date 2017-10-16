@@ -8,7 +8,7 @@
 #endif
 
 #include "common.macros.hpp"
-#include "olim3d.macros.hpp"
+#include "olim3d.macros.def.hpp"
 #include "olim18.defs.hpp"
 
 // neighbor order:
@@ -256,6 +256,8 @@ void olim18_rect<node, update_rules, speed_estimates>::do_tri22_updates(
     if (nb[l0 = dirs[i]] && nb[l1 = dirs[j]]) RECT_TRI22(l0, l1);
   }
 }
+
+#include "olim3d.macros.undef.hpp"
 
 #endif // __OLIM18_RECT_IMPL_HPP__
 

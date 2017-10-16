@@ -1,5 +1,5 @@
-#ifndef __OLIM_UPDATE_RULES_HPP__
-#define __OLIM_UPDATE_RULES_HPP__
+#ifndef __OLIM_RECT_UPDATE_RULES_HPP__
+#define __OLIM_RECT_UPDATE_RULES_HPP__
 
 struct olim_rect_update_rules {
   double line1(double u0, double s, double h) const;
@@ -16,7 +16,7 @@ struct olim_rect_update_rules {
   double tetra222(double u0, double u1, double u2, double s, double h) const;
 };
 
-#endif // __OLIM_UPDATE_RULES_HPP__
+#endif // __OLIM_RECT_UPDATE_RULES_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

@@ -6,7 +6,7 @@
 #include <src/config.hpp>
 
 #include "common.macros.hpp"
-#include "olim.macros.hpp"
+#include "olim.macros.def.hpp"
 
 template <class update_rules>
 void olim8lut<update_rules>::update_impl(int i, int j, double & T) {
@@ -38,6 +38,8 @@ void olim8lut<update_rules>::update_impl(int i, int j, double & T) {
     }
   }
 }
+
+#include "olim.macros.undef.hpp"
 
 #endif // __OLIM8LUT_IMPL_HPP__
 

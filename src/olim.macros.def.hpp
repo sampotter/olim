@@ -1,5 +1,8 @@
-#ifndef __OLIM_MACROS_HPP__
-#define __OLIM_MACROS_HPP__
+#ifdef OLIM_MACROS_DEFINED
+#    error "OLIM macros have already been defined"
+#endif
+
+#define OLIM_MACROS_DEFINED 1
 
 #include <src/config.hpp>
 
@@ -26,8 +29,6 @@
                              speed(i + di[l], j + dj[l]),     \
                              h));                             \
   } while (0)
-
-#endif // __OLIM_MACROS_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

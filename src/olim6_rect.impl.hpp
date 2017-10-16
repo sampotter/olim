@@ -9,7 +9,7 @@
 #endif
 
 #include "common.macros.hpp"
-#include "olim3d.macros.hpp"
+#include "olim3d.macros.def.hpp"
 #include "olim6.defs.hpp"
 
 template <class update_rules, class speed_estimate>
@@ -49,6 +49,8 @@ void olim6_rect<update_rules, speed_estimate>::update_impl(
   printf("olim6_rect::update_impl: T <- %g\n", T);
 #endif
 }
+
+#include "olim3d.macros.undef.hpp"
 
 #endif // __OLIM6_RECT_IMPL_HPP__
 

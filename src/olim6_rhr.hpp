@@ -2,7 +2,7 @@
 #define __OLIM6_RHR_HPP__
 
 #include "olim6_rect.hpp"
-#include "olim_update_rules.hpp"
+#include "olim_rect_update_rules.hpp"
 #include "speed_estimates.hpp"
 
 using olim6_rhr = olim6_rect<olim_rect_update_rules, rhr_speed_estimate>;

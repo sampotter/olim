@@ -9,7 +9,7 @@
 #endif
 
 #include "common.macros.hpp"
-#include "olim3d.macros.hpp"
+#include "olim3d.macros.def.hpp"
 #include "olim26.defs.hpp"
 
 // neighbor order:
@@ -195,6 +195,8 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
   printf("olim26_rect::update_impl: T <- %g\n", T);
 #endif
 }
+
+#include "olim3d.macros.undef.hpp"
 
 #endif // __OLIM26_RECT_IMPL_HPP__
 

@@ -3,7 +3,7 @@
 
 #include "neumann_marcher_3d.hpp"
 #include "node_3d.hpp"
-#include "olim_rect_update_rules.hpp"
+#include "olim_update_rules.hpp"
 
 template <class update_rules, class speed_estimate>
 struct olim6_rect: public neumann_marcher_3d<node_3d>, public update_rules,
@@ -13,7 +13,7 @@ private:
   virtual void update_impl(int i, int j, int k, double & T);
 };
 
-#include "olim6_rect.impl.hpp"
+#include "olim6.impl.hpp"
 
 #endif // __OLIM6_HPP_HPP__
 

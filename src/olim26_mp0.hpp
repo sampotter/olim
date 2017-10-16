@@ -2,8 +2,8 @@
 #define __OLIM26_MP0_HPP__
 
 #include "node_3d.hpp"
-#include "olim26_rect.hpp"
-#include "olim_rect_update_rules.hpp"
+#include "olim26.hpp"
+#include "olim_update_rules.hpp"
 #include "speed_estimates.hpp"
 
 using olim26_mp0 = olim26_rect<

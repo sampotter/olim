@@ -24,7 +24,7 @@ private:
     double const * s_, double s, double h, double & T) const;
 };
 
-#include "olim18_rect.impl.hpp"
+#include "olim18.impl.hpp"
 
 #endif // __OLIM18_HPP__
 

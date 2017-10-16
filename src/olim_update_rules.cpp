@@ -11,7 +11,7 @@
 
 #include "common.defs.hpp"
 #include "common.macros.hpp"
-#include "olim_rect_update_rules.hpp"
+#include "olim_update_rules.hpp"
 #include "olim_util.hpp"
 
 double olim_rect_update_rules::line1(double u0, double s, double h)

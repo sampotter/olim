@@ -1,6 +1,6 @@
 #include "common.defs.hpp"
 #include "test.hpp"
-#include "olim_rect_update_rules.hpp"
+#include "olim_update_rules.hpp"
 
 #include <cmath>
 

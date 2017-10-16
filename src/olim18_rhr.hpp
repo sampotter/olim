@@ -2,8 +2,8 @@
 #define __OLIM18_RHR_HPP__
 
 #include "node_3d.hpp"
-#include "olim18_rect.hpp"
-#include "olim_rect_update_rules.hpp"
+#include "olim18.hpp"
+#include "olim_update_rules.hpp"
 #include "speed_estimates.hpp"
 
 using olim18_rhr = olim18_rect<

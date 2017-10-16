@@ -18,7 +18,7 @@ private:
   virtual void update_impl(int i, int j, int k, double & T);
 };
 
-#include "olim26_rect.impl.hpp"
+#include "olim26.impl.hpp"
 
 #endif // __OLIM26_HPP__
 

@@ -7,15 +7,15 @@
 static olim_rect_update_rules updates;
 
 void line1_works() {
-  IS_APPROX_EQUAL(updates.line1(0.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(updates.line<1>(0.0, 1.0, 1.0), 1.0);
 }
 
 void line2_works() {
-  IS_APPROX_EQUAL(updates.line2(0.0, 1.0, 1.0), sqrt(2));
+  IS_APPROX_EQUAL(updates.line<2>(0.0, 1.0, 1.0), sqrt(2));
 }
 
 void line3_works() {
-  IS_APPROX_EQUAL(updates.line3(0.0, 1.0, 1.0), sqrt(3));
+  IS_APPROX_EQUAL(updates.line<3>(0.0, 1.0, 1.0), sqrt(3));
 }
 
 void tri11_is_symmetric() {

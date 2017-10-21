@@ -4,16 +4,16 @@
 
 #define OLIM_MACROS_DEFINED 1
 
-#define LINE1(i) do {                                   \
-    T = min(T, this->line1(VAL(i), SPEED_ARGS(i), h));  \
+#define LINE1(i) do {                                              \
+    T = min(T, this->template line<1>(VAL(i), SPEED_ARGS(i), h));  \
   } while (0)
 
-#define LINE2(i) do {                                   \
-    T = min(T, this->line2(VAL(i), SPEED_ARGS(i), h));  \
+#define LINE2(i) do {                                               \
+    T = min(T, this->template line<2>(VAL(i), SPEED_ARGS(i), h));   \
   } while (0)
 
-#define LINE3(i) do {                                   \
-    T = min(T, this->line3(VAL(i), SPEED_ARGS(i), h));  \
+#define LINE3(i) do {                                               \
+    T = min(T, this->template line<3>(VAL(i), SPEED_ARGS(i), h));   \
   } while (0)
 
 #define TRI11(i, j) do {                                    \

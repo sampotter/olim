@@ -14,42 +14,6 @@
 #include "olim_rect_update_rules.hpp"
 #include "olim_util.hpp"
 
-double olim_rect_update_rules::line1(double u0, double s, double h)
-  const
-{
-#if PRINT_UPDATES
-  double tmp = u0 + s*h;
-  printf("line1(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
-  return tmp;
-#else
-  return u0 + s*h;
-#endif
-}
-
-double olim_rect_update_rules::line2(double u0, double s, double h)
-  const
-{
-#if PRINT_UPDATES
-  double tmp = u0 + s*h*sqrt2;
-  printf("line2(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
-  return tmp;
-#else
-  return u0 + s*h*sqrt2;
-#endif
-}
-
-double olim_rect_update_rules::line3(double u0, double s, double h)
-  const
-{
-#if PRINT_UPDATES
-  double tmp = u0 + s*h*sqrt3;
-  printf("line3(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
-  return tmp;
-#else
-  return u0 + s*h*sqrt3;
-#endif
-}
-
 double olim_rect_update_rules::tri11(
   double u0, double u1, double s, double h) const
 {

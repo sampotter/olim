@@ -36,7 +36,7 @@ set (FMM_SRC_FILES
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/fmm.cpp
-  src/olim_update_rules.cpp
+  src/olim_rect_update_rules.cpp
   src/olim_util.cpp
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
@@ -100,7 +100,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher
 	basic_marcher_3d
 	heap
-	olim_update_rules
+	olim_rect_update_rules
 	olim4_rhr_lut
 	olim6_mp0
 	olim6_rhr

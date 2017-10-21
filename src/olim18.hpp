@@ -3,7 +3,7 @@
 
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
-#include "olim_update_rules.hpp"
+#include "olim_rect_update_rules.hpp"
 #include "speed_estimates.hpp"
 
 template <class node, class update_rules, class speed_estimate>

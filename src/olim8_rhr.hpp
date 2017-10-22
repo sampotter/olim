@@ -7,16 +7,16 @@
 
 #include "update_rules.line_updates.hpp"
 
-struct olim8_rhr_update_rules: public update_rules::rhr_line_updates {
+struct olim8_rhr_update_rules {
   double tri11(double u0, double u1, double s, double s0, double s1, double h)
     const;
   double tri12(double u0, double u1, double s, double s0, double s1, double h)
     const;
 };
 
-using olim8_rhr = olim8<olim8_rhr_update_rules>;
-using olim8hu_rhr = olim8hu<olim8_rhr_update_rules>;
-using olim8lut_rhr = olim8lut<olim8_rhr_update_rules>;
+using olim8_rhr = olim8<update_rules::rhr_line_updates, olim8_rhr_update_rules>;
+using olim8hu_rhr = olim8hu<update_rules::rhr_line_updates, olim8_rhr_update_rules>;
+using olim8lut_rhr = olim8lut<update_rules::rhr_line_updates, olim8_rhr_update_rules>;
 
 #endif // __OLIM8_RHR_HPP__
 

@@ -5,8 +5,8 @@
 
 #include <src/config.hpp>
 
-template <class update_rules>
-void olim8<update_rules>::update_impl(int i, int j, double & T) {
+template <class line_updates, class tri_updates>
+void olim8<line_updates, tri_updates>::update_impl(int i, int j, double & T) {
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   abstract_node * x0 = 0x0;
   abstract_node * x1 = 0x0;

@@ -4,8 +4,11 @@
 #include "moore_marcher.hpp"
 #include "node.hpp"
 
-template <class update_rules>
-struct olim8lut: public moore_marcher<node>, public update_rules {
+template <class line_updates,
+          class tri_updates>
+struct olim8lut: public moore_marcher<node>,
+                 public line_updates,
+                 public tri_updates {
   using moore_marcher::moore_marcher;
 private:
   virtual void update_impl(int i, int j, double & T);

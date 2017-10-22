@@ -8,8 +8,8 @@
 #include "common.macros.hpp"
 #include "olim.macros.def.hpp"
 
-template <class update_rules>
-void olim8lut<update_rules>::update_impl(int i, int j, double & T) {
+template <class line_updates, class tri_updates>
+void olim8lut<line_updates, tri_updates>::update_impl(int i, int j, double & T) {
   using std::min;
 
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

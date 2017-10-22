@@ -73,10 +73,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double c = (u0 - u1)/(s*h);
+    double sh = this->s_hat(s, s0, s1)*h;
+    double c = (u0 - u1)/sh;
     double lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*sqrt(2 - c*c));
 #if PRINT_UPDATES
-    double tmp = (1 - lam)*u0 + lam*u1 + s*h*sqrt(2*lam*(lam - 1) + 1);
+    double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(2*lam*(lam - 1) + 1);
     printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g, "
            "is_constrained = true) -> %g\n",
            u0, u1, s, h, tmp);
@@ -122,7 +123,7 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double sh = s*h, c = std::fabs(u0 - u1)/sh;
+    double sh = this->s_hat(s, s0, s1)*h, c = std::fabs(u0 - u1)/sh;
     double sgn = u0 > u1 ? 1 : -1;
     double lam = std::max(0.0, std::min(1.0, sgn*c/sqrt(1 - c*c)));
 #if PRINT_UPDATES

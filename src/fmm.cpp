@@ -5,9 +5,7 @@
 
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"
-#include "olim4_mp0.hpp"
-#include "olim4_rhr.hpp"
-#include "olim4_rhr_lut.hpp"
+#include "olim4.hpp"
 #include "olim6.hpp"
 #include "olim8.hpp"
 #include "olim18.hpp"
@@ -26,8 +24,6 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim4_mp0>(M, N, h);
     } else if (type == OLIM4_RHR) {
       m = std::make_unique<olim4_rhr>(M, N, h);
-    } else if (type == OLIM4_RHR_LUT) {
-      m = std::make_unique<olim4_rhr_lut>(M, N, h);
     } else if (type == OLIM8_MP0) {
       m = std::make_unique<olim8_mp0>(M, N, h);
     } else if (type == OLIM8_MP1) {
@@ -42,8 +38,6 @@ void fmm(double * out, bool * in, int M, int N, double h, double * S,
       m = std::make_unique<olim4_mp0>(M, N, h, std::move(s_cache));
     } else if (type == OLIM4_RHR) {
       m = std::make_unique<olim4_rhr>(M, N, h, std::move(s_cache));
-    } else if (type == OLIM4_RHR_LUT) {
-      m = std::make_unique<olim4_rhr_lut>(M, N, h, std::move(s_cache));
     } else if (type == OLIM8_MP0) {
       m = std::make_unique<olim8_mp0>(M, N, h, std::move(s_cache));
     } else if (type == OLIM8_MP1) {

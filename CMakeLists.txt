@@ -37,9 +37,6 @@ set (FMM_SRC_FILES
   src/basic_marcher_3d.cpp
   src/fmm.cpp
   src/olim_util.cpp
-  src/olim4_mp0.cpp
-  src/olim4_rhr.cpp
-  src/olim4_rhr_lut.cpp
   src/qroots.cpp
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)
@@ -94,7 +91,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher
 	basic_marcher_3d
 	heap
-	olim4_rhr_lut
 	olim6_mp0
 	olim6_rhr
 	olim8_mp0
@@ -120,7 +116,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
   set (speed_tests
 	basic_marcher
-	olim4_rhr_lut
 	olim8_mp1)
 
   foreach (speed_test ${speed_tests})

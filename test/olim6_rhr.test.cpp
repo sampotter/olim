@@ -1,7 +1,7 @@
 #include "test.hpp"
 
 #include "basic_marcher_3d.hpp"
-#include "olim4_rhr.hpp"
+#include "olim4.hpp"
 #include "olim6.hpp"
 #include "speed_funcs.hpp"
 

@@ -88,8 +88,7 @@ def build_src_txt():
 
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"
-#include "olim4_mp0.hpp"
-#include "olim4_rhr.hpp"
+#include "olim4.hpp"
 #include "olim6.hpp"
 #include "olim8.hpp"
 #include "olim18.hpp"

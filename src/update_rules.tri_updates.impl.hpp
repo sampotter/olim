@@ -7,6 +7,7 @@
 #    include <cstdio>
 #endif
 
+#include "common.hpp"
 #include "common.defs.hpp"
 #include "common.macros.hpp"
 #ifdef EIKONAL_DEBUG
@@ -21,7 +22,7 @@ namespace update_rules {
     const
   {
     return tri11_impl(
-      u0, u1, s, s0, s1, h, std::bool_constant<is_constrained> {});
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
   template <class speed_estimator, bool is_constrained>
@@ -31,7 +32,7 @@ namespace update_rules {
     const
   {
     return tri12_impl(
-      u0, u1, s, s0, s1, h, std::bool_constant<is_constrained> {});
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
   template <class speed_estimator, bool is_constrained>
@@ -41,7 +42,7 @@ namespace update_rules {
     const
   {
     return tri13_impl(
-      u0, u1, s, s0, s1, h, std::bool_constant<is_constrained> {});
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
   template <class speed_estimator, bool is_constrained>
@@ -51,7 +52,7 @@ namespace update_rules {
     const
   {
     return tri22_impl(
-      u0, u1, s, s0, s1, h, std::bool_constant<is_constrained> {});
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
   template <class speed_estimator, bool is_constrained>
@@ -61,7 +62,7 @@ namespace update_rules {
     const
   {
     return tri23_impl(
-      u0, u1, s, s0, s1, h, std::bool_constant<is_constrained> {});
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
   template <class speed_estimator, bool is_constrained>

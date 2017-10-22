@@ -6,7 +6,7 @@
 #include <src/config.hpp>
 
 #include "common.macros.hpp"
-#include "olim.macros.def.hpp"
+#include "olim.macros.hpp"
 
 template <class line_updates, class tri_updates>
 void olim8lut<line_updates, tri_updates>::update_impl(int i, int j, double & T) {
@@ -14,7 +14,12 @@ void olim8lut<line_updates, tri_updates>::update_impl(int i, int j, double & T) 
 
   abstract_node * nb[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
   get_valid_neighbors(i, j, nb);
-  double s = speed(i, j), h = get_h();
+  double s = speed(i, j), h = get_h(), s_[8];
+  for (int k = 0; k < 8; ++k) {
+    if (nb[k]) {
+      s_[k] = this->speed(i + di[k], j + dj[k]);
+    }
+  }
 
   // implementing constrained algorithm for now
   for (int k = 0, l = 1, m = 2; k < 8; k += 2, l = k + 1, m = (l + 1) % 8) {
@@ -38,8 +43,6 @@ void olim8lut<line_updates, tri_updates>::update_impl(int i, int j, double & T) 
     }
   }
 }
-
-#include "olim.macros.undef.hpp"
 
 #endif // __OLIM8LUT_IMPL_HPP__
 

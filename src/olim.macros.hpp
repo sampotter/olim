@@ -1,8 +1,5 @@
-#ifdef OLIM_MACROS_DEFINED
-#    error "OLIM macros have already been defined"
-#endif
-
-#define OLIM_MACROS_DEFINED 1
+#ifndef __OLIM_MACROS_HPP__
+#define __OLIM_MACROS_HPP__
 
 #define LINE1(i) do {                                              \
     T = min(T, this->template line<1>(VAL(i), SPEED_ARGS(i), h));  \
@@ -104,6 +101,8 @@
         SPEED_ARGS(i, j, k),                                            \
         h));                                                            \
   } while (0)
+
+#endif // __OLIM_MACROS_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

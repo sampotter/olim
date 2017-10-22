@@ -9,20 +9,7 @@
 #endif
 
 #include "common.macros.hpp"
-#include "olim3d.macros.def.hpp"
-
-#define SPEED_ARGS(...)                         \
-  GET_MACRO_NAME_3(                             \
-    __VA_ARGS__,                                \
-    SPEED_ARGS_3,                               \
-    SPEED_ARGS_2,                               \
-    SPEED_ARGS_1)(__VA_ARGS__)
-
-// TODO: make sure to remove this def/undef stuff
-
-#define SPEED_ARGS_1(i) s, s_[i]
-#define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
-#define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
+#include "olim.macros.hpp"
 
 // neighbor order:
 // degree 1: N, E, U, S, W, D
@@ -207,13 +194,6 @@ void olim26<node, line_updates, tri_updates, tetra_updates>::update_impl(
   printf("olim26::update_impl: T <- %g\n", T);
 #endif
 }
-
-#undef SPEED_ARGS
-#undef SPEED_ARGS_1
-#undef SPEED_ARGS_2
-#undef SPEED_ARGS_3
-
-#include "olim3d.macros.undef.hpp"
 
 #endif // __OLIM26_IMPL_HPP__
 

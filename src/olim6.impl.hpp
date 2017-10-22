@@ -9,18 +9,7 @@
 #endif
 
 #include "common.macros.hpp"
-#include "olim3d.macros.def.hpp"
-
-#define SPEED_ARGS(...)                         \
-  GET_MACRO_NAME_3(                             \
-    __VA_ARGS__,                                \
-    SPEED_ARGS_3,                               \
-    SPEED_ARGS_2,                               \
-    SPEED_ARGS_1)(__VA_ARGS__)
-
-#define SPEED_ARGS_1(i) s, s_[i]
-#define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
-#define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
+#include "olim.macros.hpp"
 
 template <class line_updates, class tri_updates, class tetra_updates>
 void olim6<line_updates, tri_updates, tetra_updates>::update_impl(
@@ -58,13 +47,6 @@ void olim6<line_updates, tri_updates, tetra_updates>::update_impl(
   printf("olim6::update_impl: T <- %g\n", T);
 #endif
 }
-
-#undef SPEED_ARGS
-#undef SPEED_ARGS_1
-#undef SPEED_ARGS_2
-#undef SPEED_ARGS_3
-
-#include "olim3d.macros.undef.hpp"
 
 #endif // __OLIM6_IMPL_HPP__
 

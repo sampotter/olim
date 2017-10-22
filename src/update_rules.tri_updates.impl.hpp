@@ -20,7 +20,7 @@ namespace update_rules {
     double u0, double u1, double s, double s0, double s1, double h) const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, h, s);
+    check_params(u0, u1, h, s, s0, s1);
 #endif
     double sh = this->s_hat(s, s0, s1)*h, du = u1 - u0, alpha = fabs(du)/sh,
       alpha_sq = alpha*alpha;
@@ -47,7 +47,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, h, s);
+    check_params(u0, u1, h, s, s0, s1);
 #endif
     double sh = this->s_hat(s, s0, s1)*h, du = u1 - u0, alpha = fabs(du)/sh,
       alpha_sq = alpha*alpha;
@@ -74,7 +74,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, h, s);
+    check_params(u0, u1, h, s, s0, s1);
 #endif
     double sh = this->s_hat(s, s0, s1)*h, du = u1 - u0, alpha = fabs(du)/sh,
       alpha_sq = alpha*alpha;
@@ -101,7 +101,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, h, s);
+    check_params(u0, u1, h, s, s0, s1);
 #endif
     double sh = this->s_hat(s, s0, s1)*h, du = u1 - u0, alpha = fabs(du)/sh,
       alpha_sq = alpha*alpha;
@@ -132,7 +132,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, h, s);
+    check_params(u0, u1, h, s, s0, s1);
 #endif
     double sh = this->s_hat(s, s0, s1)*h, du = u1 - u0, alpha = fabs(du)/sh,
       alpha_sq = alpha*alpha;

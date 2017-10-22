@@ -110,8 +110,9 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	update_rules.tri_updates)
 
   foreach (test ${tests})
-	add_executable (${test}.test src/${test}.test.cpp)
+	add_executable (${test}.test test/${test}.test.cpp)
 	target_link_libraries (${test}.test fmm)
+	target_include_directories (${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 	add_test (
 	  NAME ${test} COMMAND ${CMAKE_COMMAND}
 	  -DTEST_PROGRAM=$<TARGET_FILE:${test}.test>

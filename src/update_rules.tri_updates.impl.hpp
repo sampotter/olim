@@ -78,9 +78,9 @@ namespace update_rules {
     double lam = 0.5 + (c > 0 ? 1 : -1)*std::fabs(c)/(2*sqrt(2 - c*c));
 #if PRINT_UPDATES
     double tmp = (1 - lam)*u0 + lam*u1 + sh*sqrt(2*lam*(lam - 1) + 1);
-    printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g, "
+    printf("tri11(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
            "is_constrained = true) -> %g\n",
-           u0, u1, s, h, tmp);
+           u0, u1, s, s0, s1, h, tmp);
     return tmp;
 #endif
     return (1 - lam)*u0 + lam*u1 + s*h*sqrt(2*lam*(lam - 1) + 1);
@@ -108,8 +108,8 @@ namespace update_rules {
       T = (1 - lam)*u0 + lam*u1 + sh*l;
     }
 #if PRINT_UPDATES
-    printf("tri11(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = false) -> %g\n", u0, u1, s, h, T);
+    printf("tri11(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = false) -> %g\n", u0, u1, s, s0, s1, h, T);
 #endif
     return T;
   }
@@ -128,8 +128,8 @@ namespace update_rules {
     double lam = std::max(0.0, std::min(1.0, sgn*c/sqrt(1 - c*c)));
 #if PRINT_UPDATES
     double tmp = (1 - lam)*u0 + lam*u1 + sh*std::sqrt(lam*lam + 1);
-    printf("tri12(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = true) -> %g\n", u0, u1, s, h, tmp);
+    printf("tri12(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = true) -> %g\n", u0, u1, s, s0, s1, h, tmp);
     return tmp;
 #endif
     return (1 - lam)*u0 + lam*u1 + sh*std::sqrt(lam*lam + 1);
@@ -158,8 +158,8 @@ namespace update_rules {
       T = (1 + lam)*u0 - lam*u1 + sh*l;
     }
 #if PRINT_UPDATES
-    printf("tri12(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = false) -> %g\n", u0, u1, s, h, T);
+    printf("tri12(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = false) -> %g\n", u0, u1, s, s0, s1, h, T);
 #endif
     return T;
   }
@@ -187,8 +187,8 @@ namespace update_rules {
       T = (1 + lam)*u0 - lam*u1 + sh*l;
     }
 #if PRINT_UPDATES
-    printf("tri13(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = false) -> %g\n", u0, u1, s, h, T);
+    printf("tri13(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = false) -> %g\n", u0, u1, s, s0, s1, h, T);
 #endif
     return T;
   }
@@ -220,8 +220,8 @@ namespace update_rules {
       }
     }
 #if PRINT_UPDATES
-    printf("tri22(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = false) -> %g\n", u0, u1, s, h, T);
+    printf("tri22(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = false) -> %g\n", u0, u1, s, s0, s1, h, T);
 #endif
     return T;
   }
@@ -249,8 +249,8 @@ namespace update_rules {
       T = (1 + lam)*u0 - lam*u1 + sh*l;
     }
 #if PRINT_UPDATES
-    printf("tri23(u0 = %g, u1 = %g, s = %g, h = %g, "
-           "is_constrained = false) -> %g\n", u0, u1, s, h, T);
+    printf("tri23(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g, "
+           "is_constrained = false) -> %g\n", u0, u1, s, s0, s1, h, T);
 #endif
     return T;
   }

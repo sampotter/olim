@@ -16,7 +16,8 @@ namespace update_rules {
     (void) s0;
 #if PRINT_UPDATES
     double tmp = u0 + s*h;
-    printf("line<1>(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+    printf("line<1>(u0 = %g, s = %g, s0 = %g, h = %g) -> %g\n",
+           u0, s, s0, h, tmp);
     return tmp;
 #else
     return u0 + s*h;
@@ -29,7 +30,8 @@ namespace update_rules {
     (void) s0;
 #if PRINT_UPDATES
     double tmp = u0 + s*h*sqrt2;
-    printf("line<2>(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+    printf("line<2>(u0 = %g, s = %g, s0 = %g, h = %g) -> %g\n",
+           u0, s, s0, h, tmp);
     return tmp;
 #else
     return u0 + s*h*sqrt2;
@@ -42,7 +44,8 @@ namespace update_rules {
     (void) s0;
 #if PRINT_UPDATES
     double tmp = u0 + s*h*sqrt3;
-    printf("line<3>(u0 = %g, s = %g, h = %g) -> %g\n", u0, s, h, tmp);
+    printf("line<3>(u0 = %g, s = %g, s0 = %g, h = %g) -> %g\n",
+           u0, s, s0, h, tmp);
     return tmp;
 #else
     return u0 + s*h*sqrt3;

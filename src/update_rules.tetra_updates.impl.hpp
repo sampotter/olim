@@ -152,7 +152,8 @@ namespace update_rules {
       p111);                        // compute_p
 #if PRINT_UPDATES
     printf("tetra111(u0 = %0.16g, u1 = %0.16g, u2 = %0.16g, s = %0.16g, "
-           "h = %0.16g) -> %g\n", u0, u1, u2, s, h, T);
+           "s0 = %g, s1 = %g, s2 = %g, h = %0.16g) -> %g\n",
+           u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
   }
@@ -198,8 +199,9 @@ namespace update_rules {
     }
 
 #if PRINT_UPDATES
-    printf("tetra122(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
-           u0, u1, u2, s, h, T);
+    printf("tetra122(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, "
+           "s1 = %g, s2 = %g, h = %g) -> %g\n",
+           u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
 
     return T;
@@ -236,8 +238,9 @@ namespace update_rules {
       this->s_hat(s, s0, s1, s2)*h, // sh
       p123);                        // compute_p
 #if PRINT_UPDATES
-    printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
-           u0, u1, u2, s, h, T);
+    printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
+           "s2 = %g, h = %g) -> %g\n",
+           u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
   }
@@ -272,8 +275,9 @@ namespace update_rules {
       this->s_hat(s, s0, s1, s2)*h, // sh
       p222);                        // compute_p
 #if PRINT_UPDATES
-    printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, h = %g) -> %g\n",
-           u0, u1, u2, s, h, T);
+    printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
+           "s2 = %g, h = %g) -> %g\n",
+           u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
   }

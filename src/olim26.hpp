@@ -41,14 +41,14 @@ private:
 using olim26_mp0 = olim26<
   node_3d,
   update_rules::mp_line_updates,
-  update_rules::mp0_tri_updates,
+  update_rules::mp0_tri_updates<false>,
   update_rules::mp0_tetra_updates
 >;
 
 using olim26_rhr = olim26<
   node_3d,
   update_rules::rhr_line_updates,
-  update_rules::rhr_tri_updates,
+  update_rules::rhr_tri_updates<false>,
   update_rules::rhr_tetra_updates
 >;
 

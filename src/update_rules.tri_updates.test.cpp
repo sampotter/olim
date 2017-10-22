@@ -3,7 +3,7 @@
 #include "test.hpp"
 #include "update_rules.tri_updates.hpp"
 
-static update_rules::rhr_tri_updates updates;
+static update_rules::rhr_tri_updates<false> updates;
 
 void tri11_is_symmetric() {
   double u0 = 0.0, u1 = 0.1, s = 1, s0 = 1, s1 = 1, h = 1;

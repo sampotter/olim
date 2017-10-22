@@ -1,6 +1,6 @@
 #include "test.hpp"
 
-#include "olim8_rhr.hpp"
+#include "olim8.hpp"
 #include "olim18.hpp"
 
 void quadrants_are_correct() {

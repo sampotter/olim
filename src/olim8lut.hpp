@@ -21,6 +21,11 @@ using olim8lut_mp0 = olim8lut<
   update_rules::mp0_tri_updates<true>
 >;
 
+using olim8lut_rhr = olim8lut<
+  update_rules::rhr_line_updates,
+  update_rules::rhr_tri_updates<true>
+>;
+
 #include "olim8lut.impl.hpp"
 
 #endif // __OLIM8LUT_HPP__

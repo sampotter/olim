@@ -21,6 +21,11 @@ using olim8hu_mp0 = olim8hu<
   update_rules::mp0_tri_updates<true>
 >;
 
+using olim8hu_rhr = olim8hu<
+  update_rules::rhr_line_updates,
+  update_rules::rhr_tri_updates<true>
+>;
+
 #include "olim8hu.impl.hpp"
 
 #endif // __OLIM8HU_HPP__

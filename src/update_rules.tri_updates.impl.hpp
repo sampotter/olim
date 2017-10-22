@@ -15,7 +15,8 @@
 
 namespace update_rules {
   template <class speed_estimator, bool is_constrained>
-  double rect_tri_updates<speed_estimator, is_constrained>::tri11(
+  std::enable_if_t<!is_constrained, double>
+  rect_tri_updates<speed_estimator, is_constrained>::tri11(
     double u0, double u1, double s, double s0, double s1, double h) const
   {
 #ifdef EIKONAL_DEBUG
@@ -40,7 +41,8 @@ namespace update_rules {
   }
 
   template <class speed_estimator, bool is_constrained>
-  double rect_tri_updates<speed_estimator, is_constrained>::tri12(
+  std::enable_if_t<!is_constrained, double>
+  rect_tri_updates<speed_estimator, is_constrained>::tri12(
     double u0, double u1, double s, double s0, double s1, double h)
     const
   {
@@ -66,7 +68,8 @@ namespace update_rules {
   }
 
   template <class speed_estimator, bool is_constrained>
-  double rect_tri_updates<speed_estimator, is_constrained>::tri13(
+  std::enable_if_t<!is_constrained, double>
+  rect_tri_updates<speed_estimator, is_constrained>::tri13(
     double u0, double u1, double s, double s0, double s1, double h)
     const
   {
@@ -92,7 +95,8 @@ namespace update_rules {
   }
 
   template <class speed_estimator, bool is_constrained>
-  double rect_tri_updates<speed_estimator, is_constrained>::tri22(
+  std::enable_if_t<!is_constrained, double>
+  rect_tri_updates<speed_estimator, is_constrained>::tri22(
     double u0, double u1, double s, double s0, double s1, double h)
     const
   {
@@ -122,7 +126,8 @@ namespace update_rules {
   }
 
   template <class speed_estimator, bool is_constrained>
-  double rect_tri_updates<speed_estimator, is_constrained>::tri23(
+  std::enable_if_t<!is_constrained, double>
+  rect_tri_updates<speed_estimator, is_constrained>::tri23(
     double u0, double u1, double s, double s0, double s1, double h)
     const
   {

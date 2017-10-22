@@ -113,15 +113,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	  -DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
 	  -P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
   endforeach ()
-
-  set (speed_tests
-	basic_marcher
-	olim8_mp1)
-
-  foreach (speed_test ${speed_tests})
-	add_executable (${speed_test}.speed src/${speed_test}.speed.cpp)
-	target_link_libraries (${speed_test}.speed fmm)
-  endforeach ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 enable_testing ()

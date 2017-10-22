@@ -160,9 +160,9 @@ void heap<Node>::grow() {
 
 template <class Node>
 void heap<Node>::swap(int pos1, int pos2) {
-	std::swap(_data[pos1], _data[pos2]);
-	_data[pos1]->set_heap_pos(pos1);
-	_data[pos2]->set_heap_pos(pos2);
+  std::swap(_data[pos1], _data[pos2]);
+  _data[pos1]->set_heap_pos(pos1);
+  _data[pos2]->set_heap_pos(pos2);
 }
 
 template <class Node>

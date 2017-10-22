@@ -3,6 +3,8 @@
 
 #include "moore_marcher.hpp"
 #include "node.hpp"
+#include "update_rules.line_updates.hpp"
+#include "update_rules.tri_updates.hpp"
 
 template <class line_updates,
           class tri_updates>
@@ -13,6 +15,11 @@ struct olim8: public moore_marcher<node>,
 private:
   virtual void update_impl(int i, int j, double & T);
 };
+
+using olim8_mp0 = olim8<
+  update_rules::mp_line_updates,
+  update_rules::mp0_tri_updates<true>
+>;
 
 #include "olim8.impl.hpp"
 

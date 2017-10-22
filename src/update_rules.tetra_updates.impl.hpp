@@ -140,7 +140,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, u2, h, s, s0, s1, s2);
+    check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = tetra_newton<2, 1, 2, -1, -1, 1>(
       1.0/3.0,                      // lam1init
@@ -167,7 +167,7 @@ namespace update_rules {
     using std::sqrt;
 
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, u2, h, s, s0, s1, s2);
+    check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
 
     double T = INF(double);
@@ -225,7 +225,7 @@ namespace update_rules {
     const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, u2, h, s, s0, s1, s2);
+    check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = tetra_newton<1, 1, 2, 0, 0, 1>(
       0.0,                          // lam1init
@@ -261,7 +261,7 @@ namespace update_rules {
     double s0, double s1, double s2, double h) const
   {
 #ifdef EIKONAL_DEBUG
-    check_params(u0, u1, u2, h, s, s0, s1, s2);
+    check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = tetra_newton<2, 1, 2, -1, -1, 2>(
       1.0/3.0,                      // lam1init

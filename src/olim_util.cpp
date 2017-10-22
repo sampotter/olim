@@ -6,7 +6,7 @@
 #include <limits>
 
 #ifdef EIKONAL_DEBUG
-void check_params(double u0, double u1, double h, double s) {
+void check_params(double u0, double u1, double s, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(!std::isinf(u0));
@@ -17,8 +17,8 @@ void check_params(double u0, double u1, double h, double s) {
 #endif
 
 #ifdef EIKONAL_DEBUG
-void check_params(double u0, double u1, double h, double s,
-                  double s0, double s1) {
+void check_params(double u0, double u1, double s,
+                  double s0, double s1, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(!std::isinf(u0));
@@ -31,7 +31,7 @@ void check_params(double u0, double u1, double h, double s,
 #endif
 
 #ifdef EIKONAL_DEBUG
-void check_params(double u0, double u1, double u2, double h, double s) {
+void check_params(double u0, double u1, double u2, double s, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(u2 >= 0);
@@ -44,8 +44,8 @@ void check_params(double u0, double u1, double u2, double h, double s) {
 #endif
 
 #ifdef EIKONAL_DEBUG
-void check_params(double u0, double u1, double u2, double h, double s,
-                  double s0, double s1, double s2) {
+void check_params(double u0, double u1, double u2, double s,
+                  double s0, double s1, double s2, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(u2 >= 0);
@@ -66,7 +66,7 @@ void check_params(double u0, double u1, double u2, double h, double s,
  */
 double rhr_adj(double u0, double u1, double s, double h, double * lam) {
 #ifdef EIKONAL_DEBUG
-  check_params(u0, u1, h, s);
+  check_params(u0, u1, s, h);
 #endif
 
   double c = (u0 - u1)/(s*h);
@@ -84,7 +84,7 @@ double rhr_adj(double u0, double u1, double s, double h, double * lam) {
  */
 double rhr_diag(double u0, double u1, double s, double h) {
 #ifdef EIKONAL_DEBUG
-  check_params(u0, u1, h, s);
+  check_params(u0, u1, s, h);
 #endif
   
   // TODO: make this one as simple as the adj rule

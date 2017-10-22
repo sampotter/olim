@@ -5,11 +5,11 @@
 #include "olim8hu.hpp"
 #include "olim8lut.hpp"
 
-struct olim8_mp1_update_rules {
-  double adj1pt(double u0, double s, double s0, double h) const;
-  double diag1pt(double u0, double s, double s0, double h) const;
-  double adj2pt(double u0, double u1, double s, double s0, double s1, double h) const;
-  double diag2pt(double u0, double u1, double s, double s0, double s1, double h) const;
+#include "update_rules.line_updates.hpp"
+
+struct olim8_mp1_update_rules: public update_rules::mp_line_updates {
+  double tri11(double u0, double u1, double s, double s0, double s1, double h) const;
+  double tri12(double u0, double u1, double s, double s0, double s1, double h) const;
 };
 
 using olim8_mp1 = olim8<olim8_mp1_update_rules>;

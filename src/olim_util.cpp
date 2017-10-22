@@ -29,6 +29,23 @@ void check_params(double u0, double u1, double u2, double h, double s) {
 }
 #endif
 
+#ifdef EIKONAL_DEBUG
+void check_params(double u0, double u1, double u2, double h, double s,
+                  double s0, double s1, double s2) {
+  assert(u0 >= 0);
+  assert(u1 >= 0);
+  assert(u2 >= 0);
+  assert(!std::isinf(u0));
+  assert(!std::isinf(u1));
+  assert(!std::isinf(u2));
+  assert(h > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
+  assert(s2 >= 0);
+}
+#endif
+
 /**
  * Adjacent triangle update with constant quadrature rule (used by
  * olim8_rhr and olim8_mp0c).

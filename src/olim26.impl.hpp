@@ -1,5 +1,5 @@
-#ifndef __OLIM26_RECT_IMPL_HPP__
-#define __OLIM26_RECT_IMPL_HPP__
+#ifndef __OLIM26_IMPL_HPP__
+#define __OLIM26_IMPL_HPP__
 
 #include <src/config.hpp>
 
@@ -10,7 +10,6 @@
 
 #include "common.macros.hpp"
 #include "olim3d.macros.def.hpp"
-#include "olim26.defs.hpp"
 
 #define SPEED_ARGS(...)                         \
   GET_MACRO_NAME_3(                             \
@@ -19,9 +18,11 @@
     SPEED_ARGS_2,                               \
     SPEED_ARGS_1)(__VA_ARGS__)
 
-#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
-#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
-#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+// TODO: make sure to remove this def/undef stuff
+
+#define SPEED_ARGS_1(i) s, s_[i]
+#define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
+#define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
 
 // neighbor order:
 // degree 1: N, E, U, S, W, D
@@ -31,29 +32,67 @@
 // degree 3: UNE, USE, USW, UNW, DNE, DSE, DSW, DNW
 //           18,  19,  20,  21,  22,  23,  24,  25
 
-template <class node, class update_rules, class speed_estimates>
-int olim26_rect<node, update_rules, speed_estimates>::di[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::di[] = {
   1, 0, 0, -1, 0, 0,
   1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
   1, -1, -1, 1, 1, -1, -1, 1
 };
 
-template <class node, class update_rules, class speed_estimates>
-int olim26_rect<node, update_rules, speed_estimates>::dj[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::dj[] = {
   0, 1, 0, 0, -1, 0,
   0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
   1, 1, -1, -1, 1, 1, -1, -1
 };
 
-template <class node, class update_rules, class speed_estimates>
-int olim26_rect<node, update_rules, speed_estimates>::dk[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::dk[] = {
   0, 0, 1, 0, 0, -1,
   1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
   1, 1, 1, 1, -1, -1, -1, -1
 };
 
-template <class node, class update_rules, class speed_estimates>
-void olim26_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::line1tris[6][8] = {
+  {UN, UNE, NE, DNE, DN, DNW, NW, UNW}, // N
+  {UE, USE, SE, DSE, DE, DNE, NE, UNE}, // E
+  {UN, UNE, UE, USE, US, USW, UW, UNW}, // U
+  {US, USE, SE, DSE, DS, DSW, SW, USW}, // S
+  {UW, USW, SW, DSW, DW, DNW, NW, UNW}, // W
+  {DN, DNE, DE, DSE, DS, DSW, DW, DNW}, // D
+};
+
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::line2tris[12][4] = {
+  {U, N, UNE, UNW}, // UN
+  {U, E, UNE, USE}, // UE
+  {U, S, USE, USW}, // US
+  {U, W, UNW, USW}, // UW
+  {N, E, UNE, DNE}, // NE
+  {S, E, USE, DSE}, // SE
+  {S, W, USW, DSW}, // SW
+  {N, W, UNW, DNW}, // NW
+  {D, N, DNE, DNW}, // DN
+  {D, E, DNE, DSE}, // DE
+  {D, S, DSE, DSW}, // DS
+  {D, W, DNW, DSW}, // DW
+};
+
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim26<node, line_updates, tri_updates, tetra_updates>::line3tris[8][6] = {
+  {U, UN, N, NE, E, UE}, // UNE
+  {U, US, S, SE, E, UE}, // USE
+  {U, UW, W, SW, S, US}, // USW
+  {U, UN, N, NW, W, UW}, // UNW
+  {D, DN, N, NE, E, DE}, // DNE
+  {D, DS, S, SE, E, DE}, // DSE
+  {D, DS, S, SW, W, DW}, // DSW
+  {D, DN, N, NW, W, DW}, // DNW
+};
+
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim26<node, line_updates, tri_updates, tetra_updates>::get_valid_neighbors(
   int i, int j, int k, abstract_node ** nb)
 {
   int a, b, c;
@@ -65,8 +104,8 @@ void olim26_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
   }
 }
 
-template <class node, class update_rules, class speed_estimates>
-void olim26_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim26<node, line_updates, tri_updates, tetra_updates>::stage_neighbors_impl(
   abstract_node * n)
 {
   int i = static_cast<node *>(n)->get_i();
@@ -74,7 +113,7 @@ void olim26_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
   int k = static_cast<node *>(n)->get_k();
 
 #if PRINT_UPDATES
-  printf("olim26_rect::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim26::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   for (int l = 0; l < 26; ++l) {
@@ -90,52 +129,14 @@ void olim26_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
   }
 }
 
-namespace olim26 {
-  int line1tris[6][8] = {
-    {UN, UNE, NE, DNE, DN, DNW, NW, UNW}, // N
-    {UE, USE, SE, DSE, DE, DNE, NE, UNE}, // E
-    {UN, UNE, UE, USE, US, USW, UW, UNW}, // U
-    {US, USE, SE, DSE, DS, DSW, SW, USW}, // S
-    {UW, USW, SW, DSW, DW, DNW, NW, UNW}, // W
-    {DN, DNE, DE, DSE, DS, DSW, DW, DNW}, // D
-  };
-
-  int line2tris[12][4] = {
-    {U, N, UNE, UNW}, // UN
-    {U, E, UNE, USE}, // UE
-    {U, S, USE, USW}, // US
-    {U, W, UNW, USW}, // UW
-    {N, E, UNE, DNE}, // NE
-    {S, E, USE, DSE}, // SE
-    {S, W, USW, DSW}, // SW
-    {N, W, UNW, DNW}, // NW
-    {D, N, DNE, DNW}, // DN
-    {D, E, DNE, DSE}, // DE
-    {D, S, DSE, DSW}, // DS
-    {D, W, DNW, DSW}, // DW
-  };
-
-  int line3tris[8][6] = {
-    {U, UN, N, NE, E, UE}, // UNE
-    {U, US, S, SE, E, UE}, // USE
-    {U, UW, W, SW, S, US}, // USW
-    {U, UN, N, NW, W, UW}, // UNW
-    {D, DN, N, NE, E, DE}, // DNE
-    {D, DS, S, SE, E, DE}, // DSE
-    {D, DS, S, SW, W, DW}, // DSW
-    {D, DN, N, NW, W, DW}, // DNW
-  };
-}
-
-template <class node, class update_rules, class speed_estimates>
-void olim26_rect<node, update_rules, speed_estimates>::update_impl(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim26<node, line_updates, tri_updates, tetra_updates>::update_impl(
   int i, int j, int k, double & T)
 {
-  using namespace olim26;
   using std::min;
 
 #ifdef PRINT_UPDATES
-  printf("olim26_rect::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim26::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   abstract_node * nb[26];
@@ -203,7 +204,7 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
   }
 
 #ifdef PRINT_UPDATES
-  printf("olim26_rect::update_impl: T <- %g\n", T);
+  printf("olim26::update_impl: T <- %g\n", T);
 #endif
 }
 
@@ -214,7 +215,7 @@ void olim26_rect<node, update_rules, speed_estimates>::update_impl(
 
 #include "olim3d.macros.undef.hpp"
 
-#endif // __OLIM26_RECT_IMPL_HPP__
+#endif // __OLIM26_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

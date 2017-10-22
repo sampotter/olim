@@ -3,12 +3,18 @@
 
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
-#include "olim_rect_update_rules.hpp"
-#include "speed_estimates.hpp"
+#include "update_rules.line_updates.hpp"
+#include "update_rules.tetra_updates.hpp"
+#include "update_rules.tri_updates.hpp"
 
-template <class node, class update_rules, class speed_estimate>
-struct olim18_rect: public marcher_3d<node>, public update_rules,
-                    public speed_estimate {
+template <class node,
+          class line_updates,
+          class tri_updates,
+          class tetra_updates>
+struct olim18_rect: public marcher_3d<node>,
+                    public line_updates,
+                    public tri_updates,
+                    public tetra_updates {
   using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
@@ -26,8 +32,19 @@ private:
     double const * s_, double s, double h, double & T) const;
 };
 
-using olim18_mp0 = olim18_rect<node_3d, olim_rect_update_rules, mp0_speed_estimate>;
-using olim18_rhr = olim18_rect<node_3d, olim_rect_update_rules, rhr_speed_estimate>;
+using olim18_mp0 = olim18_rect<
+  node_3d,
+  update_rules::mp_line_updates,
+  update_rules::mp0_tri_updates,
+  update_rules::mp0_tetra_updates
+>;
+
+using olim18_rhr = olim18_rect<
+  node_3d,
+  update_rules::rhr_line_updates,
+  update_rules::rhr_tri_updates,
+  update_rules::rhr_tetra_updates
+>;
 
 #include "olim18.impl.hpp"
 

@@ -21,8 +21,8 @@ void olim8hu<update_rules>::update_impl(int i, int j, double & T) {
     if ((x0 = nb[k])) {
       u0 = x0->get_value();
       s0 = speed(i + di[k], j + dj[k]);
-      Tnew = k % 2 == 0 ? this->adj1pt(u0, s, s0, h) :
-        this->diag1pt(u0, s, s0, h);
+      Tnew = k % 2 == 0 ? this->template line<1>(u0, s, s0, h) :
+        this->template line <2>(u0, s, s0, h);
       if (Tnew < T) {
         T = Tnew;
         argmin = k;
@@ -41,27 +41,27 @@ void olim8hu<update_rules>::update_impl(int i, int j, double & T) {
   if (argmin % 2 == 0) {
     if ((x1 = nb[kprev])) {
       s1 = speed(i + di[kprev], j + dj[kprev]);
-      T = std::min(T, this->diag2pt(u0, x1->get_value(), s, s0, s1, h));
+      T = std::min(T, this->tri12(u0, x1->get_value(), s, s0, s1, h));
     }
     if ((x1 = nb[knext])) {
       s1 = speed(i + di[knext], j + dj[knext]);
-      T = std::min(T, this->diag2pt(u0, x1->get_value(), s, s0, s1, h));
+      T = std::min(T, this->tri12(u0, x1->get_value(), s, s0, s1, h));
     }
   } else {
     x1 = nb[kprev];
     abstract_node * x2 = nb[knext];
     if (x1) {
       s1 = speed(i + di[kprev], j + dj[kprev]);
-      T = std::min(T, this->diag2pt(x1->get_value(), u0, s, s1, s0, h));
+      T = std::min(T, this->tri12(x1->get_value(), u0, s, s1, s0, h));
     }
     if (x2) {
       s1 = speed(i + di[knext], j + dj[knext]);
-      T = std::min(T, this->diag2pt(x2->get_value(), u0, s, s1, s0, h));
+      T = std::min(T, this->tri12(x2->get_value(), u0, s, s1, s0, h));
     }
     if (x1 && x2) {
       s0 = speed(i + di[kprev], j + dj[kprev]);
       s1 = speed(i + di[knext], j + dj[knext]);
-      T = std::min(T, this->adj2pt(x1->get_value(), x2->get_value(),
+      T = std::min(T, this->tri12(x1->get_value(), x2->get_value(),
                                    s, s0, s1, h));
     }
   }

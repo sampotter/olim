@@ -23,14 +23,14 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
         !nb[(k + 1) % 8] && !nb[(k + 2) % 8]) {
       u0 = x0->get_value();
       s0 = speed(i + di[k], j + dj[k]);
-      T = std::min(T, this->adj1pt(u0, s, s0, h));
+      T = std::min(T, this->template line<1>(u0, s, s0, h));
     }
   }
   for (int k = 1; k < 8; k += 2) { // diagonal
     if ((x0 = nb[k]) && !nb[(k + 7) % 8] && !nb[(k + 1) % 8]) {
       u0 = x0->get_value();
       s0 = speed(i + di[k], j + dj[k]);
-      T = std::min(T, this->diag1pt(u0, s, s0, h));
+      T = std::min(T, this->template line<2>(u0, s, s0, h));
     }
   }
 
@@ -43,7 +43,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       u1 = x1->get_value();
       s0 = speed(i + di[k], j + dj[k]);
       s1 = speed(i + di[l], j + dj[l]);
-      T = std::min(T, this->diag2pt(u0, u1, s, s0, s1, h));
+      T = std::min(T, this->tri12(u0, u1, s, s0, s1, h));
     }
   }
   for (int k = 1, l = 2; k < 8; k += 2, l = (k + 1) % 8) {
@@ -52,7 +52,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       u1 = x1->get_value();
       s0 = speed(i + di[l], j + dj[l]);
       s1 = speed(i + di[k], j + dj[k]);
-      T = std::min(T, this->diag2pt(u0, u1, s, s0, s1, h));
+      T = std::min(T, this->tri12(u0, u1, s, s0, s1, h));
     }
   }
 
@@ -66,7 +66,7 @@ void olim8<update_rules>::update_impl(int i, int j, double & T) {
       u1 = x1->get_value();
       s0 = speed(i + di[k], j + dj[k]);
       s1 = speed(i + di[l], j + dj[l]);
-      T = std::min(T, this->adj2pt(u0, u1, s, s0, s1, h));
+      T = std::min(T, this->tri11(u0, u1, s, s0, s1, h));
     }
   }
 #endif // OLIM8_ADJ_UPDATES

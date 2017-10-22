@@ -11,6 +11,9 @@
 #include "olim3d.macros.def.hpp"
 #include "olim18.defs.hpp"
 
+// TODO: can probably consolidate this stuff since it doesn't vary
+// anymore?
+
 #define SPEED_ARGS(...)                         \
   GET_MACRO_NAME_3(                             \
     __VA_ARGS__,                                \
@@ -18,9 +21,9 @@
     SPEED_ARGS_2,                               \
     SPEED_ARGS_1)(__VA_ARGS__)
 
-#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
-#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
-#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+#define SPEED_ARGS_1(i) s, s_[i]
+#define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
+#define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
 
 // neighbor order:
 //
@@ -30,32 +33,32 @@
 // the order of the degree 2 neighbors is critically
 // important for the hash function DEG2NB to work
 
-template <class node, class update_rules, class speed_estimates>
-int olim18_rect<node, update_rules, speed_estimates>::di[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim18_rect<node, line_updates, tri_updates, tetra_updates>::di[] = {
 // N, E, U,  S, W, D
    1, 0, 0, -1, 0, 0,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    -1, 0,  0,  0,  1,  1, -1, -1,  1,  1,  0,  -1
 };
 
-template <class node, class update_rules, class speed_estimates>
-int olim18_rect<node, update_rules, speed_estimates>::dj[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim18_rect<node, line_updates, tri_updates, tetra_updates>::dj[] = {
 // N, E, U, S, W,  D
    0, 1, 0, 0, -1, 0,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    0,  -1, 1,  1,  0,  0,  -1, 1,  1,  -1, -1, 0
 };
 
-template <class node, class update_rules, class speed_estimates>
-int olim18_rect<node, update_rules, speed_estimates>::dk[] = {
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+int olim18_rect<node, line_updates, tri_updates, tetra_updates>::dk[] = {
 // N, E, U, S, W, D
    0, 0, 1, 0, 0, -1,
 // DS, DW, DE, UE, UN, DN, SW, SE, NE, NW, UW, US
    -1, -1, -1, 1,  1,  -1, 0,  0,  0,  0,  1,  1
 };
 
-template <class node, class update_rules, class speed_estimates>
-void olim18_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim18_rect<node, line_updates, tri_updates, tetra_updates>::get_valid_neighbors(
   int i, int j, int k, abstract_node ** nb)
 {
   int a, b, c;
@@ -67,8 +70,8 @@ void olim18_rect<node, update_rules, speed_estimates>::get_valid_neighbors(
   }
 }
 
-template <class node, class update_rules, class speed_estimates>
-void olim18_rect<node, update_rules, speed_estimates>::stage_neighbors_impl(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim18_rect<node, line_updates, tri_updates, tetra_updates>::stage_neighbors_impl(
   abstract_node * n)
 {
   int i = static_cast<node *>(n)->get_i();
@@ -102,8 +105,8 @@ static int eqdirs[4] = {olim18::N, olim18::E, olim18::S, olim18::W};
  */
 #define DEG2NB(i, j) ((5*i*i + 8*i*j + 4*i + 9*j) % 13 + 5)
 
-template <class node, class update_rules, class speed_estimates>
-void olim18_rect<node, update_rules, speed_estimates>::update_impl(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim18_rect<node, line_updates, tri_updates, tetra_updates>::update_impl(
   int i, int j, int k, double & T)
 {
   using namespace olim18;
@@ -239,8 +242,8 @@ void olim18_rect<node, update_rules, speed_estimates>::update_impl(
 #endif
 }
 
-template <class node, class update_rules, class speed_estimates>
-void olim18_rect<node, update_rules, speed_estimates>::do_tri12_updates(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim18_rect<node, line_updates, tri_updates, tetra_updates>::do_tri12_updates(
   abstract_node const * const * nb, int const * dirs, 
   double const * s_, double s, double h, double & T)
   const
@@ -255,8 +258,8 @@ void olim18_rect<node, update_rules, speed_estimates>::do_tri12_updates(
   }
 }
 
-template <class node, class update_rules, class speed_estimates>
-void olim18_rect<node, update_rules, speed_estimates>::do_tri22_updates(
+template <class node, class line_updates, class tri_updates, class tetra_updates>
+void olim18_rect<node, line_updates, tri_updates, tetra_updates>::do_tri22_updates(
   abstract_node const * const * nb, int const * dirs,
   double const * s_, double s, double h, double & T)
   const

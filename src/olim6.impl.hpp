@@ -1,5 +1,5 @@
-#ifndef __OLIM6_RECT_IMPL_HPP__
-#define __OLIM6_RECT_IMPL_HPP__
+#ifndef __OLIM6_IMPL_HPP__
+#define __OLIM6_IMPL_HPP__
 
 #include <src/config.hpp>
 
@@ -10,7 +10,6 @@
 
 #include "common.macros.hpp"
 #include "olim3d.macros.def.hpp"
-#include "olim6.defs.hpp"
 
 #define SPEED_ARGS(...)                         \
   GET_MACRO_NAME_3(                             \
@@ -19,19 +18,18 @@
     SPEED_ARGS_2,                               \
     SPEED_ARGS_1)(__VA_ARGS__)
 
-#define SPEED_ARGS_1(i) this->estimate_speed(s, s_[i])
-#define SPEED_ARGS_2(i, j) this->estimate_speed(s, s_[i], s_[j])
-#define SPEED_ARGS_3(i, j, k) this->estimate_speed(s, s_[i], s_[j], s_[k])
+#define SPEED_ARGS_1(i) s, s_[i]
+#define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
+#define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
 
-template <class update_rules, class speed_estimate>
-void olim6_rect<update_rules, speed_estimate>::update_impl(
+template <class line_updates, class tri_updates, class tetra_updates>
+void olim6<line_updates, tri_updates, tetra_updates>::update_impl(
   int i, int j, int k, double & T)
 {
-  using namespace olim6;
   using std::min;
 
 #ifdef PRINT_UPDATES
-  printf("olim6_rect::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim6::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
@@ -57,13 +55,18 @@ void olim6_rect<update_rules, speed_estimate>::update_impl(
   if (nb[1] && nb[3] && nb[5]) TETRA111(1, 3, 5);
 
 #ifdef PRINT_UPDATES
-  printf("olim6_rect::update_impl: T <- %g\n", T);
+  printf("olim6::update_impl: T <- %g\n", T);
 #endif
 }
 
+#undef SPEED_ARGS
+#undef SPEED_ARGS_1
+#undef SPEED_ARGS_2
+#undef SPEED_ARGS_3
+
 #include "olim3d.macros.undef.hpp"
 
-#endif // __OLIM6_RECT_IMPL_HPP__
+#endif // __OLIM6_IMPL_HPP__
 
 // Local Variables:
 // indent-tabs-mode: nil

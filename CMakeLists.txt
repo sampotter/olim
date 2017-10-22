@@ -41,7 +41,6 @@ set (FMM_SRC_FILES
   src/olim4_rhr.cpp
   src/olim4_rhr_lut.cpp
   src/qroots.cpp
-  src/solim4_mp0.cpp
   src/speed_funcs.cpp
   src/test_graph_marcher.cpp)
 
@@ -104,7 +103,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	olim18_rhr
 	olim26_rhr
 	qroots
-	solim4_mp0
 	test_graph_marcher
 	update_rules.tetra_updates
 	update_rules.tri_updates)

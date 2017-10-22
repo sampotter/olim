@@ -60,7 +60,22 @@ namespace update_rules {
   template <bool is_constrained>
   using mp0_tri_updates = rect_tri_updates<mp_speed_estimator, is_constrained>;
 
-  // TODO: struct mp1_tri_updates
+  template <bool is_constrained>
+  struct mp1_tri_updates {
+    double tri11(double u0, double u1, double s, double s0, double s1, double h)
+      const;
+    double tri12(double u0, double u1, double s, double s0, double s1, double h)
+      const;
+
+  private:
+    double tri11_impl(
+      double u0, double u1, double s, double s0, double s1, double h,
+      std::true_type &&) const;
+
+    double tri12_impl(
+      double u0, double u1, double s, double s0, double s1, double h,
+      std::true_type &&) const;
+  };
 }
 
 #include "update_rules.tri_updates.impl.hpp"

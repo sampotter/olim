@@ -1,4 +1,4 @@
-#include "olim8_mp1.hpp"
+#include "olim8.hpp"
 #include "speed_funcs.hpp"
 
 int main() {

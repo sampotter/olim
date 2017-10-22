@@ -40,7 +40,6 @@ set (FMM_SRC_FILES
   src/olim4_mp0.cpp
   src/olim4_rhr.cpp
   src/olim4_rhr_lut.cpp
-  src/olim8_mp1.cpp
   src/qroots.cpp
   src/solim4_mp0.cpp
   src/speed_funcs.cpp

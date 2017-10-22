@@ -21,6 +21,11 @@ using olim8_mp0 = olim8<
   update_rules::mp0_tri_updates<true>
 >;
 
+using olim8_mp1 = olim8<
+  update_rules::mp_line_updates,
+  update_rules::mp1_tri_updates<true>
+>;
+
 using olim8_rhr = olim8<
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates<true>

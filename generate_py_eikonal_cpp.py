@@ -92,8 +92,6 @@ def build_src_txt():
 #include "olim4_rhr.hpp"
 #include "olim6.hpp"
 #include "olim8.hpp"
-#include "olim8hu.hpp"
-#include "olim8lut.hpp"
 #include "olim18.hpp"
 #include "olim26.hpp"
 

@@ -5,23 +5,53 @@
 
 #include "speed_estimators.hpp"
 
+// TODO: consider cleaning up the template mess below using a macro
+//
+// TODO: replace the tri functions with a tri<D1, D2> function (one
+// benefit of this is that the template parameter is available for use
+// in the implementation of these functions, which should help to keep
+// bugs at bay)
+
 namespace update_rules {
   template <class speed_estimator, bool is_constrained>
   struct rect_tri_updates: public speed_estimator {
-    std::enable_if_t<!is_constrained, double>
-    tri11(double u0, double u1, double s, double s0, double s1, double h) const;
+    double tri11(double u0, double u1, double s, double s0, double s1, double h) const;
+    double tri12(double u0, double u1, double s, double s0, double s1, double h) const;
+    double tri13(double u0, double u1, double s, double s0, double s1, double h) const;
+    double tri22(double u0, double u1, double s, double s0, double s1, double h) const;
+    double tri23(double u0, double u1, double s, double s0, double s1, double h) const;
 
-    std::enable_if_t<!is_constrained, double>
-    tri12(double u0, double u1, double s, double s0, double s1, double h) const;
+  private:
+    double
+    tri11_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::true_type &&) const;
 
-    std::enable_if_t<!is_constrained, double>
-    tri13(double u0, double u1, double s, double s0, double s1, double h) const;
+    double
+    tri11_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::false_type &&) const;
 
-    std::enable_if_t<!is_constrained, double>
-    tri22(double u0, double u1, double s, double s0, double s1, double h) const;
+    double
+    tri12_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::true_type &&) const;
 
-    std::enable_if_t<!is_constrained, double>
-    tri23(double u0, double u1, double s, double s0, double s1, double h) const;
+    double
+    tri12_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::false_type &&) const;
+
+    double
+    tri13_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::false_type &&)
+      const;
+
+    double
+    tri22_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::false_type &&)
+      const;
+
+    double
+    tri23_impl(double u0, double u1, double s, double s0, double s1, double h,
+               std::false_type &&)
+      const;
   };
 
   template <bool is_constrained>

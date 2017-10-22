@@ -3,6 +3,8 @@
 
 #ifdef EIKONAL_DEBUG
 void check_params(double u0, double u1, double h, double s);
+void check_params(double u0, double u1, double h, double s,
+                  double s0, double s1);
 void check_params(double u0, double u1, double u2, double h, double s);
 void check_params(double u0, double u1, double u2, double h, double s,
                   double s0, double s1, double s2);

@@ -51,10 +51,13 @@ marcher_template = Template('''
 marchers3d = {
     'basic_marcher_3d': 'BasicMarcher3D',
     'olim6_mp0': 'Olim6Mid0',
+    'olim6_mp1': 'Olim6Mid1',
     'olim6_rhr': 'Olim6Rect',
     'olim18_mp0': 'Olim18Mid0',
+    'olim18_mp1': 'Olim18Mid1',
     'olim18_rhr': 'Olim18Rect',
     'olim26_mp0': 'Olim26Mid0',
+    'olim26_mp1': 'Olim26Mid1',
     'olim26_rhr': 'Olim26Rect'}
 
 marcher3d_template = Template('''

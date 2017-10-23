@@ -320,31 +320,30 @@ namespace update_rules {
       return rhr_adj(u0, u1, sbar0, h);
     }
 
-    double alpha_sq = std::pow((u0 - u1)/h, 2);
-    double sbar0_sq = sbar0*sbar0;
-    double dsbar = sbar1 - sbar0;
-    double dsbar_sq = dsbar*dsbar;
+    double ds = s1 - s0, ds_sq = ds*ds;
+    double du = u1 - u0;
+    double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
+    double tmp = 3*s0 - s1 - 2*ds;
     double a[] = {
-      sbar0_sq - alpha_sq - 2*sbar0*dsbar + dsbar_sq,
-      -4*sbar0_sq + 2*alpha_sq + 10*sbar0*dsbar - 6*dsbar_sq,
-      4*sbar0_sq - 2*alpha_sq - 20*sbar0*dsbar + 17*dsbar_sq,
-      16*sbar0*dsbar - 24*dsbar_sq,
-      16*dsbar_sq
+      (s0 - ds)*(s0 - ds) - alpha_sq,
+      2*(alpha_sq - tmp*(s0 - ds)),
+      8*ds_sq - 8*s0*ds - 2*alpha_sq + tmp*tmp,
+      8*ds*tmp,
+      16*ds_sq
     };
 
-    double lam, roots[4] = {-1, -1, -1, -1},
-      T = std::numeric_limits<double>::infinity(), lhs, rhs;
+    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
     qroots(a, roots);
 
     int i = 0;
     while ((lam = roots[i++]) != -1) {
-      lhs = (u0 - u1)*std::sqrt(1 - 2*lam + 2*lam*lam)/h;
-      rhs = -sbar0*(4*lam*lam - 5*lam + 2) + sbar1*(4*lam*lam - 3*lam + 1);
+      l = sqrt(pow(1 - lam, 2) + lam*lam);
+      slam = (1 - lam)*s0 + lam*s1;
+      lhs = -du*l/h;
+      rhs = s0*(-1 + 3*lam - 2*lam*lam) + s1*lam*(-1 + 2*lam) +
+        ds*(1 - 2*lam + 2*lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(
-          T,
-          (1 - lam)*u0 + lam*u1 +
-            ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1));
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
       }
     }
 

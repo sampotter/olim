@@ -308,7 +308,7 @@ namespace update_rules {
       16*dsbar_sq
     };
 
-    double lam, Tnew, argmin, roots[4] = {-1, -1, -1, -1},
+    double lam, roots[4] = {-1, -1, -1, -1},
       T = std::numeric_limits<double>::infinity(), lhs, rhs;
     qroots(a, roots);
 
@@ -317,16 +317,12 @@ namespace update_rules {
       lhs = (u0 - u1)*std::sqrt(1 - 2*lam + 2*lam*lam)/h;
       rhs = -sbar0*(4*lam*lam - 5*lam + 2) + sbar1*(4*lam*lam - 3*lam + 1);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        Tnew = (1 - lam)*u0+ lam*u1 +
-          ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1);
-        if (Tnew < T) {
-          T = Tnew;
-          argmin = lam;
-        }
+        T = std::min(
+          T,
+          (1 - lam)*u0 + lam*u1 +
+            ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(1 - 2*lam + 2*lam*lam + 1));
       }
     }
-
-    (void) argmin;
 
     return T;
   }
@@ -366,7 +362,7 @@ namespace update_rules {
       4*dsbar*dsbar
     };
 
-    double lam, Tnew, argmin, roots[4] = {-1, -1, -1, -1},
+    double lam, roots[4] = {-1, -1, -1, -1},
       T = std::numeric_limits<double>::infinity(), lhs, rhs;
     qroots(a, roots);
 
@@ -375,16 +371,12 @@ namespace update_rules {
       lhs = (u0 - u1)*std::sqrt(lam*lam + 1)/h;
       rhs = sbar1 + 2*sbar1*lam*lam - sbar0*(1 - lam + 2*lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        Tnew = (1 - lam)*u0+ lam*u1 +
-          ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(lam*lam + 1);
-        if (Tnew < T) {
-          T = Tnew;
-          argmin = lam;
-        }
+        T = std::min(
+          T,
+          (1 - lam)*u0+ lam*u1 +
+            ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(lam*lam + 1));
       }
     }
-
-    (void) argmin;
 
     return T;
   }

@@ -238,6 +238,36 @@ void qroots_works_1() {
   }
 }
 
+static bool contains_root(double const * roots, double root,
+                          double tol = 1e-10) {
+  return fabs(roots[0] - root)/fabs(root) < tol ||
+    fabs(roots[1] - root)/fabs(root) < tol ||
+    fabs(roots[2] - root)/fabs(root) < tol ||
+    fabs(roots[3] - root)/fabs(root) < tol;
+}
+
+void qroots_works_2() {
+  double a[5] = {
+    1.6776543209876538,
+    -6.9953086419753054,
+    8.3053086419753033,
+    -2.1599999999999966,
+    0.15999999999999959
+  };
+  double roots[4] = {-1, -1, -1, -1};
+
+  qroots(a, roots, 0, 1);
+
+  for (int i = 0; i < 4; ++i) {
+    IS_TRUE(roots[i] != -1);
+  }
+
+  IS_TRUE(contains_root(roots, -2.609));
+  IS_TRUE(contains_root(roots, -2.30582));
+  IS_TRUE(contains_root(roots, 0.432014));
+  IS_TRUE(contains_root(roots, 0.482802));
+}
+
 int main() {
   sigma_works_1();
   sigma_works_2();
@@ -247,6 +277,7 @@ int main() {
   sturm_works_3();
   sturm_works_4();
   qroots_works_1();
+  qroots_works_2();
 }
 
 // Local Variables:

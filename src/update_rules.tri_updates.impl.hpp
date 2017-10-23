@@ -435,7 +435,7 @@ namespace update_rules {
       lhs = -du*l/h;
       rhs = 2*h*lam*slam + h*ds*(1 + 2*lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + (s + slam)*h*l/2);
       }
     }
 
@@ -475,7 +475,7 @@ namespace update_rules {
       rhs = s1*lam*(2*lam - 1) - s0*(2*lam*lam - 3*lam + 1) +
         2*ds*(1 - lam + lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
       }
     }
 
@@ -513,7 +513,7 @@ namespace update_rules {
       lhs = -du*l/h;
       rhs = lam*slam + ds*(2 + lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
       }
     }
 

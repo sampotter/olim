@@ -4,7 +4,10 @@
 #include <cmath>
 #include <limits>
 
-static double polyval(double const * const coefs, int ncoefs, double x) {
+/**
+ * Use Horner's rule to evaluate a polynomial.
+ */
+static double polyval(double const * coefs, int ncoefs, double x) {
   double y = 0;
   for (int i = ncoefs - 1; i > 0; --i) {
     y += coefs[i];
@@ -13,6 +16,11 @@ static double polyval(double const * const coefs, int ncoefs, double x) {
   return y + coefs[0];
 }
 
+/**
+ * This is a lookup table used to compute the number of bits in a
+ * 4-bit integer that are 1. The comments following each number are
+ * the binary representation of the index (i.e. argument).
+ */
 static char nbits[16] = {
   0, // 0000
   1, // 0001
@@ -32,6 +40,15 @@ static char nbits[16] = {
   4  // 1111
 };
 
+/**
+ * Compute the number of sign changes at `x' for the Sturm sequence
+ * associated with the 4th degree polynomial defined by the
+ * coefficients in `polys'.
+ *
+ * The implementation of this function tries to do this efficiently
+ * using binary arithmetic---at the time of writing this, this helped
+ * speed up qroots by around 15-20%.
+ */
 int sigma(double const * const * polys, double x) {
   double const * a = polys[0];
   double y = a[0] + x*(a[1] + x*(a[2] + x*(a[3] + x*a[4])));

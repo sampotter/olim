@@ -92,6 +92,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher_3d
 	heap
 	olim6_mp0
+	olim6_mp1
 	olim6_rhr
 	olim8_mp0
 	olim8_mp1

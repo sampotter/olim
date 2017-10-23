@@ -2,7 +2,6 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
-#include <cstdio>
 #include <limits>
 
 void sigma_works_1() {
@@ -229,13 +228,12 @@ void sturm_works_4() {
   IS_TRUE(sturm(polys, 0, 1) == 0);
 }
 
-void qroots_works_1() {
-  double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
-  double roots[4] = {-1, -1, -1, -1};
-  qroots(a, roots, 0, 1);
-  for (int i = 0; i < 4 && roots[i] != -1; ++i) {
-    printf("%g\n", roots[i]);
-  }
+// Some helper functions for testing the roots returned by qroots:
+
+static int num_roots(double const * roots) {
+  int i = 0;
+  while (roots[i] != -1) i++;
+  return i;
 }
 
 static bool contains_root(double const * roots, double root,
@@ -246,24 +244,20 @@ static bool contains_root(double const * roots, double root,
     fabs(roots[3] - root)/fabs(root) < tol;
 }
 
-void qroots_works_2() {
-  double a[5] = {
-    1.6776543209876538,
-    -6.9953086419753054,
-    8.3053086419753033,
-    -2.1599999999999966,
-    0.15999999999999959
-  };
+void qroots_works_1() {
+  double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
   double roots[4] = {-1, -1, -1, -1};
-
   qroots(a, roots, 0, 1);
+  IS_TRUE(num_roots(roots) == 2);
+  IS_TRUE(contains_root(roots, 0.25));
+  IS_TRUE(contains_root(roots, 0.75));
+}
 
-  for (int i = 0; i < 4; ++i) {
-    IS_TRUE(roots[i] != -1);
-  }
-
-  IS_TRUE(contains_root(roots, -2.609));
-  IS_TRUE(contains_root(roots, -2.30582));
+void qroots_works_2() {
+  double a[5] = { -0.803056, 2.86611, -1.10611, -2.56, -0.64};
+  double roots[4] = {-1, -1, -1, -1};
+  qroots(a, roots, 0, 1);
+  IS_TRUE(num_roots(roots) == 2);
   IS_TRUE(contains_root(roots, 0.432014));
   IS_TRUE(contains_root(roots, 0.482802));
 }

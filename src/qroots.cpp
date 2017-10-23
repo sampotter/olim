@@ -4,17 +4,26 @@
 #include <cmath>
 #include <limits>
 
-/**
- * Use Horner's rule to evaluate a polynomial.
+#include "common.macros.hpp"
+
+/*
+ * Evaluate 0th-4th degree polynomials using Horner's rule.
  */
-static double polyval(double const * coefs, int ncoefs, double x) {
-  double y = 0;
-  for (int i = ncoefs - 1; i > 0; --i) {
-    y += coefs[i];
-    y *= x;
-  }
-  return y + coefs[0];
-}
+#define POLY0H(a) (a)[0]
+#define POLY1H(a, x) ((a)[0] + (x)*(a)[1])
+#define POLY2H(a, x) ((a)[0] + (x)*((a)[1] + (x)*(a)[2]))
+#define POLY3H(a, x) ((a)[0] + (x)*((a)[1] + (x)*((a)[2] + (x)*(a)[3])))
+#define POLY4H(a, x) \
+  ((a)[0] + (x)*((a)[1] + (x)*((a)[2] + (x)*((a)[3] + (x)*(a)[4]))))
+
+/**
+ * Evaluate 0th-4th degree polynomials in monomial form.
+ */
+#define POLY0M(a) (a)[0]
+#define POLY1M(a, x) (POLY0M(a) + (a)[1]*(x))
+#define POLY2M(a, x) (POLY1M(a, x) + (a)[2]*(x)*(x))
+#define POLY3M(a, x) (POLY2M(a, x) + (a)[3]*(x)*(x)*(x))
+#define POLY4M(a, x) (POLY3M(a, x) + (a)[4]*(x)*(x)*(x)*(x))
 
 /**
  * This is a lookup table used to compute the number of bits in a
@@ -50,24 +59,19 @@ static char nbits[16] = {
  * speed up qroots by around 15-20%.
  */
 int sigma(double const * const * polys, double x) {
-  double const * a = polys[0];
-  double y = a[0] + x*(a[1] + x*(a[2] + x*(a[3] + x*a[4])));
+  double y = POLY4M(polys[0], x);
   char signs = y > 0 ? 127 : 0;
 
-  a = polys[1];
-  y = a[0] + x*(a[1] + x*(a[2] + x*a[3]));
+  y = POLY3M(polys[1], x);
   signs = (signs << (y != 0)) | (y > 0);
 
-  a = polys[2];
-  y = a[0] + x*(a[1] + x*a[2]);
+  y = POLY2M(polys[2], x);
   signs = (signs << (y != 0)) | (y > 0);
 
-  a = polys[3];
-  y = a[0] + x*a[1];
+  y = POLY1M(polys[3], x);
   signs = (signs << (y != 0)) | (y > 0);
 
-  a = polys[4];
-  y = a[0];
+  y = POLY0M(polys[4]);
   signs = (signs << (y != 0)) | (y > 0);
 
   // TODO: compare with modding and adding---that may actually be
@@ -78,24 +82,23 @@ int sigma(double const * const * polys, double x) {
 int oldsigma(double const * const * polys, double x) {
   int nsigns = 0, signs[5], changes = 0;
 
-  double y = polys[0][0] +
-    x*(polys[0][1] + x*(polys[0][2] + x*(polys[0][3] + x*polys[0][4])));
+  double y = POLY4M(polys[0], x);
   if (y > 0) signs[nsigns++] = 1;
   if (y < 0) signs[nsigns++] = -1;
 
-  y = polys[1][0] + x*(polys[1][1] + x*(polys[1][2] + x*polys[1][3]));
+  y = POLY3M(polys[1], x);
   if (y > 0) signs[nsigns++] = 1;
   if (y < 0) signs[nsigns++] = -1;
 
-  y = polys[2][0] + x*(polys[2][1] + x*polys[2][2]);
+  y = POLY2M(polys[2], x);
   if (y > 0) signs[nsigns++] = 1;
   if (y < 0) signs[nsigns++] = -1;
 
-  y = polys[3][0] + x*polys[3][1];
+  y = POLY1M(polys[3], x);
   if (y > 0) signs[nsigns++] = 1;
   if (y < 0) signs[nsigns++] = -1;
 
-  y = polys[4][0];
+  y = POLY0M(polys[4]);
   if (y > 0) signs[nsigns++] = 1;
   if (y < 0) signs[nsigns++] = -1;
 
@@ -107,21 +110,28 @@ int oldsigma(double const * const * polys, double x) {
   return changes;
 }
 
+/**
+ * Compute the number of roots that lie in (l, r] of the 4th degree
+ * polynomial with coefficients given by `polys'.
+ */
 int sturm(double const * const * polys, double l, double r) {
   // Sturm's theorem finds roots on (l, r]; the case p(l) = 0 *does*
   // happen and *isn't* handled by our fast sigma---so, perturb l to
-  // the right a very small amount to get around this
-  double l_plus_eps = l + std::numeric_limits<decltype(l)>::epsilon();
+  // the right a very small amount to get around this.
+  double l_plus_eps = l + EPS(decltype(l));
+
+  // When in debug mode, check that the old (and slower) sigma
+  // function computes the same thing as the riskier, bit-twiddling
+  // sigma.
   assert(sigma(polys, l_plus_eps) == oldsigma(polys, l_plus_eps));
   assert(sigma(polys, r) == oldsigma(polys, r));
+
   return sigma(polys, l_plus_eps) - sigma(polys, r);
 }
 
-// TODO: remove use of polyval
-
 static double secant(double const * a, double x0, double x1, double l,
                      double r, bool & found, double tol = 1e-13) {
-  double x, f0 = polyval(a, 5, x0), f1 = polyval(a, 5, x1);
+  double x, f0 = POLY4H(a, x0), f1 = POLY4H(a, x1);
   do {
     x = (x1*f0 - x0*f1)/(f0 - f1);
     if (x < l || r < x) {
@@ -131,7 +141,7 @@ static double secant(double const * a, double x0, double x1, double l,
     x1 = x0;
     x0 = x;
     f1 = f0;
-  } while (fabs(f0 = polyval(a, 5, x)) > tol);
+  } while (fabs(f0 = POLY4H(a, x)) > tol);
   found = true;
   return x;
 }

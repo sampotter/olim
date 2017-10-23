@@ -362,8 +362,7 @@ namespace update_rules {
       4*dsbar*dsbar
     };
 
-    double lam, roots[4] = {-1, -1, -1, -1},
-      T = std::numeric_limits<double>::infinity(), lhs, rhs;
+    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), lhs, rhs;
     qroots(a, roots);
 
     int i = 0;

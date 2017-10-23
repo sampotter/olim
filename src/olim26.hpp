@@ -45,6 +45,13 @@ using olim26_mp0 = olim26<
   update_rules::mp0_tetra_updates
 >;
 
+using olim26_mp1 = olim26<
+  node_3d,
+  update_rules::mp_line_updates,
+  update_rules::mp1_tri_updates<false>,
+  update_rules::mp1_tetra_updates
+>;
+
 using olim26_rhr = olim26<
   node_3d,
   update_rules::rhr_line_updates,

@@ -27,6 +27,12 @@ using olim6_mp0 = olim6<
   update_rules::mp0_tetra_updates
 >;
 
+using olim6_mp1 = olim6<
+  update_rules::mp_line_updates,
+  update_rules::mp1_tri_updates<false>,
+  update_rules::mp1_tetra_updates
+>;
+
 using olim6_rhr = olim6<
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates<false>,

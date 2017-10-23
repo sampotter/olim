@@ -380,6 +380,122 @@ namespace update_rules {
 
     return T;
   }
+
+  template <bool is_constrained>
+  double
+  mp1_tri_updates<is_constrained>::tri13_impl(
+    double u0, double u1, double s, double s0, double s1, double h,
+    std::false_type &&) const
+  {
+#ifdef EIKONAL_DEBUG
+    check_params(u0, u1, s, s0, s1, h);
+#endif
+
+    double ds = s1 - s0;
+    double du = u1 - u0;
+    double alpha = fabs(du)/h;
+    double const a[] = {
+      ds*ds - alpha*alpha,
+      4*s0*ds,
+      4*s0*s0 - 4*s0*ds + 4*ds*(s1 + ds) - 2*alpha*alpha,
+      16*s0*ds,
+      16*ds*ds
+    };
+
+    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
+    qroots(a, roots);
+
+    int i = 0;
+    while ((lam = roots[i++]) != -1) {
+      l = h*std::sqrt(1 + 2*lam*lam);
+      slam = (1 - lam)*s0 + lam*s1;
+      lhs = -du*l/h;
+      rhs = 2*h*lam*slam + h*ds*(1 + 2*lam*lam);
+      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+      }
+    }
+
+    return T;
+  }
+
+  template <bool is_constrained>
+  double
+  mp1_tri_updates<is_constrained>::tri22_impl(
+    double u0, double u1, double s, double s0, double s1, double h,
+    std::false_type &&) const
+  {
+#ifdef EIKONAL_DEBUG
+    check_params(u0, u1, s, s0, s1, h);
+#endif
+
+    double ds = s1 - s0;
+    double du = u1 - u0;
+    double alpha = fabs(du)/h;
+    double const a[] = {
+      2*alpha*alpha - pow(s0 - 2*ds*ds, 2),
+      2*(s0 - 2*ds)*(3*s0 - s1 - 2*ds) - 2*alpha*alpha,
+      -13*s0*s0 + 10*s0*s1 - s1*s1 + 24*s0*ds - 12*s1*ds - 12*ds*ds +
+        2*alpha*alpha,
+      4*(3*s0 - s1 - 2*ds)*(s0 - s1 - ds),
+      -16*ds*ds
+    };
+
+    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
+    qroots(a, roots);
+
+    int i = 0;
+    while ((lam = roots[i++]) != -1) {
+      l = sqrt(2*(1 - lam + lam*lam));
+      slam = (1 - lam)*s0 + lam*s1;
+      lhs = -du*l/h;
+      rhs = s1*lam*(2*lam - 1) - s0*(2*lam*lam - 3*lam + 1) +
+        2*ds*(1 - lam + lam*lam);
+      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+      }
+    }
+
+    return T;
+  }
+
+  template <bool is_constrained>
+  double
+  mp1_tri_updates<is_constrained>::tri23_impl(
+    double u0, double u1, double s, double s0, double s1, double h,
+    std::false_type &&) const
+  {
+#ifdef EIKONAL_DEBUG
+    check_params(u0, u1, s, s0, s1, h);
+#endif
+
+    double ds = s1 - s0, ds_sq = ds*ds;
+    double du = u1 - u0;
+    double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
+    double const a[] = {
+      4*ds_sq - 2*alpha_sq,
+      4*s0*ds,
+      s0*s0 - 4*s0*ds + 4*ds*(s1 + ds) - alpha_sq,
+      4*s0*ds,
+      4*ds_sq
+    };
+
+    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
+    qroots(a, roots);
+
+    int i = 0;
+    while ((lam = roots[i++]) != -1) {
+      l = sqrt(2 + lam*lam);
+      slam = (1 - lam)*s0 + lam*s1;
+      lhs = -du*l/h;
+      rhs = lam*slam + ds*(2 + lam*lam);
+      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+        T = std::min(T, (1 - lam)*u0 + lam*u1 + slam*h*l);
+      }
+    }
+
+    return T;
+  }
 }
 
 #endif // __UPDATE_RULES_TRI_UPDATES_IMPL_HPP__

@@ -6,6 +6,7 @@
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
 * Collected from <2017-10-23 Mon>
+  - [ ] get qroots tests working...
   - [ ] add tests for new mp1 stuff
   - [ ] olim_util.hpp -> olim_debug.hpp (or something)
   - [ ] add "exact" Newton for OLIM6/18

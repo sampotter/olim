@@ -277,6 +277,17 @@ namespace update_rules {
     double u0, double u1, double s, double s0, double s1, double h,
     std::true_type &&) const
   {
+    double T = tri11_impl(u0, u1, s, s0, s1, h, std::false_type {});
+    return std::isinf(T) ?
+      std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h/2) : T;
+  }
+
+  template <bool is_constrained>
+  double
+  mp1_tri_updates<is_constrained>::tri11_impl(
+    double u0, double u1, double s, double s0, double s1, double h,
+    std::false_type &&) const
+  {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
@@ -317,8 +328,6 @@ namespace update_rules {
 
     (void) argmin;
 
-    // TODO: deal with T == inf case so that this is truly constrained
-
     return T;
   }
 
@@ -327,6 +336,17 @@ namespace update_rules {
   mp1_tri_updates<is_constrained>::tri12_impl(
     double u0, double u1, double s, double s0, double s1, double h,
     std::true_type &&) const
+  {
+    double T = tri12_impl(u0, u1, s, s0, s1, h, std::false_type {});
+    return std::isinf(T) ?
+      std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h*sqrt2/2) : T;
+  }
+
+  template <bool is_constrained>
+  double
+  mp1_tri_updates<is_constrained>::tri12_impl(
+    double u0, double u1, double s, double s0, double s1, double h,
+    std::false_type &&) const
   {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
@@ -365,8 +385,6 @@ namespace update_rules {
     }
 
     (void) argmin;
-
-    // TODO: deal with T == inf case so that this is truly constrained
 
     return T;
   }

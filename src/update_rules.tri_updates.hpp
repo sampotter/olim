@@ -72,9 +72,17 @@ namespace update_rules {
       double u0, double u1, double s, double s0, double s1, double h,
       std::true_type &&) const;
 
+    double tri11_impl(
+      double u0, double u1, double s, double s0, double s1, double h,
+      std::false_type &&) const;
+
     double tri12_impl(
       double u0, double u1, double s, double s0, double s1, double h,
       std::true_type &&) const;
+
+    double tri12_impl(
+      double u0, double u1, double s, double s0, double s1, double h,
+      std::false_type &&) const;
   };
 }
 

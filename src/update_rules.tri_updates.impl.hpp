@@ -272,6 +272,30 @@ namespace update_rules {
   }
 
   template <bool is_constrained>
+  double mp1_tri_updates<is_constrained>::tri13(
+    double u0, double u1, double s, double s0, double s1, double h) const
+  {
+    return tri13_impl(
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
+  }
+
+  template <bool is_constrained>
+  double mp1_tri_updates<is_constrained>::tri22(
+    double u0, double u1, double s, double s0, double s1, double h) const
+  {
+    return tri22_impl(
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
+  }
+
+  template <bool is_constrained>
+  double mp1_tri_updates<is_constrained>::tri23(
+    double u0, double u1, double s, double s0, double s1, double h) const
+  {
+    return tri23_impl(
+      u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
+  }
+
+  template <bool is_constrained>
   double
   mp1_tri_updates<is_constrained>::tri11_impl(
     double u0, double u1, double s, double s0, double s1, double h,

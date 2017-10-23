@@ -227,16 +227,16 @@ void qroots(double const * a, double * roots, double l, double r) {
     if (ival.nroots == 1) {
       findroot(polys[0], ival.l, ival.r, 0.1, &roots[root++]);
     } else if (ival.nroots > 1) {
-      mid = (l + r)/2;
-      int sigl = sigma(polys, l), sigm = sigma(polys, mid),
-        sigr = sigma(polys, r);
+      mid = (ival.l + ival.r)/2;
+      int sigl = sigma(polys, ival.l), sigm = sigma(polys, mid),
+        sigr = sigma(polys, ival.r);
       if (sigl > sigm) {
         assert(0 <= i && i < 4);
-        ivals[i++] = {sigl - sigm, l, mid};
+        ivals[i++] = {sigl - sigm, ival.l, mid};
       }
       if (sigm > sigr) {
         assert(0 <= i && i < 4);
-        ivals[i++] = {sigm - sigr, mid, r};
+        ivals[i++] = {sigm - sigr, mid, ival.r};
       }
     }
   }

@@ -138,7 +138,7 @@ void qroots(double const * a, double * roots, double l, double r) {
   // degree so we can invoke an appropriate direct solver.
 
   int degree = 4;
-  while (a[degree] < 1e-13) --degree;
+  while (fabs(a[degree]) < 1e-13) --degree;
 
   int root = 0;
 

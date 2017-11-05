@@ -55,7 +55,7 @@ void rhr_tri23_works() {
 // TODO: test constrained rhr
 
 update_rules::mp1_tri_updates<true> mp1c; // (c)onstrained
-update_rules::mp1_tri_updates<true> mp1u; // (u)nconstrained
+update_rules::mp1_tri_updates<false> mp1u; // (u)nconstrained
 
 void mp1_tri11_works() {
   double u0, u1, s, s0, s1, h, T;

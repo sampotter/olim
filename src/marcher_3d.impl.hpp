@@ -29,7 +29,7 @@ marcher_3d<Node>::marcher_3d(
   for (int k = 0; k < depth; ++k) {
     for (int j = 0; j < width; ++j) {
       for (int i = 0; i < height; ++i) {
-        _s_cache[height*(width*k + j) * i] = s(h*j - x0, h*i - y0, h*k - z0);
+        _s_cache[height*(width*k + j) + i] = s(h*j - x0, h*i - y0, h*k - z0);
       }
     }
   }

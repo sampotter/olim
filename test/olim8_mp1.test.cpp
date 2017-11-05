@@ -103,51 +103,6 @@ void s3_test() {
   }
 }
 
-void s4_test() {
-  int M = 101, N = M;
-  double h = 1.0/(M - 1);
-  olim8_mp1 m {M, N, h, s4};
-  m.add_boundary_node(0, 0);
-  m.run();
-  for (int i = M - 3; i < M; ++i) {
-    for (int j = N - 3; j < N; ++j) {
-      double U = m.get_value(i, j);
-      double u = f4(h*j, h*i);
-      IS_APPROX_EQUAL(u, U, 1e-1);
-    }
-  }
-}
-
-void s5_test() {
-  int M = 101, N = M;
-  double h = 1.0/(M - 1);
-  olim8_mp1 m {M, N, h, s5};
-  m.add_boundary_node(0, 0);
-  m.run();
-  for (int i = M - 3; i < M; ++i) {
-    for (int j = N - 3; j < N; ++j) {
-      double U = m.get_value(i, j);
-      double u = f5(h*j, h*i);
-      IS_APPROX_EQUAL(u, U, 1e-1);
-    }
-  }
-}
-
-void s6_test() {
-  int M = 101, N = M;
-  double h = 1.0/(M - 1);
-  olim8_mp1 m {M, N, h, s6};
-  m.add_boundary_node(0, 0);
-  m.run();
-  for (int i = M - 3; i < M; ++i) {
-    for (int j = N - 3; j < N; ++j) {
-      double U = m.get_value(i, j);
-      double u = f6(h*j, h*i);
-      IS_APPROX_EQUAL(u, U, 1e-1);
-    }
-  }
-}
-
 int main() {
   trivial_case_works();
   adjacent_update_works();
@@ -157,9 +112,6 @@ int main() {
   s1_test();
   s2_test();
   s3_test();
-  s4_test();
-  s5_test();
-  s6_test();
 }
 
 // Local Variables:

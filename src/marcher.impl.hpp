@@ -62,7 +62,7 @@ void marcher<Node>::add_boundary_node(int i, int j, double value) {
 template <class Node>
 void marcher<Node>::add_boundary_node(double x, double y, double value) {
   auto const dist = [x, y] (int i, int j) -> double {
-    return std::sqrt(std::pow(i - y, 2) + std::pow(j - x, 2));
+    return std::sqrt((i - y)*(i - y) + (j - x)*(j - x));
   };
 
   int i0 = floor(y), i1 = ceil(y);

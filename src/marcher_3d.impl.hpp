@@ -51,11 +51,70 @@ marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
   init();
 }
 
+/**
+ * TODO: see comment about this function in marcher.impl.hpp (i.e. the
+ * 2D version of this function).
+ */
 template <class Node>
 void marcher_3d<Node>::add_boundary_node(int i, int j, int k, double value) {
   assert(in_bounds(i, j, k));
   assert(operator()(i, j, k).is_far()); // TODO: for now---worried about heap
   stage_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
+}
+
+template <class Node>
+void marcher_3d<Node>::add_boundary_node(double x, double y, double z,
+                                         double value) {
+  auto const dist = [x, y, z] (int i, int j, int k) -> double {
+    return std::sqrt((i - y)*(i - y) + (j - x)*(j - x) + (k - z)*(k - z));
+  };
+
+  int i0 = floor(y), i1 = ceil(y);
+  int j0 = floor(x), j1 = ceil(x);
+  int k0 = floor(z), k1 = ceil(z);
+
+  Node nodes[8] = {
+    {i0, j0, k0, value + dist(i0, j0, k0)},
+    {i0, j0, k1, value + dist(i0, j0, k1)},
+    {i0, j1, k0, value + dist(i0, j1, k0)},
+    {i1, j0, k0, value + dist(i1, j0, k0)},
+    {i0, j1, k1, value + dist(i0, j1, k1)},
+    {i1, j0, k1, value + dist(i1, j0, k1)},
+    {i1, j1, k0, value + dist(i1, j1, k0)},
+    {i1, j1, k1, value + dist(i1, j1, k1)}
+  };
+
+  add_boundary_nodes(nodes, 8);
+}
+
+template <class Node>
+void marcher_3d<Node>::add_boundary_nodes(Node const * nodes, int n) {
+  Node const * node;
+  int i, j, k;
+
+  /**
+   * Add nodes to min-heap.
+   */
+  for (int l = 0; l < n; ++l) {
+    node = &nodes[l];
+    i = node->get_i();
+    j = node->get_j();
+    k = node->get_k();
+    assert(in_bounds(i, j, k));
+    assert(operator()(i, j, k).is_far());
+    operator()(i, j, k) = {i, j, k, node->get_value()};
+  }
+
+  /**
+   * Stage nodes' neighbors.
+   */
+  for (int l = 0; l < n; ++l) {
+    node = &nodes[k];
+    i = node->get_i();
+    j = node->get_j();
+    k = node->get_k();
+    stage_neighbors(&operator()(i, j, k));
+  }
 }
 
 template <class Node>

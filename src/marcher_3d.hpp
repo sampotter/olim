@@ -16,6 +16,8 @@ struct marcher_3d: public abstract_marcher
              std::unique_ptr<double[]> s_cache);
 
   void add_boundary_node(int i, int j, int k, double value = 0.0);
+  void add_boundary_node(double x, double y, double z, double value = 0.0);
+  void add_boundary_nodes(Node const * nodes, int num_nodes);
   double get_value(int i, int j, int k) const;
 
 protected:

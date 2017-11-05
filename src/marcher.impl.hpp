@@ -102,6 +102,9 @@ void marcher<Node>::add_boundary_nodes(Node const * nodes, int n) {
    * efficient for a large number of boundary nodes? (a guess)
    */
   for (int k = 0; k < n; ++k) {
+    node = &nodes[k];
+    i = node->get_i();
+    j = node->get_j();
     stage_neighbors(&operator()(i, j));
   }
 }

@@ -41,7 +41,9 @@ marcher_template = Template('''
       "y0"_a = 0.0)
     .def("run", &${cpp_class_name}::run)
     .def(
-      "addBoundaryNode", &${cpp_class_name}::add_boundary_node,
+      "addBoundaryNode",
+      py::overload_cast<int, int, double>(
+        &${cpp_class_name}::add_boundary_node),
       "i"_a,
       "j"_a,
       "value"_a = 0.0)

@@ -17,6 +17,8 @@ struct marcher: public abstract_marcher {
   marcher(int height, int width, double h, std::unique_ptr<double[]> S_values);
 
   void add_boundary_node(int i, int j, double value = 0.0);
+  void add_boundary_node(double i, double j, double value = 0.0);
+  void add_boundary_nodes(Node const * nodes, int num_nodes);
   Node * get_node_pointer() const { return _nodes; }
   double get_value(int i, int j) const;
   int get_height() const { return _height; }

@@ -43,11 +43,67 @@ marcher<Node>::marcher(int height, int width, double h,
   init();
 }
 
+/**
+ * TODO: this function is a little broken right now. If we remove the
+ * "is_far" assertion and allow the user to add boundary nodes
+ * wherever, then it's possible to invalidate the heap property in the
+ * underlying min-heap. One way to get this to happen is to add a
+ * boundary node and then add another boundary node which is adjacent
+ * to the node just added. This should be fixed, since there is a
+ * correct way to enable this behavior.
+ */
 template <class Node>
 void marcher<Node>::add_boundary_node(int i, int j, double value) {
   assert(in_bounds(i, j));
-  assert(operator()(i, j).is_far()); // TODO: for now---worried about heap
+  assert(operator()(i, j).is_far());
   stage_neighbors(&(operator()(i, j) = {i, j, value}));
+}
+
+template <class Node>
+void marcher<Node>::add_boundary_node(double x, double y, double value) {
+  auto const dist = [x, y] (int i, int j) -> double {
+    return std::sqrt(std::pow(i - y, 2) + std::pow(j - x, 2));
+  };
+
+  int i0 = floor(y), i1 = ceil(y);
+  int j0 = floor(x), j1 = ceil(x);
+
+  Node nodes[4] = {
+    {i0, j0, value + dist(i0, j0)},
+    {i0, j1, value + dist(i0, j1)},
+    {i1, j0, value + dist(i1, j0)},
+    {i1, j1, value + dist(i1, j1)}
+  };
+
+  add_boundary_nodes(nodes, 4);
+}
+
+template <class Node>
+void marcher<Node>::add_boundary_nodes(Node const * nodes, int n) {
+  Node const * node;
+  int i, j;
+
+  /**
+   * First, add the sequence of nodes to the grid.
+   */
+  for (int k = 0; k < n; ++k) {
+    node = &nodes[k];
+    i = node->get_i();
+    j = node->get_j();
+    assert(in_bounds(i, j));
+    assert(operator()(i, j).is_far());
+    operator()(i, j) = {i, j, node->get_value()};
+  }
+
+  /**
+   * Next, with the nodes added, update their neighbors---this is done
+   * in order to avoid breaking the heap property of the underlying
+   * min-heap. Batch adding of boundary nodes may also be more
+   * efficient for a large number of boundary nodes? (a guess)
+   */
+  for (int k = 0; k < n; ++k) {
+    stage_neighbors(&operator()(i, j));
+  }
 }
 
 template <class Node>

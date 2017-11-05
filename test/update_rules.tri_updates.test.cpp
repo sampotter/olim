@@ -66,8 +66,8 @@ void mp1_tri11_works() {
   }
   {
     u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.978772;
-    IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T);
-    IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T);
+    IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T, 1e-3);
+    IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T, 1e-3);
   }
 }
 

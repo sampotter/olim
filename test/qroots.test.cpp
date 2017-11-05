@@ -258,8 +258,8 @@ void qroots_works_2() {
   double roots[4] = {-1, -1, -1, -1};
   qroots(a, roots, 0, 1);
   IS_TRUE(num_roots(roots) == 2);
-  IS_TRUE(contains_root(roots, 0.432014));
-  IS_TRUE(contains_root(roots, 0.482802));
+  IS_TRUE(contains_root(roots, 0.432017, 1e-6));
+  IS_TRUE(contains_root(roots, 0.4828, 1e-5));
 }
 
 int main() {

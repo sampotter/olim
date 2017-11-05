@@ -232,11 +232,15 @@ void plane_boundaries_are_correct() {
   int n = 2;
   double h = 1;
   olim18_rhr m {n, n, n, h, default_speed_func_3d, 0, 0, 0};
-  for (int i = 0; i < 2; ++i) {
+
+  node_3d nodes[4];
+  for (int i = 0, k = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      m.add_boundary_node(i, j, 0);
+      nodes[k++] = node_3d {i, j, 0};
     }
   }
+  m.add_boundary_nodes(nodes, 4);
+
   m.run();
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {

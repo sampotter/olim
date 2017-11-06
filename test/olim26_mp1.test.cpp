@@ -9,4 +9,5 @@ int main() {
   quadrants_are_correct<olim3d>(sqrt(2));
   octants_are_correct<olim3d>(sqrt(2), sqrt(3));
   planes_are_correct<olim, olim3d>();
+  result_is_symmetric<olim3d>();
 }

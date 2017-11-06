@@ -12,4 +12,5 @@ int main() {
   quadrants_are_correct<olim3d>(1 + sqrt(2)/2);
   octants_are_correct<olim3d>(1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
   planes_are_correct<olim, olim3d>();
+  result_is_symmetric<olim3d>();
 }

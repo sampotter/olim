@@ -4,22 +4,6 @@
 #include "olim8.hpp"
 #include "olim26.hpp"
 
-void result_is_symmetric() {
-  int n = 7;
-  double x0 = (n - 1.0)/2.0, y0 = x0, z0 = x0;
-  olim26_rhr m {n, n, n, 1.0, default_speed_func_3d, x0, y0, z0};
-  m.add_boundary_node(n/2, n/2, n/2);
-  m.run();
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
-        IS_APPROX_EQUAL(m.get_value(i, j, k), m.get_value(i, j, k_));
-      }
-    }
-  }
-}
-
 void two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
@@ -87,7 +71,7 @@ int main() {
   quadrants_are_correct<olim3d>(sqrt(2));
   octants_are_correct<olim3d>(sqrt(2), sqrt(3));
   planes_are_correct<olim, olim3d>();
-  result_is_symmetric();
   two_by_two_by_three_cells_are_correct();
+  result_is_symmetric<olim3d>();
   plane_boundaries_are_correct();
 }

@@ -1,4 +1,4 @@
-function newton111mp1(u0, u1, u2, s0, s1, s2, h)
+function [U, lam1, lam2] = newton111mp1(u0, u1, u2, s0, s1, s2, h)
     if nargin < 1
         u0 = 0;
     end
@@ -38,6 +38,8 @@ function newton111mp1(u0, u1, u2, s0, s1, s2, h)
         x = X(k - 1, 1);
         y = X(k - 1, 2);
         p = H(x, y)\g(x, y);
+        fprintf('k = %d\n', k);
+        fprintf('%0.16g\n', [x y p' g(x, y)']);
         X(k, :) = [x; y] - p;
         E(k - 1) = norm(p, 'inf')/norm(X(k, :), 'inf');
         if E(k - 1) < 1e-15
@@ -48,6 +50,13 @@ function newton111mp1(u0, u1, u2, s0, s1, s2, h)
         E(length(E)) = eps;
     end
     
+    lam1 = X(size(X, 1), 1);
+    lam2 = X(size(X, 1), 2);
+    lam0 = 1 - lam1 - lam2;
+    U = lam0*u0 + lam1*u1 + lam2*u2 + h*(lam0*s0 + lam1*s1 + lam2*s2)*l(lam1, lam2);
+
+    % Plotting:
+
     lin = linspace(-0.1, 1.1, 121);
     [x y] = meshgrid(lin, lin);
     F = (1 - x - y)*u0 + x*u1 + y*u2 + h*s(x, y).*l(x, y);

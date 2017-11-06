@@ -299,7 +299,7 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
 
   auto const Q = [] (double lam1, double lam2) {
     return F + E1*lam1 + E2*lam2 + lam1*(E1 + M11*lam1 + M12*lam2) +
-    lam2*(E2 + M12*lam1 + M22*lam2);
+      lam2*(E2 + M12*lam1 + M22*lam2);
   };
 
   auto const g = [&] (double lam1, double lam2, double & g1, double & g2) {

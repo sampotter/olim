@@ -169,7 +169,18 @@ void qroots(double const * a, double * roots, double l, double r) {
 
   int root = 0;
 
-  assert(degree > 1);
+  /**
+   * TODO: should we do something special if a[i] ~= 0 for each i?
+   */
+  if (degree == 0) {
+    return;
+  }
+
+  /**
+   * TODO: this may happen---this is just a placeholder until we
+   * "trip" this eventually.
+   */
+  assert(degree != 1);
 
   if (degree == 2) {
     double disc = a[1]*a[1] - 4*a[2]*a[0];

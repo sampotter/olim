@@ -14,4 +14,5 @@ int main() {
   planes_are_correct<olim, olim3d>();
   two_by_two_by_three_cells_are_correct<olim3d>();
   result_is_symmetric<olim3d>();
+  plane_boundaries_are_correct<olim3d>();
 }

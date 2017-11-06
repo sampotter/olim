@@ -250,6 +250,26 @@ void two_by_two_by_three_cells_are_correct() {
   }
 }
 
+template <class olim3d>
+void plane_boundaries_are_correct() {
+  int n = 2;
+  double h = 1;
+  olim3d m {n, n, n, h, default_speed_func_3d, 0, 0, 0};
 
+  typename olim3d::node_type nodes[4];
+  for (int i = 0, k = 0; i < 2; ++i) {
+    for (int j = 0; j < 2; ++j) {
+      nodes[k++] = typename olim3d::node_type {i, j, 0};
+    }
+  }
+  m.add_boundary_nodes(nodes, 4);
+
+  m.run();
+  for (int i = 0; i < 2; ++i) {
+    for (int j = 0; j < 2; ++j) {
+      IS_APPROX_EQUAL(m.get_value(i, j, 1), 1.0);
+    }
+  }
+}
 
 #endif // __OLIM_TEST_COMMON_HPP__

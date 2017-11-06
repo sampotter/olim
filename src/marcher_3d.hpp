@@ -8,6 +8,8 @@
 template <class Node>
 struct marcher_3d: public abstract_marcher
 {
+  using node_type = Node;
+
   marcher_3d(
     int height, int width, int depth, double h = 1,
     std::function<double(double, double, double)> speed = default_speed_func_3d,

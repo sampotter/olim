@@ -2,28 +2,6 @@
 #include "olim8.hpp"
 #include "olim18.hpp"
 
-void planes_are_correct() {
-  int n = 11;
-  double h = 1.0/(n/2);
-  
-  olim8_rhr m8 {n, n, h, default_speed_func, 1, 1};
-  m8.add_boundary_node(n/2, n/2);
-  m8.run();
-  
-  olim18_rhr m18 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
-  m18.add_boundary_node(n/2, n/2, n/2);
-  m18.run();
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      double m8value = m8.get_value(i, j);
-      IS_APPROX_EQUAL(m8value, m18.get_value(i, j, n/2));
-      IS_APPROX_EQUAL(m8value, m18.get_value(i, n/2, j));
-      IS_APPROX_EQUAL(m8value, m18.get_value(n/2, i, j));
-    }
-  }
-}
-
 void result_is_symmetric() {
   int n = 11;
   olim18_rhr m {n, n, n, 1.0, default_speed_func_3d, 1.0, 1.0, 1.0};
@@ -101,8 +79,8 @@ void plane_boundaries_are_correct() {
 
 int main() {
   quadrants_are_correct<olim18_rhr>(sqrt(2));
-  octants_are_correct<olim18_mp0>(sqrt(2), 1.0 + 2/sqrt(3));
-  planes_are_correct();
+  octants_are_correct<olim18_rhr>(sqrt(2), 1.0 + 2/sqrt(3));
+  planes_are_correct<olim8_rhr, olim18_rhr>();
   result_is_symmetric();
   two_by_two_by_three_cells_are_correct();
   plane_boundaries_are_correct();

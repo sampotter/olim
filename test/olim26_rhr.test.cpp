@@ -4,59 +4,6 @@
 #include "olim8.hpp"
 #include "olim26.hpp"
 
-void planes_are_correct() {
-  int n = 3;
-  double h = 1.0/(n/2);
-  
-  olim8_rhr m8 {n, n, h, default_speed_func, 1, 1};
-  m8.add_boundary_node(n/2, n/2);
-  m8.run();
-  
-  olim26_rhr m26 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
-  m26.add_boundary_node(n/2, n/2, n/2);
-  m26.run();
-
-  /**
-   * Tests for quadrants in the y-z plane:
-   */
-  {
-    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), sqrt(2));
-  }
-  {
-    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
-    m.add_boundary_node(0, 1, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), sqrt(2));
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
-  }
-  {
-    olim26_rhr m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
-    m.add_boundary_node(0, 0, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), sqrt(2));
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
-  }
-  {
-    olim26_rhr m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
-    m.add_boundary_node(0, 1, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), sqrt(2));
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 0.0);
-  }
-}
-
 void result_is_symmetric() {
   int n = 7;
   double x0 = (n - 1.0)/2.0, y0 = x0, z0 = x0;
@@ -136,7 +83,7 @@ void plane_boundaries_are_correct() {
 int main() {
   quadrants_are_correct<olim26_rhr>(sqrt(2));
   octants_are_correct<olim26_rhr>(sqrt(2), sqrt(3));
-  planes_are_correct();
+  planes_are_correct<olim8_rhr, olim26_rhr>();
   result_is_symmetric();
   two_by_two_by_three_cells_are_correct();
   plane_boundaries_are_correct();

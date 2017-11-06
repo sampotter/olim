@@ -3,29 +3,6 @@
 #include "olim.test.common.hpp"
 #include "test.hpp"
 
-void planes_are_correct() {
-  int n = 11;
-  double h = 1.0/(n/2);
-  
-  basic_marcher m {n, n, h, default_speed_func, 1, 1};
-  m.add_boundary_node(n/2, n/2);
-  m.run();
-  
-  basic_marcher_3d m3d {n, n, n, h, default_speed_func_3d, 1, 1, 1};
-  m3d.add_boundary_node(n/2, n/2, n/2);
-  m3d.run();
-
-  // Check that planes are correct:
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      double mvalue = m.get_value(i, j);
-      IS_APPROX_EQUAL(mvalue, m3d.get_value(i, j, n/2));
-      IS_APPROX_EQUAL(mvalue, m3d.get_value(i, n/2, j));
-      IS_APPROX_EQUAL(mvalue, m3d.get_value(n/2, i, j));
-    }
-  }
-}
-
 void result_is_symmetric() {
   int n = 5;
   basic_marcher_3d m {n, n, n, 1.0, default_speed_func_3d, 1.0, 1.0, 1.0};
@@ -121,7 +98,7 @@ int main() {
   quadrants_are_correct<basic_marcher_3d>(1.0 + sqrt(2)/2);
   octants_are_correct<basic_marcher_3d>(
     1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
-  planes_are_correct();
+  planes_are_correct<basic_marcher, basic_marcher_3d>();
   result_is_symmetric();
   two_by_two_by_three_cells_are_correct();
   plane_boundaries_are_correct();

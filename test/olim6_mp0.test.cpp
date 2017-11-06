@@ -61,8 +61,7 @@ void result_is_symmetric() {
 
 int main() {
   quadrants_are_correct<olim6_mp0>(1 + sqrt(2)/2);
-  octants_are_correct<basic_marcher_3d>(
-    1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
-  planes_are_correct();
+  octants_are_correct<olim6_mp0>(1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
+  planes_are_correct<olim4_mp0, olim6_mp0>();
   result_is_symmetric();
 }

@@ -309,8 +309,8 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     g2 = du2 + h*(l*ds2 + ratio*(M12*lam1 + M22*lam2 + E2));
   };
 
-  auto const H = [&] (double lam1, double lam2, double & h11, double & h12,
-                      double & h21, double & h22) {
+  auto const H = [&] (double lam1, double lam2,
+                      double & h11, double & h12, double & h22) {
     double l = len(lam1, lam2);
     double slam_ = slam(lam1, lam2);
     double ratio = slam_/(2*Q(lam1, lam2));
@@ -319,22 +319,24 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     double b1 = ds1 - ratio*a1;
     double b2 = ds2 - ratio*a2;
 
-    h11 = h*(a1*b1 + slam_*2)/l;
-    h12 = h*(a2*b1 + slam_*1)/l;
-    h21 = h*(a1*b2 + slam_*1)/l;
-    h22 = h*(a2*b2 + slam_*2)/l;
+    h11 = h*(a1*b1 + slam_*M11)/l;
+    h12 = h*(a2*b1 + slam_*M12)/l;
+    h22 = h*(a2*b2 + slam_*M22)/l;
   };
 
-  double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h21, h22, det, p1, p2;
+  double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h22, det, p1, p2;
   do {
     g(lam1, lam2, g1, g2);
-    H(lam1, lam2, h11, h12, h21, h22);
-    det = h11*h22 - h12*h21;
-    p1 = (h22*g1 - h21*g2)/det;
-    p2 = (h11*g1 - h12*g2)/det;
+    H(lam1, lam2, h11, h12, h22);
+    det = h11*h22 - h12*h12;
+    p1 = ( h22*g1 - h12*g2)/det;
+    p2 = (-h12*g1 + h11*g2)/det;
     lam1 -= p1;
     lam2 -= p2;
-  } while (max(p1, p2)/max(lam1, lam2) > 1e-15);
+    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+      return INF(double);
+    }
+  } while (max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2)) > 1e-15);
 
   double lam0 = 1 - lam1 - lam2;
   double ulam = lam0*u0 + lam1*u1 + lam2*u2;

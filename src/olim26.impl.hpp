@@ -196,8 +196,3 @@ void olim26<node, line_updates, tri_updates, tetra_updates>::update_impl(
 }
 
 #endif // __OLIM26_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

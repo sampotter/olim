@@ -13,8 +13,3 @@ private:
 };
 
 #endif // __GRAPH_NODE_HPP_
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

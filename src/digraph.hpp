@@ -15,8 +15,3 @@ private:
 #include "digraph.impl.hpp"
 
 #endif // __DIGRAPH_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

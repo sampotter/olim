@@ -103,8 +103,3 @@
   } while (0)
 
 #endif // __OLIM_MACROS_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

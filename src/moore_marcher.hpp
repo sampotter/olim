@@ -17,8 +17,3 @@ private:
 #include "moore_marcher.impl.hpp"
 
 #endif // __MOORE_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

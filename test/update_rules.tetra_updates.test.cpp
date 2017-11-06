@@ -129,8 +129,3 @@ int main() {
   tetra222_is_symmetric();
   tetra222_works();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

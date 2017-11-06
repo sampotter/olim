@@ -34,8 +34,3 @@ using olim4_rhr = olim4<
 #include "olim4.impl.hpp"
 
 #endif // __OLIM4_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

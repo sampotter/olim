@@ -56,8 +56,3 @@ void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
     if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

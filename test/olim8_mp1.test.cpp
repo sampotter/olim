@@ -128,8 +128,3 @@ int main() {
   s3_test();
   s_test(s7, f7, 513);
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

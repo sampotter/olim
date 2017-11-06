@@ -19,8 +19,3 @@
 #define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
 
 #endif // __COMMON_MACROS_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

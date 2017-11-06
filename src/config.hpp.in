@@ -6,7 +6,3 @@
 #ifdef EIKONAL_DEBUG
 #cmakedefine PRINT_UPDATES @PRINT_UPDATES@
 #endif
-
-// Local Variables:
-// indent-tabs-mode: nil
-// End:

@@ -258,8 +258,3 @@ void olim18_rect<node, line_updates, tri_updates, tetra_updates>::do_tri22_updat
 }
 
 #endif // __OLIM18_RECT_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

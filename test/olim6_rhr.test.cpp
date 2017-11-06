@@ -382,8 +382,3 @@ int main() {
   agrees_with_basic_marcher_3d_for_nontrivial_speed_function();
   plane_boundaries_are_correct();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

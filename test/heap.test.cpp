@@ -61,8 +61,3 @@ int main() {
   insert_works();
   swim_works();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

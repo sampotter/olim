@@ -175,8 +175,3 @@ void marcher<Node>::init() {
 }
 
 #endif // __MARCHER_IMPL_HPP_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

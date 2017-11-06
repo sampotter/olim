@@ -93,8 +93,3 @@ double rhr_diag(double u0, double u1, double s, double h) {
   double lam = std::max(0.0, std::min(1.0, sgn*c/sqrt(1 - c*c)));
   return (1 - lam)*u0 + lam*u1 + sh*sqrt(lam*lam + 1);
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -17,8 +17,3 @@ private:
 #include "neumann_marcher.impl.hpp"
 
 #endif // __NEUMANN_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -187,8 +187,3 @@ bool heap<Node>::has_heap_prop_impl(int pos) const {
 #undef VALUE
 
 #endif // __HEAP_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

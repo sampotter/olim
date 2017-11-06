@@ -32,8 +32,3 @@ void abstract_marcher::adjust_heap_entry(abstract_node * n) {
 void abstract_marcher::insert_into_heap(abstract_node * n) {
   _heap.insert(n);
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

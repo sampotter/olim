@@ -84,8 +84,3 @@ using olim8lut_rhr = olim8lut<
 #include "olim8.impl.hpp"
 
 #endif // __OLIM8_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

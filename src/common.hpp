@@ -7,8 +7,3 @@ namespace eikonal {
 }
 
 #endif // __COMMON_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

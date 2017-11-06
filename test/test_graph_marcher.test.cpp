@@ -54,8 +54,3 @@ int main() {
 
   printf("maxerr = %g\n", maxerr);
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

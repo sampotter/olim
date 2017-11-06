@@ -65,8 +65,3 @@ namespace test {
 }
 
 #endif // __TEST_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

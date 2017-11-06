@@ -16,8 +16,3 @@ private:
 };
 
 #endif // __NODE_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

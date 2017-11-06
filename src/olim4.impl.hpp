@@ -33,8 +33,3 @@ void olim4<line_updates, tri_updates>::update_impl(int i, int j, double & T) {
 }
 
 #endif // __OLIM4_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

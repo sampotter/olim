@@ -273,8 +273,3 @@ int main() {
   qroots_works_1();
   qroots_works_2();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -187,8 +187,3 @@ void marcher_3d<Node>::init() {
 }
 
 #endif // __MARCHER_3D_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

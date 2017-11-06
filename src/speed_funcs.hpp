@@ -32,8 +32,3 @@ double s7(double x, double y);
 double f7(double x, double y);
 
 #endif // __SPEED_FUNCS_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

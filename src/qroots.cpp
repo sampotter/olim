@@ -239,8 +239,3 @@ void qroots(double const * a, double * roots, double l, double r) {
     }
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

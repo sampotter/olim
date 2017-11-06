@@ -34,8 +34,3 @@ namespace update_rules {
 #include "update_rules.tetra_updates.impl.hpp"
 
 #endif // __UPDATE_RULES_TETRA_UPDATES_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -33,8 +33,3 @@ tri_neighbors::iterator end() {
 }
 
 #endif // __TRI_MARCHER_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

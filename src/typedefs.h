@@ -25,8 +25,3 @@ typedef double(* speed_func)(double, double);
 typedef double(* speed_func_3d)(double, double, double);
 
 #endif // __TYPEDEFS_H__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

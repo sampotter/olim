@@ -81,8 +81,3 @@ int main() {
   rhr_tri23_works();
   mp1_tri11_works();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

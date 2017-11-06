@@ -11,8 +11,3 @@ namespace olim18 {
 }
 
 #endif // __OLIM6_DEFS_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

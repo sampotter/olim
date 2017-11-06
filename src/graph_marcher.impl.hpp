@@ -48,8 +48,3 @@ void graph_marcher<Node, Neighbors>::stage_neighbors_impl(abstract_node * node) 
 }
 
 #endif // __GRAPH_MARCHER_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

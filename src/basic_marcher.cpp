@@ -29,8 +29,3 @@ void basic_marcher::update_impl(int i, int j, double & T) {
     assert(false);
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

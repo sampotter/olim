@@ -36,8 +36,3 @@ struct mp_speed_estimator {
 };
 
 #endif // __SPEED_ESTIMATORS_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

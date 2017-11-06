@@ -12,8 +12,3 @@ void fmm3d(double * out, bool * in, int* dims, double h, double * S,
            marcher_type type);
 
 #endif // __FMM_H__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

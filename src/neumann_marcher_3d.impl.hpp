@@ -55,8 +55,3 @@ void neumann_marcher_3d<Node>::get_valid_neighbors(int i, int j, int k,
 }
 
 #endif // __NEUMANN_MARCHER_3D_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

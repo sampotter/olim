@@ -49,8 +49,3 @@ void olim6<line_updates, tri_updates, tetra_updates>::update_impl(
 }
 
 #endif // __OLIM6_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

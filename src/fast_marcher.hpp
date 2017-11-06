@@ -9,8 +9,3 @@ struct fast_marcher: public marcher<node> {
 };
 
 #endif // __FAST_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -56,8 +56,3 @@ using olim18_rhr = olim18_rect<
 #include "olim18.impl.hpp"
 
 #endif // __OLIM18_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

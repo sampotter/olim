@@ -21,8 +21,3 @@ digraph<Vertex, Neighbors>::get_neighbors(Vertex const & v) const {
 }
 
 #endif // __DIGRAPH_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

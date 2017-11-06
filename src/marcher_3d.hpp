@@ -46,8 +46,3 @@ private:
 #include "marcher_3d.impl.hpp"
 
 #endif // __MARCHER_3D_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

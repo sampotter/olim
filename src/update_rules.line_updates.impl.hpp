@@ -92,8 +92,3 @@ namespace update_rules {
 }
 
 #endif // __UPDATE_RULES_LINE_UPDATES_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

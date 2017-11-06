@@ -136,8 +136,3 @@ void fmm3d(double * out, bool * in, int * dims, double h, double * S,
     }
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

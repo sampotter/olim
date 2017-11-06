@@ -95,8 +95,3 @@ void test_graph_marcher::update_impl(graph_node * node, double & T) {
     assert(false);
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

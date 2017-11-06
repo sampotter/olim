@@ -97,8 +97,3 @@ int main() {
   slightly_more_involved();
   slightly_more_involved_2();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

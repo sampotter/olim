@@ -411,8 +411,3 @@ void mexFunction(int nlhs, mxArray * plhs[], int nrhs, mxArray const * prhs[]) {
     mexErrMsgTxt("Boundary array must be either 2D or 3D.");
   }
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

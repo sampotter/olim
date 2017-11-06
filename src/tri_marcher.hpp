@@ -28,8 +28,3 @@ struct tri_marcher: public graph_marcher<graph_node, tri_neighbors> {
 #include "tri_marcher.impl.hpp"
 
 #endif // __TRI_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

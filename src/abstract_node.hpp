@@ -25,8 +25,3 @@ protected:
 };
 
 #endif // __ABSTRACT_NODE_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

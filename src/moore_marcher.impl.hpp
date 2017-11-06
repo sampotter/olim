@@ -42,8 +42,3 @@ void moore_marcher<Node>::get_valid_neighbors(int i, int j,
 }
 
 #endif // __MOORE_MARCHER_IMPL_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

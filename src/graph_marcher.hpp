@@ -34,8 +34,3 @@ private:
 #include "graph_marcher.impl.hpp"
 
 #endif // __GRAPH_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

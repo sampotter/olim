@@ -93,8 +93,3 @@ int main() {
   sf1_single_row_test();
   sf1_test();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

@@ -17,8 +17,3 @@ struct smart_neumann_marcher: public neumann_marcher<smart_node> {
 };
 
 #endif // __SMART_NEUMANN_MARCHER_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

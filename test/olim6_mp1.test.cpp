@@ -30,8 +30,3 @@ void planes_are_correct() {
 int main() {
   planes_are_correct();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

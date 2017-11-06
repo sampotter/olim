@@ -257,8 +257,3 @@ int main() {
   two_by_two_by_three_cells_are_correct();
   plane_boundaries_are_correct();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

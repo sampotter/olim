@@ -16,8 +16,3 @@ namespace update_rules {
 #include "update_rules.line_updates.impl.hpp"
 
 #endif // __UPDATE_RULES_LINE_UPDATES_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

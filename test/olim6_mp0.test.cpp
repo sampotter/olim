@@ -62,9 +62,3 @@ int main() {
   planes_are_correct();
   result_is_symmetric();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:
-

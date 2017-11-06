@@ -119,11 +119,6 @@ PYBIND11_MODULE(eikonal, m) {
         src_txt += marcher3d_template.substitute(
             cpp_class_name=k, py_class_name=v)
     src_txt += '''}
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:
 '''
     return src_txt
 

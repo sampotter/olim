@@ -102,8 +102,3 @@ double f7(double x, double y) {
   x = x - 0.900367222589747;
   return (y*y + std::pow(x + cos((x + y)/2), 2))/2;
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

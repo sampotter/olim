@@ -53,8 +53,3 @@ int main() {
   neighboring_values_are_correct();
   rectangular_domain_works();
 }
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

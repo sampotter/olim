@@ -42,8 +42,3 @@ using olim6_rhr = olim6<
 #include "olim6.impl.hpp"
 
 #endif // __OLIM6_HPP_HPP__
-
-// Local Variables:
-// indent-tabs-mode: nil
-// c-basic-offset: 2
-// End:

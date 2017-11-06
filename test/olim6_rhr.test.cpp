@@ -195,10 +195,13 @@ void plane_boundaries_are_correct() {
 }
 
 int main() {
-  quadrants_are_correct<olim6_rhr>(1 + sqrt(2)/2);
-  octants_are_correct<olim6_rhr>(
+  using olim = olim4_rhr;
+  using olim3d = olim6_rhr;
+
+  quadrants_are_correct<olim3d>(1 + sqrt(2)/2);
+  octants_are_correct<olim3d>(
     1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
-  planes_are_correct<olim4_rhr, olim6_rhr>();
+  planes_are_correct<olim, olim3d>();
   planes_are_correct_for_nontrivial_speed_function();
   result_is_symmetric();
   result_is_symmetric_for_nontrivial_speed_function();

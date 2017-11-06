@@ -10,8 +10,14 @@
   - [X] fix broken tests
   - [X] file local -> dir local
   - [ ] speed func test
-  - [ ] templatize tests and add more
+  - [X] templatize tests
+  - [ ] make arbitrary speed function versions of templatized tests
+  - [ ] loop over speed functions
+  - [ ] "using" variables for olim & olim3d parameters to template functions
+  - [ ] add olim4_mp1 tests
   - [ ] add tests for new mp1 stuff
+  - [ ] add 2d templatized test stuff
+  - [ ] fix line num info in templatized tests (get it back)
   - [ ] speed_func -> scalar_field
   - [ ] olim_util.hpp -> olim_debug.hpp (or something)
   - [ ] add "exact" Newton for OLIM6/18

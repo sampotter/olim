@@ -103,6 +103,20 @@ void s3_test() {
   }
 }
 
+void s_test(speed_func s, speed_func f, int n = 11) {
+  double h = 1.0/(n - 1);
+  olim8_mp1 m {n, n, h, s};
+  m.add_boundary_node(0, 0);
+  m.run();
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      double U = m.get_value(i, j);
+      double u = f(h*j, h*i);
+      IS_APPROX_EQUAL(u, U, 1e-1);
+    }
+  }
+}
+
 int main() {
   trivial_case_works();
   adjacent_update_works();
@@ -112,6 +126,7 @@ int main() {
   s1_test();
   s2_test();
   s3_test();
+  s_test(s7, f7, 513);
 }
 
 // Local Variables:

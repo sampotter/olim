@@ -182,8 +182,6 @@ void qroots(double const * a, double * roots, double l, double r) {
     return;
   }
 
-  assert(degree != 3);
-
   // Compute Sturm sequence for applying Sturm's theorem.
   // TODO: are there other, simpler Sturm sequences that we can use instead?
   // TODO: simplify arithmetic (low priority)

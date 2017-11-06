@@ -306,7 +306,7 @@ void two_by_two_by_three_cells_are_correct() {
 }
 
 void agrees_with_basic_marcher_3d() {
-  int n = 21;
+  int n = 11;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
@@ -328,7 +328,7 @@ void agrees_with_basic_marcher_3d() {
 }
 
 void agrees_with_basic_marcher_3d_for_nontrivial_speed_function() {
-  int n = 15;
+  int n = 11;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 

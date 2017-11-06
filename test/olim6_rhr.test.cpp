@@ -5,34 +5,6 @@
 #include "olim4.hpp"
 #include "olim6.hpp"
 
-void octants_are_correct() {
-  int n = 2;
-  double h = 1;
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 2; ++j) {
-      for (int k = 0; k < 2; ++k) {
-        double x0 = j, y0 = i, z0 = k;
-        olim6_rhr m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
-        m.add_boundary_node(i, j, k);
-        m.run();
-        IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
-        IS_APPROX_EQUAL(
-          m.get_value((i + 1) % 2, (j + 1) % 2, k), 1.0 + sqrt(2)/2.0);
-        IS_APPROX_EQUAL(
-          m.get_value((i + 1) % 2, j, (k + 1) % 2), 1.0 + sqrt(2)/2.0);
-        IS_APPROX_EQUAL(
-          m.get_value(i, (j + 1) % 2, (k + 1) % 2), 1.0 + sqrt(2)/2.0);
-        IS_APPROX_EQUAL(
-          m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),
-          1.0 + sqrt(2)/2.0 + sqrt(3)/3.0);
-      }
-    }
-  }
-}
-
 void planes_are_correct() {
   int n = 11;
   double h = 1.0/(n/2);
@@ -247,7 +219,8 @@ void plane_boundaries_are_correct() {
 
 int main() {
   quadrants_are_correct<olim6_rhr>(1 + sqrt(2)/2);
-  octants_are_correct();
+  octants_are_correct<basic_marcher_3d>(
+    1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
   planes_are_correct();
   planes_are_correct_for_nontrivial_speed_function();
   result_is_symmetric();

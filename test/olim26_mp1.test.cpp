@@ -3,4 +3,5 @@
 
 int main() {
   quadrants_are_correct<olim26_mp1>(sqrt(2));
+  octants_are_correct<olim26_mp0>(sqrt(2), sqrt(3));
 }

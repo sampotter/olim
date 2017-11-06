@@ -4,30 +4,6 @@
 #include "olim8.hpp"
 #include "olim26.hpp"
 
-void two_by_two_by_two_octants_are_correct() {
-  int n = 2;
-  double h = 1;
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 2; ++j) {
-      for (int k = 0; k < 2; ++k) {
-        double x0 = j, y0 = i, z0 = k;
-        olim26_rhr m {n, n, n, h, default_speed_func_3d, x0, y0, z0};
-        m.add_boundary_node(i, j, k);
-        m.run();
-        IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, (j + 1) % 2, k), sqrt(2));
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, (k + 1) % 2), sqrt(2));
-        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, (k + 1) % 2), sqrt(2));
-        IS_APPROX_EQUAL(
-          m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2), sqrt(3));
-      }
-    }
-  }
-}
-
 void planes_are_correct() {
   int n = 3;
   double h = 1.0/(n/2);
@@ -159,7 +135,7 @@ void plane_boundaries_are_correct() {
 
 int main() {
   quadrants_are_correct<olim26_rhr>(sqrt(2));
-  two_by_two_by_two_octants_are_correct();
+  octants_are_correct<olim26_rhr>(sqrt(2), sqrt(3));
   planes_are_correct();
   result_is_symmetric();
   two_by_two_by_three_cells_are_correct();

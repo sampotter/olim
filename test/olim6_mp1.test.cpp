@@ -30,5 +30,7 @@ void planes_are_correct() {
 
 int main() {
   quadrants_are_correct<olim6_mp1>(1 + sqrt(2)/2);
+  octants_are_correct<basic_marcher_3d>(
+    1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
   planes_are_correct();
 }

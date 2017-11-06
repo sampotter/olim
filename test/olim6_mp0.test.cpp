@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include "basic_marcher_3d.hpp"
+#include "olim.test.common.hpp"
 #include "olim4.hpp"
 #include "olim6.hpp"
 
@@ -59,6 +60,7 @@ void result_is_symmetric() {
 }
 
 int main() {
+  quadrants_are_correct<olim6_mp0>(1 + sqrt(2)/2);
   planes_are_correct();
   result_is_symmetric();
 }

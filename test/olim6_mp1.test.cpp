@@ -1,6 +1,7 @@
 #include "test.hpp"
 
 #include "basic_marcher_3d.hpp"
+#include "olim.test.common.hpp"
 #include "olim4.hpp"
 #include "olim6.hpp"
 
@@ -28,5 +29,6 @@ void planes_are_correct() {
 }
 
 int main() {
+  quadrants_are_correct<olim6_mp1>(1 + sqrt(2)/2);
   planes_are_correct();
 }

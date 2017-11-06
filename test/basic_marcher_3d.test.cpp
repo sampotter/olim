@@ -1,131 +1,7 @@
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"
+#include "olim.test.common.hpp"
 #include "test.hpp"
-
-void quadrants_are_correct() {
-  int n = 2;
-  double h = 1;
-
-  /*
-   * Tests for quadrants in the x-y plane:
-   */
-  {
-    basic_marcher_3d m {n, n, 1, h, default_speed_func_3d, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0 + sqrt(2)/2.0);
-  }
-  {
-    basic_marcher_3d m {n, n, 1, h, default_speed_func_3d, 1, 0, 0};
-    m.add_boundary_node(0, 1, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
-  }
-  {
-    basic_marcher_3d m {n, n, 1, h, default_speed_func_3d, 0, 1, 0};
-    m.add_boundary_node(1, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
-  }
-  {
-    basic_marcher_3d m {n, n, 1, h, default_speed_func_3d, 1, 1, 0};
-    m.add_boundary_node(1, 1, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 0.0);
-  }
-
-  /**
-   * Tests for quadrants in the x-z plane:
-   */
-  {
-    basic_marcher_3d m {n, 1, n, h, default_speed_func_3d, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0 + sqrt(2)/2.0);
-  }
-  {
-    basic_marcher_3d m {n, 1, n, h, default_speed_func_3d, 0, 1, 0};
-    m.add_boundary_node(1, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
-  }
-  {
-    basic_marcher_3d m {n, 1, n, h, default_speed_func_3d, 0, 0, 1};
-    m.add_boundary_node(0, 0, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
-  }
-  {
-    basic_marcher_3d m {n, 1, n, h, default_speed_func_3d, 0, 1, 1};
-    m.add_boundary_node(1, 0, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 0.0);
-  }
-
-  /**
-   * Tests for quadrants in the y-z plane:
-   */
-  {
-    basic_marcher_3d m {1, n, n, h, default_speed_func_3d, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0 + sqrt(2)/2.0);
-  }
-  {
-    basic_marcher_3d m {1, n, n, h, default_speed_func_3d, 1, 0, 0};
-    m.add_boundary_node(0, 1, 0);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
-  }
-  {
-    basic_marcher_3d m {1, n, n, h, default_speed_func_3d, 0, 0, 1};
-    m.add_boundary_node(0, 0, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
-  }
-  {
-    basic_marcher_3d m {1, n, n, h, default_speed_func_3d, 1, 0, 1};
-    m.add_boundary_node(0, 1, 1);
-    m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0 + sqrt(2)/2.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 0.0);
-  }
-}
 
 void octants_are_correct() {
   int n = 2;
@@ -270,7 +146,7 @@ void plane_boundaries_are_correct() {
 }
 
 int main() {
-  quadrants_are_correct();
+  quadrants_are_correct<basic_marcher_3d>(1.0 + sqrt(2)/2);
   octants_are_correct();
   planes_are_correct();
   result_is_symmetric();

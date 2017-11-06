@@ -97,7 +97,11 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	olim8_mp0
 	olim8_mp1
 	olim8_rhr
+    olim18_mp0
+    olim18_mp1
 	olim18_rhr
+    olim26_mp0
+    olim26_mp1
 	olim26_rhr
 	qroots
 	test_graph_marcher

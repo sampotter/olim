@@ -8,6 +8,9 @@
 * Collected from <2017-10-23 Mon>
   - [X] get qroots tests working...
   - [X] fix broken tests
+  - [X] file local -> dir local
+  - [ ] speed func test
+  - [ ] templatize tests and add more
   - [ ] add tests for new mp1 stuff
   - [ ] speed_func -> scalar_field
   - [ ] olim_util.hpp -> olim_debug.hpp (or something)

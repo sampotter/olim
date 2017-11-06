@@ -49,9 +49,9 @@ namespace test {
       return;
     }
 
-    T const val = std::max(
-      std::fabs(t - t_hat)/std::fabs(t),
-      std::fabs(t_hat - t)/std::fabs(t_hat));
+    T const absdiff = std::fabs(t - t_hat);
+    T const val = t == 0 || t_hat == 0 ? absdiff :
+      std::max(absdiff/std::fabs(t), absdiff/std::fabs(t_hat));
 
     if (std::isnan(val)) {
       fprintf(stdout, "failure (%s:%d): |%g - %g| == %g > %g\n",

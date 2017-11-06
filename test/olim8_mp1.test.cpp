@@ -126,5 +126,5 @@ int main() {
   s1_test();
   s2_test();
   s3_test();
-  s_test(s7, f7, 513);
+  s_test(s7, f7);
 }

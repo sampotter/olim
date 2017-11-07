@@ -287,6 +287,7 @@ template <int M11, int M12, int M22, int E1, int E2, int F>
 inline double mp1_newton(double u0, double u1, double u2, double s,
                          double s0, double s1, double s2, double h,
                          double (* len)(double, double))
+// TODO: remove len fp and use sqrt(Q)
 {
   using std::max;
 
@@ -324,8 +325,18 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     h22 = h*(a2*b2 + slam_*M22)/l;
   };
 
-  double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h22, det, p1, p2;
+  auto const f = [&] (double lam1, double lam2) {
+    double lam0 = 1 - lam1 - lam2;
+    double ulam = lam0*u0 + lam1*u1 + lam2*u2;
+    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2, sbar2 = (s + s2)/2;
+    double sh = (lam0*sbar0 + lam1*sbar1 + lam2*sbar2)*h;
+    return ulam + sh*len(lam1, lam2);
+  };
+
+  double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h22, det, p1, p2,
+    f0, f1 = f(lam1, lam2);
   do {
+    f0 = f1;
     g(lam1, lam2, g1, g2);
     H(lam1, lam2, h11, h12, h22);
     det = h11*h22 - h12*h12;
@@ -336,13 +347,11 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
       return INF(double);
     }
-  } while (max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2)) > 1e-15);
+    f1 = f(lam1, lam2);
+  } while (max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2)) > EPS(double) &&
+           fabs(f1 - f0) > EPS(double));
 
-  double lam0 = 1 - lam1 - lam2;
-  double ulam = lam0*u0 + lam1*u1 + lam2*u2;
-  double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2, sbar2 = (s + s2)/2;
-  double sh = (lam0*sbar0 + lam1*sbar1 + lam2*sbar2)*h;
-  return ulam + sh*len(lam1, lam2);
+  return f1;
 }
 
 namespace update_rules {

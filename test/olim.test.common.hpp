@@ -1,6 +1,8 @@
 #ifndef __OLIM_TEST_COMMON_HPP__
 #define __OLIM_TEST_COMMON_HPP__
 
+#include <cassert>
+
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
@@ -157,7 +159,9 @@ void octants_are_correct(double diag2val, double diag3val) {
 
 template <class olim, class olim3d>
 void planes_are_correct(int n = 11) {
-  double h = 2.0/n;
+  assert(n % 2 == 1);
+
+  double h = 2.0/(n - 1);
   
   olim m {n, n, h, default_speed_func, 1, 1};
   m.add_boundary_node(n/2, n/2);

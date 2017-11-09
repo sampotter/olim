@@ -255,6 +255,50 @@ namespace update_rules {
     return T;
   }
 
+  template <int A, int B, int C>
+  inline double mp1_tri_newton(double u0, double u1, double s, double s0,
+                               double s1, double h) {
+    double const sbar0 = (s + s0)/2;
+    double const sbar1 = (s + s1)/2;
+
+    auto const u = [&] (double lam) -> double {
+      return (1 - lam)*u0 + lam*u1;
+    };
+
+    auto const sbar = [&] (double lam) -> double {
+      return (1 - lam)*sbar0 + lam*sbar1;
+    };
+
+    auto const q = [&] (double lam) -> double {
+      return A*lam*lam + 2*B*lam + C;
+    };
+
+    auto const l = [&] (double lam) -> double {
+      return std::sqrt(q(lam));
+    };
+
+    auto const p = [&] (double lam) -> double {
+      return (lam + static_cast<double>(B)/A)*q(lam);
+    };
+
+    auto const F = [&] (double lam) -> double {
+      return u(lam) + h*sbar(lam)*l(lam);
+    };
+
+    double lam = 0.5, F0, F1 = F(lam), dlam;
+    do {
+      F0 = F1;
+      dlam = p(lam);
+      lam -= dlam;
+      if (lam < 0 || 1 < lam) {
+        return INF(double);
+      }
+      F1 = F(lam);
+    } while (fabs(dlam)/fabs(lam) > EPS(double) && fabs(F1 - F0) > EPS(double));
+
+    return F1;
+  }
+
   template <bool is_constrained>
   double mp1_tri_updates<is_constrained>::tri11(
     double u0, double u1, double s, double s0, double s1, double h) const
@@ -315,39 +359,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
-    double ds = s1 - s0, ds_sq = ds*ds;
-    double du = u1 - u0;
-    double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
-    double tmp = 3*s0 - s1 - 2*ds;
-    double a[] = {
-      (s0 - ds)*(s0 - ds) - alpha_sq,
-      2*(alpha_sq - tmp*(s0 - ds)),
-      8*ds_sq - 8*s0*ds - 2*alpha_sq + tmp*tmp,
-      8*ds*tmp,
-      16*ds_sq
-    };
-
-    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
-    qroots(a, roots);
-
-    int i = 0;
-    while ((lam = roots[i++]) != -1) {
-      l = sqrt(pow(1 - lam, 2) + lam*lam);
-      lhs = -du*l/h;
-      rhs = s0*(-1 + 3*lam - 2*lam*lam) + s1*lam*(-1 + 2*lam) +
-        ds*(1 - 2*lam + 2*lam*lam);
-      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        slam = (1 - lam)*sbar0 + lam*sbar1;
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
-      }
-    }
-
+    double T = mp1_tri_newton<2, -1, 1>(u0, u1, s, s0, s1, h);
 #ifdef PRINT_UPDATES
     printf("tri11(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
            "%g\n", u0, u1, s, s0, s1, h, T);
 #endif
-
     return T;
   }
 
@@ -371,38 +387,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-
-    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
-    double alpha = std::fabs((u0 - u1)/h);
-    double dsbar = sbar1 - sbar0;
-    double const a[] = {
-      (dsbar - alpha)*(dsbar + alpha),
-      2*sbar0*dsbar,
-      4*dsbar*dsbar + (sbar0 - alpha)*(sbar0 + alpha),
-      4*sbar0*dsbar,
-      4*dsbar*dsbar
-    };
-
-    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), lhs, rhs;
-    qroots(a, roots);
-
-    int i = 0;
-    while ((lam = roots[i++]) != -1) {
-      lhs = (u0 - u1)*std::sqrt(lam*lam + 1)/h;
-      rhs = sbar1 + 2*sbar1*lam*lam - sbar0*(1 - lam + 2*lam*lam);
-      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(
-          T,
-          (1 - lam)*u0+ lam*u1 +
-            ((1 - lam)*sbar0 + lam*sbar1)*h*std::sqrt(lam*lam + 1));
-      }
-    }
-
+    double T = mp1_tri_newton<1, 0, 1>(u0, u1, s, s0, s1, h);
 #if PRINT_UPDATES
     printf("tri12(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
            "%g\n", u0, u1, s, s0, s1, h, T);
 #endif
-
     return T;
   }
 
@@ -415,36 +404,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double ds = s1 - s0;
-    double du = u1 - u0;
-    double alpha = fabs(du)/h;
-    double const a[] = {
-      ds*ds - alpha*alpha,
-      4*s0*ds,
-      4*s0*s0 - 4*s0*ds + 4*ds*(s1 + ds) - 2*alpha*alpha,
-      16*s0*ds,
-      16*ds*ds
-    };
-
-    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
-    qroots(a, roots);
-
-    int i = 0;
-    while ((lam = roots[i++]) != -1) {
-      l = h*std::sqrt(1 + 2*lam*lam);
-      slam = (1 - lam)*s0 + lam*s1;
-      lhs = -du*l/h;
-      rhs = 2*h*lam*slam + h*ds*(1 + 2*lam*lam);
-      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + (s + slam)*h*l/2);
-      }
-    }
-
+    double T = mp1_tri_newton<2, 0, 1>(u0, u1, s, s0, s1, h);
 #ifdef PRINT_UPDATES
     printf("tri13(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
            "%g\n", u0, u1, s, s0, s1, h, T);
 #endif
-
     return T;
   }
 
@@ -457,38 +421,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double ds = s1 - s0;
-    double du = u1 - u0;
-    double alpha = fabs(du)/h;
-    double const a[] = {
-      2*alpha*alpha - pow(s0 - 2*ds*ds, 2),
-      2*(s0 - 2*ds)*(3*s0 - s1 - 2*ds) - 2*alpha*alpha,
-      -13*s0*s0 + 10*s0*s1 - s1*s1 + 24*s0*ds - 12*s1*ds - 12*ds*ds +
-        2*alpha*alpha,
-      4*(3*s0 - s1 - 2*ds)*(s0 - s1 - ds),
-      -16*ds*ds
-    };
-
-    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
-    qroots(a, roots);
-
-    int i = 0;
-    while ((lam = roots[i++]) != -1) {
-      l = sqrt(2*(1 - lam + lam*lam));
-      slam = (1 - lam)*s0 + lam*s1;
-      lhs = -du*l/h;
-      rhs = s1*lam*(2*lam - 1) - s0*(2*lam*lam - 3*lam + 1) +
-        2*ds*(1 - lam + lam*lam);
-      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
-      }
-    }
-
+    double T = mp1_tri_newton<2, -1, 2>(u0, u1, s, s0, s1, h);
 #ifdef PRINT_UPDATES
     printf("tri22(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
            "%g\n", u0, u1, s, s0, s1, h, T);
 #endif
-
     return T;
   }
 
@@ -501,36 +438,11 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double ds = s1 - s0, ds_sq = ds*ds;
-    double du = u1 - u0;
-    double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
-    double const a[] = {
-      4*ds_sq - 2*alpha_sq,
-      4*s0*ds,
-      s0*s0 - 4*s0*ds + 4*ds*(s1 + ds) - alpha_sq,
-      4*s0*ds,
-      4*ds_sq
-    };
-
-    double lam, roots[4] = {-1, -1, -1, -1}, T = INF(double), l, slam, lhs, rhs;
-    qroots(a, roots);
-
-    int i = 0;
-    while ((lam = roots[i++]) != -1) {
-      l = sqrt(2 + lam*lam);
-      slam = (1 - lam)*s0 + lam*s1;
-      lhs = -du*l/h;
-      rhs = lam*slam + ds*(2 + lam*lam);
-      if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
-        T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
-      }
-    }
-
+    double T = mp1_tri_newton<1, 0, 2>(u0, u1, s, s0, s1, h);
 #ifdef PRINT_UPDATES
     printf("tri23(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
            "%g\n", u0, u1, s, s0, s1, h, T);
 #endif
-
     return T;
   }
 }

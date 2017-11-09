@@ -17,6 +17,9 @@ marchers = {
     'olim8lut_rhr': 'Olim8LutRect',
 }
 
+# TODO: we should probably make the format that's computed here
+# something that's computed and returned by the marcher on the C++
+# side. This would make things a little simpler and cleaner here.
 marcher_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
     .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
@@ -28,14 +31,17 @@ marcher_template = Template('''
           format,
           ${cpp_class_name}::ndims,
           {m_.get_height(), m_.get_width()},
-          {sizeof(node)*m_.get_height(), sizeof(node)}
+          {
+            sizeof(${cpp_class_name}::node_type)*m_.get_width(), 
+            sizeof(${cpp_class_name}::node_type)
+          }
         };
       })
     .def(
       py::init<int, int, double, speed_function, double, double>(),
       "height"_a,
       "width"_a,
-      "h"_a,
+      "h"_a = 1.0,
       "s"_a = py::cpp_function(default_speed_func),
       "x0"_a = 0.0,
       "y0"_a = 0.0)
@@ -62,14 +68,31 @@ marchers3d = {
     'olim26_mp1': 'Olim26Mid1',
     'olim26_rhr': 'Olim26Rect'}
 
+# TODO: see comment above for `marcher_template' variable.
 marcher3d_template = Template('''
-  py::class_<${cpp_class_name}>(m, "${py_class_name}")
+  py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
+    .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
+        auto const format =
+          py::format_descriptor<${cpp_class_name}::float_type>::format();
+        return {
+          m_.get_node_pointer(),
+          sizeof(${cpp_class_name}::float_type),
+          format,
+          ${cpp_class_name}::ndims,
+          {m_.get_height(), m_.get_width(), m_.get_depth()},
+          {
+            sizeof(${cpp_class_name}::node_type)*m_.get_width(),
+            sizeof(${cpp_class_name}::node_type),
+            sizeof(${cpp_class_name}::node_type)*m_.get_width()*m_.get_height(),
+          }
+        };
+      })
     .def(
       py::init<int, int, int, double, speed_function_3d, double, double, double>(),
       "height"_a,
       "width"_a,
       "depth"_a,
-      "h"_a,
+      "h"_a = 1.0,
       "s"_a = py::cpp_function(default_speed_func_3d),
       "x0"_a = 0.0,
       "y0"_a = 0.0,

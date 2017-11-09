@@ -8,7 +8,10 @@
 template <class Node>
 struct marcher_3d: public abstract_marcher
 {
+  using float_type = double;
   using node_type = Node;
+
+  static constexpr int ndims = 3;
 
   marcher_3d(
     int height, int width, int depth, double h = 1,
@@ -20,7 +23,11 @@ struct marcher_3d: public abstract_marcher
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   void add_boundary_node(double x, double y, double z, double value = 0.0);
   void add_boundary_nodes(Node const * nodes, int num_nodes);
+  Node * get_node_pointer() const { return _nodes; }
   double get_value(int i, int j, int k) const;
+  int get_height() const { return _height; }
+  int get_width() const { return _width; }
+  int get_depth() const { return _depth; }
 
 protected:
   Node & operator()(int i, int j, int k);

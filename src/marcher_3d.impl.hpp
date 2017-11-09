@@ -29,7 +29,7 @@ marcher_3d<Node>::marcher_3d(
   for (int k = 0; k < depth; ++k) {
     for (int j = 0; j < width; ++j) {
       for (int i = 0; i < height; ++i) {
-        _s_cache[height*(width*k + j) + i] = s(h*j - x0, h*i - y0, h*k - z0);
+        _s_cache[width*(height*k + i) + j] = s(h*j - x0, h*i - y0, h*k - z0);
       }
     }
   }
@@ -126,13 +126,13 @@ double marcher_3d<Node>::get_value(int i, int j, int k) const {
 template <class Node>
 Node & marcher_3d<Node>::operator()(int i, int j, int k) {
   assert(in_bounds(i, j, k));
-  return _nodes[_height*(_width*k + j) + i];
+  return _nodes[_width*(_height*k + i) + j];
 }
 
 template <class Node>
 Node const & marcher_3d<Node>::operator()(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
-  return _nodes[_height*(_width*k + j) + i];
+  return _nodes[_width*(_height*k + i) + j];
 }
 
 template <class Node>
@@ -165,7 +165,7 @@ bool marcher_3d<Node>::in_bounds(int i, int j, int k) const {
 template <class Node>
 double marcher_3d<Node>::speed(int i, int j, int k) {
   assert(in_bounds(i, j, k));
-  return _s_cache[_height*(_width*k + j) + i];
+  return _s_cache[_width*(_height*k + i) + j];
 }
 
 template <class Node>

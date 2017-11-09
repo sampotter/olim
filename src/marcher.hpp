@@ -8,6 +8,7 @@
 template <class Node>
 struct marcher: public abstract_marcher {
   using float_type = double;
+  using node_type = Node;
 
   static constexpr int ndims = 2;
 

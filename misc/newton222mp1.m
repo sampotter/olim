@@ -1,4 +1,4 @@
-function newton222mp1(u0, u1, u2, s0, s1, s2, h)
+function T = newton222mp1(u0, u1, u2, s0, s1, s2, h)
     if nargin < 1
         u0 = 0;
     end
@@ -69,6 +69,11 @@ function newton222mp1(u0, u1, u2, s0, s1, s2, h)
     end
     if E(length(E)) == 0
         E(length(E)) = eps;
+    end
+    if any(X(k, :) < 0) || sum(X(k, :)) > 1
+        T = inf;
+    else
+        T = Fvals(k);
     end
     
     min_ = -1;

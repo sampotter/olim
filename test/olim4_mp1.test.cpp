@@ -2,6 +2,8 @@
 #include "olim.test.common.hpp"
 
 int main() {
-  trivial_case_works<olim4_mp1>();
-  adjacent_update_works<olim4_mp1>();
+  using olim = olim4_mp1;
+
+  trivial_case_works<olim>();
+  adjacent_update_works<olim>();
 }

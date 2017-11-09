@@ -72,8 +72,10 @@ void sf1_test() {
 }
 
 int main() {
-  trivial_case_works<olim8_mp0>();
-  adjacent_update_works<olim8_mp0>();
+  using olim = olim8_mp0;
+
+  trivial_case_works<olim>();
+  adjacent_update_works<olim>();
   neighboring_values_are_correct();
   origin_test();
   sf1_single_row_test();

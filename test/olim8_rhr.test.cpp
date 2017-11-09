@@ -72,8 +72,10 @@ void slightly_more_involved_2() {
 }
 
 int main() {
-  trivial_case_works<olim8_rhr>();
-  adjacent_update_works<olim8_rhr>();
+  using olim = olim8_rhr;
+
+  trivial_case_works<olim>();
+  adjacent_update_works<olim>();
   neighboring_values_are_correct();
   maria_test();
   origin_test();

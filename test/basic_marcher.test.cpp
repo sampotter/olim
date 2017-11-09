@@ -35,8 +35,10 @@ void rectangular_domain_works() {
 }
 
 int main() {
-  trivial_case_works<basic_marcher>();
-  adjacent_update_works<basic_marcher>();
+  using olim = basic_marcher;
+
+  trivial_case_works<olim>();
+  adjacent_update_works<olim>();
   neighboring_values_are_correct();
   rectangular_domain_works();
 }

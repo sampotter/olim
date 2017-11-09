@@ -105,8 +105,10 @@ void s_test(speed_func s, speed_func f, int n = 11) {
 }
 
 int main() {
-  trivial_case_works<olim8_mp1>();
-  adjacent_update_works<olim8_mp1>();
+  using olim = olim8_mp1;
+
+  trivial_case_works<olim>();
+  adjacent_update_works<olim>();
   neighboring_values_are_correct();
   origin_test();
   s1_single_row_test();

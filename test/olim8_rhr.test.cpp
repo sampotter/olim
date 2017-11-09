@@ -1,15 +1,6 @@
 #include "olim8.hpp"
+#include "olim.test.common.hpp"
 #include "speed_funcs.hpp"
-#include "test.hpp"
-
-#include <cstdio>
-
-void trivial_case_works() {
-  olim8_rhr m {1, 1};
-  m.add_boundary_node(0, 0);
-  m.run();
-  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
-};
 
 void adjacent_update_works() {
   olim8_rhr m {2, 1, 0.5};
@@ -89,7 +80,7 @@ void slightly_more_involved_2() {
 }
 
 int main() {
-  trivial_case_works();
+  trivial_case_works<olim8_rhr>();
   adjacent_update_works();
   neighboring_values_are_correct();
   maria_test();

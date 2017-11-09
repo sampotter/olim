@@ -6,6 +6,14 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
+template <class olim>
+void trivial_case_works() {
+  olim m {1, 1};
+  m.add_boundary_node(0, 0);
+  m.run();
+  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+}
+
 template <class olim3d>
 void quadrants_are_correct(double diag_value) {
   int n = 2;

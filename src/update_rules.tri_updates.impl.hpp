@@ -316,10 +316,6 @@ namespace update_rules {
     check_params(u0, u1, s, s0, s1, h);
 #endif
     double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
-    if (sbar0 == sbar1) {
-      return rhr_adj(u0, u1, sbar0, h);
-    }
-
     double ds = s1 - s0, ds_sq = ds*ds;
     double du = u1 - u0;
     double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
@@ -338,14 +334,19 @@ namespace update_rules {
     int i = 0;
     while ((lam = roots[i++]) != -1) {
       l = sqrt(pow(1 - lam, 2) + lam*lam);
-      slam = (1 - lam)*s0 + lam*s1;
       lhs = -du*l/h;
       rhs = s0*(-1 + 3*lam - 2*lam*lam) + s1*lam*(-1 + 2*lam) +
         ds*(1 - 2*lam + 2*lam*lam);
       if (fabs(lhs - rhs)/fabs(lhs) < 1e-6) {
+        slam = (1 - lam)*sbar0 + lam*sbar1;
         T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
       }
     }
+
+#ifdef PRINT_UPDATES
+    printf("tri11(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
+           "%g\n", u0, u1, s, s0, s1, h, T);
+#endif
 
     return T;
   }
@@ -370,11 +371,8 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
-    if (sbar0 == sbar1) {
-      return rhr_diag(u0, u1, sbar0, h);
-    }
 
+    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
     double alpha = std::fabs((u0 - u1)/h);
     double dsbar = sbar1 - sbar0;
     double const a[] = {
@@ -400,6 +398,11 @@ namespace update_rules {
       }
     }
 
+#if PRINT_UPDATES
+    printf("tri12(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
+           "%g\n", u0, u1, s, s0, s1, h, T);
+#endif
+
     return T;
   }
 
@@ -412,7 +415,6 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-
     double ds = s1 - s0;
     double du = u1 - u0;
     double alpha = fabs(du)/h;
@@ -438,6 +440,11 @@ namespace update_rules {
       }
     }
 
+#ifdef PRINT_UPDATES
+    printf("tri13(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
+           "%g\n", u0, u1, s, s0, s1, h, T);
+#endif
+
     return T;
   }
 
@@ -450,7 +457,6 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-
     double ds = s1 - s0;
     double du = u1 - u0;
     double alpha = fabs(du)/h;
@@ -478,6 +484,11 @@ namespace update_rules {
       }
     }
 
+#ifdef PRINT_UPDATES
+    printf("tri22(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
+           "%g\n", u0, u1, s, s0, s1, h, T);
+#endif
+
     return T;
   }
 
@@ -490,7 +501,6 @@ namespace update_rules {
 #ifdef EIKONAL_DEBUG
     check_params(u0, u1, s, s0, s1, h);
 #endif
-
     double ds = s1 - s0, ds_sq = ds*ds;
     double du = u1 - u0;
     double alpha = fabs(du)/h, alpha_sq = alpha*alpha;
@@ -515,6 +525,11 @@ namespace update_rules {
         T = std::min(T, (1 - lam)*u0 + lam*u1 + (slam + s)*h*l/2);
       }
     }
+
+#ifdef PRINT_UPDATES
+    printf("tri23(u0 = %g, u1 = %g, s = %g, s0 = %g, s1 = %g, h = %g) -> "
+           "%g\n", u0, u1, s, s0, s1, h, T);
+#endif
 
     return T;
   }

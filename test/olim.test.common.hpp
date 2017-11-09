@@ -14,6 +14,14 @@ void trivial_case_works() {
   IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
 }
 
+template <class olim>
+void adjacent_update_works() {
+  olim m {2, 1, 0.5};
+  m.add_boundary_node(0, 0);
+  m.run();
+  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
+}
+
 template <class olim3d>
 void quadrants_are_correct(double diag_value) {
   int n = 2;

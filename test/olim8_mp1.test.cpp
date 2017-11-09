@@ -5,13 +5,6 @@
 #include "speed_funcs.hpp"
 #include "test.hpp"
 
-void adjacent_update_works() {
-  olim8_mp1 m {2, 1, 0.5};
-  m.add_boundary_node(0, 0);
-  m.run();
-  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
-}
-
 void neighboring_values_are_correct() {
   olim8_mp1 m {3, 3, 1};
   m.add_boundary_node(1, 1);
@@ -113,7 +106,7 @@ void s_test(speed_func s, speed_func f, int n = 11) {
 
 int main() {
   trivial_case_works<olim8_mp1>();
-  adjacent_update_works();
+  adjacent_update_works<olim8_mp1>();
   neighboring_values_are_correct();
   origin_test();
   s1_single_row_test();

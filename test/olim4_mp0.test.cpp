@@ -3,4 +3,5 @@
 
 int main() {
   trivial_case_works<olim4_mp0>();
+  adjacent_update_works<olim4_mp0>();
 }

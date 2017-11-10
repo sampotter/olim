@@ -59,16 +59,18 @@ update_rules::mp1_tri_updates<false> mp1u; // (u)nconstrained
 
 void mp1_tri11_works() {
   double u0, u1, s, s0, s1, h, T;
-  {
-    u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.734125810797985;
-    IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T);
-    IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T);
-  }
-  {
-    u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.983380951166242;
-    IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T, 1e-3);
-    IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T, 1e-3);
-  }
+
+  u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.73093624;
+  IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T);
+  IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T);
+
+  u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.97877243;
+  IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T);
+  IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T);
+
+  u0 = 1.0, u1 = 0.853553, s = 1.0, s0 = 1.0, s1 = 1.0, h = 0.5, T = 1.27266;
+  IS_APPROX_EQUAL(mp1c.tri11(u0, u1, s, s0, s1, h), T, 4e-6);
+  IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T, 4e-6);
 }
 
 int main() {

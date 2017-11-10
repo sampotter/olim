@@ -260,6 +260,8 @@ namespace update_rules {
                                double s1, double h) {
     double const sbar0 = (s + s0)/2;
     double const sbar1 = (s + s1)/2;
+    double const dsbar = sbar1 - sbar0;
+    double const du = u1 - u0;
 
     auto const u = [&] (double lam) -> double {
       return (1 - lam)*u0 + lam*u1;
@@ -273,16 +275,36 @@ namespace update_rules {
       return A*lam*lam + 2*B*lam + C;
     };
 
+    auto const dq = [&] (double lam) -> double {
+      return 2*(A*lam + B);
+    };
+
     auto const l = [&] (double lam) -> double {
       return std::sqrt(q(lam));
     };
 
-    auto const p = [&] (double lam) -> double {
-      return (lam + static_cast<double>(B)/A)*q(lam);
+    auto const dl = [&] (double lam) -> double {
+      return dq(lam)/(2*l(lam));
+    };
+
+    auto const d2l = [&] (double lam) -> double {
+      return (A*C - B*B)/(q(lam)*l(lam));
     };
 
     auto const F = [&] (double lam) -> double {
       return u(lam) + h*sbar(lam)*l(lam);
+    };
+
+    auto const dF = [&] (double lam) -> double {
+      return du + h*(dsbar*l(lam) + sbar(lam)*dl(lam));
+    };
+
+    auto const d2F = [&] (double lam) -> double {
+      return h*(2*dsbar*dl(lam) + sbar(lam)*d2l(lam));
+    };
+
+    auto const p = [&] (double lam) -> double {
+      return dF(lam)/d2F(lam);
     };
 
     double lam = 0.5, F0, F1 = F(lam), dlam;

@@ -26,6 +26,26 @@ void rhr_tri12_works() {
   // TODO: add interior point test
   IS_APPROX_EQUAL(rhrc.tri12(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2);
   IS_APPROX_EQUAL(rhrc.tri12(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+
+  double u0, u1, s, s0, s1, h;
+
+  u0 = 0.923028, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), INF(double));
+
+  u0 = 0.852848, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), 1.05597249);
+
+  u0 = 0.923028, u1 = 0.817579, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), 1.14970069);
+
+  u0 = 0.883639, u1 = 0.817579, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), 1.12475323);
+
+  u0 = 0.852848, u1 = 0.65974, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), INF(double));
+
+  u0 = 0.883639, u1 = 0.65974, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri12(u0, u1, s, s0, s1, h), INF(double));
 }
 
 void rhr_tri13_works() {
@@ -38,6 +58,17 @@ void rhr_tri22_works() {
   IS_APPROX_EQUAL(rhru.tri22(0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt6/2);
   IS_APPROX_EQUAL(rhru.tri22(0.0, 1.0, 1.0, 1.0, 1.0, 1.0), INF(double));
   IS_APPROX_EQUAL(rhru.tri22(1.0, 0.0, 1.0, 1.0, 1.0, 1.0), INF(double));
+
+  double u0, u1, s, s0, s1, h;
+
+  u0 = 0.65974, u1 = 0.817579, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri22(u0, u1, s, s0, s1, h), 1.012639677310786);
+
+  u0 = 0.65974, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri22(u0, u1, s, s0, s1, h), 0.986849397845339);
+
+  u0 = 0.707107, u1 = 0.817579, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  IS_APPROX_EQUAL(rhru.tri22(u0, u1, s, s0, s1, h), 1.053198553345643);
 }
 
 void rhr_tri22_is_symmetric() {
@@ -73,6 +104,14 @@ void mp1_tri11_works() {
   IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T, 4e-6);
 }
 
+void mp1_tri22_works() {
+  double u0, u1, s, s0, s1, h, T;
+
+  u0 = 0.65974, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
+  T = 0.986849397845339;
+  IS_APPROX_EQUAL(mp1u.tri22(u0, u1, s, s0, s1, h), T);
+}
+
 int main() {
   rhr_tri11_is_symmetric();
   rhr_tri11_works();
@@ -82,4 +121,5 @@ int main() {
   rhr_tri22_works();
   rhr_tri23_works();
   mp1_tri11_works();
+  mp1_tri22_works();
 }

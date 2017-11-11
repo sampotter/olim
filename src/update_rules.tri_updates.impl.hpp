@@ -3,6 +3,10 @@
 
 #include <src/config.hpp>
 
+#if EIKONAL_DEBUG
+#    include <cassert>
+#endif
+
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
@@ -361,6 +365,28 @@ namespace update_rules {
       u0, u1, s, s0, s1, h, eikonal::bool_t<is_constrained> {});
   }
 
+#ifdef EIKONAL_DEBUG
+  template <int A, int B, int C>
+  static inline void
+  verify_edge_solution(double u0, double u1, double s, double s0, double s1,
+                       double h) {
+    using std::sqrt;
+    double const sbar0 = (s + s0)/2, sbar1 = (s + s1)/2;
+    double const l0 = sqrt(C), l1 = sqrt(A + 2*B + C);
+    double const T_left = u0 + h*sbar0*l0, T_right = u1 + h*sbar1*l1;
+    double const dlam = sqrt(EPS(double));
+    double const lam1 = T_left < T_right ? dlam : 1 - dlam;
+    double const lam0 = 1 - lam1;
+    double const l = sqrt(A*lam1*lam1 + 2*B*lam1 + C);
+    double const T = lam0*u0 + lam1*u1 + h*(sbar0*lam0 + sbar1*lam1)*l;
+    if (T_left < T_right) {
+      assert(T_left <= T);
+    } else {
+      assert(T_right <= T);
+    }
+  }
+#endif
+
   template <bool is_constrained>
   double
   mp1_tri_updates<is_constrained>::tri11_impl(
@@ -368,6 +394,11 @@ namespace update_rules {
     std::true_type &&) const
   {
     double T = tri11_impl(u0, u1, s, s0, s1, h, std::false_type {});
+#ifdef EIKONAL_DEBUG
+    if (std::isinf(T)) {
+      verify_edge_solution<2, -1, 1>(u0, u1, s, s0, s1, h);
+    }
+#endif
     return std::isinf(T) ?
       std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h/2) : T;
   }
@@ -396,6 +427,11 @@ namespace update_rules {
     std::true_type &&) const
   {
     double T = tri12_impl(u0, u1, s, s0, s1, h, std::false_type {});
+#ifdef EIKONAL_DEBUG
+    if (std::isinf(T)) {
+      verify_edge_solution<1, 0, 1>(u0, u1, s, s0, s1, h);
+    }
+#endif
     return std::isinf(T) ?
       std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h*sqrt2/2) : T;
   }

@@ -8,7 +8,7 @@ s = @(x, y) 1 - sin(r(x, y));
 ntrials = 10;
 mnum = 1;
 % Ms = 2*ceil(logspace(1, 3, 10)/2) + 1;
-Ms = 2.^(3:9) + 1;
+Ms = 2.^(3:10) + 1;
 methods = {'basic', 'olim4_rhr', 'olim4_mp0', ...
            'olim8_rhr', 'olim8_mp0', 'olim8_mp1'};
 T = inf(length(Ms), length(methods));

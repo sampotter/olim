@@ -51,7 +51,7 @@ function [U, lam] = tri_newton(u0, u1, s, s0, s1, h, method)
     found_minima = false;
 
     while ~found_minima
-        x0 = rand;
+        x0 = 1/2;
 
         X(1) = x0;
         X(2) = X(1) + p(X(1));
@@ -62,7 +62,9 @@ function [U, lam] = tri_newton(u0, u1, s, s0, s1, h, method)
                 abs(p(X(k)))/abs(X(k)) > eps && ...
                 0 <= X(k) && X(k) <= 1
             k = k + 1;
-            X(k) = X(k - 1) + p(X(k - 1));
+            alpha = get_alpha(X(k - 1), p(X(k - 1)));
+            fprintf('%0.16g\n', alpha);
+            X(k) = X(k - 1) + alpha*p(X(k - 1));
             F(k) = f(X(k));
         end
 
@@ -109,16 +111,21 @@ function [U, lam] = tri_newton(u0, u1, s, s0, s1, h, method)
     ylim([1e-18 1])
     xlim([1 K+1])
     
-    function alpha = get_alpha(k)
+    function alpha = get_alpha(x, p)
         alpha = 1;
         scale = 0.9;
         c1 = 1e-4;
-        c2 = 1e-3;
-        while f(X(k - 1) + alpha*p(X(k - 1))) > f(X(k - 1)) + ...
-                c1*alpha*df(X(k - 1))*p(X(k - 1)) & ...
-                abs(df(X(k - 1) + alpha*p(X(k - 1))*p(X(k - 1)))) > ...
-                c2*abs(df(X(k - 1))*p(X(k - 1)))
+        c2 = 0.9;
+        while ~wolfe1(alpha, x, p, c1) && ~wolfe2(alpha, x, p, c2)
             alpha = scale*alpha;
         end
+    end
+
+    function sat = wolfe1(alpha, x, p, c1)
+        sat = f(x + alpha*p) <= f(x) + c1*alpha*df(x)*p;
+    end
+
+    function sat = wolfe2(alpha, x, p, c2)
+        sat = abs(df(x + alpha*p)*p) <= c2*abs(df(x)*p);
     end
 end

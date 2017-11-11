@@ -3,6 +3,8 @@
 
 #include <src/config.hpp>
 
+#include <random>
+
 #if EIKONAL_DEBUG
 #    include <cassert>
 #endif
@@ -262,6 +264,9 @@ namespace update_rules {
   template <int A, int B, int C>
   inline double mp1_tri_newton(double u0, double u1, double s, double s0,
                                double s1, double h) {
+    using std::max;
+    using std::min;
+
     double const sbar0 = (s + s0)/2;
     double const sbar1 = (s + s1)/2;
     double const dsbar = sbar1 - sbar0;
@@ -311,17 +316,27 @@ namespace update_rules {
       return dF(lam)/d2F(lam);
     };
 
-    double lam = 0.5, F0, F1 = F(lam), dlam;
-    do {
-      F0 = F1;
-      dlam = p(lam);
-      lam -= dlam;
-      if (lam < 0 || 1 < lam) {
-        return INF(double);
-      }
-      F1 = F(lam);
-    } while (fabs(dlam)/fabs(lam) > EPS(double) && fabs(F1 - F0) > EPS(double));
+    static std::random_device dev;
+    static std::minstd_rand0 gen(dev());
+    static std::uniform_real_distribution<double> dist(0.0, 1.0);
 
+    bool found_minima = false;
+    double lam, F0, F1, dlam;
+    while (!found_minima) {
+      lam = dist(gen);
+      F1 = F(lam);
+      do {
+        F0 = F1;
+        dlam = p(lam);
+        lam = max(0.0, min(1.0, lam - dlam));
+        F1 = F(lam);
+      } while (dlam != 0 &&
+               fabs(dlam)/fabs(lam) > EPS(double) &&
+               fabs(F1 - F0) > EPS(double));
+      if (d2F(lam) > 0) {
+        found_minima = true;
+      }
+    }
     return F1;
   }
 

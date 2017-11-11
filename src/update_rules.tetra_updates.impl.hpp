@@ -285,17 +285,21 @@ namespace update_rules {
 
 template <int M11, int M12, int M22, int E1, int E2, int F>
 inline double mp1_newton(double u0, double u1, double u2, double s,
-                         double s0, double s1, double s2, double h,
-                         double (* len)(double, double))
-// TODO: remove len fp and use sqrt(Q)
-{
+                         double s0, double s1, double s2, double h) {
   using std::max;
+  using std::sqrt;
 
   double du1 = u1 - u0, du2 = u2 - u0;
-  double ds1 = s1 - s0, ds2 = s2 - s0;
 
-  auto const slam = [&] (double lam1, double lam2) {
-    return (1 - lam1 - lam2)*s0 + lam1*s1 + lam2*s2;
+  double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2, sbar2 = (s + s2)/2;
+  double dsbar1 = sbar1 - sbar0, dsbar2 = sbar2 - sbar0;
+
+  auto const sbar = [&] (double lam1, double lam2) {
+    return (1 - lam1 - lam2)*sbar0 + lam1*sbar1 + lam2*sbar2;
+  };
+
+  auto const u = [&] (double lam1, double lam2) {
+    return (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2;
   };
 
   auto const Q = [] (double lam1, double lam2) {
@@ -303,39 +307,40 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
       lam2*(E2 + M12*lam1 + M22*lam2);
   };
 
+  auto const len = [&] (double lam1, double lam2) {
+    return sqrt(Q(lam1, lam2));
+  };
+
   auto const g = [&] (double lam1, double lam2, double & g1, double & g2) {
     double l = len(lam1, lam2);
-    double ratio = slam(lam1, lam2)/l;
-    g1 = du1 + h*(l*ds1 + ratio*(M11*lam1 + M12*lam2 + E1));
-    g2 = du2 + h*(l*ds2 + ratio*(M12*lam1 + M22*lam2 + E2));
+    double ratio = sbar(lam1, lam2)/l;
+    g1 = du1 + h*(l*dsbar1 + ratio*(M11*lam1 + M12*lam2 + E1));
+    g2 = du2 + h*(l*dsbar2 + ratio*(M12*lam1 + M22*lam2 + E2));
   };
 
   auto const H = [&] (double lam1, double lam2,
                       double & h11, double & h12, double & h22) {
     double l = len(lam1, lam2);
-    double slam_ = slam(lam1, lam2);
-    double ratio = slam_/(2*Q(lam1, lam2));
+    double sbar_ = sbar(lam1, lam2);
+    double ratio = sbar_/(2*Q(lam1, lam2));
     double a1 = M11*lam1 + M12*lam2 + E1;
     double a2 = M12*lam1 + M22*lam2 + E2;
-    double b1 = ds1 - ratio*a1;
-    double b2 = ds2 - ratio*a2;
+    double b1 = dsbar1 - ratio*a1;
+    double b2 = dsbar2 - ratio*a2;
 
-    h11 = h*(a1*b1 + slam_*M11)/l;
-    h12 = h*(a2*b1 + slam_*M12)/l;
-    h22 = h*(a2*b2 + slam_*M22)/l;
+    h11 = h*(a1*b1 + sbar_*M11)/l;
+    h12 = h*(a2*b1 + sbar_*M12)/l;
+    h22 = h*(a2*b2 + sbar_*M22)/l;
   };
 
   auto const f = [&] (double lam1, double lam2) {
-    double lam0 = 1 - lam1 - lam2;
-    double ulam = lam0*u0 + lam1*u1 + lam2*u2;
-    double sbar0 = (s + s0)/2, sbar1 = (s + s1)/2, sbar2 = (s + s2)/2;
-    double sh = (lam0*sbar0 + lam1*sbar1 + lam2*sbar2)*h;
-    return ulam + sh*len(lam1, lam2);
+    return u(lam1, lam2) + h*sbar(lam1, lam2)*len(lam1, lam2);
   };
 
   double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h22, det, p1, p2,
-    f0, f1 = f(lam1, lam2);
+    f0 = INF(double), f1 = f(lam1, lam2);
   do {
+    assert(f1 <= f0);
     f0 = f1;
     g(lam1, lam2, g1, g2);
     H(lam1, lam2, h11, h12, h22);
@@ -349,17 +354,12 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     }
     f1 = f(lam1, lam2);
   } while (max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2)) > EPS(double) &&
-           fabs(f1 - f0) > EPS(double));
+           fabs(f1 - f0) > 10*EPS(double));
 
   return f1;
 }
 
 namespace update_rules {
-  inline double len111(double lam1, double lam2) {
-    double lam0 = 1 - lam1 - lam2;
-    return sqrt(lam0*lam0 + lam1*lam1 + lam2*lam2);
-  }
-
   double
   mp1_tetra_updates::tetra111(
     double u0, double u1, double u2, double s,
@@ -369,17 +369,13 @@ namespace update_rules {
     check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = mp1_newton<2, 1, 2, -1, -1, 1>(
-      u0, u1, u2, s, s0, s1, s2, h, len111);
+      u0, u1, u2, s, s0, s1, s2, h);
 #if PRINT_UPDATES
     printf("tetra111(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
            "s2 = %g, h = %g) -> %g\n",
            u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
-  }
-
-  inline double len122(double lam1, double lam2) {
-    return sqrt(1 + lam1*lam1 + lam2*lam2);
   }
 
   double
@@ -391,17 +387,13 @@ namespace update_rules {
     check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = mp1_newton<1, 0, 1, 0, 0, 1>(
-      u0, u1, u2, s, s0, s1, s2, h, len122);
+      u0, u1, u2, s, s0, s1, s2, h);
 #if PRINT_UPDATES
     printf("tetra122(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
            "s2 = %g, h = %g) -> %g\n",
            u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
-  }
-
-  inline double len123(double lam1, double lam2) {
-    return sqrt(lam1*lam2 + 2*lam1*lam2 + 2*lam2*lam2 + 1);
   }
 
   double
@@ -413,17 +405,13 @@ namespace update_rules {
     check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = mp1_newton<1, 1, 2, 0, 0, 1>(
-      u0, u1, u2, s, s0, s1, s2, h, len123);
+      u0, u1, u2, s, s0, s1, s2, h);
 #if PRINT_UPDATES
     printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
            "s2 = %g, h = %g) -> %g\n",
            u0, u1, u2, s, s0, s1, s2, h, T);
 #endif
     return T;
-  }
-
-  inline double len222(double lam1, double lam2) {
-    return sqrt(pow(1 - lam1, 2) + pow(1 - lam2, 2) + pow(lam2 + lam2, 2));
   }
 
   double
@@ -435,7 +423,7 @@ namespace update_rules {
     check_params(u0, u1, u2, s, s0, s1, s2, h);
 #endif
     double T = mp1_newton<2, 1, 2, -1, -1, 2>(
-      u0, u1, u2, s, s0, s1, s2, h, len222);
+      u0, u1, u2, s, s0, s1, s2, h);
 #if PRINT_UPDATES
     printf("tetra222(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
            "s2 = %g, h = %g) -> %g\n",

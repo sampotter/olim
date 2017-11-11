@@ -1,4 +1,4 @@
-function T = newton222mp1(u0, u1, u2, s0, s1, s2, h)
+function T = newton222mp1(u0, u1, u2, s, s0, s1, s2, h)
     if nargin < 1
         u0 = 0;
     end
@@ -9,15 +9,18 @@ function T = newton222mp1(u0, u1, u2, s0, s1, s2, h)
         u2 = 0;
     end
     if nargin < 4
-        s0 = 1;
+        s = 1;
     end
     if nargin < 5
-        s1 = 1;
+        s0 = 1;
     end
     if nargin < 6
-        s2 = 1;
+        s1 = 1;
     end
     if nargin < 7
+        s2 = 1;
+    end
+    if nargin < 8
         h = 1;
     end
 

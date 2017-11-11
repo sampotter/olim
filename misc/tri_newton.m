@@ -48,20 +48,31 @@ function [U, lam] = tri_newton(u0, u1, s, s0, s1, h, method)
     % p = @(x) -df(x)./d2f(x);
     p = @(x) -df(x)./max(0.1, d2f(x));
 
-    x0 = 0.5;
+    found_minima = false;
 
-    X(1) = x0;
-    X(2) = X(1) + p(X(1));
-    F(1) = f(X(1));
-    F(2) = f(X(2));
-    k = 2;
-    while abs(F(k) - F(k - 1)) > eps && ...
-            abs(p(X(k)))/abs(X(k)) > eps && ...
-            0 <= X(k) && X(k) <= 1
-        k = k + 1;
-        X(k) = X(k - 1) + p(X(k - 1));
-        F(k) = f(X(k));
+    while ~found_minima
+        x0 = rand;
+
+        X(1) = x0;
+        X(2) = X(1) + p(X(1));
+        F(1) = f(X(1));
+        F(2) = f(X(2));
+        k = 2;
+        while abs(F(k) - F(k - 1)) > eps && ...
+                abs(p(X(k)))/abs(X(k)) > eps && ...
+                0 <= X(k) && X(k) <= 1
+            k = k + 1;
+            X(k) = X(k - 1) + p(X(k - 1));
+            F(k) = f(X(k));
+        end
+
+        if d2f(x0) > 0
+            found_minima = true;
+        else
+            fprintf('found saddle: restarting\n')
+        end
     end
+
     if X(k) < 0 || 1 < X(k)
         lam = nan;
         U = inf;

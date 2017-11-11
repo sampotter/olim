@@ -9,17 +9,27 @@
   - [X] get qroots tests working...
   - [X] fix broken tests
   - [X] file local -> dir local
+  - [ ] looks like olim18_rhr's tri22 is screwed up---FIX
   - [ ] found olim6_mp1 error---need 2x2x3 tests working...
     - copy 2x2 region of correct values (on edge of 3x3 cube and in
       middle of 2x2x3 cell) to new marcher and run from there to
       reduce the number of "print updates"
   - [ ] speed func test
   - [X] templatize tests
+  - [ ] add some randomized tests for tri and tetra updates to make
+    sure that rhr and mp0 agree with mp1 when speed function is 1
   - [ ] make arbitrary speed function versions of templatized tests
   - [ ] loop over speed functions
   - [ ] "using" variables for olim & olim3d parameters to template functions
-  - [ ] add olim4_mp1 tests
+  - [X] add olim4_mp1 tests
+  - [ ] writeup for mp1 tetra newton is wrong---is actually "rhr
+    mp1"... maybe this is a valid method? fix, anyway
+  - [ ] rhr0 vs rhr1
   - [ ] add tests for new mp1 stuff
+  - [ ] i changed the implementation of mp1 tri newton so that it now
+    solves the constrained problem, and there is no longer any
+    difference between unconstrained and constrained mp1 tri
+  - [ ] get rid of tetraXXX and replace with tetra<d0, d1, d2>
   - [ ] add 2d templatized test stuff
   - [ ] fix line num info in templatized tests (get it back)
   - [ ] speed_func -> scalar_field

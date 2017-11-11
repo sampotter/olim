@@ -1,4 +1,4 @@
-function newton222rhr(u0, u1, u2, s, h);
+function [U, lam1, lam2] = newton222rhr(u0, u1, u2, s, h);
     if nargin < 1
         u0 = 0;
     end
@@ -42,6 +42,9 @@ function newton222rhr(u0, u1, u2, s, h);
     if E(length(E)) == 0
         E(length(E)) = eps; % for better plotting
     end
+    lam1 = X(k, 1);
+    lam2 = X(k, 2);
+    U = (1 - lam1 - lam2)*u0 + lam1*u1 + lam2*u2 + s*h*l(lam1, lam2);
 
     lin = linspace(-2, 3, 251);
     [x_ y_] = meshgrid(lin, lin);

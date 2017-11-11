@@ -215,13 +215,13 @@ namespace update_rules {
     if (alpha_sq > 2) {
       return T;
     }
-    double rhs = sqrt3*alpha/(2*sqrt(4 - alpha_sq));
-    double lam = 0.5 - rhs, l = sqrt(2*(1 - lam*(1 - lam)));
-    if (0 <= lam && lam <= 1 && fabs(du*l + sh*lam) < 1e-13) {
+    double rhs = sqrt3*alpha/sqrt(2 - alpha_sq);
+    double lam = (1 + rhs)/2, l = sqrt(2*(1 - lam + lam*lam));
+    if (0 <= lam && lam <= 1 && fabs(du/sh + (2*lam - 1)/l) < 1e-13) {
       T = (1 - lam)*u0 + lam*u1 + sh*l;
     } else {
-      lam = 0.5 + rhs, l = sqrt(2*(1 - lam*(1 - lam)));
-      if (0 <= lam && lam <= 1 && fabs(du*l * sh*lam) < 1e-13) {
+      lam = (1 - rhs)/2, l = sqrt(2*(1 - lam + lam*lam));
+      if (0 <= lam && lam <= 1 && fabs(du/sh + (2*lam - 1)/l) < 1e-13) {
         T = (1 - lam)*u0 + lam*u1 + sh*l;
       }
     }

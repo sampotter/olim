@@ -275,7 +275,7 @@ namespace update_rules {
       this->s_hat(s, s0, s1, s2)*h, // sh
       p222);                        // compute_p
 #if PRINT_UPDATES
-    printf("tetra123(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
+    printf("tetra222(u0 = %g, u1 = %g, u2 = %g, s = %g, s0 = %g, s1 = %g, "
            "s2 = %g, h = %g) -> %g\n",
            u0, u1, u2, s, s0, s1, s2, h, T);
 #endif

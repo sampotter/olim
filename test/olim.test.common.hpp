@@ -293,4 +293,26 @@ void plane_boundaries_are_correct() {
   }
 }
 
+template <class olim3d, class other_olim3d>
+void agrees_with_other_olim3d(int n = 11) {
+  double h = 2.0/(n - 1);
+  int i0 = n/2;
+
+  olim3d m1 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
+  m1.add_boundary_node(i0, i0, i0);
+  m1.run();
+
+  other_olim3d m2 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
+  m2.add_boundary_node(i0, i0, i0);
+  m2.run();
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      for (int k = 0; k < n; ++k) {
+        IS_APPROX_EQUAL(m1.get_value(i, j, k), m2.get_value(i, j, k));
+      }
+    }
+  }
+}
+
 #endif // __OLIM_TEST_COMMON_HPP__

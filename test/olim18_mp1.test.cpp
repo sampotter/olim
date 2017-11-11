@@ -12,4 +12,6 @@ int main() {
   result_is_symmetric<olim3d>();
   two_by_two_by_three_cells_are_correct<olim3d>();
   plane_boundaries_are_correct<olim3d>();
+  agrees_with_other_olim3d<olim3d, olim18_rhr>();
+  agrees_with_other_olim3d<olim3d, olim18_mp0>();
 }

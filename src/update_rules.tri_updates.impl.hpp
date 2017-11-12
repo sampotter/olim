@@ -313,7 +313,8 @@ namespace update_rules {
     };
 
     auto const p = [&] (double lam) -> double {
-      return dF(lam)/d2F(lam);
+      // Hessian modification---see Nocedal & Wright
+      return -dF(lam)/max(0.1, d2F(lam));
     };
 
     static std::random_device dev;

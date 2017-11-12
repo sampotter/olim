@@ -201,10 +201,9 @@ void planes_are_correct(int n = 11) {
 }
 
 template <class olim3d>
-void result_is_symmetric() {
-  int n = 5;
+void result_is_symmetric(speed_func_3d s = default_speed_func_3d, int n = 5) {
   double x0 = (n - 1)/2.0;
-  olim3d m {n, n, n, 1.0, default_speed_func_3d, x0, x0, x0};
+  olim3d m {n, n, n, 1.0, s, x0, x0, x0};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 

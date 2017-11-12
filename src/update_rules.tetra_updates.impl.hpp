@@ -74,7 +74,7 @@ double tetra_newton(
    * required by the tetrahedral update.
    */
   int niters = 0;
-  bool failure = false;
+  bool failure = false, out_of_bounds = false;
   do {
     /**
      * Compute the iteration step, including exact step size.
@@ -87,11 +87,15 @@ double tetra_newton(
     if (fabs(alpha) <= EPS(double)) break;
 
     /**
-     * Update lambda by the computed step size and abort if lambda
-     * lies outside of the 2-simplex.
+     * Update lambda by the computed step size.
      */
     lam1 += alpha*p1 , lam2 += alpha*p2;
-    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) return INF(double);
+    if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+      if (out_of_bounds) {
+        return INF(double);
+      }
+      out_of_bounds = true;
+    }
 
     /**
      * Compute the error for the iteration.
@@ -113,6 +117,13 @@ double tetra_newton(
 #endif
     }
   } while (relerr > 1e-15);
+
+  /**
+   * If the minimizer lies outside the feasible set, return infinity.
+   */
+  if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+    return INF(double);
+  }
 
   /**
    * Compute the minimized quantity and return it.
@@ -337,6 +348,7 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     return u(lam1, lam2) + h*sbar(lam1, lam2)*len(lam1, lam2);
   };
 
+  bool out_of_bounds = false;
   double lam1 = 1./3, lam2 = lam1, g1, g2, h11, h12, h22, det, p1, p2,
     f0 = INF(double), f1 = f(lam1, lam2);
   do {
@@ -350,11 +362,17 @@ inline double mp1_newton(double u0, double u1, double u2, double s,
     lam1 -= p1;
     lam2 -= p2;
     if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
-      return INF(double);
+      if (out_of_bounds) {
+        return INF(double);
+      }
+      out_of_bounds = true;
     }
     f1 = f(lam1, lam2);
   } while (max(fabs(p1), fabs(p2))/max(fabs(lam1), fabs(lam2)) > EPS(double) &&
            fabs(f1 - f0) > 10*EPS(double));
+  if (lam1 < 0 || lam2 < 0 || 1 - lam1 - lam2 < 0) {
+    return INF(double);
+  }
 
   return f1;
 }

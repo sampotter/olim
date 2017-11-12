@@ -322,18 +322,44 @@ namespace update_rules {
     static std::uniform_real_distribution<double> dist(0.4, 0.6);
 
     bool found_minima = false;
-    double lam, F0, F1, dlam;
+    double lam, F0, F1, dlam, alpha, c1 = 1e-4, c2 = 0.9;
+    bool out_of_bounds = false;
     while (!found_minima) {
       lam = dist(gen);
       F1 = F(lam);
       do {
         F0 = F1;
         dlam = p(lam);
-        lam = max(0.0, min(1.0, lam - dlam));
+
+        alpha = 1;
+        double lhs, rhs;
+        bool wolfe1, wolfe2;
+        do {
+          lhs = F(lam + alpha*dlam);
+          rhs = F(lam) + c1*alpha*dF(lam)*dlam;
+          wolfe1 = fabs(lhs - rhs) <= EPS(double) || lhs <= rhs;
+
+          lhs = fabs(dF(lam + alpha*dlam)*dlam);
+          rhs = c2*fabs(dF(lam)*dlam);
+          wolfe2 = fabs(lhs - rhs) <= EPS(double) || lhs <= rhs;
+
+          alpha *= 0.99;
+        } while (!wolfe1 || !wolfe2);
+
+        lam += dlam;
+        if (lam < 0 || lam >= 1) {
+          if (out_of_bounds == true) {
+            return INF(double);
+          }
+          out_of_bounds = true;
+        }
         F1 = F(lam);
       } while (dlam != 0 &&
                fabs(dlam)/fabs(lam) > EPS(double) &&
                fabs(F1 - F0) > EPS(double));
+      if (lam < 0 || lam >= 1) {
+        return INF(double);
+      }
       if (d2F(lam) > 0) {
         found_minima = true;
       }

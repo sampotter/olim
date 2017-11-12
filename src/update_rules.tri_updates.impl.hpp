@@ -322,7 +322,7 @@ namespace update_rules {
     static std::uniform_real_distribution<double> dist(0.4, 0.6);
 
     bool found_minima = false;
-    double lam, F0, F1, dlam, alpha, c1 = 1e-4, c2 = 0.9;
+    double lam, F0, F1, dlam, alpha, c1 = 1e-4, eps = 10*EPS(double);
     bool out_of_bounds = false;
     while (!found_minima) {
       lam = dist(gen);
@@ -332,31 +332,23 @@ namespace update_rules {
         dlam = p(lam);
 
         alpha = 1;
-        double lhs, rhs;
-        bool wolfe1, wolfe2;
-        do {
+        double lhs = F(lam + alpha*dlam);
+        double rhs = F(lam) + c1*alpha*dF(lam)*dlam;
+        while (lhs - eps > rhs) {
+          alpha *= 0.99;
           lhs = F(lam + alpha*dlam);
           rhs = F(lam) + c1*alpha*dF(lam)*dlam;
-          wolfe1 = fabs(lhs - rhs) <= EPS(double) || lhs <= rhs;
-
-          lhs = fabs(dF(lam + alpha*dlam)*dlam);
-          rhs = c2*fabs(dF(lam)*dlam);
-          wolfe2 = fabs(lhs - rhs) <= EPS(double) || lhs <= rhs;
-
-          alpha *= 0.99;
-        } while (!wolfe1 || !wolfe2);
+        }
 
         lam += dlam;
         if (lam < 0 || lam >= 1) {
-          if (out_of_bounds == true) {
+          if (out_of_bounds) {
             return INF(double);
           }
           out_of_bounds = true;
         }
         F1 = F(lam);
-      } while (dlam != 0 &&
-               fabs(dlam)/fabs(lam) > EPS(double) &&
-               fabs(F1 - F0) > EPS(double));
+      } while (dlam != 0 && fabs(dlam)/fabs(lam) > eps && fabs(F1 - F0) > eps);
       if (lam < 0 || lam >= 1) {
         return INF(double);
       }

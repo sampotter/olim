@@ -319,7 +319,7 @@ namespace update_rules {
 
     static std::random_device dev;
     static std::minstd_rand0 gen(dev());
-    static std::uniform_real_distribution<double> dist(0.0, 1.0);
+    static std::uniform_real_distribution<double> dist(0.4, 0.6);
 
     bool found_minima = false;
     double lam, F0, F1, dlam;

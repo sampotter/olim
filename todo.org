@@ -16,6 +16,13 @@
       reduce the number of "print updates"
   - [X] try sup'd up line search for tri newton
   - [X] get "agrees_with" test to work for olim26mp1
+  - [ ] add "monotonically decreasing error" tests
+    - [ ] 2D
+      - [ ] default speed func
+      - [ ] other speed funcs
+    - [ ] 3D
+      - [ ] default speed func
+      - [ ] other speed funcs
   - [ ] do larger agrees with tests
   - [-] add olim 3d mp1s to errors3d.m and check for stalling in
     newton iterations
@@ -35,7 +42,7 @@
     sure that rhr and mp0 agree with mp1 when speed function is 1
   - [ ] make arbitrary speed function versions of templatized tests
   - [ ] loop over speed functions
-  - [ ] "using" variables for olim & olim3d parameters to template functions
+  - [X] "using" variables for olim & olim3d parameters to template functions
   - [X] add olim4_mp1 tests
   - [ ] writeup for mp1 tetra newton is wrong---is actually "rhr
     mp1"... maybe this is a valid method? fix, anyway

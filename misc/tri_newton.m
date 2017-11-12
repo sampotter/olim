@@ -116,7 +116,7 @@ function [U, lam] = tri_newton(u0, u1, s, s0, s1, h, method)
         scale = 0.9;
         c1 = 1e-4;
         c2 = 0.9;
-        while ~wolfe1(alpha, x, p, c1) && ~wolfe2(alpha, x, p, c2)
+        while ~wolfe1(alpha, x, p, c1) || ~wolfe2(alpha, x, p, c2)
             alpha = scale*alpha;
         end
     end

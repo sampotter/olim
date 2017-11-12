@@ -2,9 +2,11 @@
 #define __OLIM_TEST_COMMON_HPP__
 
 #include <cassert>
+#include <vector>
 
 #include "speed_funcs.hpp"
 #include "test.hpp"
+#include "typedefs.h"
 
 template <class olim>
 void trivial_case_works() {
@@ -314,5 +316,58 @@ void agrees_with_other_olim3d(int n = 11) {
     }
   }
 }
+
+// Right now this just computes the absolute l2 error---in the future,
+// would be good to extend it to compute relative error & other p-norm
+// errors
+template <class olim>
+void error_is_monotonic(int nmin = 5, int nmax = 31,
+                        speed_func s = default_speed_func,
+                        speed_func f = default_speed_func_soln) {
+  assert(nmin % 2 == 1);
+  assert(nmax % 2 == 1);
+
+  std::vector<double> error;
+  error.reserve(nmax - nmin + 1);
+  for (int n = nmin, i = n/2; n <= nmax; n += 2, i = n/2) {
+    double h = 2.0/(n - 1);
+    olim m {n, n, h, s, 1, 1};
+    m.add_boundary_node(i, i);
+    m.run();
+
+    // Compute l2 norm of f
+    double f2norm = 0, x, y;
+    for (int i = 0; i < n; ++i) {
+      y = h*i - 1;
+      for (int j = 0; j < n; ++j) {
+        x = h*j - 1;
+        f2norm += std::pow(f(x, y), 2);
+      }
+    }
+
+    // Compute l2 error between m and f
+    double e = 0;
+    for (int i = 0; i < n; ++i) {
+      y = h*i - 1;
+      for (int j = 0; j < n; ++j) {
+        x = h*j - 1;
+        double lhs = f(x, y);
+        double rhs = m.get_value(i, j);
+        e += std::pow(lhs - rhs, 2);
+      }
+    }
+
+    // Store relative error
+    error.push_back(std::sqrt(e)/std::sqrt(f2norm));
+  }
+
+  for (size_t i = 1; i < error.size(); ++i) {
+    IS_TRUE(error[i] <= error[i - 1]);
+  }
+}
+
+// template <class olim3d>
+// void error_is_monotonic(int nmin = 1, int nmax = 11, speed_func_3d s) {
+// }
 
 #endif // __OLIM_TEST_COMMON_HPP__

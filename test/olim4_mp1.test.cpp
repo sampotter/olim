@@ -6,4 +6,5 @@ int main() {
 
   trivial_case_works<olim>();
   adjacent_update_works<olim>();
+  error_is_monotonic<olim>();
 }

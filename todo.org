@@ -9,12 +9,25 @@
   - [X] get qroots tests working...
   - [X] fix broken tests
   - [X] file local -> dir local
-  - [ ] looks like olim18_rhr's tri22 is screwed up---FIX
-  - [ ] found olim6_mp1 error---need 2x2x3 tests working...
+  - [X] looks like olim18_rhr's tri22 is screwed up---FIX
+  - [X] found olim6_mp1 error---need 2x2x3 tests working...
     - copy 2x2 region of correct values (on edge of 3x3 cube and in
       middle of 2x2x3 cell) to new marcher and run from there to
       reduce the number of "print updates"
-  - [ ] speed func test
+  - [ ] try sup'd up line search for tri newton
+  - [ ] get "agrees_with" test to work for olim26mp1
+  - [ ] do larger agrees with tests
+  - [ ] add olim 3d mp1s to errors3d.m and check for stalling in
+    newton iterationsx
+  - [ ] templatized speed func test
+    - [ ] 2D
+      - [ ] is_symmetric
+      - [ ] error_is_no_worse_than (mp0 vs mp1)
+    - [ ] 3D
+      - [ ] is_symmetric
+      - [ ] error_is_no_worse_than (mp0 vs mp1)
+  - [ ] randomize tetra newton lam0 to see if that effects "error
+    dimples"
   - [X] templatize tests
   - [ ] add some randomized tests for tri and tetra updates to make
     sure that rhr and mp0 agree with mp1 when speed function is 1
@@ -30,6 +43,7 @@
     solves the constrained problem, and there is no longer any
     difference between unconstrained and constrained mp1 tri
   - [ ] get rid of tetraXXX and replace with tetra<d0, d1, d2>
+    - [ ] tetra122 as special case (template specialization)
   - [ ] add 2d templatized test stuff
   - [ ] fix line num info in templatized tests (get it back)
   - [ ] speed_func -> scalar_field

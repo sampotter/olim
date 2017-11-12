@@ -16,7 +16,11 @@ int main() {
   result_is_symmetric<olim3d>();
   plane_boundaries_are_correct<olim3d>();
 
+#if RELWITHDEBINFO
   int n = 31;
+#else
+  int n = 11;
+#endif
   agrees_with_other_olim3d<olim3d, olim6_rhr>(n);
   agrees_with_other_olim3d<olim3d, olim6_mp0>(n);
 }

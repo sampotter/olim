@@ -13,7 +13,11 @@ int main() {
   two_by_two_by_three_cells_are_correct<olim3d>();
   plane_boundaries_are_correct<olim3d>();
 
+#if RELWITHDEBINFO
   int n = 31;
+#else
+  int n = 11;
+#endif
   agrees_with_other_olim3d<olim3d, olim18_rhr>(n);
   agrees_with_other_olim3d<olim3d, olim18_mp0>(n);
 }

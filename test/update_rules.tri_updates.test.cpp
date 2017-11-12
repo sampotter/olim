@@ -104,6 +104,21 @@ void mp1_tri11_works() {
   IS_APPROX_EQUAL(mp1u.tri11(u0, u1, s, s0, s1, h), T, 4e-6);
 }
 
+void mp1_tri12_works() {
+  double u0, u1, s, s0, s1, h, T;
+
+  u0 = 0.46487865669951, u1 = 0.4, s = 1, s0 = 1, s1 = 1, h = 0.2;
+  T = 0.6540631166978595;
+  IS_APPROX_EQUAL(mp1u.tri12(u0, u1, s, s0, s1, h), T);
+}
+
+void mp1_tri13_works() {
+  double u0, u1, s, s0, s1, h;
+
+  u0 = 0, u1 = 1.41421, s = 1, s0 = 1, s1 = 1, h = 1;
+  IS_APPROX_EQUAL(mp1u.tri13(u0, u1, s, s0, s1, h), INF(double));
+}
+
 void mp1_tri22_works() {
   double u0, u1, s, s0, s1, h, T;
 
@@ -121,5 +136,7 @@ int main() {
   rhr_tri22_works();
   rhr_tri23_works();
   mp1_tri11_works();
+  mp1_tri12_works();
+  mp1_tri13_works();
   mp1_tri22_works();
 }

@@ -27,7 +27,8 @@
       reduce the number of "print updates"
   - [X] try sup'd up line search for tri newton
   - [X] get "agrees_with" test to work for olim26mp1
-  - [ ] make python script to generate all plots
+  - [X] make python script to generate all plots
+  - [X] spend some time optimizing mp1 methods
   - [-] add "monotonically decreasing error" tests
     - [-] 2D
       - [X] default speed func
@@ -35,7 +36,7 @@
     - [ ] 3D
       - [ ] default speed func
       - [ ] other speed funcs
-  - [ ] make python test plots presentable
+  - [X] make python test plots presentable
   - [ ] templatized speed func test
     - [ ] 2D
       - [ ] is_symmetric

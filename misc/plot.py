@@ -121,6 +121,10 @@ def compute_soln(marcher, s, n):
     m.run()
     return np.array(m)
 
+_line_style_cycler = itertools.cycle(['o-', 'o-.', 'o--', 'o:'])
+def get_next_line_style():
+    return next(_line_style_cycler);
+
 def make_error_plot_2d(s=speedfuncs.s1, minpow=3, maxpow=10,
                        marchers=marchers2d, verbose=True):
     if verbose:
@@ -137,7 +141,9 @@ def make_error_plot_2d(s=speedfuncs.s1, minpow=3, maxpow=10,
             print('- %s (n = %d, e = %g)' % (get_marcher_name(marcher), n, e))
     fig = plt.figure()
     for marcher in marchers:
-        plt.loglog(ns, E[marcher])
+        style = get_next_line_style()
+        plt.loglog(ns, E[marcher], style, label=get_marcher_name(marcher))
+    plt.legend()
     return fig
 
 if __name__ == '__main__':

@@ -64,11 +64,11 @@ void agrees_with_basic_marcher_3d() {
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
-  basic_marcher_3d m3d {n, n, n, h, default_speed_func_3d, 1, 1, 1};
+  basic_marcher_3d m3d {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
   m3d.add_boundary_node(i0, j0, k0);
   m3d.run();
 
-  olim6_rhr m6 {n, n, n, h, default_speed_func_3d, 1, 1, 1};
+  olim6_rhr m6 {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
   m6.add_boundary_node(i0, j0, k0);
   m6.run();
 

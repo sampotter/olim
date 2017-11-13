@@ -42,7 +42,7 @@ marcher_template = Template('''
       "height"_a,
       "width"_a,
       "h"_a = 1.0,
-      "s"_a = py::cpp_function(default_speed_func),
+      "s"_a = py::cpp_function(static_cast<speed_func>(default_speed_func)),
       "x0"_a = 0.0,
       "y0"_a = 0.0)
     .def("run", &${cpp_class_name}::run)
@@ -93,7 +93,7 @@ marcher3d_template = Template('''
       "width"_a,
       "depth"_a,
       "h"_a = 1.0,
-      "s"_a = py::cpp_function(default_speed_func_3d),
+      "s"_a = py::cpp_function(static_cast<speed_func_3d>(default_speed_func)),
       "x0"_a = 0.0,
       "y0"_a = 0.0,
       "z0"_a = 0.0)

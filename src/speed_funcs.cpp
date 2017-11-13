@@ -18,7 +18,7 @@ double default_speed_func(double x, double y) {
   return 1.0;
 }
 
-double default_speed_func_3d(double x, double y, double z) {
+double default_speed_func(double x, double y, double z) {
   (void) x;
   (void) y;
   (void) z;

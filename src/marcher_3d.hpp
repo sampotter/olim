@@ -15,7 +15,8 @@ struct marcher_3d: public abstract_marcher
 
   marcher_3d(
     int height, int width, int depth, double h = 1,
-    std::function<double(double, double, double)> speed = default_speed_func_3d,
+    std::function<double(double, double, double)> speed =
+      static_cast<speed_func_3d>(default_speed_func),
     double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
   marcher_3d(int height, int width, int depth, double h,
              std::unique_ptr<double[]> s_cache);

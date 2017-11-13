@@ -13,7 +13,8 @@ struct marcher: public abstract_marcher {
   static constexpr int ndims = 2;
 
   marcher(int height, int width, double h = 1,
-          std::function<double(double, double)> speed = default_speed_func,
+          std::function<double(double, double)> speed =
+            static_cast<speed_func>(default_speed_func),
           double x0 = 0.0, double y0 = 0.0);
   marcher(int height, int width, double h, std::unique_ptr<double[]> S_values);
 

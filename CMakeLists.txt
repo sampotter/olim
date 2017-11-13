@@ -38,8 +38,7 @@ set (FMM_SRC_FILES
   src/fmm.cpp
   src/olim_util.cpp
   src/qroots.cpp
-  src/speed_funcs.cpp
-  src/test_graph_marcher.cpp)
+  src/speed_funcs.cpp)
 
 add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

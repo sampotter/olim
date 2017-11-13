@@ -29,6 +29,11 @@
   - [X] get "agrees_with" test to work for olim26mp1
   - [X] make python script to generate all plots
   - [X] spend some time optimizing mp1 methods
+  - [X] templatize tests
+  - [X] "using" variables for olim & olim3d parameters to template functions
+  - [X] add olim4_mp1 tests
+  - [ ] add the rest of the 3D speed functions
+  - [ ] make plot.py generate lots of plots
   - [-] add "monotonically decreasing error" tests
     - [-] 2D
       - [X] default speed func
@@ -43,22 +48,12 @@
     - [ ] 3D
       - [ ] is_symmetric
   - [ ] large olim26_mp1 is more accurate than olim26_mp0/rhr---find this error
-  - [ ] do larger agrees with tests
-  - [ ] make arbitrary speed function versions of templatized tests
-    - [ ] test symmetry of speed function runs
   - [ ] randomize tetra newton lam0 to see if that effects "error
     dimples"
   - [ ] go through results from larger olim18mp1 and olim26mp1 and
     compare 'inf' results with MATLAB solution
-  - [-] add olim 3d mp1s to errors3d.m and check for stalling in
-    newton iterations
-    - [X] add them
-    - [ ] find stalling
-  - [X] templatize tests
   - [ ] add some randomized tests for tri and tetra updates to make
     sure that rhr and mp0 agree with mp1 when speed function is 1
-  - [X] "using" variables for olim & olim3d parameters to template functions
-  - [X] add olim4_mp1 tests
   - [ ] writeup for mp1 tetra newton is wrong---is actually "rhr
     mp1"... maybe this is a valid method? fix, anyway
   - [ ] seems likely that the way i'm defining and passing speed

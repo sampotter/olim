@@ -261,6 +261,11 @@ namespace update_rules {
     return T;
   }
 
+#define EVAL_q(lam) ((A*(lam) + 2*B)*(lam) + C)
+#define EVAL_l(lam) std::sqrt(EVAL_q(lam))
+#define EVAL_sbar(lam) (sbar0 + (lam)*dsbar)
+#define EVAL_u(lam) (u0 + (lam)*du)
+
   template <int A, int B, int C>
   inline double mp1_tri_newton(double u0, double u1, double s, double s0,
                                double s1, double h) {
@@ -272,49 +277,12 @@ namespace update_rules {
     double const dsbar = sbar1 - sbar0;
     double const du = u1 - u0;
 
-    auto const u = [&] (double lam) -> double {
-      return (1 - lam)*u0 + lam*u1;
-    };
-
-    auto const sbar = [&] (double lam) -> double {
-      return (1 - lam)*sbar0 + lam*sbar1;
-    };
-
-    auto const q = [&] (double lam) -> double {
-      return A*lam*lam + 2*B*lam + C;
-    };
-
-    auto const dq = [&] (double lam) -> double {
-      return 2*(A*lam + B);
-    };
-
-    auto const l = [&] (double lam) -> double {
-      return std::sqrt(q(lam));
-    };
-
-    auto const dl = [&] (double lam) -> double {
-      return dq(lam)/(2*l(lam));
-    };
-
-    auto const d2l = [&] (double lam) -> double {
-      return (A*C - B*B)/(q(lam)*l(lam));
-    };
-
-    auto const F = [&] (double lam) -> double {
-      return u(lam) + h*sbar(lam)*l(lam);
-    };
-
-    auto const dF = [&] (double lam) -> double {
-      return du + h*(dsbar*l(lam) + sbar(lam)*dl(lam));
-    };
-
     auto const d2F = [&] (double lam) -> double {
-      return h*(2*dsbar*dl(lam) + sbar(lam)*d2l(lam));
-    };
-
-    auto const p = [&] (double lam) -> double {
-      // Hessian modification---see Nocedal & Wright
-      return -dF(lam)/max(0.1, d2F(lam));
+      double q = EVAL_q(lam);
+      double l = std::sqrt(q);
+      double dl = (A*lam + B)/l;
+      double d2l = (A*C - B*B)/(q*l);
+      return h*(2*dsbar*dl + EVAL_sbar(lam)*d2l);
     };
 
     static std::random_device dev;
@@ -322,33 +290,57 @@ namespace update_rules {
     static std::uniform_real_distribution<double> dist(0.4, 0.6);
 
     bool found_minima = false;
-    double lam, F0, F1, dlam, alpha, c1 = 1e-4, eps = 10*EPS(double);
+    double lam, F0, F1, dF, dlam, alpha, g, l, u, sbar, c1 = 1e-4, eps = 10*EPS(double);
     bool out_of_bounds = false;
+
     while (!found_minima) {
       lam = dist(gen);
-      F1 = F(lam);
-      do {
-        F0 = F1;
-        dlam = p(lam);
 
+      // Initialize values for iteration
+      l = EVAL_l(lam);
+      u = EVAL_u(lam);
+      sbar = EVAL_sbar(lam);
+      F1 = u + h*sbar*l;
+      do {
+        F0 = F1; // Save old F value
+
+        // Compute the first derivative of F
+        dF = du + h*(dsbar*l + sbar*(A*lam + B)/l);
+
+        // Compute descent direction
+        dlam = -dF/max(0.1, d2F(lam));
+
+        // Backtracking line search to satisfy Wolfe conditions
+        g = c1*dF*dlam;
         alpha = 1;
-        double lhs = F(lam + alpha*dlam);
-        double rhs = F(lam) + c1*alpha*dF(lam)*dlam;
-        while (lhs - eps > rhs) {
+        double tmp = lam + alpha*dlam;
+        double lhs = EVAL_u(tmp) + h*EVAL_sbar(tmp)*EVAL_l(tmp);
+        while (lhs - eps > F1 + alpha*g) {
           alpha *= 0.99;
-          lhs = F(lam + alpha*dlam);
-          rhs = F(lam) + c1*alpha*dF(lam)*dlam;
+          tmp = lam + alpha*dlam;
+          lhs = EVAL_u(tmp) + h*EVAL_sbar(tmp)*EVAL_l(tmp);
         }
 
-        lam += dlam;
+        // Update lambda iterate
+        lam += alpha*dlam;
+
+        // Keep track of whether the iterate has exited the feasible
+        // set (gone `out of bounds'). If it's been `out of bounds'
+        // for for two iterations in a row, return infinity (we're
+        // solving the constrained problem)
         if (lam < 0 || lam >= 1) {
           if (out_of_bounds) {
             return INF(double);
           }
           out_of_bounds = true;
         }
-        F1 = F(lam);
-      } while (dlam != 0 && fabs(dlam)/fabs(lam) > eps && fabs(F1 - F0) > eps);
+
+        // Update iteration's values
+        l = EVAL_l(lam);
+        u = EVAL_u(lam);
+        sbar = EVAL_sbar(lam);
+        F1 = u + h*sbar*l;
+      } while (fabs(dlam) > eps*fabs(dlam) && fabs(F1 - F0) > eps);
       if (lam < 0 || lam >= 1) {
         return INF(double);
       }
@@ -400,6 +392,7 @@ namespace update_rules {
   }
 
 #ifdef EIKONAL_DEBUG
+#    if !RELWITHDEBINFO
   template <int A, int B, int C>
   static inline void
   verify_edge_solution(double u0, double u1, double s, double s0, double s1,
@@ -413,12 +406,14 @@ namespace update_rules {
     double const lam0 = 1 - lam1;
     double const l = sqrt(A*lam1*lam1 + 2*B*lam1 + C);
     double const T = lam0*u0 + lam1*u1 + h*(sbar0*lam0 + sbar1*lam1)*l;
+    (void) T;
     if (T_left < T_right) {
       assert(T_left <= T);
     } else {
       assert(T_right <= T);
     }
   }
+#    endif
 #endif
 
   template <bool is_constrained>
@@ -429,9 +424,11 @@ namespace update_rules {
   {
     double T = tri11_impl(u0, u1, s, s0, s1, h, std::false_type {});
 #ifdef EIKONAL_DEBUG
+#    if !RELWITHDEBINFO
     if (std::isinf(T)) {
       verify_edge_solution<2, -1, 1>(u0, u1, s, s0, s1, h);
     }
+#    endif
 #endif
     return std::isinf(T) ?
       std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h/2) : T;
@@ -462,9 +459,11 @@ namespace update_rules {
   {
     double T = tri12_impl(u0, u1, s, s0, s1, h, std::false_type {});
 #ifdef EIKONAL_DEBUG
+#if !RELWITHDEBINFO
     if (std::isinf(T)) {
       verify_edge_solution<1, 0, 1>(u0, u1, s, s0, s1, h);
     }
+#    endif
 #endif
     return std::isinf(T) ?
       std::min(u0 + (s + s0)*h/2, u1 + (s + s1)*h*sqrt2/2) : T;

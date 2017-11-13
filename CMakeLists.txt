@@ -107,7 +107,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     olim26_mp1
 	olim26_rhr
 	qroots
-	test_graph_marcher
 	update_rules.tetra_updates
 	update_rules.tri_updates)
 

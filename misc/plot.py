@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import speedfuncs
 import speedfuncs3d
+import time
 
 marchers2d = [
     eik.BasicMarcher,
@@ -125,10 +126,11 @@ _line_style_cycler = itertools.cycle(['o-', 'o-.', 'o--', 'o:'])
 def get_next_line_style():
     return next(_line_style_cycler);
 
-def make_error_plot_2d(s=speedfuncs.s1, minpow=3, maxpow=10,
-                       marchers=marchers2d, verbose=True):
+def make_error_plot(s=speedfuncs.s1, minpow=3, maxpow=10,
+                    marchers=marchers2d, verbose=True):
+    assert(all(s.dim == marcher.dim for marcher in marchers))
     if verbose:
-        print('make_error_plot_2d:')
+        print('make_error_plot:')
     f = speedfuncs.get_soln_func(s)
     ns = np.power(2, np.arange(minpow, maxpow + 1)) + 1
     E = {marcher: np.zeros(ns.shape) for marcher in marchers}
@@ -146,6 +148,52 @@ def make_error_plot_2d(s=speedfuncs.s1, minpow=3, maxpow=10,
     plt.legend()
     return fig
 
+def tic():
+    tic.t0 = time.time()
+tic.t0 = None
+
+def toc():
+    if tic.t0:
+        return time.time() - tic.t0
+    else:
+        raise RuntimeError("tic() hasn't been called")
+
+def time_marcher(s, marcher, n, ntrials):
+    assert(marcher.dim in [2, 3])
+    t = np.inf
+    h = 2/(n - 1)
+    if marcher.dim == 2:
+        for trial in range(ntrials):
+            tic()
+            marcher(n, n, h, x0=1, y0=1)
+            t = min(t, toc())
+    else:
+        for trial in range(ntrials):
+            tic()
+            marcher(n, n, n, h, x0=1, y0=1, z0=1)
+            t = min(t, toc())
+    return t
+
+def make_timing_plot(s=speedfuncs.s1, minpow=3, maxpow=10,
+                     marchers=marchers2d, verbose=True, ntrials=10):
+    assert(all(s.dim == marcher.dim for marcher in marchers))
+    if verbose:
+        print('make_timing_plot:')
+    f = speedfuncs.get_soln_func(s)
+    ns = np.power(2, np.arange(minpow, maxpow + 1)) + 1
+    T = {marcher: np.zeros(ns.shape) for marcher in marchers}
+    for marcher, (i, n) in itertools.product(marchers, enumerate(ns)):
+        if verbose:
+            print('- %s (n = %d)' % (get_marcher_name(marcher), n))
+        T[marcher][i] = time_marcher(s, marcher, n, ntrials)
+    fig = plt.figure()
+    for marcher in marchers:
+        style = get_next_line_style()
+        plt.loglog(ns, T[marcher], style, label=get_marcher_name(marcher))
+    plt.legend(loc=2)
+    return fig
+
 if __name__ == '__main__':
-    fig = make_error_plot_2d()
+    # fig = make_error_plot(minpow=2, maxpow=7)
+    fig = make_timing_plot(minpow=2, maxpow=12)
     fig.show()

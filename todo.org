@@ -5,15 +5,6 @@
    3. "Smart mesh"
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
-* Deliverable for tonight
-  - [-] error plots
-    - [X] olim* rhr vs mp0 vs mp1 (ratios) nontrivial speed func
-    - [X] speed func tests (for both of these, put node on wall, and
-      look at other wall
-      - [X] computed solution
-      - [X] error plot
-    - [ ] olim* rhr default
-    - [ ] comparisons of 2d speed func and 3d speed func plots
 * Writeups
   - [ ] algorithms
 * Collected from <2017-10-23 Mon>
@@ -32,7 +23,7 @@
   - [X] templatize tests
   - [X] "using" variables for olim & olim3d parameters to template functions
   - [X] add olim4_mp1 tests
-  - [ ] add the rest of the 3D speed functions
+  - [X] add the rest of the 3D speed functions
   - [ ] make plot.py generate lots of plots
   - [-] add "monotonically decreasing error" tests
     - [-] 2D
@@ -48,6 +39,7 @@
     - [ ] 3D
       - [ ] is_symmetric
   - [ ] large olim26_mp1 is more accurate than olim26_mp0/rhr---find this error
+  - [ ] olim8 mp1 takes a long time on s5 and s9
   - [ ] randomize tetra newton lam0 to see if that effects "error
     dimples"
   - [ ] go through results from larger olim18mp1 and olim26mp1 and

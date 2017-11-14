@@ -34,10 +34,29 @@ s9 = lambda x, y, z: 2*a*np.sqrt(
     np.multiply(
         np.exp(-2*a*(np.power(x, 2) + np.power(y, 2) + np.power(z, 2))),
         np.power(x, 2) + np.power(y, 2) + np.power(z, 2)))
-f9 = 1 - np.divide(1, np.exp(np.power(x, 2) + np.power(y, 2) + np.power(z, 2)))
+f9 = lambda x, y, z: 1 - np.divide(
+    1, np.exp(np.power(x, 2) + np.power(y, 2) + np.power(z, 2)))
 
 _speed_funcs = [s0, s1, s2, s3, s5, s6, s8, s9]
+
 _soln_funcs = [f0, f1, f2, f3, f5, f6, f8, f9]
+
+def speed_funcs():
+    return _speed_funcs
+
+_speed_func_names = {
+    s0: 's0',
+    s1: 's1',
+    s2: 's2',
+    s3: 's3',
+    s5: 's5',
+    s6: 's6',
+    s8: 's8',
+    s9: 's9'
+}
+
+def get_speed_func_name(s):
+    return _speed_func_names[s]
 
 for func in _speed_funcs + _soln_funcs:
     func.dim = 3

@@ -1,13 +1,26 @@
+#!/usr/bin/env python3
+
 import sys
 sys.path.insert(0, '../build/Release')
+
+import argparse
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Generate all plots')
+    parser.add_argument('plotdir', type=str, help='a directory to save plots')
+    parser.add_argument('format', type=str, help='the file extension to use')
+    args = parser.parse_args()
 
 import eikonal as eik
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
+import os.path
 import speedfuncs
 import speedfuncs3d
 import time
+
+from mpl_toolkits.axes_grid1 import ImageGrid
 
 marchers2d = [
     eik.BasicMarcher,
@@ -92,6 +105,12 @@ _marcher_names = {
     eik.Olim8Rect: 'olim8 rect',
 }
 
+def get_soln_func(s):
+    return (speedfuncs if s.dim == 2 else speedfuncs3d).get_soln_func(s)
+
+def get_speed_func_name(s):
+    return (speedfuncs if s.dim == 2 else speedfuncs3d).get_speed_func_name(s)
+
 def get_marcher_name(marcher):
     return _marcher_names[marcher]
 
@@ -130,7 +149,11 @@ def make_error_plot(s=speedfuncs.s1, minpow=3, maxpow=10,
                     marchers=marchers2d, verbose=True):
     assert(all(s.dim == marcher.dim for marcher in marchers))
     if verbose:
-        print('make_error_plot:')
+        if s.dim == 2:
+            s_name = speedfuncs.get_speed_func_name(s)
+        else:
+            s_name = speedfuncs3d.get_speed_func_name(s)
+        print('make_error_plot (s = %s):' % s_name)
     f = speedfuncs.get_soln_func(s)
     ns = np.power(2, np.arange(minpow, maxpow + 1)) + 1
     E = {marcher: np.zeros(ns.shape) for marcher in marchers}
@@ -193,7 +216,64 @@ def make_timing_plot(s=speedfuncs.s1, minpow=3, maxpow=10,
     plt.legend(loc=2)
     return fig
 
+def get_subplots_shape(n):
+    nrows = int(np.sqrt(n))
+    ncols = int(np.ceil(n/nrows))
+    return nrows, ncols
+
+def make_error_slice_plot(s=speedfuncs.s1, n=65, marchers=marchers2d,
+                          index=None, verbose=True):
+    dim = s.dim
+    assert(dim in [2, 3])
+    if verbose:
+        print('error_slice_plot:')
+    if not index:
+        if dim == 2:
+            index = (slice(None), slice(None))
+        elif dim == 3:
+            # By default, just grab the first z-slice
+            index = (slice(None), slice(None), 0)
+    fig = plt.figure()
+    nrows, ncols = get_subplots_shape(len(marchers))
+    grid = ImageGrid(fig, 111, nrows_ncols=(nrows, ncols), cbar_mode='single')
+    u = get_exact_soln(get_soln_func(s), n)
+    Us = dict()
+    for marcher in marchers:
+        if verbose:
+            print('- %s' % get_marcher_name(marcher))
+        Us[marcher] = compute_soln(marcher, s, n)
+    errors = {marcher: Us[marcher] - u for marcher in marchers}
+    vmin = min(error[index].min() for error in errors.values())
+    vmax = max(error[index].max() for error in errors.values())
+    for i, marcher in enumerate(marchers):
+        ax = grid[i]
+        img = ax.imshow(errors[marcher][index], interpolation='nearest',
+                        vmin=vmin, vmax=vmax)
+        ax.set_title(get_marcher_name(marcher))
+    grid.cbar_axes[0].colorbar(img)
+    return fig
+
 if __name__ == '__main__':
-    # fig = make_error_plot(minpow=2, maxpow=7)
-    fig = make_timing_plot(minpow=2, maxpow=12)
-    fig.show()
+    # for s in speedfuncs.speed_funcs():
+    #     s_name = speedfuncs.get_speed_func_name(s)
+    #     path = os.path.join(args.plotdir, 'error_%s.%s' % (s_name, args.format))
+    #     make_error_plot(s=s, minpow=2, maxpow=8).savefig(path)
+
+    # for s in speedfuncs.speed_funcs():
+    #     s_name = speedfuncs.get_speed_func_name(s)
+    #     path = os.path.join(
+    #         args.plotdir, 'error_slice_%s.%s' % (s_name, args.format))
+    #     make_error_slice_plot(s=s, n=101).savefig(path)
+
+    marcher_lists = [
+        ('olim6', olim6_marchers),
+        ('olim18', olim18_marchers),
+        ('olim26', olim26_marchers)
+    ]
+    for marcher_type, marchers in marcher_lists:
+        for s in speedfuncs3d.speed_funcs():
+            s_name = get_speed_func_name(s)
+            path = os.path.join(
+                args.plotdir,
+                'error_slice_%s_%s.%s' % (marcher_type, s_name, args.format))
+            make_error_slice_plot(s=s, n=25, marchers=marchers).savefig(path)

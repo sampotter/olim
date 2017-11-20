@@ -25,6 +25,14 @@
   - [X] add olim4_mp1 tests
   - [X] add the rest of the 3D speed functions
   - [ ] make plot.py generate lots of plots
+    - [ ] errors
+      - [ ] 2D
+      - [ ] 3D
+    - [ ] timings
+      - [ ] 2D
+      - [ ] 3D
+    - [ ] error slice
+    - [ ] solution slice
   - [-] add "monotonically decreasing error" tests
     - [-] 2D
       - [X] default speed func
@@ -131,6 +139,15 @@
   - [ ] consolidate olim_util in olim_updates
   - [ ] implement olim4_mp1! (missed this...)
 * Ideas
+** Adaptive neighborhoods
+   - Maybe there's some way of selecting between different OLIMks
+     depending on the speed function or function values, so in a
+     certain regime we could drop e.g. from OLIM8 to OLIM4 and speed
+     the method up
+** Higher order OLIM?
+   - The "partially higher order" (2nd order) finite difference method
+     does a 2nd order finite difference update when the nodes are
+     available for it---we could extend this to OLIM straightforwardly
 ** Fast olim8_mp1 using exact Newton?
    - Can we do the olim8_mp1 update if we use an exact Newton line
      search?

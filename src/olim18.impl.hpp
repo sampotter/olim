@@ -187,6 +187,11 @@ void olim18_rect<node, line_updates, tri_updates, tetra_updates>::update_impl(
       if (nb[l2] && nb[l02]) TETRA122(l2, l02, l12);
     }
 
+    /**
+     * (1, 1, 1) 3-pt update
+     */
+    if (nb[l0] && nb[l1] && nb[l2]) TETRA111(l0, l1, l2);
+
     /*
      * (2, 2, 2) 3-pt update
      */
@@ -216,6 +221,11 @@ void olim18_rect<node, line_updates, tri_updates, tetra_updates>::update_impl(
       if (nb[l1] && nb[l01]) TETRA122(l1, l01, l12);
       if (nb[l2] && nb[l02]) TETRA122(l2, l02, l12);
     }
+
+    /**
+     * (1, 1, 1) 3-pt update
+     */
+    if (nb[l0] && nb[l1] && nb[l2]) TETRA111(l0, l1, l2);
 
     /*
      * (2, 2, 2) 3-pt update

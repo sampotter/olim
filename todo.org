@@ -10,6 +10,8 @@
 * New todo
   - [ ] Write an implementation of olim18 and olim26 that iterates over all valid tetrahedra
 * Collected from <2017-10-23 Mon>
+  - [ ] get rid of tetraXXX and replace with tetra<d0, d1, d2>
+    - [ ] tetra122 as special case (template specialization)
   - [ ] make plot.py generate lots of plots
     - [ ] errors
       - [ ] 2D
@@ -48,8 +50,6 @@
   - [ ] i changed the implementation of mp1 tri newton so that it now
     solves the constrained problem, and there is no longer any
     difference between unconstrained and constrained mp1 tri
-  - [ ] get rid of tetraXXX and replace with tetra<d0, d1, d2>
-    - [ ] tetra122 as special case (template specialization)
   - [ ] add 2d templatized test stuff
   - [ ] fix line num info in templatized tests (get it back)
   - [ ] speed_func -> scalar_field

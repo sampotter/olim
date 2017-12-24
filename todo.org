@@ -1,3 +1,8 @@
+* Things to tell Masha about
+  - [ ] bitvector rewrite
+  - [ ] skipping tetras
+  - [ ] projected newton
+  - [ ] show her a pathological case
 * Masha's todo list
    1. "Suppose slowness is smooth or Lipschitz continuous. Show that
       than one can use hierarchical update rules for saving CPU time."
@@ -9,9 +14,33 @@
   - [ ] algorithms
 * New todo
   - [ ] Write an implementation of olim18 and olim26 that iterates over all valid tetrahedra
+* New Newton's method for tetrahedra
+  - [-] finish prototyping new tetra newton in MATLAB
+    - [X] get qpe working
+    - [X] get qpi working
+    - [ ] replace quadprog with qpi in:
+      - [ ] F0_tetra_test
+      - [ ] F1_tetra_test
+  - [ ] replace old C++
+    - [ ] F0
+    - [ ] F1
 * Collected from <2017-10-23 Mon>
-  - [ ] get rid of tetraXXX and replace with tetra<d0, d1, d2>
+  - [ ] fix dP vs dP' fuckup
+  - [-] get rid of tetraXXX and replace with tetra<d0, d1, d2>
+    - [X] initial rewrite
     - [ ] tetra122 as special case (template specialization)
+  - [ ] write general 3D OLIM using template parameters for which
+    "groups" of updates to do
+  - [ ] test rewritten F1 in MATLAB
+  - [ ] rewrite F1 using CTFE in C++
+  - [ ] projected newton
+    - [ ] test in MATLAB
+      - [ ] F0
+      - [ ] F1
+  - [ ] skipping updates
+    - [ ] test in MATLAB
+      - [ ] F0
+      - [ ] F1
   - [ ] make plot.py generate lots of plots
     - [ ] errors
       - [ ] 2D

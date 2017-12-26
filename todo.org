@@ -14,16 +14,46 @@
   - [ ] algorithms
 * New todo
   - [ ] Write an implementation of olim18 and olim26 that iterates over all valid tetrahedra
-* New Newton's method for tetrahedra
-  - [-] finish prototyping new tetra newton in MATLAB
+* New Newton's method (constrained) for tetrahedra
+  - [X] finish prototyping new tetra newton in MATLAB
     - [X] get qpe working
     - [X] get qpi working
-    - [ ] replace quadprog with qpi in:
-      - [ ] F0_tetra_test
-      - [ ] F1_tetra_test
+      - [X] fix case where minimum is in the interior and x0 is on the
+        boundary
+    - [X] replace quadprog with qpi in:
+      - [X] F0_tetra_test.m
+      - [X] F1_tetra_test.m
+  - [X] minimize Rayleigh quotients to find lambda_min for Hessians
+    - just need to do this by brute force since minimization <=>
+      solving nonlinear equations for zero
   - [ ] replace old C++
-    - [ ] F0
-    - [ ] F1
+    - [ ] template version
+      - [ ] F0
+        - [ ] tri
+        - [ ] tetra
+      - [ ] F1
+        - [ ] tri
+        - [ ] tetra
+    - [ ] unstructured version
+      - [ ] F0
+        - [ ] tri
+        - [ ] tetra
+      - [ ] F1
+        - [ ] tri
+        - [ ] tetra
+    - [ ] skipping
+      - [ ] F0
+        - [ ] tri
+        - [ ] tetra
+      - [ ] F1
+        - [ ] tri
+        - [ ] tetra
+  - [ ] try nocedal & wright interpolation line search method
+* Unconstrained method stuff
+  - [ ] check if we're using the simplified descent direction for F0
+  - [ ] derive the simplified descent direction for F1
+  - [ ] try exact step size for F0
+  - [ ] derive exact step size for F1
 * Collected from <2017-10-23 Mon>
   - [ ] fix dP vs dP' fuckup
   - [-] get rid of tetraXXX and replace with tetra<d0, d1, d2>

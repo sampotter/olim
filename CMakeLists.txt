@@ -39,6 +39,7 @@ set (FMM_SRC_FILES
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/fmm.cpp
+  src/numopt.cpp
   src/olim_util.cpp
   src/qroots.cpp
   src/speed_funcs.cpp)
@@ -55,7 +56,7 @@ if (${BUILD_MEX_BINDINGS})
 						 # name on each.
 	COMMAND
 	  mex -output fmm -outdir ${CMAKE_CURRENT_BINARY_DIR}
-	  -L${CMAKE_CURRENT_BINARY_DIR} -lfmm src/mex.fmm.cpp
+	  -L${CMAKE_CURRENT_BINARY_DIR} -lfmm -larmadillo src/mex.fmm.cpp
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	MAIN_DEPENDENCY src/mex.fmm.cpp
 	DEPENDS ${FMM_SRC_FILES})

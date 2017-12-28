@@ -17,6 +17,9 @@ option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." ON)
 
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 
+find_package (Armadillo REQUIRED)
+include_directories (${ARMADILLO_INCLUDE_DIR})
+
 # If we have a macro like PRINT_UPDATES defined, because of the way
 # the preprocessor works, it's helpful to turn this warning on to make
 # sure that we're using PRINT_UPDATES correctly. If we don't have it
@@ -42,6 +45,8 @@ set (FMM_SRC_FILES
 
 add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+
+target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 
 if (${BUILD_MEX_BINDINGS})
   add_custom_command (
@@ -90,6 +95,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher
 	basic_marcher_3d
 	heap
+    numopt
     olim4_mp0
     olim4_mp1
     olim4_rhr

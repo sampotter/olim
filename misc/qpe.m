@@ -1,6 +1,8 @@
-function [xopt, p] = qpe(G, c, A, b)
+function xopt = qpe(G, c, A, b)
 % Solve an equality-constrained quadratic program using the Schur
 % complement method (following Nocedal & Wright)
-    mu = pinv(A*inv(G)*A')*A*inv(G)*c;
-    xopt = inv(G)*(A'*mu - c);
+    tmp1 = G\(A');
+    tmp2 = G\c;
+    mu = (A*tmp1)\(A*tmp2);
+    xopt = tmp1*mu - tmp2;
 end

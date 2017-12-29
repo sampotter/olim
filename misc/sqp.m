@@ -1,9 +1,5 @@
-function out = sqp(f, df, d2f, A, b, x0, tol, niters, stepsize)
+function out = sqp(f, df, d2f, A, b, x0, tol, niters)
     n = size(A, 2);
-    
-    if nargin < 9
-        stepsize = false;
-    end
     
     out = struct;
     out.xs = zeros(n, niters);
@@ -55,22 +51,15 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters, stepsize)
         g = xopt - x;
         
         % Compute step size alpha
-        if strcmp(class(stepsize), 'function_handle')
-            alpha = stepsize(x)
-        else
-            c1 = 1e-4;
-            alpha = 1;
-            if norm(g, 'inf') > 1e2*tol
-                if f(x + alpha*g) > f(x) + c1*alpha*dot(df(x), g)
-                    alpha = 0.5;
-                    fprintf('- alpha = %g\n', alpha);
-                end
-                while f(x + alpha*g) > f(x) + c1*alpha*dot(df(x), g)
-                    alpha = 0.95*alpha;
-                    fprintf('- alpha = %g\n', alpha);
-                end
+        c1 = 1e-4;
+        alpha = 1;
+        if norm(g, 'inf') > tol
+            while f(x + alpha*g) > f(x) + c1*alpha*dot(df(x), g)
+                alpha = 0.5*alpha;
+                fprintf('- alpha = %g\n', alpha);
             end
         end
+
         out.alphas(k) = alpha;
 
         out.xs(:, k + 1) = x + alpha*g;

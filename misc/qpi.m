@@ -29,7 +29,7 @@ function x = qpi(H, c, A, b, x0, tol, niters)
 
     k = 1;
     while true
-        p = qpe(H, H*x + c, A(W, :), zeros(length(W), 1));
+        p = qpe(H, H*x + c, A(W, :));
         if norm(p, 'inf') <= tol
             lam = nan(m, 1);
             lam(W) = A(W, :)'\(H*x + c);

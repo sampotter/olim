@@ -36,7 +36,7 @@ namespace test {
 
     // Handle the case where both t and t_hat are +/- infinity.
     if (std::isinf(t) && std::isinf(t_hat)) {
-      if ((t > 0 && t_hat) < 0 || (t < 0 && t_hat > 0)) {
+      if ((t > 0 && t_hat < 0) || (t < 0 && t_hat > 0)) {
         fprintf(stdout, "failure (%s:%d): |%g - %g| == %g\n",
                 filename, line, t, t_hat, t - t_hat);
       } else {

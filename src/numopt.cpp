@@ -88,7 +88,7 @@ arma::vec numopt::qpi(
         numer.fill(arma::datum::nan);
         numer(V) = b(V) - A.rows(V)*x;
         mask.fill(arma::fill::zeros);
-        mask(1 - ind).fill(arma::datum::nan);
+        mask.elem(arma::find(ind == 0)).fill(arma::datum::nan);
         masked = mask + numer/denom;
         alpha = std::max(0., std::min(masked.min(), alpha));
         if (alpha < 1) {
@@ -99,10 +99,10 @@ arma::vec numopt::qpi(
       x += alpha*p;
     }
 
-    ++k;
-  }
-  if (k == niters && error) {
-    *error = true;
+    if (++k == niters && error) {
+      *error = true;
+      break;
+    }
   }
   return x;
 }
@@ -118,11 +118,11 @@ arma::vec numopt::sqp(
 
   arma::mat H;
   arma::vec x0, x1 = xinit, c, g;
-  double f0, f1, lambda_min, qpi_tol, c1 = 1e-4, alpha;
+  double f0, f1 = f(x1), lambda_min, qpi_tol, c1 = 1e-4, alpha;
 
   bool qpi_error;
   int k = 0, found_opt, qpi_niters = 10;
-  while (k < niters) {
+  while (true) {
     // Compute the Hessian for the current iterate and ensure that
     // it's symmetric
     H = d2f(x1);
@@ -153,7 +153,7 @@ arma::vec numopt::sqp(
 
     // Compute step size
     alpha = 1;
-    if (arma::norm(g, "inf") > 1e2*tol) {
+    if (arma::norm(g, "inf") > tol) {
       while (f(x1 + alpha*g) > f1 + c1*alpha*arma::dot(df(x1), g)) {
         alpha /= 2;
       }
@@ -168,10 +168,10 @@ arma::vec numopt::sqp(
       break;
     }
     
-    ++k;
-  }
-  if (k == niters && error) {
-    *error = true;
+    if (++k == niters && error) {
+      *error = true;
+      break;
+    }
   }
   return x1;
 }

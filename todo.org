@@ -46,7 +46,26 @@
       - [ ] F1
         - [ ] tri
         - [ ] tetra
-  - [ ] turned off tetra updates test---turn this back on when done
+  - [-] get all tests working
+    - [ ] olim18_mp0.test.cpp
+    - [ ] olim18_mp1.test.cpp
+    - [ ] olim18_rhr.test.cpp
+    - [ ] olim26_mp0.test.cpp
+    - [ ] olim26_mp1.test.cpp
+    - [ ] olim26_rhr.test.cpp
+    - [ ] olim3d.test.cpp
+    - [ ] olim4_mp0.test.cpp
+    - [ ] olim4_mp1.test.cpp
+    - [ ] olim4_rhr.test.cpp
+    - [ ] olim6_mp0.test.cpp
+    - [ ] olim6_mp1.test.cpp
+    - [ ] olim6_rhr.test.cpp
+    - [ ] olim8_mp0.test.cpp
+    - [ ] olim8_mp1.test.cpp
+    - [ ] olim8_rhr.test.cpp
+    - [ ] update_rules.tetra_updates.test.cpp
+    - [X] update_rules.tri_updates.test.cpp
+  - [ ] consider removing speed estimators
   - [ ] get line_updates to conform with new template style
     (e.g. "degree" template parameter)
   - [ ] try nocedal & wright interpolation line search method

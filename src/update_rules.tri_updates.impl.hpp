@@ -13,11 +13,10 @@ template <char p0, char p1>
 double
 update_rules::tri_updates<speed_est, degree>::tri(
   double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>) const
+  ffvec<p0>, ffvec<p1>, double tol) const
 {
   return tri_impl(
-    u0, u1, s, s0, s1, h,
-    ffvec<p0> {}, ffvec<p1> {},
+    u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol,
     std::integral_constant<char, degree> {});
 }
 
@@ -29,8 +28,10 @@ template <char p0, char p1>
 double
 update_rules::tri_updates<speed_est, degree>::tri_impl(
   double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>, std::integral_constant<char, 0>) const
+  ffvec<p0>, ffvec<p1>, double tol, std::integral_constant<char, 0>) const
 {
+  (void) tol;
+
   constexpr char p0_dot_p0 = dot(p0, p0);
   constexpr char p0_dot_p1 = dot(p0, p1);
   constexpr char p1_dot_p1 = dot(p1, p1);
@@ -46,7 +47,7 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0*dp_dot_p0;
   double const disc = b*b - a*c;
 
-  if (disc < 0) {
+  if (disc <= 0) {
     return std::min(u0 + sh*sqrt(p0_dot_p0), u1 + sh*sqrt(p1_dot_p1));
   } else {
     double const lhs = -b/a;
@@ -54,8 +55,8 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     double const l1 = sqrt((dp_dot_dp*lam1 + 2*dp_dot_p0)*lam1 + p0_dot_p0);
     double const l2 = sqrt((dp_dot_dp*lam2 + 2*dp_dot_p0)*lam2 + p0_dot_p0);
-    double const check1 = alpha*l1 - dp_dot_p0 - lam1*dp_dot_dp;
-    double const check2 = alpha*l2 - dp_dot_p0 - lam2*dp_dot_dp;
+    double const check1 = fabs(alpha*l1 - dp_dot_p0 - lam1*dp_dot_dp);
+    double const check2 = fabs(alpha*l2 - dp_dot_p0 - lam2*dp_dot_dp);
     double const lam = check1 < check2 ? lam1 : lam2;
     if (lam < 0 || 1 < lam) {
       return std::min(u0 + sh*sqrt(p0_dot_p0), u1 + sh*sqrt(p1_dot_p1));
@@ -67,23 +68,22 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 }
 
 #define u__(x) ((1 - (x))*u0 + (x)*u1)
-#define s__(x) this->s_hat(s, s0, s1, (x))
 #define q__(x) ((dp_dot_dp*x + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define l__(x) std::sqrt(q__(x))
+#define theta__ this->theta()
+#define s__(x) ((1 - theta__)*s + theta__*((1 - (x))*s0 + (x)*s1))
 #define F1__(x) (u__(x) + h*s__(x)*l__(x))
-#define dF1__(x) (du + h*(ds*this->theta()*q__(x) + s__(x)*dp_dot_plam)/l__(x))
+#define dF1__(x) (du + h*(ds*theta__*q__(x) + s__(x)*dp_dot_plam)/l__(x))
 #define d2F1__(x) h*(s__(x)*dp_dot_plam*dp_dot_plam/q__(x) + \
-                     ds*this->theta()*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
+                     ds*theta__*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
 
 template <class speed_est, char degree>
 template <char p0, char p1>
 double
 update_rules::tri_updates<speed_est, degree>::tri_impl(
   double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>, std::integral_constant<char, 1>) const
+  ffvec<p0>, ffvec<p1>, double tol, std::integral_constant<char, 1>) const
 {
-  constexpr double tol = 1e-13;
-
   constexpr char p0_dot_p0 = dot(p0, p0);
   constexpr char p0_dot_p1 = dot(p0, p1);
   constexpr char p1_dot_p1 = dot(p1, p1);
@@ -99,8 +99,10 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   F1[0] = F1__(lam[0]);
   do {
     dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
-    g = -dF1__(lam[0])/d2F1__(lam[0]);
-    lam[1] = std::max(0., std::min(1., lam[0] - g));
+    double tmp1 = dF1__(lam[0]);
+    double tmp2 = d2F1__(lam[0]);
+    g = -tmp1/tmp2;
+    lam[1] = std::max(0., std::min(1., lam[0] + g));
     F1[1] = F1__(lam[1]);
     conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
     lam[0] = lam[1];
@@ -110,9 +112,10 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 }
 
 #undef u__
-#undef s__
 #undef q__
 #undef l__
+#undef theta__
+#undef s__
 #undef F1__
 #undef dF1__
 #undef d2F1__

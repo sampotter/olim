@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "common.macros.hpp"
 #include "speed_est.hpp"
 #include "update_rules.utils.hpp"
 
@@ -14,17 +15,19 @@ namespace update_rules {
     template <char p0, char p1>
     double tri(
       double u0, double u1, double s, double s0, double s1, double h,
-      ffvec<p0>, ffvec<p1>) const;
+      ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
 
   private:
     template <char p0, char p1>
     double tri_impl(
       double u0, double u1, double s, double s0, double s1, double h,
-      ffvec<p0>, ffvec<p1>, std::integral_constant<char, 0>) const;
+      ffvec<p0>, ffvec<p1>, double tol,
+      std::integral_constant<char, 0>) const;
     template <char p0, char p1>
     double tri_impl(
       double u0, double u1, double s, double s0, double s1, double h,
-      ffvec<p0>, ffvec<p1>, std::integral_constant<char, 1>) const;
+      ffvec<p0>, ffvec<p1>, double tol,
+      std::integral_constant<char, 1>) const;
   };
 
   using mp0_tri_updates = tri_updates<mp_speed_est, 0>;

@@ -26,12 +26,11 @@
   - [X] minimize Rayleigh quotients to find lambda_min for Hessians
     - just need to do this by brute force since minimization <=>
       solving nonlinear equations for zero
-  - [-] write C++ utility module for all this
+  - [X] write C++ utility module for all this
     - [X] write qpe
     - [X] write qpi
-    - [ ] write sqp
-    - [ ] write tests
-    - [ ] turned off tetra updates test---turn this back on when done
+    - [X] write sqp
+    - [X] write tests
   - [ ] replace old C++
     - [ ] template version
       - [ ] F0
@@ -47,8 +46,13 @@
       - [ ] F1
         - [ ] tri
         - [ ] tetra
+  - [ ] turned off tetra updates test---turn this back on when done
+  - [ ] get line_updates to conform with new template style
+    (e.g. "degree" template parameter)
   - [ ] try nocedal & wright interpolation line search method
   - [ ] try golden section search
+  - [ ] get olim to conditionally use moore marcher or neumann marcher
+    depending on adj and diag bools
 * Unconstrained method stuff
   once we get the constrained method working, we'll take a look at
   this---the stuff here doesn't make much sense for the constrained

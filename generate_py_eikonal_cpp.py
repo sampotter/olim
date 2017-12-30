@@ -8,13 +8,7 @@ marchers = {
     'olim4_rhr': 'Olim4Rect',
     'olim8_mp0': 'Olim8Mid0',
     'olim8_mp1': 'Olim8Mid1',
-    'olim8_rhr': 'Olim8Rect',
-    'olim8hu_mp0': 'Olim8HierMid0',
-    'olim8hu_mp1': 'Olim8HierMid1',
-    'olim8hu_rhr': 'Olim8HierRect',
-    'olim8lut_mp0': 'Olim8LutMid0',
-    'olim8lut_mp1': 'Olim8LutMid1',
-    'olim8lut_rhr': 'Olim8LutRect',
+    'olim8_rhr': 'Olim8Rect'
 }
 
 # TODO: we should probably make the format that's computed here
@@ -118,11 +112,8 @@ def build_src_txt():
 
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"
-#include "olim4.hpp"
-#include "olim6.hpp"
-#include "olim8.hpp"
-#include "olim18.hpp"
-#include "olim26.hpp"
+#include "olim.hpp"
+#include "olim3d.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;

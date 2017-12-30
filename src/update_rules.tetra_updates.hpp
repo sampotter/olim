@@ -1,34 +1,36 @@
 #ifndef __UPDATE_RULES_TETRA_UPDATES_HPP__
 #define __UPDATE_RULES_TETRA_UPDATES_HPP__
 
-#include "speed_estimators.hpp"
+#include "speed_est.hpp"
+#include "update_rules.utils.hpp"
 
 namespace update_rules {
-  template <class speed_estimator>
-  struct rect_tetra_updates: public speed_estimator {
-    double tetra111(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra122(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra123(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra222(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
+  template <class speed_est, char degree>
+  struct tetra_updates: public speed_est {
+    using speed_est::speed_est;
+
+    template <char p0, char p1, char p2>
+    double tetra(
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h,
+      ffvec<p0>, ffvec<p1>, ffvec<p2>) const;
+
+  private:
+    template <char p0, char p1, char p2>
+    double tetra_impl(
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h,
+      ffvec<p0>, ffvec<p1>, ffvec<p2>, std::integral_constant<char, 0>) const;
+    template <char p0, char p1, char p2>
+    double tetra_impl(
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h,
+      ffvec<p0>, ffvec<p1>, ffvec<p2>, std::integral_constant<char, 1>) const;
   };
 
-  using rhr_tetra_updates = rect_tetra_updates<rhr_speed_estimator>;
-  using mp0_tetra_updates = rect_tetra_updates<mp_speed_estimator>;
-
-  struct mp1_tetra_updates {
-    double tetra111(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra122(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra123(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-    double tetra222(double u0, double u1, double u2, double s,
-                    double s0, double s1, double s2, double h) const;
-  };
+  using mp0_tetra_updates = tetra_updates<mp_speed_est, 0>;
+  using mp1_tetra_updates = tetra_updates<mp_speed_est, 1>;
+  using rhr_tetra_updates = tetra_updates<rhr_speed_est, 0>;
 }
 
 #include "update_rules.tetra_updates.impl.hpp"

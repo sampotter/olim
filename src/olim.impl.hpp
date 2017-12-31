@@ -3,12 +3,16 @@
 
 #include "common.macros.hpp"
 #include "update_rules.utils.hpp"
+#include <src/config.hpp>
 
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
 int olim<node, line_updates, tri_updates, adj_updates, diag_updates>::di[] = {
   -1, -1, 0, 1, 1, 1, 0, -1
 };
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
@@ -46,6 +50,10 @@ void olim<node, line_updates, tri_updates,
           adj_updates, diag_updates>::update_impl(int i, int j, double & T) {
   using std::min;
 
+#ifdef PRINT_UPDATES
+  printf("olim::update_impl(i = %d, j = %d)\n", i, j);
+#endif
+
   abstract_node * nb[8];
   memset(nb, 0x0, 8*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, nb);
@@ -68,6 +76,10 @@ void olim<node, line_updates, tri_updates,
       TRI(j, k, 11, 10);
     }
   }
+
+#ifdef PRINT_UPDATES
+  printf("olim::update_impl: T <- %g\n", T);
+#endif
 }
 
 #undef P01

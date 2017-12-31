@@ -1,13 +1,22 @@
 #include "basic_marcher.hpp"
 
+#include <src/config.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 #include "common.macros.hpp"
 
 void basic_marcher::update_impl(int i, int j, double & T) {
   using std::min;
+
+#ifdef PRINT_UPDATES
+  printf("basic_marcher::update_impl(i = %d, j = %d)\n", i, j);
+#endif
 
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(i, j, nb);
@@ -28,4 +37,8 @@ void basic_marcher::update_impl(int i, int j, double & T) {
   } else {
     assert(false);
   }
+
+#ifdef PRINT_UPDATES
+  printf("basic_marcher::update_impl: T <- %g\n", T);
+#endif
 }

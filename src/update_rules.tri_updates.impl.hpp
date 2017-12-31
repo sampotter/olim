@@ -1,7 +1,12 @@
 #ifndef __UPDATE_RULES_TRI_UPDATES_IMPL_HPP__
 #define __UPDATE_RULES_TRI_UPDATES_IMPL_HPP__
 
+#include <src/config.hpp>
+
 #include <algorithm>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif
 
 #include "common.hpp"
 #include "common.defs.hpp"
@@ -15,9 +20,15 @@ update_rules::tri_updates<speed_est, degree>::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
 {
-  return tri_impl(
+  double T = tri_impl(
     u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol,
     std::integral_constant<char, degree> {});
+#ifdef PRINT_UPDATES
+  printf("tri<%d, %d, %d>::update_impl(u0 = %g, u1 = %g, "
+         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n", degree, p0, p1,
+         u0, u1, s, s0, s1, h, T);
+#endif
+  return T;
 }
 
 /**

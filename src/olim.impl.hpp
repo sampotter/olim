@@ -5,20 +5,10 @@
 #include "update_rules.utils.hpp"
 #include <src/config.hpp>
 
-template <class node, class line_updates, class tri_updates, bool adj_updates,
-          bool diag_updates>
-int olim<node, line_updates, tri_updates, adj_updates, diag_updates>::di[] = {
-  -1, -1, 0, 1, 1, 1, 0, -1
-};
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
 
-template <class node, class line_updates, class tri_updates, bool adj_updates,
-          bool diag_updates>
-int olim<node, line_updates, tri_updates, adj_updates, diag_updates>::dj[] = {
-  0, 1, 1, 1, 0, -1, -1, -1
-};
 
 #define P01 1
 #define P10 2
@@ -61,7 +51,9 @@ void olim<node, line_updates, tri_updates,
   double h = this->get_h(), s = this->speed(i, j), s_[8];
   for (int k = 0; k < 8; ++k) {
     if (nb[k]) {
-      s_[k] = this->speed(i + di[k], j + dj[k]);
+      s_[k] = this->speed(
+        i + moore_marcher<node>::di[k],
+        j + moore_marcher<node>::dj[k]);
     }
   }
 

@@ -1,20 +1,17 @@
 #ifndef __OLIM_HPP__
 #define __OLIM_HPP__
 
-#include "neumann_marcher.hpp"
+#include "moore_marcher.hpp"
 #include "node.hpp"
 #include "update_rules.line_updates.hpp"
 #include "update_rules.tri_updates.hpp"
 
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
-struct olim: public neumann_marcher<node>, public line_updates,
+struct olim: public moore_marcher<node>, public line_updates,
              public tri_updates {
   static_assert(adj_updates || diag_updates, "error");
-  using neumann_marcher<node>::neumann_marcher;
-protected:
-  static int di[8];
-  static int dj[8];
+  using moore_marcher<node>::moore_marcher;
 private:
   virtual void update_impl(int i, int j, double & T);
 };

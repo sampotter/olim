@@ -58,7 +58,7 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0*dp_dot_p0;
   double const disc = b*b - a*c;
 
-  if (disc <= 0) {
+  if (disc < 0 || a == 0) {
     return std::min(u0 + sh*sqrt(p0_dot_p0), u1 + sh*sqrt(p1_dot_p1));
   } else {
     double const lhs = -b/a;

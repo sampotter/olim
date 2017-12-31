@@ -1,14 +1,14 @@
 #ifndef __OLIM_IMPL_HPP__
 #define __OLIM_IMPL_HPP__
 
-#include "common.macros.hpp"
-#include "update_rules.utils.hpp"
 #include <src/config.hpp>
 
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
 
+#include "common.macros.hpp"
+#include "update_rules.utils.hpp"
 
 #define P01 1
 #define P10 2
@@ -36,8 +36,9 @@
 
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
-void olim<node, line_updates, tri_updates,
-          adj_updates, diag_updates>::update_impl(int i, int j, double & T) {
+void olim<node, line_updates, tri_updates, adj_updates,
+          diag_updates>::update_impl(int i, int j, double & T)
+{
   using std::min;
 
 #ifdef PRINT_UPDATES
@@ -77,7 +78,6 @@ void olim<node, line_updates, tri_updates,
 #undef P01
 #undef P10
 #undef P11
-
 #undef LINE
 #undef TRI
 

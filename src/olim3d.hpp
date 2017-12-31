@@ -13,42 +13,27 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
                public tetra_updates
 {
   static constexpr bool do_line2_updates =
-    groups::group_I ||
-    groups::group_II ||
-    groups::group_III ||
-    groups::group_IV_b ||
-    groups::group_V ||
-    groups::group_VI_b;
+    groups::group_I || groups::group_II || groups::group_III ||
+    groups::group_IV_b || groups::group_V || groups::group_VI_b;
 
   static constexpr bool do_line3_updates =
-    groups::group_V ||
-    groups::group_VI_a ||
-    groups::group_VI_b;
+    groups::group_V || groups::group_VI_a || groups::group_VI_b;
 
   static constexpr bool do_tri11_updates =
-    groups::group_II ||
-    groups::group_III ||
-    groups::group_IV_a ||
+    groups::group_II || groups::group_III || groups::group_IV_a ||
     groups::group_VI_a;
 
   static constexpr bool do_tri12_updates =
-    groups::group_I ||
-    groups::group_II ||
-    groups::group_III ||
-    groups::group_V;
+    groups::group_I || groups::group_II || groups::group_III || groups::group_V;
 
   static constexpr bool do_tri13_updates = groups::group_V;
 
   static constexpr bool do_tri22_updates =
-    groups::group_I ||
-    groups::group_II ||
-    groups::group_III ||
-    groups::group_IV_b ||
-    groups::group_VI_b;
+    groups::group_I || groups::group_II || groups::group_III ||
+    groups::group_IV_b || groups::group_VI_b;
 
   static constexpr bool do_tri23_updates =
-    groups::group_V ||
-    groups::group_VI_b;
+    groups::group_V || groups::group_VI_b;
 
   using marcher_3d<node>::marcher_3d;
 protected:

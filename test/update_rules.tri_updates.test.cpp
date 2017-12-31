@@ -41,7 +41,7 @@ void rhr_tri11_is_symmetric() {
 }
 
 void rhr_tri11_works() {
-  IS_APPROX_EQUAL(TRI11(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI11(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
   IS_APPROX_EQUAL(TRI11(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
   IS_APPROX_EQUAL(TRI11(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
 }
@@ -83,7 +83,7 @@ void rhr_tri13_works() {
 }
 
 void rhr_tri22_works() {
-  IS_APPROX_EQUAL(TRI22(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
+  IS_APPROX_EQUAL(TRI22(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.224744871391589);
   IS_APPROX_EQUAL(TRI22(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
   IS_APPROX_EQUAL(TRI22(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
 

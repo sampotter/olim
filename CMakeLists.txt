@@ -97,7 +97,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher_3d
 	heap
     numopt
-    olim3d
     olim4_mp0
     olim4_mp1
     olim4_rhr

@@ -7,12 +7,16 @@ s = rand;
 s0 = rand;
 s1 = rand;
 theta = rand;
+p0 = randn(3, 1);
+p1 = randn(3, 1);
+
+% theta = 0.5;
+% u0 = 0; u1 = 1.41421; s = 1; s0 = 1; s1 = 1; h = 1;
+% p0 = [1; 0; 0];
+% p1 = [0; 1; 0];
 
 fprintf(['u0 = %g, u1 = %g, h = %g, s = %g, s0 = %g, s1 = %g, theta ' ...
          '= %g\n'], u0, u1, h, s, s0, s1, theta);
-
-p0 = randn(3, 1);
-p1 = randn(3, 1);
 
 fprintf('p0 = (%g, %g, %g)\n', p0(1), p0(2), p0(3));
 fprintf('p1 = (%g, %g, %g)\n', p1(1), p1(2), p1(3));
@@ -23,7 +27,6 @@ ds = s1 - s0;
 s = @(lam) (1 - theta)*s + theta*((1 - lam)*s0 + lam*s1);
 
 p = @(lam) p0 + lam*dp;
-cprojp = @(lam) eye(3) - p(lam)*p(lam)'/(p(lam)'*p(lam));
 
 u = @(lam) (1 - lam)*u0 + lam*u1;
 
@@ -32,11 +35,6 @@ dq = @(lam) 2*dp'*p(lam);
 d2q = 2*dp'*dp;
 
 l = @(lam) sqrt(q(lam));
-
-% F1 = @(lam) u(lam) + h*s(lam)*l(lam);
-% dF1 = @(lam) du + h*(ds*theta*q(lam) + s(lam)*dq(lam)/2)/l(lam);
-% d2F1 = @(lam) h*(s(lam)*dq(lam)^2 + 2*q(lam)*(2*ds*theta*dq(lam) + ...
-% s(lam)*d2q))/(4*q(lam)*l(lam));
 
 F1 = @(lam) u(lam) + h*s(lam)*sqrt(p(lam)'*p(lam));
 dF1 = @(lam) du + h*(ds*theta*p(lam)'*p(lam) + s(lam)*dp'*p(lam))/l(lam);
@@ -48,7 +46,7 @@ g = @(lam) -dF1(lam)/d2F1(lam);
 iter = 1;
 maxiters = 100;
 
-lam(iter) = rand;
+lam(iter) = 0.5;
 F1iters(iter) = F1(lam(iter));
 alpha(iter) = 1;
 
@@ -76,7 +74,8 @@ while iter < 100 && norm(g(lam(iter)), 'inf') > eps
         alpha(iter) = 0.9*alpha(iter);
     end
 
-    lam(iter + 1) = lam(iter) + alpha(iter)*g(lam(iter));
+    gs(iter) = g(lam(iter));
+    lam(iter + 1) = lam(iter) + alpha(iter)*gs(iter);
     iter = iter + 1;
     lam(iter) = max(0, min(1, lam(iter)));
 
@@ -89,13 +88,9 @@ while iter < 100 && norm(g(lam(iter)), 'inf') > eps
     if abs(dlam) < tol || abs(dF1iters) < tol
         break
     end
-
-    % if (lam(iter) < 0 || lam(iter) > 1) && (lam(iter - 1) < 0 || ...
-    %                                         lam(iter - 1) > 1)
-    %     break;
-    % end
 end
 arglam = max(0, min(1, lam(iter)));
+fprintf('F1 = %0.16g\n', F1(arglam));
 
 Lams = linspace(-0.5, 1.5, 151);
 F1s = zeros(size(Lams), 'like', Lams);

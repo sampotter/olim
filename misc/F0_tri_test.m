@@ -1,18 +1,22 @@
 clear;
 
-u0 = rand;
-u1 = rand;
-h = rand;
-s = rand;
-s0 = rand;
-s1 = rand;
-theta = 0.5;
+% u0 = rand;
+% u1 = rand;
+% h = rand;
+% s = rand;
+% s0 = rand;
+% s1 = rand;
+% theta = rand;
+% p0 = randn(3, 1);
+% p1 = randn(3, 1);
+
+theta = 0;
+u0=0; u1=0; s=1; s0=1; s1=1; h=1;
+p0 = [1; 1; 0];
+p1 = [0; 1; 1];
 
 fprintf(['u0 = %g, u1 = %g, h = %g, s = %g, s0 = %g, s1 = %g, theta ' ...
          '= %g\n'], u0, u1, h, s, s0, s1, theta);
-
-p0 = randn(3, 1);
-p1 = randn(3, 1);
 
 fprintf('p0 = (%g, %g, %g)\n', p0(1), p0(2), p0(3));
 fprintf('p1 = (%g, %g, %g)\n', p1(1), p1(2), p1(3));
@@ -75,6 +79,7 @@ else
     fprintf('check1 = %g, check2 = %g\n', check(lam1), check(lam2));
     fprintf('lam1 = %g, lam2 = %g, arglam = %g\n', lam1, lam2, arglam);
 end
+fprintf('F0 = %0.16g\n', F0(arglam));
 
 figure;
 hold on;

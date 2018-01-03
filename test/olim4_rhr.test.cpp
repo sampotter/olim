@@ -1,16 +1,14 @@
-#include "olim4.hpp"
 #include "olim.test.common.hpp"
+
+#include <basic_marcher.hpp>
+#include <olim.hpp>
 
 int main() {
   using olim = olim4_rhr;
 
   trivial_case_works<olim>();
   adjacent_update_works<olim>();
-
-  int nmin = 5, nmax = 31;
-  for (size_t i = 0; i < speed_funcs.size(); ++i) {
-    auto s = speed_funcs[i];
-    auto f = speed_func_solns[i];
-    error_is_monotonic<olim>(nmin, nmax, s, f);
+  for (auto & s: speed_funcs) {
+    olims_agree<olim, basic_marcher>(s);
   }
 }

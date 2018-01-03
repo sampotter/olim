@@ -39,13 +39,17 @@
       - [ ] F1
         - [ ] tri
         - [ ] tetra
-    - [ ] unstructured version
+    - [ ] general p0, p1, p2 version
       - [ ] F0
         - [ ] tri
         - [ ] tetra
       - [ ] F1
         - [ ] tri
         - [ ] tetra
+  - [X] add general speed func test for olim4_rhr
+  - [ ] add the rest of the 3d speed funcs and extend the tests to use
+    them and iterate over them
+    - also make an array of pairs of 2d/3d speed funcs for simpler iteration
   - [-] get all tests working
     - [ ] olim18_mp0.test.cpp
     - [ ] olim18_mp1.test.cpp
@@ -54,12 +58,12 @@
     - [ ] olim26_mp1.test.cpp
     - [ ] olim26_rhr.test.cpp
     - [ ] olim3d.test.cpp
-    - [ ] olim4_mp0.test.cpp
-    - [ ] olim4_mp1.test.cpp
-    - [ ] olim4_rhr.test.cpp
-    - [ ] olim6_mp0.test.cpp
-    - [ ] olim6_mp1.test.cpp
-    - [ ] olim6_rhr.test.cpp
+    - [X] olim4_mp0.test.cpp
+    - [X] olim4_mp1.test.cpp
+    - [X] olim4_rhr.test.cpp
+    - [X] olim6_mp0.test.cpp
+    - [X] olim6_mp1.test.cpp
+    - [X] olim6_rhr.test.cpp
     - [ ] olim8_mp0.test.cpp
     - [ ] olim8_mp1.test.cpp
     - [ ] olim8_rhr.test.cpp

@@ -176,16 +176,20 @@ void octants_are_correct(double diag2val, double diag3val) {
 }
 
 template <class olim, class olim3d>
-void planes_are_correct(int n = 11) {
+void planes_are_correct(
+  int n = 11,
+  speed_func s = (speed_func) default_speed_func,
+  speed_func_3d s3d = (speed_func_3d) default_speed_func)
+{
   assert(n % 2 == 1);
 
   double h = 2.0/(n - 1);
   
-  olim m {n, n, h, (speed_func) default_speed_func, 1, 1};
+  olim m {n, n, h, s, 1, 1};
   m.add_boundary_node(n/2, n/2);
   m.run();
   
-  olim3d m3d {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
+  olim3d m3d {n, n, n, h, s3d, 1, 1, 1};
   m3d.add_boundary_node(n/2, n/2, n/2);
   m3d.run();
 
@@ -295,15 +299,15 @@ void plane_boundaries_are_correct() {
 }
 
 template <class olim1, class olim2>
-void olims_agree(int n = 11) {
+void olims_agree(speed_func s = default_speed_func, int n = 11) {
   double h = 2.0/(n - 1);
   int i0 = n/2;
 
-  olim1 m1 {n, n, h, (speed_func) default_speed_func, 1, 1};
+  olim1 m1 {n, n, h, s, 1, 1};
   m1.add_boundary_node(i0, i0);
   m1.run();
 
-  olim2 m2 {n, n, h, (speed_func) default_speed_func, 1, 1};
+  olim2 m2 {n, n, h, s, 1, 1};
   m2.add_boundary_node(i0, i0);
   m2.run();
 

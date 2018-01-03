@@ -3,6 +3,8 @@
 
 #include <array>
 
+#include "typedefs.h"
+
 double default_speed_func(double x, double y);
 double default_speed_func_soln(double x, double y);
 
@@ -34,7 +36,7 @@ double f6(double x, double y);
 double s7(double x, double y);
 double f7(double x, double y);
 
-static std::array<double(*)(double, double), 8> speed_funcs {{
+static std::array<speed_func, 8> speed_funcs {{
   default_speed_func, s1, s2, s3, s4, s5, s6, s7
 }};
 

@@ -88,6 +88,9 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 #define d2F1__(x) h*(s__(x)*dp_dot_plam*dp_dot_plam/q__(x) + \
                      ds*theta__*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
 
+/**
+ * F1 specialization
+ */
 template <class speed_est, char degree>
 template <char p0, char p1>
 double

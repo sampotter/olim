@@ -87,8 +87,8 @@ using olim6_rhr = olim3d_rhr<olim6_groups>;
 
 struct olim18_groups {
   static constexpr bool group_I = true;
-  static constexpr bool group_II = false;
-  static constexpr bool group_III = false;
+  static constexpr bool group_II = true;
+  static constexpr bool group_III = true;
   static constexpr bool group_IV_a = true;
   static constexpr bool group_IV_b = true;
   static constexpr bool group_V = false;

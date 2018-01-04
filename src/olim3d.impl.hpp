@@ -2,28 +2,6 @@
 #define __OLIM3D_IMPL_HPP__
 
 /**
- * This enum class enumerates the eight standard octants. With the
- * lowest three bits labeled (b2, b1, b0), our convention is:
- * 
- * - b0 = 1 if W and 0 if E
- * - b1 = 1 if N and 0 if S
- * - b2 = 1 if U and 0 if D
- *
- * This enumeration is used to iterate over the octants during each
- * update.
- */
-namespace octant {
-  constexpr int DSE = 0;
-  constexpr int DSW = 0;
-  constexpr int DNE = 0;
-  constexpr int DNW = 0;
-  constexpr int USE = 0;
-  constexpr int USW = 0;
-  constexpr int UNE = 0;
-  constexpr int UNW = 0;
-}
-
-/**
  * This table contains the parity (sum of number of bits % 2) of the
  * first 8 chars. The following function is implemented using this as
  * a lookup table. The parity is also the handedness of the octant

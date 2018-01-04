@@ -250,25 +250,9 @@ void olim3d<
   /**
    * Line updates:
    */
-  for (int i = 0; i < 6; ++i) {
-    if (nb[i]) {
-      LINE(i, 1);
-    }
-  }
-  if (do_line2_updates) {
-    for (int i = 6; i < 18; ++i) {
-      if (nb[i]) {
-        LINE(i, 2);
-      }
-    }
-  }
-  if (do_line3_updates) {
-    for (int i = 18; i < 26; ++i) {
-      if (nb[i]) {
-        LINE(i, 3);
-      }
-    }
-  }
+  for (int l = 0; l < 6; ++l) LINE(l, 1);
+  if (do_line2_updates) for (int l = 6; l < 18; ++l) LINE(l, 2);
+  if (do_line3_updates) for (int l = 18; l < 26; ++l) LINE(l, 3);
 
   for (int octant = 0; octant < 8; ++octant) {
     int * inds = oct2inds[octant];
@@ -361,5 +345,12 @@ void olim3d<
 #undef LINE
 #undef TRI
 #undef TETRA
+#undef P001
+#undef P010
+#undef P011
+#undef P100
+#undef P101
+#undef P110
+#undef P111
 
 #endif // __OLIM3D_IMPL_HPP__

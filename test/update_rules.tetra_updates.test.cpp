@@ -144,6 +144,25 @@ void tetra111_works() {
   }
 }
 
+void tetra122_works() {
+  update_rules::mp0_tetra_updates r;
+  {
+    double u0 = 1.9915638315627207;
+    double u1 = 1.4142135623730949;
+    double u2 = 2;
+    double s = 1;
+    double s0 = 1;
+    double s1 = 1;
+    double s2 = 1;
+    double h = 1;
+    double uhat = 2.781997898655415;
+    IS_APPROX_EQUAL(
+      r.tetra(u0, u1, u2, s, s0, s1, s2, h,
+              ffvec<P001> {}, ffvec<P101> {}, ffvec<P110> {}),
+      uhat);
+  }
+}
+
 void tetra123_works() {
   IS_APPROX_EQUAL(TETRA123(updates, 0, 0, 0, 1, 1, 1, 1, 1), 1.0);
 }
@@ -179,6 +198,7 @@ int main() {
   tetra122_is_symmetric();
   tetra222_is_symmetric();
   tetra111_works();
+  tetra122_works();
   tetra123_works();
   tetra222_works<update_rules::mp0_tetra_updates>();
   tetra222_works<update_rules::mp1_tetra_updates>();

@@ -164,7 +164,7 @@ arma::vec numopt::sqp(
     f0 = f1;
     f1 = f(x1);
 
-    if (arma::norm(x1 - x0, "inf") < tol || fabs(f1 - f0) < tol) {
+    if (arma::norm(x1 - x0, "inf") <= tol || fabs(f1 - f0) <= tol) {
       break;
     }
     

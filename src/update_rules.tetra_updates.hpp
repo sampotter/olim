@@ -15,17 +15,35 @@ namespace update_rules {
       double s0, double s1, double s2, double h,
       ffvec<p0>, ffvec<p1>, ffvec<p2>) const;
 
+    double tetra(
+      double const * p0, double const * p1, double const * p2,
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h) const;
+
   private:
     template <char p0, char p1, char p2>
     double tetra_impl(
       double u0, double u1, double u2, double s,
       double s0, double s1, double s2, double h,
       ffvec<p0>, ffvec<p1>, ffvec<p2>, std::integral_constant<char, 0>) const;
+
     template <char p0, char p1, char p2>
     double tetra_impl(
       double u0, double u1, double u2, double s,
       double s0, double s1, double s2, double h,
       ffvec<p0>, ffvec<p1>, ffvec<p2>, std::integral_constant<char, 1>) const;
+
+    double tetra_impl(
+      double const * p0, double const * p1, double const * p2,
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h,
+      std::integral_constant<char, 0>) const;
+
+    double tetra_impl(
+      double const * p0, double const * p1, double const * p2,
+      double u0, double u1, double u2, double s,
+      double s0, double s1, double s2, double h,
+      std::integral_constant<char, 1>) const;
   };
 
   using mp0_tetra_updates = tetra_updates<mp_speed_est, 0>;

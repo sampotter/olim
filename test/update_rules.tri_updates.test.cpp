@@ -18,6 +18,9 @@ update_rules::rhr_tri_updates rhr;
 #define P110 6
 #define P111 7
 
+#define TRI(tri_updates, p0, p1, u0, u1, s, s0, s1, h) \
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {})
+
 #define TRI11(tri_updates, u0, u1, s, s0, s1, h) \
   tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P01> {}, ffvec<P10> {})
 
@@ -33,17 +36,64 @@ update_rules::rhr_tri_updates rhr;
 #define TRI23(tri_updates, u0, u1, s, s0, s1, h) \
   tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P011> {}, ffvec<P111> {})
 
-void rhr_tri11_is_symmetric() {
-  double u0 = 0.0, u1 = 0.1, s = 1, s0 = 1, s1 = 1, h = 1;
-  double t1 = TRI11(rhr, u0, u1, s, s0, s1, h);
-  double t2 = TRI11(rhr, u1, u0, s, s1, s0, h);
-  IS_APPROX_EQUAL(t1, t2);
-}
+/**
+ * rhr tri11 tests
+ */
 
 void rhr_tri11_works() {
-  IS_APPROX_EQUAL(TRI11(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
-  IS_APPROX_EQUAL(TRI11(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
-  IS_APPROX_EQUAL(TRI11(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P01, P10, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
+  IS_APPROX_EQUAL(TRI(rhr, P01, P10, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P01, P10, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+
+  IS_APPROX_EQUAL(TRI(rhr, P10, P01, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
+  IS_APPROX_EQUAL(TRI(rhr, P10, P01, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P10, P01, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+
+  IS_APPROX_EQUAL(TRI(rhr, P001, P010, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
+  IS_APPROX_EQUAL(TRI(rhr, P001, P010, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P001, P010, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+
+  IS_APPROX_EQUAL(TRI(rhr, P010, P100, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
+  IS_APPROX_EQUAL(TRI(rhr, P010, P100, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P010, P100, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+
+  IS_APPROX_EQUAL(TRI(rhr, P100, P001, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), sqrt2/2);
+  IS_APPROX_EQUAL(TRI(rhr, P100, P001, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+  IS_APPROX_EQUAL(TRI(rhr, P100, P001, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.0);
+}
+
+void rhr_tri11_is_symmetric() {
+  double u0 = 0.0, u1 = 0.1, s = 1, s0 = 1, s1 = 1, h = 1, t, t1, t2;
+
+  t1 = TRI(rhr, P01, P10, u0, u1, s, s0, s1, h);
+  t2 = TRI(rhr, P01, P10, u1, u0, s, s1, s0, h);
+  IS_APPROX_EQUAL(t1, t2);
+
+  t = t1;
+
+  t1 = TRI(rhr, P10, P01, u0, u1, s, s0, s1, h);
+  t2 = TRI(rhr, P10, P01, u1, u0, s, s1, s0, h);
+  IS_APPROX_EQUAL(t1, t2);
+  IS_APPROX_EQUAL(t, t1);
+  IS_APPROX_EQUAL(t, t2);
+
+  t1 = TRI(rhr, P001, P010, u0, u1, s, s0, s1, h);
+  t2 = TRI(rhr, P001, P010, u1, u0, s, s1, s0, h);
+  IS_APPROX_EQUAL(t1, t2);
+  IS_APPROX_EQUAL(t, t1);
+  IS_APPROX_EQUAL(t, t2);
+
+  t1 = TRI(rhr, P010, P100, u0, u1, s, s0, s1, h);
+  t2 = TRI(rhr, P010, P100, u1, u0, s, s1, s0, h);
+  IS_APPROX_EQUAL(t1, t2);
+  IS_APPROX_EQUAL(t, t1);
+  IS_APPROX_EQUAL(t, t2);
+
+  t1 = TRI(rhr, P100, P001, u0, u1, s, s0, s1, h);
+  t2 = TRI(rhr, P100, P001, u1, u0, s, s1, s0, h);
+  IS_APPROX_EQUAL(t1, t2);
+  IS_APPROX_EQUAL(t, t1);
+  IS_APPROX_EQUAL(t, t2);
 }
 
 void rhr_tri12_works() {

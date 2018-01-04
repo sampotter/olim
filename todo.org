@@ -31,14 +31,14 @@
     - [X] write qpi
     - [X] write sqp
     - [X] write tests
-  - [ ] replace old C++
-    - [ ] template version
-      - [ ] F0
-        - [ ] tri
-        - [ ] tetra
-      - [ ] F1
-        - [ ] tri
-        - [ ] tetra
+  - [-] replace old C++
+    - [X] template version
+      - [X] F0
+        - [X] tri
+        - [X] tetra
+      - [X] F1
+        - [X] tri
+        - [X] tetra
     - [ ] general p0, p1, p2 version
       - [ ] F0
         - [ ] tri

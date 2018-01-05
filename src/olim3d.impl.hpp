@@ -59,18 +59,6 @@ int oct2inds[8][7] = {
   {ind::U, ind::UN, ind::N, ind::NW, ind::W, ind::UW, ind::UNW}
 };
 
-/**
- * xyz i j
- * 001 1 0
- * 101 5 1
- * 100 4 2
- * 110 6 3
- * 010 2 4
- * 011 3 5
- * 111 7 6
- */
-constexpr char ps[7] = {1, 5, 4, 6, 2, 3, 7};
-
 #define P001 1
 #define P010 2
 #define P011 3

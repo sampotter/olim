@@ -57,18 +57,18 @@
     - [ ] olim26_mp0.test.cpp
     - [ ] olim26_mp1.test.cpp
     - [ ] olim26_rhr.test.cpp
-    - [ ] olim3d.test.cpp
     - [X] olim4_mp0.test.cpp
     - [X] olim4_mp1.test.cpp
     - [X] olim4_rhr.test.cpp
     - [X] olim6_mp0.test.cpp
     - [X] olim6_mp1.test.cpp
     - [X] olim6_rhr.test.cpp
-    - [ ] olim8_mp0.test.cpp
-    - [ ] olim8_mp1.test.cpp
-    - [ ] olim8_rhr.test.cpp
-    - [ ] update_rules.tetra_updates.test.cpp
+    - [X] olim8_mp0.test.cpp
+    - [X] olim8_mp1.test.cpp
+    - [X] olim8_rhr.test.cpp
+    - [X] update_rules.tetra_updates.test.cpp
     - [X] update_rules.tri_updates.test.cpp
+  - [ ] formulate F1 tri as an SQP
   - [ ] consider removing speed estimators
   - [ ] get line_updates to conform with new template style
     (e.g. "degree" template parameter)
@@ -76,6 +76,10 @@
   - [ ] try golden section search
   - [ ] get olim to conditionally use moore marcher or neumann marcher
     depending on adj and diag bools
+    - [ ] will need to order nodes by degree to do this
+    - [ ] also make sure that the size of the arrow allocated is
+      correct depending on a template parameter
+    - [ ] do the same sort of thing but for olim3d
 * Unconstrained method stuff
   once we get the constrained method working, we'll take a look at
   this---the stuff here doesn't make much sense for the constrained

@@ -11,4 +11,6 @@ int main() {
   for (auto & s: speed_funcs) {
     olims_agree<olim, basic_marcher>(s);
   }
+  result_is_symmetric<olim>((speed_func) default_speed_func);
+  result_is_symmetric<olim>((speed_func) s1);
 }

@@ -204,6 +204,26 @@ void planes_are_correct(
   }
 }
 
+template <class olim>
+void result_is_symmetric(speed_func s = default_speed_func, int n = 11) {
+  double x0 = (n - 1)/2.0;
+  olim m {n, n, 1.0, s, x0, x0};
+  m.add_boundary_node(n/2, n/2);
+  m.run();
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
+      IS_APPROX_EQUAL(m.get_value(i, j), m.get_value(i, j_));
+    }
+  }
+
+  for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
+    for (int j = 0; j < n; ++j) {
+      IS_APPROX_EQUAL(m.get_value(i, j), m.get_value(i_, j));
+    }
+  }
+}
+
 template <class olim3d>
 void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   double x0 = (n - 1)/2.0;

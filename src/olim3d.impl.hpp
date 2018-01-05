@@ -48,7 +48,7 @@ namespace ind {
   constexpr int DNW = 25;
 }
 
-int oct2inds[8][7] = {
+constexpr int oct2inds[8][7] = {
   {ind::D, ind::DS, ind::S, ind::SE, ind::E, ind::DE, ind::DSE},
   {ind::D, ind::DS, ind::S, ind::SW, ind::W, ind::DW, ind::DSW},
   {ind::D, ind::DN, ind::N, ind::NE, ind::E, ind::DE, ind::DNE},
@@ -202,8 +202,9 @@ void olim3d<
   if (do_line2_updates) for (int l = 6; l < 18; ++l) LINE(l, 2);
   if (do_line3_updates) for (int l = 18; l < 26; ++l) LINE(l, 3);
 
+  int const * inds;
   for (int octant = 0; octant < 8; ++octant) {
-    int * inds = oct2inds[octant];
+    inds = oct2inds[octant];
 
     /**
      * Triangle updates:

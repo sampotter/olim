@@ -177,9 +177,9 @@ void octants_are_correct(double diag2val, double diag3val) {
 
 template <class olim, class olim3d>
 void planes_are_correct(
-  int n = 11,
   speed_func s = (speed_func) default_speed_func,
-  speed_func_3d s3d = (speed_func_3d) default_speed_func)
+  speed_func_3d s3d = (speed_func_3d) default_speed_func,
+  int n = 5)
 {
   assert(n % 2 == 1);
 

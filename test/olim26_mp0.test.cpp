@@ -8,7 +8,7 @@ int main() {
   using olim3d = olim26_mp0;
 
   quadrants_are_correct<olim3d>(sqrt(2));
-  octants_are_correct<olim3d>(sqrt(2), sqrt(2) + 1.0/sqrt(3));
+  octants_are_correct<olim3d>(sqrt(2), sqrt(3));
   for (int i = 0; i < 2; ++i) {
     planes_are_correct<olim, olim3d>(speed_funcs[i], speed_funcs_3d[i]);
     result_is_symmetric<olim3d>(speed_funcs_3d[i]);

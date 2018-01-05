@@ -53,7 +53,7 @@ constexpr int oct2inds[8][7] = {
   {ind::D, ind::DS, ind::S, ind::SW, ind::W, ind::DW, ind::DSW},
   {ind::D, ind::DN, ind::N, ind::NE, ind::E, ind::DE, ind::DNE},
   {ind::D, ind::DN, ind::N, ind::NW, ind::W, ind::DW, ind::DNW},
-  {ind::U, ind::US, ind::S, ind::SE, ind::E, ind::DE, ind::USE},
+  {ind::U, ind::US, ind::S, ind::SE, ind::E, ind::UE, ind::USE},
   {ind::U, ind::US, ind::S, ind::SW, ind::W, ind::UW, ind::USW},
   {ind::U, ind::UN, ind::N, ind::NE, ind::E, ind::UE, ind::UNE},
   {ind::U, ind::UN, ind::N, ind::NW, ind::W, ind::UW, ind::UNW}

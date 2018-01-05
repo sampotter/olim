@@ -1,25 +1,6 @@
 #ifndef __OLIM3D_IMPL_HPP__
 #define __OLIM3D_IMPL_HPP__
 
-/**
- * This table contains the parity (sum of number of bits % 2) of the
- * first 8 chars. The following function is implemented using this as
- * a lookup table. The parity is also the handedness of the octant
- * with the ordering prescribed by its labeling (e.g., DSE is
- * right-handed and DSW is left-handed): so, 0 == right-handed, 1 ==
- * left-handed.
- */
-char parity[8] = {0, 1, 1, 0, 1, 0, 0, 1};
-
-enum class orientation {RIGHT_HANDED, LEFT_HANDED};
-
-/**
- * Get the orientation of the octant as specified by its labeling (see
- * comment for the parity array).
- */
-orientation get_orientation(int octant) {
-  return static_cast<orientation>(parity[octant]);
-}
 
 /**
  * We only need to do triangle or line updates that lie in the xy-,
@@ -28,7 +9,8 @@ orientation get_orientation(int octant) {
  * updates). This function returns true if the passed octant requires
  * these updates.
  */
-bool should_do_xyz_planar_updates(int octant) {
+inline bool should_do_xyz_planar_updates(int octant) {
+  static constexpr char parity[8] = {0, 1, 1, 0, 1, 0, 0, 1};
   return static_cast<bool>(parity[octant]);
 }
 

@@ -104,19 +104,35 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
   constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
+  constexpr double c1 = 1e-4;
+
   double const ds = s1 - s0, du = u1 - u0;
 
   bool conv;
-  double lam[2], F1[2];
-  double g, dp_dot_plam;
+  double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;
   lam[0] = 0.5;
   F1[0] = F1__(lam[0]);
   do {
+    alpha = 1;
     dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
-    double tmp1 = dF1__(lam[0]);
-    double tmp2 = d2F1__(lam[0]);
-    g = -tmp1/tmp2;
-    lam[1] = std::max(0., std::min(1., lam[0] + g));
+    dF1 = dF1__(lam[0]);
+    d2F1 = d2F1__(lam[0]);
+    g = -dF1/d2F1;
+
+    double lam_ = lam[0] + alpha*g;
+    double u_ = u__(lam_);
+    double s_ = s__(lam_);
+    double l_ = l__(lam_);
+    double tmp = u_ + h*s_*l_;
+    while (tmp > F1[0] + c1*alpha*dF1*g) {
+      alpha *= 0.9;
+      lam_ = lam[0] + alpha*g;
+      u_ = u__(lam_);
+      s_ = s__(lam_);
+      l_ = l__(lam_);
+      tmp = u_ + h*s_*l_;
+    }
+    lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
     F1[1] = F1__(lam[1]);
     conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
     lam[0] = lam[1];

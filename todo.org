@@ -39,14 +39,31 @@
       - [X] F1
         - [X] tri
         - [X] tetra
-    - [ ] general p0, p1, p2 version
-      - [ ] F0
+    - [-] general p0, p1, p2 version
+      - [-] F0
         - [ ] tri
-        - [ ] tetra
-      - [ ] F1
+        - [X] tetra
+      - [-] F1
         - [ ] tri
-        - [ ] tetra
+        - [X] tetra
   - [X] add general speed func test for olim4_rhr
+  - [ ] fix issue with symmetry in olim8_mp0 by printing
+    updates. Maybe this will help with the issues with higher dim
+    olim8's, since they use the same tri update implementation
+  - [-] need to fix slowness due to speed function evaluation in
+    pybind11 bridge
+    - [X] get marchers to copy data instead of evaluating functions
+    - [ ] compare speed with MATLAB
+    - [ ] if it's significantly slower, try unchecked access
+    - [ ] if that still doesn't work, either ask on the mailing list
+      or try the lower-level python bindings
+      - this might be more portable ultimately if we want to generate
+        bindings for multiple languages and not require people to have
+        pybind11 installed
+  - [ ] the "sink" function can be sped up? look at the "next < n"
+    test and note that it will almost always evaluate to true; could
+    change the loop iteration, and add a step that takes place after
+    the loop
   - [ ] add the rest of the 3d speed funcs and extend the tests to use
     them and iterate over them
     - also make an array of pairs of 2d/3d speed funcs for simpler iteration
@@ -68,18 +85,20 @@
     - [X] olim8_rhr.test.cpp
     - [X] update_rules.tetra_updates.test.cpp
     - [X] update_rules.tri_updates.test.cpp
-  - [ ] formulate F1 tri as an SQP
-  - [ ] consider removing speed estimators
-  - [ ] get line_updates to conform with new template style
-    (e.g. "degree" template parameter)
-  - [ ] try nocedal & wright interpolation line search method
-  - [ ] try golden section search
+  - [X] formulate F1 tri as an SQP
+    - this is essentially what we already did
   - [ ] get olim to conditionally use moore marcher or neumann marcher
     depending on adj and diag bools
     - [ ] will need to order nodes by degree to do this
     - [ ] also make sure that the size of the arrow allocated is
       correct depending on a template parameter
     - [ ] do the same sort of thing but for olim3d
+  - [ ] consider removing speed estimators
+  - [ ] get line_updates to conform with new template style
+    (e.g. "degree" template parameter)
+  - [ ] line search methods
+    - [ ] golden section
+    - [ ] zoom
 * Unconstrained method stuff
   once we get the constrained method working, we'll take a look at
   this---the stuff here doesn't make much sense for the constrained

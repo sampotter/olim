@@ -51,6 +51,13 @@ add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 
+# This executable is just for convenience. If you want to write a
+# quick test and have it build with the rest of the library, you can
+# do this here.
+add_executable (scratch misc/scratch.cpp)
+target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries (scratch fmm)
+
 if (${BUILD_MEX_BINDINGS})
   add_custom_command (
 	OUTPUT fmm.mexmaci64 # TODO: need to build this on multiple

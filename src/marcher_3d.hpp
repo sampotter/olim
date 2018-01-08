@@ -19,7 +19,7 @@ struct marcher_3d: public abstract_marcher
       static_cast<speed_func_3d>(default_speed_func),
     double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
   marcher_3d(int height, int width, int depth, double h,
-             std::unique_ptr<double[]> s_cache);
+             double const * s_cache);
 
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   void add_boundary_node(double x, double y, double z, double value = 0.0);
@@ -47,7 +47,7 @@ private:
   void init();
 
   Node * _nodes;
-  std::unique_ptr<double[]> _s_cache {nullptr};
+  double const * _s_cache {nullptr};
   double _h {1};
   double _x0 {0}, _y0 {0}, _z0 {0};
   int _height, _width, _depth;

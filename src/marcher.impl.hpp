@@ -3,9 +3,41 @@
 
 #include <cassert>
 #include <cmath>
+#include <cstdio>
 
 static inline size_t get_initial_heap_size(int width, int height) {
   return static_cast<size_t>(std::max(8.0, std::log(width*height)));
+}
+
+template <class Node>
+marcher<Node>::marcher(int height, int width, double h, no_speed_func_t const &):
+  abstract_marcher {get_initial_heap_size(width, height)},
+  _nodes {new Node[width*height]},
+  _s_cache {new double[width*height]},
+  _h {h},
+  _height {height},
+  _width {width}
+{
+  init();
+}
+
+template <class Node>
+marcher<Node>::marcher(int height, int width, double h, double const * s_cache):
+  abstract_marcher {get_initial_heap_size(width, height)},
+  _nodes {new Node[width*height]},
+  _s_cache {new double[width*height]},
+  _h {h},
+  _height {height},
+  _width {width}
+{
+  double * ptr = const_cast<double *>(_s_cache);
+  for (int i = 0, k = 0; i < _height; ++i, k = i*_width) {
+    for (int j = 0, l = 0; j < _width; ++j, l = k + j) {
+      ptr[l] = s_cache[l];
+    }
+  }
+
+  init();
 }
 
 template <class Node>
@@ -21,9 +53,10 @@ marcher<Node>::marcher(int height, int width, double h,
   _height {height},
   _width {width}
 {
+  double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < height; ++i) {
     for (int j = 0; j < width; ++j) {
-      _s_cache[i*width + j] = s(h*j - x0, h*i - y0);
+      ptr[i*width + j] = s(h*j - x0, h*i - y0);
     }
   }
 
@@ -31,16 +64,10 @@ marcher<Node>::marcher(int height, int width, double h,
 }
 
 template <class Node>
-marcher<Node>::marcher(int height, int width, double h,
-                       std::unique_ptr<double[]> s_cache):
-  abstract_marcher {get_initial_heap_size(width, height)},
-  _nodes {new Node[width*height]},
-  _s_cache {std::move(s_cache)},
-  _h {h},
-  _height {height},
-  _width {width}
+marcher<Node>::~marcher()
 {
-  init();
+  delete[] _nodes;
+  delete[] _s_cache;
 }
 
 /**
@@ -166,6 +193,9 @@ bool marcher<Node>::is_valid(int i, int j) const {
 
 template <class Node>
 void marcher<Node>::init() {
+  /**
+   * Set the indices associated with each node in the grid.
+   */
   for (int i = 0; i < _height; ++i) {
     for (int j = 0; j < _width; ++j) {
       operator()(i, j).set_i(i);

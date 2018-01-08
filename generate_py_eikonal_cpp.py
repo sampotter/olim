@@ -19,20 +19,48 @@ marchers = {
 marcher_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
     .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
-        auto const format =
-          py::format_descriptor<${cpp_class_name}::float_type>::format();
-        return {
-          m_.get_node_pointer(),
-          sizeof(${cpp_class_name}::float_type),
-          format,
-          ${cpp_class_name}::ndims,
-          {m_.get_height(), m_.get_width()},
-          {
-            sizeof(${cpp_class_name}::node_type)*m_.get_width(), 
-            sizeof(${cpp_class_name}::node_type)
-          }
-        };
-      })
+      auto const format =
+        py::format_descriptor<${cpp_class_name}::float_type>::format();
+      return {
+        m_.get_node_pointer(),
+        sizeof(${cpp_class_name}::float_type),
+        format,
+        ${cpp_class_name}::ndims,
+        {m_.get_height(), m_.get_width()},
+        {
+          sizeof(${cpp_class_name}::node_type)*m_.get_width(),
+          sizeof(${cpp_class_name}::node_type)
+        }
+      };
+    })
+    .def(
+      py::init([] (py::array_t<double, py::array::c_style | py::array::forcecast> arr, double h) {
+        py::buffer_info info = arr.request();
+        if (info.format != py::format_descriptor<double>::format()) {
+          throw std::runtime_error("Bad format: expected double array");
+        }
+        if (info.ndim != 2) {
+          throw std::runtime_error("Expected `ndim == 2'");
+        }
+        if (info.shape[0] > std::numeric_limits<int>::max()) {
+          throw std::runtime_error(
+            "Error: size of first dimension is larger than INT_MAX");
+        }
+        if (info.shape[1] > std::numeric_limits<int>::max()) {
+          throw std::runtime_error(
+            "Error: size of second dimension is larger than INT_MAX");
+        }
+        int height = static_cast<int>(info.shape[0]); // height
+        int width = static_cast<int>(info.shape[1]); // width
+        auto m_ptr = new ${cpp_class_name} {height, width, h, no_speed_func};
+        memcpy(
+          (double *) m_ptr->get_s_cache_data(),
+          info.ptr,
+          sizeof(double)*height*width);
+        return m_ptr;
+      }),
+      "s_cache"_a,
+      "h"_a = 1.0)
     .def(
       py::init<int, int, double, speed_function, double, double>(),
       "height"_a,
@@ -118,15 +146,16 @@ marcher3d_template = Template('''
 
 def build_src_txt():
     src_txt = '''
+#include <limits>
+
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
+#include <pybind11/numpy.h>
 
-#include "fmm.h"
-
-#include "basic_marcher.hpp"
-#include "basic_marcher_3d.hpp"
-#include "olim.hpp"
-#include "olim3d.hpp"
+#include <basic_marcher.hpp>
+#include <basic_marcher_3d.hpp>
+#include <olim.hpp>
+#include <olim3d.hpp>
 
 namespace py = pybind11;
 using namespace py::literals;

@@ -24,12 +24,17 @@ marcher_3d<Node>::marcher_3d(
   _width {width},
   _depth {depth}
 {
+  /**
+   * Temporarily grab a writable pointer to cache the speed function
+   * values.
+   */
   // TODO: make sure this is being done in the most cache-friendly way
   // possible
+  double * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < depth; ++k) {
     for (int j = 0; j < width; ++j) {
       for (int i = 0; i < height; ++i) {
-        _s_cache[width*(height*k + i) + j] = s(h*j - x0, h*i - y0, h*k - z0);
+        ptr[width*(height*k + i) + j] = s(h*j - x0, h*i - y0, h*k - z0);
       }
     }
   }
@@ -39,10 +44,10 @@ marcher_3d<Node>::marcher_3d(
 
 template <class Node>
 marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
-                             std::unique_ptr<double[]> s_cache):
+                             double const * s_cache):
   abstract_marcher {get_initial_heap_size(width, height, depth)},
   _nodes {new Node[width*height*depth]},
-  _s_cache {std::move(s_cache)},
+  _s_cache {s_cache},
   _h {h},
   _height {height},
   _width {width},

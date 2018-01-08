@@ -12,11 +12,20 @@ struct marcher: public abstract_marcher {
 
   static constexpr int ndims = 2;
 
+  /**
+   * Construct the marcher with an invalid speed function cache. This
+   * should be used if the cache will be filled after construction and
+   * before actually running the marcher (e.g. this is used in the
+   * Python binding).
+   */
+  marcher(int height, int width, double h, no_speed_func_t const &);
+
+  marcher(int height, int width, double h, double const * s_cache);
   marcher(int height, int width, double h = 1,
           std::function<double(double, double)> speed =
             static_cast<speed_func>(default_speed_func),
           double x0 = 0.0, double y0 = 0.0);
-  marcher(int height, int width, double h, std::unique_ptr<double[]> S_values);
+  ~marcher();
 
   void add_boundary_node(int i, int j, double value = 0.0);
   void add_boundary_node(double i, double j, double value = 0.0);
@@ -25,6 +34,7 @@ struct marcher: public abstract_marcher {
   double get_value(int i, int j) const;
   int get_height() const { return _height; }
   int get_width() const { return _width; }
+  void * get_s_cache_data() { return (void *) _s_cache; }
 
 protected:
   Node & operator()(int i, int j);
@@ -43,7 +53,7 @@ private:
   void init();
 
   Node * _nodes;
-  std::unique_ptr<double[]> _s_cache {nullptr};
+  double const * _s_cache {nullptr};
   double _h {1};
   double _x0 {0}, _y0 {0};
   int _height;

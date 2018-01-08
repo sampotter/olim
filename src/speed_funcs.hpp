@@ -5,6 +5,9 @@
 
 #include "typedefs.h"
 
+struct no_speed_func_t {};
+constexpr no_speed_func_t no_speed_func {};
+
 double default_speed_func(double x, double y);
 double default_speed_func_soln(double x, double y);
 

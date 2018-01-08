@@ -24,7 +24,7 @@ if __name__ == '__main__':
     f = speedfuncs.f2
 
     minpow = 3
-    maxpow = 10
+    maxpow = 13
     Ms = np.power(2, np.arange(minpow, maxpow + 1)) + 1
 
     marchers = [
@@ -45,17 +45,23 @@ if __name__ == '__main__':
         eik.Olim8Rect: "olim8 rect"
     }
 
-    ntrials = 10
+    ntrials = 20
     T = {marcher: np.zeros(Ms.shape) for marcher in marchers}
 
-    for marcher, (i, M) in itertools.product(marchers, enumerate(Ms)):
-        print('%s (M = %d)' % (marcher_names[marcher], M))
-        t = np.inf
-        for trial in range(ntrials):
-            tic()
-            marcher(M, M, 2/(M - 1), s, x0=1, y0=1)
-            t = min(t, toc())
-        T[marcher][i] = t
+    for i, M in enumerate(Ms):
+        print('M = %d:' % M)
+        h = 2/(M - 1)
+        l = np.linspace(-1, 1, M)
+        x, y = np.meshgrid(l, l)
+        s_cache = s(x, y)
+        for marcher in marchers:
+            print('- %s' % marcher_names[marcher])
+            t = np.inf
+            for trial in range(ntrials):
+                tic()
+                marcher(s_cache, h)
+                t = min(t, toc())
+            T[marcher][i] = t
 
     plt.figure()
     for marcher in marchers:

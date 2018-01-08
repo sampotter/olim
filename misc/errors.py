@@ -62,5 +62,6 @@ if __name__ == '__main__':
 
     plt.figure()
     for marcher in marchers:
-        plt.loglog(Ms, E[marcher])
+        plt.loglog(Ms, E[marcher], label=marcher_names[marcher])
+    plt.legend()
     plt.show()

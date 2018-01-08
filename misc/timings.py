@@ -5,6 +5,7 @@ sys.path.insert(0, '../build/Release')
 import eikonal as eik
 import matplotlib.pyplot as plt
 import numpy as np
+import itertools
 import speedfuncs
 import time
 
@@ -58,5 +59,6 @@ if __name__ == '__main__':
 
     plt.figure()
     for marcher in marchers:
-        plt.loglog(Ms, T[marcher])
+        plt.loglog(Ms, T[marcher], label=marcher_names[marcher])
+    plt.legend()
     plt.show()

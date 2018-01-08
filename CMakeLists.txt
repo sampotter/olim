@@ -10,11 +10,8 @@ set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
-
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
-
-option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." ON)
-
+option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 
 find_package (Armadillo REQUIRED)
@@ -46,7 +43,6 @@ set (FMM_SRC_FILES
 
 add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
 target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
 
 if (${BUILD_MEX_BINDINGS})

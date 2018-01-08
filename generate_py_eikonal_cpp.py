@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import argparse
+
 from string import Template
 
 marchers = {
@@ -50,17 +52,28 @@ marcher_template = Template('''
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a);
 ''')
 
-marchers3d = {
-    'basic_marcher_3d': 'BasicMarcher3D',
-    'olim6_mp0': 'Olim6Mid0',
-    'olim6_mp1': 'Olim6Mid1',
-    'olim6_rhr': 'Olim6Rect',
-    'olim18_mp0': 'Olim18Mid0',
-    'olim18_mp1': 'Olim18Mid1',
-    'olim18_rhr': 'Olim18Rect',
-    'olim26_mp0': 'Olim26Mid0',
-    'olim26_mp1': 'Olim26Mid1',
-    'olim26_rhr': 'Olim26Rect'}
+def get_3d_marcher_map(compile_all_3d_marchers=False):
+    d = dict()
+    if compile_all_3d_marchers:
+        for i in range(2**8):
+            groups = tuple((i & (1 << j)) >> j for j in range(8))
+            for mode in ['rhr', 'mp0', 'mp1']:
+                fmt = ((mode,) + groups)
+                k = 'olim3d_%s<groups_t<%d, %d, %d, %d, %d, %d, %d, %d>>'
+                v = '%s_%d%d%d%d%d%d%d%d'
+                d[k % fmt] = v % fmt
+    else:
+        d['basic_marcher_3d'] = 'BasicMarcher3D'
+        d['olim6_mp0'] = 'Olim6Mid0'
+        d['olim6_mp1'] = 'Olim6Mid1'
+        d['olim6_rhr'] = 'Olim6Rect'
+        d['olim18_mp0'] = 'Olim18Mid0'
+        d['olim18_mp1'] = 'Olim18Mid1'
+        d['olim18_rhr'] = 'Olim18Rect'
+        d['olim26_mp0'] = 'Olim26Mid0'
+        d['olim26_mp1'] = 'Olim26Mid1'
+        d['olim26_rhr'] = 'Olim26Rect'
+    return d
 
 # TODO: see comment above for `marcher_template' variable.
 marcher3d_template = Template('''
@@ -137,5 +150,12 @@ PYBIND11_MODULE(eikonal, m) {
     return src_txt
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--all', action='store_true')
+    args = parser.parse_args()
+
+    marchers3d = get_3d_marcher_map(args.all)
+
     src_txt = build_src_txt()
+
     print(src_txt.strip())

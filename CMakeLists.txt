@@ -2,6 +2,8 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.4 FATAL_ERROR)
 
+include (CMakeDependentOption)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
@@ -13,6 +15,10 @@ option (OLIM8_ADJ_UPDATES
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
+
+CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
+  "Compile all 256 3D marchers (this takes a while!)" OFF
+  "BUILD_PYTHON_BINDINGS" OFF)
 
 find_package (Armadillo REQUIRED)
 include_directories (${ARMADILLO_INCLUDE_DIR})
@@ -65,13 +71,20 @@ if (${BUILD_PYTHON_BINDINGS})
   set (GENERATE_PY_EIKONAL_CPP_SCRIPT generate_py_eikonal_cpp.py)
   set (GENERATED_PY_EIKONAL_CPP_PATH
 	${CMAKE_CURRENT_BINARY_DIR}/src/py.eikonal.cpp)
+  if (${COMPILE_ALL_3D_MARCHERS})
+    set (GENERATE_PY_EIKONAL_COMMAND
+	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} --all
+      > ${GENERATED_PY_EIKONAL_CPP_PATH})
+  else ()
+    set (GENERATE_PY_EIKONAL_COMMAND
+	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} > ${GENERATED_PY_EIKONAL_CPP_PATH})
+  endif ()
   add_custom_command (
 	OUTPUT src/py.eikonal.cpp
 	COMMAND ${CMAKE_COMMAND} -E copy
 	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
 	  generate_py_eikonal_cpp.py
-	COMMAND
-	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} > ${GENERATED_PY_EIKONAL_CPP_PATH}
+	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
 	DEPENDS
 	  ${CMAKE_CURRENT_SOURCE_DIR}/generate_py_eikonal_cpp.py
 	  ${FMM_SRC_FILES})

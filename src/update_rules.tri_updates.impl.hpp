@@ -31,6 +31,11 @@ update_rules::tri_updates<speed_est, degree>::tri(
   return T;
 }
 
+#define l__(x) std::sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
+#define check__(x) std::fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
+#define char_sqrt__(c) _sqrt_table[static_cast<int>(c)]
+#define l0__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
+
 /**
  * F0 specialization
  */
@@ -41,12 +46,22 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol, std::integral_constant<char, 0>) const
 {
+  using std::min;
+
   (void) tol;
+
+  static constexpr double _sqrt_table[4] = {
+    0.0,
+    1.0,
+    1.4142135623730951,
+    1.7320508075688772
+  };
 
   constexpr char p0_dot_p0 = dot(p0, p0);
   constexpr char p0_dot_p1 = dot(p0, p1);
   constexpr char p1_dot_p1 = dot(p1, p1);
   constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
+  constexpr char dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
   constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   double const du = u1 - u0;
@@ -55,28 +70,25 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   double const tmp = alpha_sq - dp_dot_dp;
   double const a = dp_dot_dp*tmp;
   double const b = dp_dot_p0*tmp;
-  double const c = alpha_sq*p0_dot_p0 - dp_dot_p0*dp_dot_p0;
+  double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
   if (disc < 0 || a == 0) {
-    return std::min(u0 + sh*sqrt(p0_dot_p0), u1 + sh*sqrt(p1_dot_p1));
+    return std::min(l0__(0), l0__(1));
   } else {
-    double const lhs = -b/a;
-    double const rhs = sqrt(disc)/a;
+    double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
-    double const l1 = sqrt((dp_dot_dp*lam1 + 2*dp_dot_p0)*lam1 + p0_dot_p0);
-    double const l2 = sqrt((dp_dot_dp*lam2 + 2*dp_dot_p0)*lam2 + p0_dot_p0);
-    double const check1 = fabs(alpha*l1 - dp_dot_p0 - lam1*dp_dot_dp);
-    double const check2 = fabs(alpha*l2 - dp_dot_p0 - lam2*dp_dot_dp);
-    double const lam = check1 < check2 ? lam1 : lam2;
-    if (lam < 0 || 1 < lam) {
-      return std::min(u0 + sh*sqrt(p0_dot_p0), u1 + sh*sqrt(p1_dot_p1));
-    } else {
-      return (1 - lam)*u0 + lam*u1 +
-        sh*sqrt(dp_dot_dp*lam*lam + 2*dp_dot_p0*lam + p0_dot_p0);
-    }
+    double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
+    return lam < 0 || 1 < lam ?
+      min(l0__(0), l0__(1)) :
+      u0 + lam*du + sh*l__(lam);
   }
 }
+
+#undef l__
+#undef check__
+#undef char_sqrt__
+#undef l0__
 
 #define u__(x) ((1 - (x))*u0 + (x)*u1)
 #define q__(x) ((dp_dot_dp*x + 2*dp_dot_p0)*(x) + p0_dot_p0)

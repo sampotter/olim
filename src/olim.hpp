@@ -1,17 +1,31 @@
 #ifndef __OLIM_HPP__
 #define __OLIM_HPP__
 
+#include <type_traits>
+
 #include "moore_marcher.hpp"
+#include "neumann_marcher.hpp"
 #include "node.hpp"
 #include "update_rules.line_updates.hpp"
 #include "update_rules.tri_updates.hpp"
 
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
-struct olim: public moore_marcher<node>, public line_updates,
+struct olim: public std::conditional_t<
+               diag_updates,
+               moore_marcher<node>,
+               neumann_marcher<node>
+             >,
+             public line_updates,
              public tri_updates {
   static_assert(adj_updates || diag_updates, "error");
-  using moore_marcher<node>::moore_marcher;
+
+  using neighborhood_t = std::conditional_t<
+    diag_updates, moore_marcher<node>, neumann_marcher<node>>;
+
+  static constexpr int num_neighbors = diag_updates ? 8 : 4;
+
+  using neighborhood_t::neighborhood_t;
 private:
   virtual void update_impl(int i, int j, double & T);
 };

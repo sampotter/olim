@@ -1,13 +1,14 @@
 #ifndef __MOORE_MARCHER_IMPL_HPP__
 #define __MOORE_MARCHER_IMPL_HPP__
 
-// neighbor order: N, NE, E, SE, S, SW, W, NW (clockwise from north)
+// neighbor order: N, E, S, W, NE, SE, SW, NW (ordered first by
+// degree, then clockwise)
 
 template <class Node>
-int moore_marcher<Node>::di[] = {-1, -1, 0, 1, 1, 1, 0, -1};
+int moore_marcher<Node>::di[] = {-1, 0, 1, 0, -1, 1, 1, -1};
 
 template <class Node>
-int moore_marcher<Node>::dj[] = {0, 1, 1, 1, 0, -1, -1, -1};
+int moore_marcher<Node>::dj[] = {0, 1, 0, -1, 1, 1, -1, -1};
 
 template <class Node>
 void moore_marcher<Node>::stage_neighbors_impl(abstract_node * n) {

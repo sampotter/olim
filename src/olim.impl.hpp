@@ -45,28 +45,28 @@ void olim<node, line_updates, tri_updates, adj_updates,
   printf("olim::update_impl(i = %d, j = %d)\n", i, j);
 #endif
 
-  abstract_node * nb[8];
-  memset(nb, 0x0, 8*sizeof(abstract_node *));
+  abstract_node * nb[num_neighbors];
+  memset(nb, 0x0, num_neighbors*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, nb);
 
-  double h = this->get_h(), s = this->speed(i, j), s_[8];
-  for (int k = 0; k < 8; ++k) {
+  double h = this->get_h(), s = this->speed(i, j), s_[num_neighbors];
+  for (int k = 0; k < num_neighbors; ++k) {
     if (nb[k]) {
       s_[k] = this->speed(
-        i + moore_marcher<node>::di[k],
-        j + moore_marcher<node>::dj[k]);
+        i + neighborhood_t::di[k],
+        j + neighborhood_t::dj[k]);
     }
   }
 
-  for (int i = 0; i < 8; i += 2) {
+  for (int i = 0, j = 1; i < 4; j = (++i + 1) % 4) {
     LINE(i, 1);
-    if (diag_updates) LINE(i + 1, 2);
+    TRI(i, j, 01, 10);
   }
-  for (int i = 0, j = 1, k = 2; i < 8; i += 2, j += 2, k = (k + 2) % 8) {
-    if (adj_updates) TRI(i, k, 01, 10);
-    if (diag_updates) {
-      TRI(i, j, 01, 11);
-      TRI(j, k, 11, 10);
+  if (diag_updates) {
+    for (int i = 4, j = 0, k = 1; i < 8; ++i, k = (++j + 1) % 4) {
+      LINE(i, 2);
+      TRI(i, j, 11, 01);
+      TRI(i, k, 11, 10);
     }
   }
 

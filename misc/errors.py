@@ -21,9 +21,10 @@ def get_exact_soln(f, M):
     return f(x, y)
 
 def compute_soln(marcher, s, M):
-    m = marcher(M, M, 2/(M - 1), s=s, x0=1, y0=1)
-    i = int((M - 2)/2)
-    m.addBoundaryNode(i, i)
+    l = np.linspace(-1, 1, M)
+    x, y = np.meshgrid(l, l)
+    m = marcher(s(x, y), 2/(M - 1))
+    m.addBoundaryNode(int(M/2), int(M/2))
     m.run()
     return np.array(m)
 

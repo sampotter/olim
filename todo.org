@@ -47,6 +47,7 @@
         - [ ] tri
         - [X] tetra
   - [X] add general speed func test for olim4_rhr
+  - [ ] fix python constructors for 3D marchers
   - [ ] fix issue with symmetry in olim8_mp0 by printing
     updates. Maybe this will help with the issues with higher dim
     olim8's, since they use the same tri update implementation

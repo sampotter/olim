@@ -9,6 +9,20 @@ static inline size_t get_initial_heap_size(int width, int height, int depth) {
 }
 
 template <class Node>
+marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
+                             no_speed_func_t const &):
+  abstract_marcher {get_initial_heap_size(width, height, depth)},
+  _nodes {new Node[width*height*depth]},
+  _s_cache {new double[width*height*depth]},
+  _h {h},
+  _height {height},
+  _width {width},
+  _depth {depth}
+{
+  init();
+}
+
+template <class Node>
 marcher_3d<Node>::marcher_3d(
   int height, int width, int depth, double h,
   std::function<double(double, double, double)> s,

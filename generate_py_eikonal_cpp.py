@@ -115,15 +115,38 @@ marcher3d_template = Template('''
         };
       })
     .def(
-      py::init<int, int, int, double, speed_function_3d, double, double, double>(),
-      "height"_a,
-      "width"_a,
-      "depth"_a,
-      "h"_a = 1.0,
-      "s"_a = py::cpp_function(static_cast<speed_func_3d>(default_speed_func)),
-      "x0"_a = 0.0,
-      "y0"_a = 0.0,
-      "z0"_a = 0.0)
+      py::init([] (py::array_t<double, py::array::c_style | py::array::forcecast> arr, double h) {
+        py::buffer_info info = arr.request();
+        if (info.format != py::format_descriptor<double>::format()) {
+          throw std::runtime_error("Bad format: expected double array");
+        }
+        if (info.ndim != 3) {
+          throw std::runtime_error("Expected `ndim == 3'");
+        }
+        if (info.shape[0] > std::numeric_limits<int>::max()) {
+          throw std::runtime_error(
+            "Error: size of first dimension is larger than INT_MAX");
+        }
+        if (info.shape[1] > std::numeric_limits<int>::max()) {
+          throw std::runtime_error(
+            "Error: size of second dimension is larger than INT_MAX");
+        }
+        if (info.shape[2] > std::numeric_limits<int>::max()) {
+          throw std::runtime_error(
+            "Error: size of third dimension is larger than INT_MAX");
+        }
+        int height = static_cast<int>(info.shape[0]); // height
+        int width = static_cast<int>(info.shape[1]); // width
+        int depth = static_cast<int>(info.shape[2]); // depth
+        auto m_ptr = new ${cpp_class_name} {height, width, depth, h, no_speed_func};
+        memcpy(
+          (double *) m_ptr->get_s_cache_data(),
+          info.ptr,
+          sizeof(double)*height*width*depth);
+        return m_ptr;
+      }),
+      "s_cache"_a,
+      "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
     .def(
       "addBoundaryNode",

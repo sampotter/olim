@@ -6,18 +6,18 @@
 #include "typedefs.h"
 
 template <class Node>
-struct marcher_3d: public abstract_marcher
-{
+struct marcher_3d: public abstract_marcher {
   using float_type = double;
   using node_type = Node;
 
   static constexpr int ndim = 3;
 
-  marcher_3d(
-    int height, int width, int depth, double h = 1,
-    std::function<double(double, double, double)> speed =
-      static_cast<speed_func_3d>(default_speed_func),
-    double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
+  marcher_3d(int height, int width, int depth, double h,
+             no_speed_func_t const &);
+  marcher_3d(int height, int width, int depth, double h = 1,
+             std::function<double(double, double, double)> speed =
+             static_cast<speed_func_3d>(default_speed_func),
+             double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
   marcher_3d(int height, int width, int depth, double h,
              double const * s_cache);
 
@@ -29,6 +29,7 @@ struct marcher_3d: public abstract_marcher
   int get_height() const { return _height; }
   int get_width() const { return _width; }
   int get_depth() const { return _depth; }
+  void * get_s_cache_data() { return (void *) _s_cache; }
 
 protected:
   Node & operator()(int i, int j, int k);

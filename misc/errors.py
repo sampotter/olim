@@ -29,11 +29,11 @@ def compute_soln(marcher, s, M):
     return np.array(m)
 
 if __name__ == '__main__':
-    s = speedfuncs.s0
-    f = speedfuncs.f0
+    s = speedfuncs.s1
+    f = speedfuncs.f1
 
     minpow = 3
-    maxpow = 6
+    maxpow = 10
     Ms = np.power(2, np.arange(minpow, maxpow + 1)) + 1
 
     marchers = [

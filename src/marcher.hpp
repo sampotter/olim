@@ -12,14 +12,7 @@ struct marcher: public abstract_marcher {
 
   static constexpr int ndim = 2;
 
-  /**
-   * Construct the marcher with an invalid speed function cache. This
-   * should be used if the cache will be filled after construction and
-   * before actually running the marcher (e.g. this is used in the
-   * Python binding).
-   */
   marcher(int height, int width, double h, no_speed_func_t const &);
-
   marcher(int height, int width, double h, double const * s_cache);
   marcher(int height, int width, double h = 1,
           std::function<double(double, double)> speed =

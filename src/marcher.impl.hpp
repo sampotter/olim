@@ -30,13 +30,7 @@ marcher<Node>::marcher(int height, int width, double h, double const * s_cache):
   _height {height},
   _width {width}
 {
-  double * ptr = const_cast<double *>(_s_cache);
-  for (int i = 0, k = 0; i < _height; ++i, k = i*_width) {
-    for (int j = 0, l = 0; j < _width; ++j, l = k + j) {
-      ptr[l] = s_cache[l];
-    }
-  }
-
+  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width);
   init();
 }
 

@@ -8,8 +8,6 @@ struct neumann_marcher: public marcher<Node> {
   using marcher<Node>::marcher;
 protected:
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb);
-  static int di[4];
-  static int dj[4];
 private:
   virtual void stage_neighbors_impl(abstract_node * n);
 };

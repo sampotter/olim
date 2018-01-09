@@ -25,7 +25,7 @@ marcher_template = Template('''
         m_.get_node_pointer(),
         sizeof(${cpp_class_name}::float_type),
         format,
-        ${cpp_class_name}::ndims,
+        ${cpp_class_name}::ndim,
         {m_.get_height(), m_.get_width()},
         {
           sizeof(${cpp_class_name}::node_type)*m_.get_width(),
@@ -113,7 +113,7 @@ marcher3d_template = Template('''
           m_.get_node_pointer(),
           sizeof(${cpp_class_name}::float_type),
           format,
-          ${cpp_class_name}::ndims,
+          ${cpp_class_name}::ndim,
           {m_.get_height(), m_.get_width(), m_.get_depth()},
           {
             sizeof(${cpp_class_name}::node_type)*m_.get_width(),

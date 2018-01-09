@@ -11,7 +11,7 @@ struct marcher_3d: public abstract_marcher
   using float_type = double;
   using node_type = Node;
 
-  static constexpr int ndims = 3;
+  static constexpr int ndim = 3;
 
   marcher_3d(
     int height, int width, int depth, double h = 1,

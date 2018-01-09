@@ -13,4 +13,5 @@ int main() {
   }
   result_is_symmetric<olim>((speed_func) default_speed_func);
   result_is_symmetric<olim>((speed_func) s1);
+  correct_corners_in_limit<olim>(101, 1.86e-2);
 }

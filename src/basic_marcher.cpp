@@ -29,11 +29,11 @@ void basic_marcher::update_impl(int i, int j, double & T) {
 
   if (!T1_inf && !T2_inf) {
     double diff = T1 - T2, disc = 2*sh*sh - diff*diff;
-    T = disc > 0 ? std::min(T, (T1 + T2 + std::sqrt(disc))/2) : T;
+    T = disc > 0 ? min(T, (T1 + T2 + sqrt(disc))/2) : T;
   } else if (T1_inf) {
-    T = std::min(T, T2 + sh);
+    T = min(T, T2 + sh);
   } else if (T2_inf) {
-    T = std::min(T, T1 + sh);
+    T = min(T, T1 + sh);
   } else {
     assert(false);
   }

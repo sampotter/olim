@@ -7,6 +7,7 @@
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
+#include <cmath>
 
 #include "common.hpp"
 #include "common.defs.hpp"
@@ -93,12 +94,11 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 #define u__(x) ((1 - (x))*u0 + (x)*u1)
 #define q__(x) ((dp_dot_dp*x + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define l__(x) std::sqrt(q__(x))
-#define theta__ this->theta()
-#define s__(x) ((1 - theta__)*s + theta__*((1 - (x))*s0 + (x)*s1))
+#define s__(x) ((1 - theta)*s + theta*((1 - (x))*s0 + (x)*s1))
 #define F1__(x) (u__(x) + h*s__(x)*l__(x))
-#define dF1__(x) (du + h*(ds*theta__*q__(x) + s__(x)*dp_dot_plam)/l__(x))
+#define dF1__(x) (du + h*(ds*theta*q__(x) + s__(x)*dp_dot_plam)/l__(x))
 #define d2F1__(x) h*(s__(x)*dp_dot_plam*dp_dot_plam/q__(x) + \
-                     ds*theta__*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
+                     ds*theta*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
 
 /**
  * F1 specialization
@@ -118,7 +118,7 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 
   constexpr double c1 = 1e-4;
 
-  double const ds = s1 - s0, du = u1 - u0;
+  double const ds = s1 - s0, du = u1 - u0, theta = this->theta();
 
   bool conv;
   double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;

@@ -2,6 +2,9 @@ import numpy as np
 
 r = lambda x, y: np.sqrt(np.power(x, 2) + np.power(y, 2))
 
+s0 = lambda x, y: 1
+f0 = r
+
 s1 = lambda x, y: 1 - np.sin(r(x, y))
 f1 = lambda x, y: np.cos(r(x, y)) + r(x, y) - 1;
 

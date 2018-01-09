@@ -10,6 +10,9 @@
 #include "common.macros.hpp"
 #include "update_rules.utils.hpp"
 
+#define __di(k) di<2>[k]
+#define __dj(k) dj<2>[k]
+
 #define P01 1
 #define P10 2
 #define P11 3
@@ -52,9 +55,7 @@ void olim<node, line_updates, tri_updates, adj_updates,
   double h = this->get_h(), s = this->speed(i, j), s_[num_neighbors];
   for (int k = 0; k < num_neighbors; ++k) {
     if (nb[k]) {
-      s_[k] = this->speed(
-        i + neighborhood_t::di[k],
-        j + neighborhood_t::dj[k]);
+      s_[k] = this->speed(i + __di(k), j + __dj(k));
     }
   }
 
@@ -74,6 +75,9 @@ void olim<node, line_updates, tri_updates, adj_updates,
   printf("olim::update_impl: T <- %g\n", T);
 #endif
 }
+
+#undef __di
+#undef __dj
 
 #undef P01
 #undef P10

@@ -24,6 +24,18 @@ void adjacent_update_works() {
   IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
 }
 
+template <class olim>
+void correct_corners_in_limit(int n, double tol) {
+  double h = 2./(n - 1);
+  olim m {n, n, h, (speed_func) default_speed_func, 1., 1.};
+  m.add_boundary_node(n/2, n/2);
+  m.run();
+  IS_APPROX_EQUAL(m.get_value(0, n - 1), sqrt(2), tol);
+  IS_APPROX_EQUAL(m.get_value(0, n - 1), sqrt(2), tol);
+  IS_APPROX_EQUAL(m.get_value(n - 1, 0), sqrt(2), tol);
+  IS_APPROX_EQUAL(m.get_value(n - 1, n - 1), sqrt(2), tol);
+}
+
 template <class olim3d>
 void quadrants_are_correct(double diag_value) {
   int n = 2;

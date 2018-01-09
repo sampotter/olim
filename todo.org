@@ -87,13 +87,11 @@
     - [X] update_rules.tri_updates.test.cpp
   - [X] formulate F1 tri as an SQP
     - this is essentially what we already did
-  - [ ] get olim to conditionally use moore marcher or neumann marcher
+  - [X] get olim to conditionally use moore marcher or neumann marcher
     depending on adj and diag bools
-    - [ ] will need to order nodes by degree to do this
-    - [ ] also make sure that the size of the arrow allocated is
-      correct depending on a template parameter
-    - [ ] do the same sort of thing but for olim3d
+  - [ ] do the same sort of thing but for olim3d
   - [ ] consider removing speed estimators
+  - [ ] collapse moore and neumann marchers into olim.hpp
   - [ ] get line_updates to conform with new template style
     (e.g. "degree" template parameter)
   - [ ] line search methods

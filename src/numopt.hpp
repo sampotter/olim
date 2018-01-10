@@ -58,6 +58,11 @@ namespace numopt {
                 bool * error = nullptr, double tol = EPS(double),
                 int niters = 0);
 
+  template <int d>
+  void qpi_baryplex(double const * G, double const * c, double const * x0,
+                    double * x, bool * error = nullptr,
+                    double tol = EPS(double), int niters = 0);
+
   using field_t = std::function<double(arma::vec const &)>;
   using grad_t = std::function<arma::vec(arma::vec const &)>;
   using hess_t = std::function<arma::mat(arma::vec const &)>;

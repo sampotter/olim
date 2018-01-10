@@ -132,6 +132,156 @@ arma::vec numopt::qpi(
   return x;
 }
 
+#define __compute_p() do {                          \
+    double det = G[0]*G[3] - G[1]*G[2];             \
+    p[0] = -(x[0] + (G[3]*c[0] - G[1]*c[1])/det);   \
+    p[1] = -(x[1] + (G[0]*c[1] - G[2]*c[0])/det);   \
+  } while (0)
+
+
+#define __compute_y() do {                      \
+    y[0] = G[0]*x[0] + G[2]*x[1] + c[0];        \
+    y[1] = G[1]*x[0] + G[3]*x[1] + c[1];        \
+  } while (0)
+
+#define __num_active()                                                  \
+  ((active[0] ? 1 : 0) + (active[1] ? 1 : 0) + (active[2] ? 1 : 0))
+
+template <>
+void
+numopt::qpi_baryplex<2>(double const * G, double const * c, double const * x0,
+                        double * x, bool * error, double tol, int niters)
+{
+  using std::max;
+  using std::min;
+
+  assert(x != nullptr);
+
+  if (error) {
+    *error = false;
+  }
+
+  double xprev[2], p[2], y[2], alpha, alpha_new;
+  if (x0) {
+    x[0] = x0[0];
+    x[1] = x0[1];
+  } else {
+    x[0] = x[1] = 0.0;
+  }
+
+  bool active[3], ind[3];
+  active[0] = fabs(x[0]) <= tol;
+  active[1] = fabs(x[1]) <= tol;
+  active[2] = fabs(1 - x[0] - x[1]) <= tol;
+
+  int k = 0, num_active, argmin;
+  while (true) {
+    xprev[0] = x[0];
+    xprev[1] = x[1];
+    num_active = __num_active();
+
+    __compute_y();
+
+    if (num_active == 0) {
+      __compute_p();
+    } else if (num_active == 1) {
+      // TODO: fix this so that we just immediately compute p
+      double x_[2];
+      if (active[0]) {
+        qpe_baryplex<2, 0>(G, c, x_);
+      } else if (active[1]) {
+        qpe_baryplex<2, 1>(G, c, x_);
+      } else if (active[2]) {
+        qpe_baryplex<2, 2>(G, c, x_);
+      } else {
+        assert(false);
+      }
+      p[0] = x_[0] - xprev[0];
+      p[1] = x_[1] - xprev[1];
+    } else if (num_active == 2) {
+      p[0] = p[1] = 0.0;
+    }
+
+    if (max(fabs(p[0]), fabs(p[1])) <= tol) {
+      if (num_active == 0) {
+        break;
+      } else if (num_active == 1) {
+        if (active[0]) {
+          if (y[0] >= 0) break;
+          else active[0] = false;
+        } else if (active[1]) {
+          if (y[1] >= 0) break;
+          else active[1] = false;
+        } else if (active[2]) {
+          if (y[0] + y[1] <= 0) break;
+          else active[2] = false;
+        } else {
+          assert(false);
+        }
+      } else if (num_active == 2) {
+        if (active[0] && active[1]) {
+          if (y[0] >= 0 && y[1] >= 0) break;
+          else active[y[0] < y[1] ? 0 : 1] = false;
+        } else if (active[0] && active[2]) {
+          if (y[1] <= 0 && y[1] <= y[0]) break;
+          else active[y[0] < 0 ? 0 : 2] = false;
+        } else if (active[1] && active[2]) {
+          if (y[0] <= 0 && y[0] <= y[1]) break;
+          else active[y[1] < 0 ? 1 : 2] = false;
+        } else {
+          assert(false);
+        }
+      } else {
+        assert(false);
+      }
+    } else {
+      alpha = 1;
+      argmin = -1;
+      ind[0] = !active[0] && p[0] < 0;
+      ind[1] = !active[1] && p[1] < 0;
+      ind[2] = !active[2] && p[0] + p[1] > 0;
+      if (ind[0] || ind[1] || ind[2]) {
+        if (ind[0]) {
+          alpha_new = -x[0]/p[0];
+          if (alpha_new < alpha) {
+            alpha = alpha_new;
+            argmin = 0;
+          }
+        }
+        if (ind[1]) {
+          alpha_new = -x[1]/p[1];
+          if (alpha_new < alpha) {
+            alpha = alpha_new;
+            argmin = 1;
+          }
+        }
+        if (ind[2]) {
+          alpha_new = (1 - x[0] - x[1])/(p[0] + p[1]);
+          if (alpha_new < alpha) {
+            alpha = alpha_new;
+            argmin = 2;
+          }
+        }
+        alpha = max(0.0, min(alpha, 1.0));
+        if (alpha < 1) {
+          active[argmin] = true;
+        }
+      }
+      x[0] += alpha*p[0];
+      x[1] += alpha*p[1];
+    }
+
+    if (++k == niters) {
+      if (error) *error = true;
+      break;
+    }
+  }
+}
+
+#undef __compute_p
+#undef __compute_y
+#undef __num_active
+
 arma::vec numopt::sqp(
   numopt::field_t const & f, numopt::grad_t const & df,
   numopt::hess_t const & d2f, arma::mat const & A, arma::vec const & b,

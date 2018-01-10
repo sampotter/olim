@@ -19,14 +19,14 @@ void test_qpez() {
     mat G = {{2, 1}, {1, 2}};
     vec c = {3, 2};
     mat A; A.eye(2, 2);
-    vec x = numopt::qpez(G, c, A);
+    vec x = numopt::qpez_schur(G, c, A);
     IS_TRUE(all(abs(x) < 1e-15));
   }
   {
     mat G(2, 2); G.eye(2, 2);
     vec c = {1, 1};
     mat A = {{-1, 1}};
-    vec x = numopt::qpez(G, c, A);
+    vec x = numopt::qpez_schur(G, c, A);
     IS_APPROX_EQUAL(x(0), -1.);
     IS_APPROX_EQUAL(x(1), -1.);
   }
@@ -34,7 +34,7 @@ void test_qpez() {
     mat G(2, 2); G.eye(2, 2);
     vec c = {-1, -1};
     mat A = {{0, 1}};
-    vec x = numopt::qpez(G, c, A);
+    vec x = numopt::qpez_schur(G, c, A);
     IS_APPROX_EQUAL(x(0), 1.);
     IS_APPROX_EQUAL(x(1), 0.);
   }

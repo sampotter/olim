@@ -31,7 +31,7 @@ arma::uvec numopt::setdiff(unsigned low, unsigned high, arma::uvec const & u) {
   }
 }
 
-arma::vec numopt::qpez(
+arma::vec numopt::qpez_schur(
   arma::mat const & G, arma::vec const & c, arma::mat const & A)
 {
   using arma::solve;
@@ -68,7 +68,7 @@ arma::vec numopt::qpi(
   while (true) {
     A_active = A.rows(W);
     y = G*x + c;
-    p = qpez(G, y, A_active);
+    p = qpez_schur(G, y, A_active);
 
     if (arma::norm(p, "inf") <= tol) {
       lam.fill(arma::datum::nan);

@@ -27,7 +27,8 @@ namespace numopt {
    * Bertsekas. The load vector for the equality constraint is
    * zero. Requires G positive definite.
    */
-  arma::vec qpez(arma::mat const & G, arma::vec const & c, arma::mat const & A);
+  arma::vec qpez_schur(arma::mat const & G, arma::vec const & c,
+                       arma::mat const & A);
   
   /**
    * Solve the inequality-constrained quadratic program:

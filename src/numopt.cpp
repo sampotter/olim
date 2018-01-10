@@ -40,6 +40,31 @@ arma::vec numopt::qpez_schur(
   return tmp1*solve(A*tmp1, A*tmp2) - tmp2;
 }
 
+template <>
+void
+numopt::qpe_baryplex<2, 0>(double const * G, double const * c, double * x)
+{
+  x[0] = 0.0;
+  x[1] = -c[1]/G[3];
+}
+
+template <>
+void
+numopt::qpe_baryplex<2, 1>(double const * G, double const * c, double * x)
+{
+  x[0] = -c[0]/G[0];
+  x[1] = 0.0;
+}
+
+template <>
+void
+numopt::qpe_baryplex<2, 2>(double const * G, double const * c, double * x)
+{
+  double pZ = ((G[3] - G[0])/2 + c[1] - c[0])/(G[0] - G[1] - G[2] + G[3]);
+  x[0] = 0.5 + pZ;
+  x[1] = 0.5 - pZ;
+}
+
 arma::vec numopt::qpi(
   arma::mat const & G, arma::vec const & c, arma::mat const & A,
   arma::vec const & b, arma::vec const * x0, bool * error, double tol,

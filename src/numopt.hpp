@@ -31,6 +31,19 @@ namespace numopt {
                        arma::mat const & A);
   
   /**
+   * Solve the equality-constrained quadratic program:
+   *
+   *     minimize x'*G*x/2 + x'*c
+   *   subject to a'*x = b
+   *
+   * where the equality constraint corresponds to the mth active
+   * constraint for the barycentric simplex in R^d (of d + 1 possible
+   * constraints).
+   */
+  template <int d, int m>
+  void qpe_baryplex(double const * G, double const * c, double * x);
+
+  /**
    * Solve the inequality-constrained quadratic program:
    *
    *     minimize  x'*G*x/2 + x'*c

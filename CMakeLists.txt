@@ -41,6 +41,7 @@ set (FMM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
+  src/cost_funcs.cpp
   src/fmm.cpp
   src/numopt.cpp
   src/olim_util.cpp
@@ -111,6 +112,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   set (tests
 	basic_marcher
 	basic_marcher_3d
+    cost_funcs
 	heap
     numopt
     olim4_mp0

@@ -93,7 +93,7 @@ using olim18_mp0 = olim3d_mp0<olim18_groups>;
 using olim18_mp1 = olim3d_mp1<olim18_groups>;
 using olim18_rhr = olim3d_rhr<olim18_groups>;
 
-using olim26_groups = groups_t<1, 0, 0, 1, 1, 1, 1, 1>;
+using olim26_groups = groups_t<1, 0, 0, 1, 1, 1, 0, 0>;
 using olim26_mp0 = olim3d_mp0<olim26_groups>;
 using olim26_mp1 = olim3d_mp1<olim26_groups>;
 using olim26_rhr = olim3d_rhr<olim26_groups>;

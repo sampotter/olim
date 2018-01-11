@@ -16,6 +16,7 @@ option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
+option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
   "Compile all 256 3D marchers (this takes a while!)" OFF
@@ -63,9 +64,11 @@ endif ()
 # This executable is just for convenience. If you want to write a
 # quick test and have it build with the rest of the library, you can
 # do this here.
-add_executable (scratch misc/scratch.cpp)
-target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries (scratch fmm)
+if (BUILD_SCRATCH)
+  add_executable (scratch misc/scratch.cpp)
+  target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries (scratch fmm)
+endif ()
 
 if (${BUILD_MEX_BINDINGS})
   set (MEX_LINKER_FLAGS "-lfmm")

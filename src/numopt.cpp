@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 
+#ifdef USE_ARMADILLO
 arma::uvec numopt::setdiff(unsigned low, unsigned high, arma::uvec const & u) {
   int n = high - low - u.n_rows;
   assert(n >= 0);
@@ -30,7 +32,9 @@ arma::uvec numopt::setdiff(unsigned low, unsigned high, arma::uvec const & u) {
     return v;
   }
 }
+#endif // USE_ARMADILLO
 
+#ifdef USE_ARMADILLO
 arma::vec numopt::qpez_schur(
   arma::mat const & G, arma::vec const & c, arma::mat const & A)
 {
@@ -39,6 +43,7 @@ arma::vec numopt::qpez_schur(
   auto const tmp2 = solve(G, c);
   return tmp1*solve(A*tmp1, A*tmp2) - tmp2;
 }
+#endif // USE_ARMADILLO
 
 template <>
 void
@@ -65,6 +70,7 @@ numopt::qpe_baryplex<2, 2>(double const * G, double const * c, double * x)
   x[1] = 0.5 - pZ;
 }
 
+#ifdef USE_ARMADILLO
 arma::vec numopt::qpi(
   arma::mat const & G, arma::vec const & c, arma::mat const & A,
   arma::vec const & b, arma::vec const * x0, bool * error, double tol,
@@ -131,6 +137,7 @@ arma::vec numopt::qpi(
   }
   return x;
 }
+#endif // USE_ARMADILLO
 
 #define __compute_p() do {                          \
     double det = G[0]*G[3] - G[1]*G[2];             \
@@ -282,6 +289,7 @@ numopt::qpi_baryplex<2>(double const * G, double const * c, double const * x0,
 #undef __compute_y
 #undef __num_active
 
+#ifdef USE_ARMADILLO
 arma::vec numopt::sqp(
   numopt::field_t const & f, numopt::grad_t const & df,
   numopt::hess_t const & d2f, arma::mat const & A, arma::vec const & b,
@@ -350,6 +358,7 @@ arma::vec numopt::sqp(
   }
   return x1;
 }
+#endif // USE_ARMADILLO
 
 #define __compute_lambda_min() do {                                 \
     double half_tr = (G[0] + G[3])/2, det = G[0]*G[3] - G[1]*G[2];  \

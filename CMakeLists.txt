@@ -15,13 +15,19 @@ option (OLIM8_ADJ_UPDATES
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
+option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
 
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
   "Compile all 256 3D marchers (this takes a while!)" OFF
-  "BUILD_PYTHON_BINDINGS" OFF)
+  "BUILD_PYTHON_BINDINGS" ON)
+CMAKE_DEPENDENT_OPTION (USE_ARMADILLO_FOR_NUMOPT
+  "Use Armadillo in the implementation of numerical optimization functions." OFF
+  "INCLUDE_ARMADILLO" ON)
 
-find_package (Armadillo REQUIRED)
-include_directories (${ARMADILLO_INCLUDE_DIR})
+if (INCLUDE_ARMADILLO)
+  find_package (Armadillo REQUIRED)
+  include_directories (${ARMADILLO_INCLUDE_DIR})
+endif ()
 
 # If we have a macro like PRINT_UPDATES defined, because of the way
 # the preprocessor works, it's helpful to turn this warning on to make
@@ -50,7 +56,9 @@ set (FMM_SRC_FILES
 
 add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
+if (INCLUDE_ARMADILLO)
+  target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
+endif ()
 
 # This executable is just for convenience. If you want to write a
 # quick test and have it build with the rest of the library, you can
@@ -60,13 +68,17 @@ target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries (scratch fmm)
 
 if (${BUILD_MEX_BINDINGS})
+  set (MEX_LINKER_FLAGS "-lfmm")
+  if (INCLUDE_ARMADILLO)
+    set (MEX_LINKER_FLAGS "${MEX_LINKER_FLAGS} -larmadillo")
+  endif ()
   add_custom_command (
 	OUTPUT fmm.mexmaci64 # TODO: need to build this on multiple
 						 # platforms and get the correct output target
 						 # name on each.
 	COMMAND
 	  mex -output fmm -outdir ${CMAKE_CURRENT_BINARY_DIR}
-	  -L${CMAKE_CURRENT_BINARY_DIR} -lfmm -larmadillo src/mex.fmm.cpp
+	  -L${CMAKE_CURRENT_BINARY_DIR} ${MEX_LINKER_FLAGS} src/mex.fmm.cpp
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	MAIN_DEPENDENCY src/mex.fmm.cpp
 	DEPENDS ${FMM_SRC_FILES})
@@ -137,7 +149,8 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
 	target_link_libraries (${test}.test fmm)
-	target_include_directories (${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+	target_include_directories (
+      ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 	add_test (
 	  NAME ${test} COMMAND ${CMAKE_COMMAND}
 	  -DTEST_PROGRAM=$<TARGET_FILE:${test}.test>

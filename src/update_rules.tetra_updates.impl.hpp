@@ -76,6 +76,7 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   double s0, double s1, double s2, double h,
   std::integral_constant<char, 0>) const
 {
+#ifdef USE_ARMADILLO
   using namespace arma;
   using namespace numopt;
 
@@ -111,6 +112,24 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   assert(!error);
 
   return F0(xopt);
+#else
+  double u[3] = {u0, u1, u2};
+  double s_hat = s;
+  double s_[3] = {s0, s1, s2};
+  double p[3][3];
+  memcpy((void *) p[0], (void *) p0, 3*sizeof(double));
+  memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
+  memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
+  F0<2> func {h, this->theta()};
+  func.set_args(u, s_hat, s_, p);
+  double lambda[2], F0;
+  bool error;
+  numopt::sqp_baryplex(&func, lambda, &error);
+  assert(!error);
+  func.set_lambda(lambda); // TODO: maybe unnecessary
+  func.eval(F0);
+  return F0;
+#endif
 }
 
 template <class speed_est, char degree>
@@ -120,6 +139,7 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   double s0, double s1, double s2, double h,
   std::integral_constant<char, 1>) const
 {
+#ifdef USE_ARMADILLO
   using namespace arma;
   using namespace numopt;
 
@@ -165,6 +185,24 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   assert(!error);
 
   return F1(xopt);
+#else
+  double u[3] = {u0, u1, u2};
+  double s_hat = s;
+  double s_[3] = {s0, s1, s2};
+  double p[3][3];
+  memcpy((void *) p[0], (void *) p0, 3*sizeof(double));
+  memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
+  memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
+  F1<2> func {h, this->theta()};
+  func.set_args(u, s_hat, s_, p);
+  double lambda[2], F1;
+  bool error;
+  numopt::sqp_baryplex(&func, lambda, &error);
+  assert(!error);
+  func.set_lambda(lambda); // TODO: maybe unnecessary
+  func.eval(F1);
+  return F1;
+#endif
 }
 
 #endif // __UPDATE_RULES_TETRA_UPDATES_IMPL_HPP__

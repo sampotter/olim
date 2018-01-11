@@ -3,8 +3,11 @@
 
 #include <cstdio>
 
+#if USE_ARMADILLO
 using namespace arma;
+#endif // USE_ARMADILLO
 
+#if USE_ARMADILLO
 void test_setdiff() {
   arma::uvec u = {2};
   arma::uvec v = numopt::setdiff(0, 4, u);
@@ -13,7 +16,9 @@ void test_setdiff() {
   IS_TRUE(v(1) == 1);
   IS_TRUE(v(2) == 3);
 }
+#endif // USE_ARMADILLO
 
+#if USE_ARMADILLO
 void test_qpez() {
   {
     mat G = {{2, 1}, {1, 2}};
@@ -39,6 +44,8 @@ void test_qpez() {
     IS_APPROX_EQUAL(x(1), 0.);
   }
 }
+#endif // USE_ARMADILLO
+
 
 void test_qpe_baryplex() {
   double G[4], c[2], x[2];
@@ -77,6 +84,7 @@ void test_qpe_baryplex() {
   }
 }
 
+#if USE_ARMADILLO
 void test_qpi() {
   mat G(2, 2); G.eye(2, 2);
   vec c = {-1./3, -1./3};
@@ -120,6 +128,7 @@ void test_qpi() {
   IS_APPROX_EQUAL(x(0), 0.0);
   IS_APPROX_EQUAL(x(1), 0.3138511630507365);
 }
+#endif // USE_ARMADILLO
 
 void test_qpi_baryplex() {
   bool error;
@@ -289,6 +298,7 @@ void test_qpi_baryplex() {
   }
 }
 
+#if USE_ARMADILLO
 void test_sqp() {
   {
     double u0, u1, u2, h, s, s0, s1, s2, theta;
@@ -794,6 +804,7 @@ void test_sqp() {
     IS_APPROX_EQUAL(x(1), xgt(1));
   }
 }
+#endif // USE_ARMADILLO
 
 void test_sqp_baryplex() {
   bool error;
@@ -1053,11 +1064,13 @@ void test_sqp_baryplex() {
 }
 
 int main() {
+#if USE_ARMADILLO
   test_setdiff();
   test_qpez();
-  test_qpe_baryplex();
   test_qpi();
-  test_qpi_baryplex();
   test_sqp();
+#endif // USE_ARMADILLO0
+  test_qpe_baryplex();
+  test_qpi_baryplex();
   test_sqp_baryplex();
 }

@@ -316,7 +316,7 @@ arma::vec numopt::sqp(
     // Compute descent direction by solving inequality-constrained
     // quadratic program
     found_opt = false;
-    qpi_tol = EPS(double);
+    qpi_tol = tol;
     while (!found_opt) {
       g = qpi(H, c, A, b, &x1, &qpi_error, qpi_tol, qpi_niters) - x1;
       if (qpi_error) {

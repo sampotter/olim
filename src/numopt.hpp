@@ -9,6 +9,7 @@
 #include <functional>
 
 #include "common.macros.hpp"
+#include "cost_funcs.hpp"
 
 namespace numopt {
   /**
@@ -78,6 +79,10 @@ namespace numopt {
   arma::vec sqp(field_t const & f, grad_t const & df, hess_t const & d2f,
                 arma::mat const & A, arma::vec const & b, arma::vec const & x0,
                 bool * error, double tol = EPS(double), int niters = 0);
+
+  template <int d>
+  void sqp_baryplex(cost_func<d> * func, double * x, bool * error,
+                    double tol = EPS(double), int niters = 0);
 }
 
 #endif // __NUMOPT_HPP__

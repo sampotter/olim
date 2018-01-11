@@ -93,13 +93,37 @@
     depending on adj and diag bools
   - [ ] do the same sort of thing but for olim3d
   - [ ] consider removing speed estimators
+** Enhancing update_rules
+   GOAL: we want to incorporate the *hierarchical update* (HU) and the
+   *trial node optimization* (TNO)
+*** HU
+    IDEA: skip higher dimensional updates by ordering the updates by
+    dimension:
+    - start with line updates, find argmin
+    - for tri updates, only do tri updates which contain argmin
+    - etc
+    - this is really only worth doing for >3D (we tried it for 2D and it didn't help much)
+    - [ ] do it in 3D
+    - [ ] add a CMake option to toggle it
+*** TNO
+    IDEA: Masha claims that if we're updating a trial node, then we
+    only have to do updates which contain the node which we're doing the update from
+    - [ ] implement this in 2D first since it should be easy to do and
+      easy to see the effects of
+    - [ ] then try for 3D---will be harder, but probably still worth it
+    - [ ] CMake option
+** Instrumenting/measuring
+   - [ ] look at boost logging for this
+   - [ ] count number of types of updates
+     - compare with HU/TNO
+   - [ ] count number of qpi/sqp iterations
 ** (Kind of) removing Armadillo
    GOAL: make it possible to optionally compile the library with
    Armadillo. If it's included, then conditionally allow for the
    marchers to use Armadillo in their implementation---but by default,
    use the new "baryplex" functions from numopt.
-   - [ ] conditional compilation
-   - [ ] conditionally use in implementations of marchers
+   - [X] conditional compilation
+   - [X] conditionally use in implementations of marchers
 ** Optimizing the SQP solver
 *** implementing the nullspace method
     - [X] start by implementing this for d = 2, and with only one
@@ -131,6 +155,8 @@
   - [ ] line search methods
     - [ ] golden section
     - [ ] zoom
+*** higher dim
+    - [ ] use BFGS for fast inverse
 * Unconstrained method stuff
   once we get the constrained method working, we'll take a look at
   this---the stuff here doesn't make much sense for the constrained

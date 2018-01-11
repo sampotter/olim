@@ -93,9 +93,16 @@
     depending on adj and diag bools
   - [ ] do the same sort of thing but for olim3d
   - [ ] consider removing speed estimators
+** (Kind of) removing Armadillo
+   GOAL: make it possible to optionally compile the library with
+   Armadillo. If it's included, then conditionally allow for the
+   marchers to use Armadillo in their implementation---but by default,
+   use the new "baryplex" functions from numopt.
+   - [ ] conditional compilation
+   - [ ] conditionally use in implementations of marchers
 ** Optimizing the SQP solver
 *** implementing the nullspace method
-    - [ ] start by implementing this for d = 2, and with only one
+    - [X] start by implementing this for d = 2, and with only one
       constraint in the active set---this should be enough to get us going
     - NOTE! right now i'm assuming that a 2x2 G is stored in four
       doubles---if we simplify this to take advantage of the fact that

@@ -149,6 +149,17 @@
        simplex. If we project, can we simplify the persuant steps of
        the algorithm? Look into this
      - [ ] F2
+     - [ ] separate nodes into "nodes" and "values"
+       - [ ] make it possible to just stick a numpy array's pointer in
+         the marcher and directly fill values there? (might cause
+         problems)
+** Automated stats
+*** tools
+    - [[http://www.pytables.org/][pytables]]
+    - [[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks][git hooks]]
+    - [[https://restic.readthedocs.io/][restic]]
+    - [[https://www.backblaze.com/b2/][backblaze b2]]
+    - [[https://sqlite.org/][sqlite]]
 ** Misc
   - [ ] get line_updates to conform with new template style
     (e.g. "degree" template parameter)

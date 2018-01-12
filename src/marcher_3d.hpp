@@ -20,6 +20,7 @@ struct marcher_3d: public abstract_marcher {
              double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
   marcher_3d(int height, int width, int depth, double h,
              double const * s_cache);
+  virtual ~marcher_3d();
 
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   void add_boundary_node(double x, double y, double z, double value = 0.0);

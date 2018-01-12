@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 
@@ -72,28 +72,17 @@ marcher_template = Template('''
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a);
 ''')
 
-def get_3d_marcher_map(compile_all_3d_marchers=False):
-    d = dict()
-    if compile_all_3d_marchers:
-        for i in range(2**8):
-            groups = tuple((i & (1 << j)) >> j for j in range(8))
-            for mode in ['rhr', 'mp0', 'mp1']:
-                fmt = ((mode,) + groups)
-                k = 'olim3d_%s<groups_t<%d, %d, %d, %d, %d, %d, %d, %d>>'
-                v = '%s_%d%d%d%d%d%d%d%d'
-                d[k % fmt] = v % fmt
-    else:
-        d['basic_marcher_3d'] = 'BasicMarcher3D'
-        d['olim6_mp0'] = 'Olim6Mid0'
-        d['olim6_mp1'] = 'Olim6Mid1'
-        d['olim6_rhr'] = 'Olim6Rect'
-        d['olim18_mp0'] = 'Olim18Mid0'
-        d['olim18_mp1'] = 'Olim18Mid1'
-        d['olim18_rhr'] = 'Olim18Rect'
-        d['olim26_mp0'] = 'Olim26Mid0'
-        d['olim26_mp1'] = 'Olim26Mid1'
-        d['olim26_rhr'] = 'Olim26Rect'
-    return d
+marchers3d = {
+    'basic_marcher_3d': 'BasicMarcher3D',
+    'olim6_mp0': 'Olim6Mid0',
+    'olim6_mp1': 'Olim6Mid1',
+    'olim6_rhr': 'Olim6Rect',
+    'olim18_mp0': 'Olim18Mid0',
+    'olim18_mp1': 'Olim18Mid1',
+    'olim18_rhr': 'Olim18Rect',
+    'olim26_mp0': 'Olim26Mid0',
+    'olim26_mp1': 'Olim26Mid1',
+    'olim26_rhr': 'Olim26Rect'}
 
 # TODO: see comment above for `marcher_template' variable.
 marcher3d_template = Template('''
@@ -159,18 +148,21 @@ marcher3d_template = Template('''
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a);
 ''')
 
-def build_src_txt():
+def build_src_txt(compile_all_olim3d):
     src_txt = '''
 #include <limits>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl.h>
 
 #include <basic_marcher.hpp>
 #include <basic_marcher_3d.hpp>
 #include <olim.hpp>
 #include <olim3d.hpp>
+
+#include "py.olim3d.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -189,17 +181,18 @@ PYBIND11_MODULE(eikonal, m) {
         v = marchers3d[k]
         src_txt += marcher3d_template.substitute(
             cpp_class_name=k, py_class_name=v)
-    src_txt += '''}
-'''
+    if compile_all_olim3d:
+        src_txt += '''  m.def("olim3d", &olim3d_group_spec, "TODO", "s_cache"_a, "h"_a, "marcher"_a, 
+    "cost_func"_a, "bd_points"_a);
+}'''
+    else:
+        src_txt += '''
+}'''
     return src_txt
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--all', action='store_true')
+    parser.add_argument('--all_olim3d', action='store_true')
     args = parser.parse_args()
-
-    marchers3d = get_3d_marcher_map(args.all)
-
-    src_txt = build_src_txt()
-
+    src_txt = build_src_txt(args.all_olim3d)
     print(src_txt.strip())

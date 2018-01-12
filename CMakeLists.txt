@@ -96,27 +96,58 @@ if (${BUILD_PYTHON_BINDINGS})
 	${CMAKE_CURRENT_BINARY_DIR}/src/py.eikonal.cpp)
   if (${COMPILE_ALL_3D_MARCHERS})
     set (GENERATE_PY_EIKONAL_COMMAND
-	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} --all
-      > ${GENERATED_PY_EIKONAL_CPP_PATH})
+	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} --all_olim3d >
+      ${GENERATED_PY_EIKONAL_CPP_PATH})
   else ()
     set (GENERATE_PY_EIKONAL_COMMAND
 	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} > ${GENERATED_PY_EIKONAL_CPP_PATH})
   endif ()
+
   add_custom_command (
 	OUTPUT src/py.eikonal.cpp
 	COMMAND ${CMAKE_COMMAND} -E copy
 	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
-	  generate_py_eikonal_cpp.py
+      ${GENERATE_PY_EIKONAL_CPP_SCRIPT}
 	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
-	DEPENDS
-	  ${CMAKE_CURRENT_SOURCE_DIR}/generate_py_eikonal_cpp.py
-	  ${FMM_SRC_FILES})
+	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${FMM_SRC_FILES})
+
+  # Again, use a Python script to generate a wrapper function which
+  # lets us call any 3D OLIM, specified by its tetrahedra groups
+  # (i.e. marcher number).
+  #
+  # TODO: since it seems likely that we'll be doing some code
+  # generation in the future, we should probably make these two little
+  # snippets into a function.
+  if (${COMPILE_ALL_3D_MARCHERS})
+    set (GENERATE_PY_OLIM3D_CPP_SCRIPT generate_py_olim3d_wrapper.py)
+    set (GENERATED_PY_OLIM3D_HPP_PATH
+      ${CMAKE_CURRENT_BINARY_DIR}/src/py.olim3d.hpp)
+    set (GENERATED_PY_OLIM3D_CPP_PATH
+      ${CMAKE_CURRENT_BINARY_DIR}/src/py.olim3d.cpp)
+    set (GENERATE_PY_OLIM3D_COMMAND
+      ./generate_py_olim3d_wrapper.py ${GENERATED_PY_OLIM3D_HPP_PATH}
+        ${GENERATED_PY_OLIM3D_CPP_PATH})
+    add_custom_command (
+      OUTPUT src/py.olim3d.cpp
+      COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_OLIM3D_CPP_SCRIPT}
+        ${GENERATE_PY_OLIM3D_CPP_SCRIPT}
+      COMMAND ${GENERATE_PY_OLIM3D_COMMAND}
+      DEPENDS ${GENERATE_PY_OLIM3D_CPP_SCRIPT} ${FMM_SRC_FILES})
+  endif ()
 
   # We probably aren't doing this the best way---as it is, we end up
   # recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
   # statically link the fmm target into this module.
   find_package (pybind11 REQUIRED)
-  pybind11_add_module (eikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
+  if (${COMPILE_ALL_3D_MARCHERS})
+    pybind11_add_module (eikonal MODULE
+      ${GENERATED_PY_EIKONAL_CPP_PATH}
+      ${GENERATED_PY_OLIM3D_CPP_PATH})
+  else ()
+    pybind11_add_module (eikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
+  endif ()
+
   target_link_libraries (eikonal PRIVATE fmm)
   target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endif ()

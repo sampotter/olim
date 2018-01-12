@@ -18,7 +18,7 @@ struct marcher: public abstract_marcher {
           std::function<double(double, double)> speed =
             static_cast<speed_func>(default_speed_func),
           double x0 = 0.0, double y0 = 0.0);
-  ~marcher();
+  virtual ~marcher();
 
   void add_boundary_node(int i, int j, double value = 0.0);
   void add_boundary_node(double i, double j, double value = 0.0);

@@ -47,7 +47,7 @@ constexpr char dot(char p, char q) {
  * coordinates; i.e., orthogonally project (lam1, lam2) onto the
  * simplex {(x, y): x >= 0, y >= 0, x + y <= 1}.
  */
-void proj_bary(double & lam1, double & lam2) {
+inline void proj_bary(double & lam1, double & lam2) {
   double const sum = lam1 + lam2;
   if (sum > 1) {
     double const shift = (1 - sum)/2;

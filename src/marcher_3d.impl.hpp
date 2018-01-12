@@ -61,13 +61,22 @@ marcher_3d<Node>::marcher_3d(int height, int width, int depth, double h,
                              double const * s_cache):
   abstract_marcher {get_initial_heap_size(width, height, depth)},
   _nodes {new Node[width*height*depth]},
-  _s_cache {s_cache},
+  _s_cache {new double[width*height*depth]},
   _h {h},
   _height {height},
   _width {width},
   _depth {depth}
 {
+  memcpy((void *) _s_cache, (void *) s_cache,
+         sizeof(double)*height*width*depth);
   init();
+}
+
+template <class Node>
+marcher_3d<Node>::~marcher_3d()
+{
+  delete[] _nodes;
+  delete[] _s_cache;
 }
 
 /**

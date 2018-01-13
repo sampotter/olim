@@ -48,7 +48,7 @@
         - [X] tetra
   - [X] add general speed func test for olim4_rhr
   - [X] fix python constructors for 3D marchers
-  - [ ] try removing _x0, _y0, _z0
+  - [X] try removing _x0, _y0, _z0
   - [ ] fix issue with symmetry in olim8_mp0 by printing
     updates. Maybe this will help with the issues with higher dim
     olim8's, since they use the same tri update implementation
@@ -62,14 +62,13 @@
       - this might be more portable ultimately if we want to generate
         bindings for multiple languages and not require people to have
         pybind11 installed
-  - [ ] the "sink" function can be sped up? look at the "next < n"
-    test and note that it will almost always evaluate to true; could
-    change the loop iteration, and add a step that takes place after
-    the loop
   - [ ] add the rest of the 3d speed funcs and extend the tests to use
     them and iterate over them
     - also make an array of pairs of 2d/3d speed funcs for simpler iteration
+    - [ ] do big python-generated test---iterate over ALL 3D marchers?
   - [-] get all tests working
+    /check if it's just the speed functions being implemented/
+    /incorrectly---they haven't been tested before!/
     - [ ] olim18_mp0.test.cpp
     - [ ] olim18_mp1.test.cpp
     - [ ] olim18_rhr.test.cpp
@@ -91,8 +90,9 @@
     - this is essentially what we already did
   - [X] get olim to conditionally use moore marcher or neumann marcher
     depending on adj and diag bools
-  - [ ] do the same sort of thing but for olim3d
-  - [ ] consider removing speed estimators
+  - [X] do the same sort of thing but for olim3d
+  - [ ] consider removing speed estimators---i.e., *use cost_funcs
+    everywhere possible*
 ** Enhancing update_rules
    GOAL: we want to incorporate the *hierarchical update* (HU) and the
    *trial node optimization* (TNO)

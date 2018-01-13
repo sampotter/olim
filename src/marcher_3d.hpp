@@ -51,7 +51,6 @@ private:
   Node * _nodes;
   double const * _s_cache {nullptr};
   double _h {1};
-  double _x0 {0}, _y0 {0}, _z0 {0};
   int _height, _width, _depth;
 };
 

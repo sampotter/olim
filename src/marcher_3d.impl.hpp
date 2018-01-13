@@ -31,9 +31,6 @@ marcher_3d<Node>::marcher_3d(
   _nodes {new Node[width*height*depth]},
   _s_cache {new double[width*height*depth]},
   _h {h},
-  _x0 {x0},
-  _y0 {y0},
-  _z0 {z0},
   _height {height},
   _width {width},
   _depth {depth}

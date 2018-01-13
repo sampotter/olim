@@ -42,8 +42,6 @@ marcher<Node>::marcher(int height, int width, double h,
   _nodes {new Node[width*height]},
   _s_cache {new double[width*height]},
   _h {h},
-  _x0 {x0},
-  _y0 {y0},
   _height {height},
   _width {width}
 {

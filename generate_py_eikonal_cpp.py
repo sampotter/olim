@@ -161,9 +161,10 @@ def build_src_txt(compile_all_olim3d):
 #include <basic_marcher_3d.hpp>
 #include <olim.hpp>
 #include <olim3d.hpp>
-
-#include "py.olim3d.hpp"
-
+'''
+    if compile_all_olim3d:
+        src_txt += '#include "py.olim3d.hpp"\n'
+    src_txt += '''
 namespace py = pybind11;
 using namespace py::literals;
 

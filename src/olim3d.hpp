@@ -7,6 +7,12 @@
 #include "update_rules.tetra_updates.hpp"
 #include "update_rules.tri_updates.hpp"
 
+// dependencies:
+//
+// 6: IVa
+// 18: I, II, III, IVb
+// 26: V, VIa, VIb
+
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
 struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
@@ -38,9 +44,11 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
   using marcher_3d<node>::marcher_3d;
 protected:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
-  static int di[26];
-  static int dj[26];
-  static int dk[26];
+
+  static constexpr int num_neighbors =
+    groups::group_V || groups::group_VI_a || groups::group_VI_b ? 26 :
+    (groups::group_I || groups::group_II || groups::group_III ||
+     groups::group_IV_b ? 18 : 6);
 private:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
@@ -93,7 +101,7 @@ using olim18_mp0 = olim3d_mp0<olim18_groups>;
 using olim18_mp1 = olim3d_mp1<olim18_groups>;
 using olim18_rhr = olim3d_rhr<olim18_groups>;
 
-using olim26_groups = groups_t<1, 0, 0, 1, 1, 1, 0, 0>;
+using olim26_groups = groups_t<0, 0, 0, 0, 0, 1, 0, 0>;
 using olim26_mp0 = olim3d_mp0<olim26_groups>;
 using olim26_mp1 = olim3d_mp1<olim26_groups>;
 using olim26_rhr = olim3d_rhr<olim26_groups>;

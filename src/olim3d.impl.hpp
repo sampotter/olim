@@ -1,6 +1,11 @@
 #ifndef __OLIM3D_IMPL_HPP__
 #define __OLIM3D_IMPL_HPP__
 
+#include "offsets.hpp"
+
+#define __di(l) di<3>[l]
+#define __dj(l) dj<3>[l]
+#define __dk(l) dk<3>[l]
 
 /**
  * We only need to do triangle or line updates that lie in the xy-,
@@ -107,30 +112,6 @@ constexpr int oct2inds[8][7] = {
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
-int olim3d<node, line_updates, tri_updates, tetra_updates, groups>::di[] = {
-  1, 0, 0, -1, 0, 0,
-  1, 0, -1, 0, 1, -1, -1, 1, 1, 0, -1, 0,
-  1, -1, -1, 1, 1, -1, -1, 1
-};
-
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-int olim3d<node, line_updates, tri_updates, tetra_updates, groups>::dj[] = {
-  0, 1, 0, 0, -1, 0,
-  0, 1, 0, -1, 1, 1, -1, -1, 0, 1, 0, -1,
-  1, 1, -1, -1, 1, 1, -1, -1
-};
-
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-int olim3d<node, line_updates, tri_updates, tetra_updates, groups>::dk[] = {
-  0, 0, 1, 0, 0, -1,
-  1, 1, 1, 1, 0, 0, 0, 0, -1, -1, -1, -1,
-  1, 1, 1, 1, -1, -1, -1, -1
-};
-
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
 void olim3d<
   node, line_updates, tri_updates, tetra_updates,
   groups>::get_valid_neighbors(int i, int j, int k, abstract_node ** nb)
@@ -141,7 +122,7 @@ void olim3d<
    */
   int a, b, c;
   for (int l = 0; l < 26; ++l) {
-    a = i + di[l], b = j + dj[l], c = k + dk[l];
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->is_valid(a, b, c)) {
       nb[l] = &this->operator()(a, b, c);
     }
@@ -164,12 +145,12 @@ void olim3d<
   int k = static_cast<node *>(n)->get_k();
 
   for (int l = 0; l < 26; ++l) {
-    this->stage(i + di[l], j + dj[l], k + dk[l]);
+    this->stage(i + __di(l), j + __dj(l), k + __dk(l));
   }
 
   int a, b, c;
   for (int l = 0; l < 26; ++l) {
-    a = i + di[l], b = j + dj[l], c = k + dk[l];
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
       this->update(a, b, c);
     }
@@ -191,7 +172,7 @@ void olim3d<
   double h = this->get_h(), s = this->speed(i, j, k), s_[26];
   for (int l = 0; l < 26; ++l) {
     if (nb[l]) {
-      s_[l] = this->speed(i + di[l], j + dj[l], k + dk[l]);
+      s_[l] = this->speed(i + __di(l), j + __dj(l), k + __dk(l));
     }
   }
 
@@ -301,5 +282,9 @@ void olim3d<
 #undef P101
 #undef P110
 #undef P111
+
+#undef __di
+#undef __dj
+#undef __dk
 
 #endif // __OLIM3D_IMPL_HPP__

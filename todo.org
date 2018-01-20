@@ -90,9 +90,17 @@
     - this is essentially what we already did
   - [X] get olim to conditionally use moore marcher or neumann marcher
     depending on adj and diag bools
-  - [X] do the same sort of thing but for olim3d
-  - [ ] consider removing speed estimators---i.e., *use cost_funcs
-    everywhere possible*
+  - [ ] merge neumann and moore marcher into the same template class,
+    at least
+  - [ ] get rid of "get_valid_neighbors" function and merge into
+    "stage_neighbors_impl"
+    - we can even optimize this a bit, since we'll be able to take
+      advantage of overlapping neighborhoods
+  - [ ] do the same sort of thing but for olim3d
+  - [ ] consider removing speed estimators
+** big olim3d plot
+   - [ ] sort entries by how many tetra updates they have to do (i.e.,
+     fixed number for each bit, sum them up)
 ** Enhancing update_rules
    GOAL: we want to incorporate the *hierarchical update* (HU) and the
    *trial node optimization* (TNO)

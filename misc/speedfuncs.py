@@ -2,7 +2,7 @@ import numpy as np
 
 r = lambda x, y: np.sqrt(np.power(x, 2) + np.power(y, 2))
 
-s0 = lambda x, y: 1
+s0 = lambda x, y: np.ones(x.shape)
 f0 = r
 
 s1 = lambda x, y: 1 - np.sin(r(x, y))

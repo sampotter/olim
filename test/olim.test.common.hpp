@@ -2,6 +2,7 @@
 #define __OLIM_TEST_COMMON_HPP__
 
 #include <cassert>
+#include <type_traits>
 #include <vector>
 
 #include "speed_funcs.hpp"
@@ -36,8 +37,33 @@ void correct_corners_in_limit(int n, double tol) {
   IS_APPROX_EQUAL(m.get_value(n - 1, n - 1), sqrt(2), tol);
 }
 
+template <class olim>
+void quadrants_are_correct(
+  double diag_value,
+  std::enable_if_t<olim::ndim == 2> * = 0)
+{
+  int n = 2;
+  double h = 1;
+
+  double x0[4] = {0.0, 0.0, 1.0, 1.0};
+  double y0[4] = {0.0, 1.0, 0.0, 1.0};
+
+  for (int i = 0, i0 = 0, j0 = 0; i < 4; i0 = ++i/2, j0 = i0 % 2) {
+    olim m {n, n, h, (speed_func) default_speed_func, x0[i], y0[i]};
+    m.add_boundary_node(i0, j0);
+    m.run();
+    IS_APPROX_EQUAL(m.get_value(i0, j0), 0.0);
+    IS_APPROX_EQUAL(m.get_value((i0 + 1) % 2, j0), 1.0);
+    IS_APPROX_EQUAL(m.get_value(i0, (j0 + 1) % 2), 1.0);
+    IS_APPROX_EQUAL(m.get_value((i0 + 1) % 2, (j0 + 1) % 2), diag_value);
+  }
+}
+
 template <class olim3d>
-void quadrants_are_correct(double diag_value) {
+void quadrants_are_correct(
+  double diag_value,
+  std::enable_if_t<olim3d::ndim == 3> * = 0)
+{
   int n = 2;
   double h = 1;
 

@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
 arma::uvec numopt::setdiff(unsigned low, unsigned high, arma::uvec const & u) {
   int n = high - low - u.n_rows;
   assert(n >= 0);
@@ -34,7 +34,7 @@ arma::uvec numopt::setdiff(unsigned low, unsigned high, arma::uvec const & u) {
 }
 #endif // USE_ARMADILLO
 
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
 arma::vec numopt::qpez_schur(
   arma::mat const & G, arma::vec const & c, arma::mat const & A)
 {
@@ -70,7 +70,7 @@ numopt::qpe_baryplex<2, 2>(double const * G, double const * c, double * x)
   x[1] = 0.5 - pZ;
 }
 
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
 arma::vec numopt::qpi(
   arma::mat const & G, arma::vec const & c, arma::mat const & A,
   arma::vec const & b, arma::vec const * x0, bool * error, double tol,
@@ -289,7 +289,7 @@ numopt::qpi_baryplex<2>(double const * G, double const * c, double const * x0,
 #undef __compute_y
 #undef __num_active
 
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
 arma::vec numopt::sqp(
   numopt::field_t const & f, numopt::grad_t const & df,
   numopt::hess_t const & d2f, arma::mat const & A, arma::vec const & b,

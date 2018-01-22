@@ -14,7 +14,7 @@
 void basic_marcher::update_impl(int i, int j, double & T) {
   using std::min;
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("basic_marcher::update_impl(i = %d, j = %d)\n", i, j);
 #endif
 
@@ -38,7 +38,7 @@ void basic_marcher::update_impl(int i, int j, double & T) {
     assert(false);
   }
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("basic_marcher::update_impl: T <- %g\n", T);
 #endif
 }
@@ -47,7 +47,7 @@ void basic_marcher::update_impl(int i, int j, double & T) {
 void basic_marcher::update_impl(int i, int j, int src, double & T) {
   using std::min;
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("basic_marcher::update_impl(i = %d, j = %d, src = %d)\n", i, j, src);
 #endif
 
@@ -77,7 +77,7 @@ void basic_marcher::update_impl(int i, int j, int src, double & T) {
     assert(false);
   }
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("basic_marcher::update_impl: T <- %g\n", T);
 #endif
 }

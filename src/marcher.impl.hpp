@@ -3,7 +3,9 @@
 
 #include <cassert>
 #include <cmath>
-#include <cstdio>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif // PRINT_UPDATES
 
 #include "common.macros.hpp"
 
@@ -75,6 +77,9 @@ marcher<Node>::~marcher()
  */
 template <class Node>
 void marcher<Node>::add_boundary_node(int i, int j, double value) {
+#if PRINT_UPDATES
+  printf("add_boundary_node(i = %d, j = %d, value = %g)\n", i, j, value);
+#endif // PRINT_UPDATES
   assert(in_bounds(i, j));
   assert(operator()(i, j).is_far());
   stage_neighbors(&(operator()(i, j) = {i, j, value}));
@@ -101,6 +106,10 @@ void marcher<Node>::add_boundary_node(double x, double y, double value) {
 
 template <class Node>
 void marcher<Node>::add_boundary_nodes(Node const * nodes, int n) {
+#if PRINT_UPDATES
+  printf("add_boundary_nodes(nodes = %p, n = %d)\n", nodes, n);
+#endif // PRINT_UPDATES
+
   Node const * node;
   int i, j;
 
@@ -126,6 +135,10 @@ void marcher<Node>::add_boundary_nodes(Node const * nodes, int n) {
     node = &nodes[k];
     i = node->get_i();
     j = node->get_j();
+#if PRINT_UPDATES
+    printf("add_boundary_node(i = %d, j = %d, value = %g)\n",
+           i, j, node->get_value());
+#endif // PRINT_UPDATES
     stage_neighbors(&operator()(i, j));
   }
 }

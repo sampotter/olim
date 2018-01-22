@@ -47,7 +47,7 @@ void olim<node, line_updates, tri_updates, adj_updates,
 {
   using std::min;
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl(i = %d, j = %d)\n", i, j);
 #endif
 
@@ -74,7 +74,7 @@ void olim<node, line_updates, tri_updates, adj_updates,
     }
   }
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl: T <- %g\n", T);
 #endif
 }
@@ -93,7 +93,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
   int i, int j, int src, double & T, eikonal::bool_t<false>)
 {
   using std::min;
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl(i = %d, j = %d, src = %d)\n", i, j, src);
 #endif
 
@@ -122,7 +122,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
   if (nb[0]) T = min(T, min(LINE(0, 1), TRI(0, 1, 01, 10)));
   if (nb[2]) T = min(T, min(LINE(2, 1), TRI(1, 2, 10, 01)));
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl: T <- %g\n", T);
 #endif
 }
@@ -134,7 +134,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
 {
   using std::min;
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl(i = %d, j = %d, src = %d)\n", i, j, src);
 #endif
 
@@ -189,7 +189,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
     DO_TRI(3, 4, 01, 11);
   }
 
-#ifdef PRINT_UPDATES
+#if PRINT_UPDATES
   printf("olim::update_impl: T <- %g\n", T);
 #endif
 }

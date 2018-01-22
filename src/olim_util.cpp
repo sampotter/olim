@@ -5,7 +5,7 @@
 #include <cmath>
 #include <limits>
 
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
 void check_params(double u0, double u1, double s, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
@@ -16,7 +16,7 @@ void check_params(double u0, double u1, double s, double h) {
 }
 #endif
 
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
 void check_params(double u0, double u1, double s,
                   double s0, double s1, double h) {
   assert(u0 >= 0);
@@ -30,7 +30,7 @@ void check_params(double u0, double u1, double s,
 }
 #endif
 
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
 void check_params(double u0, double u1, double u2, double s, double h) {
   assert(u0 >= 0);
   assert(u1 >= 0);
@@ -43,7 +43,7 @@ void check_params(double u0, double u1, double u2, double s, double h) {
 }
 #endif
 
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
 void check_params(double u0, double u1, double u2, double s,
                   double s0, double s1, double s2, double h) {
   assert(u0 >= 0);
@@ -65,7 +65,7 @@ void check_params(double u0, double u1, double u2, double s,
  * olim8_rhr and olim8_mp0c).
  */
 double rhr_adj(double u0, double u1, double s, double h, double * lam) {
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
   check_params(u0, u1, s, h);
 #endif
 
@@ -83,7 +83,7 @@ double rhr_adj(double u0, double u1, double s, double h, double * lam) {
  * olim8_rhr and olim8_mp0c).
  */
 double rhr_diag(double u0, double u1, double s, double h) {
-#ifdef EIKONAL_DEBUG
+#if EIKONAL_DEBUG
   check_params(u0, u1, s, h);
 #endif
   

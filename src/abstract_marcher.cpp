@@ -1,8 +1,16 @@
 #include "abstract_marcher.hpp"
 
+#include <src/config.hpp>
+#if PRINT_UPDATES
+#    include <cstdio>
+#endif // PRINT_UPDATES
+
 #include <cmath>
 
 void abstract_marcher::run() {
+#if PRINT_UPDATES
+  puts("abstract_marcher::run()");
+#endif // PRINT_UPDATES
   abstract_node * n {nullptr};
   while (!_heap.empty()) {
     n = get_next_node();

@@ -24,10 +24,10 @@ update_rules::tri_updates<speed_est, degree>::tri(
   double T = tri_impl(
     u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol,
     std::integral_constant<char, degree> {});
-#ifdef PRINT_UPDATES
   printf("tri<%d, %d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n", degree, p0, p1,
          u0, u1, s, s0, s1, h, T);
+#if PRINT_UPDATES
 #endif
   return T;
 }

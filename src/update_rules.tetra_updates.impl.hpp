@@ -76,7 +76,7 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   double s0, double s1, double s2, double h,
   std::integral_constant<char, 0>) const
 {
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   using namespace arma;
   using namespace numopt;
 
@@ -139,7 +139,7 @@ double update_rules::tetra_updates<speed_est, degree>::tetra_impl(
   double s0, double s1, double s2, double h,
   std::integral_constant<char, 1>) const
 {
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   using namespace arma;
   using namespace numopt;
 

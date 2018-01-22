@@ -5,6 +5,8 @@
  * Numerical optimization functions
  */
 
+#include <src/config.hpp>
+
 #if USE_ARMADILLO
 #    include <armadillo>
 #endif
@@ -18,7 +20,7 @@ namespace numopt {
    * Returns a sorted vector of unsigned integers containing the
    * elements in [low, high) - u.
    */
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   arma::uvec setdiff(unsigned low, unsigned high, arma::uvec const & u);
 #endif // USE_ARMADILLO
 
@@ -32,7 +34,7 @@ namespace numopt {
    * Bertsekas. The load vector for the equality constraint is
    * zero. Requires G positive definite.
    */
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   arma::vec qpez_schur(arma::mat const & G, arma::vec const & c,
                        arma::mat const & A);
 #endif // USE_ARMADILLO
@@ -61,7 +63,7 @@ namespace numopt {
    * Bertsekas). Equality-constrained quadratic subproblems are solved
    * using `qpe'. Requires G positive definite.
    */
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   arma::vec qpi(arma::mat const & G, arma::vec const & c, arma::mat const & A,
                 arma::vec const & b, arma::vec const * x0 = nullptr,
                 bool * error = nullptr, double tol = EPS(double),
@@ -73,7 +75,7 @@ namespace numopt {
                     double * x, bool * error = nullptr,
                     double tol = EPS(double), int niters = 0);
 
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   using field_t = std::function<double(arma::vec const &)>;
   using grad_t = std::function<arma::vec(arma::vec const &)>;
   using hess_t = std::function<arma::mat(arma::vec const &)>;
@@ -87,7 +89,7 @@ namespace numopt {
    *
    * where df is the gradient of and d2f is the Hessian of f.
    */
-#ifdef USE_ARMADILLO
+#if USE_ARMADILLO
   arma::vec sqp(field_t const & f, grad_t const & df, hess_t const & d2f,
                 arma::mat const & A, arma::vec const & b, arma::vec const & x0,
                 bool * error, double tol = EPS(double), int niters = 0);

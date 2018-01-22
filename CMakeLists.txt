@@ -13,6 +13,10 @@ set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
+option (TRIAL_NODE_OPTIMIZATION
+  "Use the 'far node optimization' during updates." ON)
+option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
+
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)

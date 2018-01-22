@@ -48,7 +48,7 @@ void neumann_marcher_3d<Node>::get_valid_neighbors(int i, int j, int k,
   int a, b, c;
   for (int l = 0; l < 6; ++l) {
     a = i + di[l], b = j + dj[l], c = k + dk[l];
-    if (this->is_valid(a, b, c)) {
+    if (this->in_bounds(a, b, c) && this->is_valid(a, b, c)) {
       nb[l] = &this->operator()(a, b, c);
     }
   }

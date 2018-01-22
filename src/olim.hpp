@@ -28,6 +28,9 @@ struct olim: public std::conditional_t<
   using neighborhood_t::neighborhood_t;
 private:
   virtual void update_impl(int i, int j, double & T);
+  virtual void update_impl(int i, int j, int src, double & T);
+  void update_impl(int i, int j, int src, double & T, eikonal::bool_t<true>);
+  void update_impl(int i, int j, int src, double & T, eikonal::bool_t<false>);
 };
 
 using olim4_mp0 = olim<

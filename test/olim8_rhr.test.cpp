@@ -8,7 +8,10 @@ int main() {
   trivial_case_works<olim>();
   adjacent_update_works<olim>();
   quadrants_are_correct<olim>(sqrt(2));
-  correct_corners_in_limit<olim>(101, EPS(double));
+  {
+    double tol = 10*EPS(double);
+    correct_corners_in_limit<olim>(101, tol);
+  }
   result_is_symmetric<olim>((speed_func) default_speed_func);
   result_is_symmetric<olim>((speed_func) s1);
 }

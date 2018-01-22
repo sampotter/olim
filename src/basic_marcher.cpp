@@ -42,3 +42,43 @@ void basic_marcher::update_impl(int i, int j, double & T) {
   printf("basic_marcher::update_impl: T <- %g\n", T);
 #endif
 }
+
+#if TRIAL_NODE_OPTIMIZATION
+void basic_marcher::update_impl(int i, int j, int src, double & T) {
+  using std::min;
+
+#ifdef PRINT_UPDATES
+  printf("basic_marcher::update_impl(i = %d, j = %d, src = %d)\n", i, j, src);
+#endif
+
+  // TODO: this is total overkill for now---we will optimize this
+  // (i.e. not get all valid neighbors) once we merge
+  // get_valid_neighbors into stage_neighbors_impl
+
+  abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
+  get_valid_neighbors(i, j, nb);
+  double sh = get_h()*speed(i, j);
+
+  double T1 = VAL(src);
+  double T2 = src % 2 == 0 ?
+    min(nb[1] ? VAL(1) : INF(double), nb[3] ? VAL(3) : INF(double)) :
+    min(nb[0] ? VAL(0) : INF(double), nb[2] ? VAL(2) : INF(double));
+
+  bool T1_inf = std::isinf(T1), T2_inf = std::isinf(T2);
+
+  if (!T1_inf && !T2_inf) {
+    double diff = T1 - T2, disc = 2*sh*sh - diff*diff;
+    T = disc > 0 ? min(T, (T1 + T2 + sqrt(disc))/2) : T;
+  } else if (T1_inf) {
+    T = min(T, T2 + sh);
+  } else if (T2_inf) {
+    T = min(T, T1 + sh);
+  } else {
+    assert(false);
+  }
+
+#ifdef PRINT_UPDATES
+  printf("basic_marcher::update_impl: T <- %g\n", T);
+#endif
+}
+#endif // TRIAL_NODE_OPTIMIZATION

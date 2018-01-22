@@ -1,32 +1,41 @@
 #ifndef __MOORE_MARCHER_IMPL_HPP__
 #define __MOORE_MARCHER_IMPL_HPP__
 
-// neighbor order: N, E, S, W, NE, SE, SW, NW (ordered first by
-// degree, then clockwise)
+#include <src/config.hpp>
 
-template <class Node>
-int moore_marcher<Node>::di[] = {-1, 0, 1, 0, -1, 1, 1, -1};
+#include "offsets.hpp"
 
-template <class Node>
-int moore_marcher<Node>::dj[] = {0, 1, 0, -1, 1, 1, -1, -1};
+#define __di(k) di<2>[k]
+#define __dj(k) dj<2>[k]
 
 template <class Node>
 void moore_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
   int i = static_cast<Node *>(n)->get_i();
   int j = static_cast<Node *>(n)->get_j();
 
-  for (int k = 0; k < 8; ++k) {
-    this->stage(i + di[k], j + dj[k]);
-  }
+  // TODO: see comment in neumann_marcher::stage_neighbors_impl
+
+  for (int k = 0; k < 8; ++k) this->pre_stage(i + __di(k), j + __dj(k));
 
   int a, b;
+#if TRIAL_NODE_OPTIMIZATION
+  int src;
+#endif // TRIAL_NODE_OPTIMIZATION
   for (int k = 0; k < 8; ++k) {
-    a = i + di[k];
-    b = j + dj[k];
+    a = i + __di(k), b = j + __dj(k);
     if (this->in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
+#if TRIAL_NODE_OPTIMIZATION
+      src = k < 4 ? (k + 2) % 4 : ((k - 2) % 4) + 4;
+      this->update(a, b, src, this->operator()(a, b).is_trial());
+#else
       this->update(a, b);
+#endif // TRIAL_NODE_OPTIMIZATION
     }
   }
+
+#if TRIAL_NODE_OPTIMIZATION
+  for (int k = 0; k < 8; ++k) this->post_stage(i + __di(k), j + __dj(k));
+#endif // TRIAL_NODE_OPTIMIZATION
 }
 
 template <class Node>
@@ -34,12 +43,14 @@ void moore_marcher<Node>::get_valid_neighbors(int i, int j,
                                               abstract_node ** nb) {
   int a, b;
   for (int k = 0; k < 8; ++k) {
-    a = i + di[k];
-    b = j + dj[k];
-    if (this->is_valid(a, b)) {
+    a = i + __di(k), b = j + __dj(k);
+    if (this->in_bounds(a, b) && this->is_valid(a, b)) {
       nb[k] = &this->operator()(a, b);
     }
   }
 }
+
+#undef __di
+#undef __dj
 
 #endif // __MOORE_MARCHER_IMPL_HPP__

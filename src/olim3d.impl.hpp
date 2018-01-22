@@ -123,7 +123,7 @@ void olim3d<
   int a, b, c;
   for (int l = 0; l < 26; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->is_valid(a, b, c)) {
+    if (this->in_bounds(a, b, c) && this->is_valid(a, b, c)) {
       nb[l] = &this->operator()(a, b, c);
     }
   }

@@ -34,9 +34,9 @@ f9 = lambda x, y: 1 - np.divide(1, np.exp(a*(np.power(x, 2) + np.power(y, 2))))
 
 # TODO: star_s
 
-_speed_funcs = [s1, s2, s3, s5, s6, s8, s9]
+_speed_funcs = [s0, s1, s2, s3, s5, s6, s8, s9]
 
-_soln_funcs = [f1, f2, f3, f5, f6, f8, f9]
+_soln_funcs = [f0, f1, f2, f3, f5, f6, f8, f9]
 
 for func in _speed_funcs + _soln_funcs:
     func.dim = 2
@@ -45,6 +45,7 @@ def speed_funcs():
     return _speed_funcs
 
 _speed_func_names = {
+    s0: 's0',
     s1: 's1',
     s2: 's2',
     s3: 's3',
@@ -53,12 +54,17 @@ _speed_func_names = {
     s8: 's8',
     s9: 's9'
 }
-
 def get_speed_func_name(s):
     return _speed_func_names[s]
 
 _soln_func_map = {
     _speed_funcs[i]: _soln_funcs[i] for i in range(len(_speed_funcs))}
-
 def get_soln_func(s):
     return _soln_func_map[s]
+
+_speed_funcs_by_name = {v: k for k, v in _speed_func_names.items()}
+def get_speed_func_by_name(name):
+    if name not in _speed_funcs_by_name:
+        raise Exception("'%s' is not a valid speed function" % name)
+    return _speed_funcs_by_name[name]
+

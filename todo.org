@@ -14,6 +14,8 @@
   - [ ] algorithms
 * New todo
   - [ ] Write an implementation of olim18 and olim26 that iterates over all valid tetrahedra
+* Bugs
+  - [ ] get ctest to fail when it turns into segmentation faults
 * New Newton's method (constrained) for tetrahedra
   - [X] finish prototyping new tetra newton in MATLAB
     - [X] get qpe working

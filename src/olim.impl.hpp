@@ -142,7 +142,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
   k[2] = src;
   if (src < 4) {
     k[0] = (src + 3) % 4;
-    k[1] = src == 0 ? 7 : src + 1;
+    k[1] = src == 0 ? 7 : src + 3;
     k[3] = src + 4;
     k[4] = (src + 1) % 4;
   } else {
@@ -161,7 +161,7 @@ void olim<node, line_updates, tri_updates, adj_updates, diag_updates>::update_im
   assert(nb[2]); // src node is always in bounds and valid
 
   double h = this->get_h(), s = this->speed(i, j), s_[5];
-  for (int l = 0; l < 3; ++l) {
+  for (int l = 0; l < 5; ++l) {
     if (nb[l]) {
       s_[l] = this->speed(i + __di(k[l]), j + __dj(k[l]));
     }

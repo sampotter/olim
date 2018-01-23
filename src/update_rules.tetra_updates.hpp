@@ -19,17 +19,17 @@ namespace update_rules {
   };
 
   struct mp0_tetra_updates: tetra_updates<mp0_tetra_updates> {
-    using cost_func = F0<2>;
+    using cost_func = F0<3, 2>;
     inline double theta() const { return 0.5; }
   };
 
   struct mp1_tetra_updates: tetra_updates<mp1_tetra_updates> {
-    using cost_func = F1<2>;
+    using cost_func = F1<3, 2>;
     inline double theta() const { return 0.5; }
   };
 
   struct rhr_tetra_updates: tetra_updates<rhr_tetra_updates> {
-    using cost_func = F0<2>;
+    using cost_func = F0<3, 2>;
     inline double theta() const { return 0.0; }
   };
 }

@@ -48,7 +48,8 @@ double update_rules::tetra_updates<derived>::tetra(
   func.set_args(u, s_hat, s_, p);
   double lambda[2], F0;
   bool error;
-  numopt::sqp_baryplex(&func, lambda, &error);
+  numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
+  sqp(func, lambda, &error);
   assert(!error);
   func.set_lambda(lambda); // TODO: maybe unnecessary
   func.eval(F0);

@@ -4,14 +4,14 @@
 
 template <>
 void
-F0<2>::eval(double & f) const
+F0<3, 2>::eval_impl(double & f) const
 {
   f = _u_lam + _sh*_l;
 }
 
 template <>
 void
-F0<2>::grad(double df[2]) const
+F0<3, 2>::grad_impl(double df[2]) const
 {
   double const dPt_dot_p[2] = {
     _dP[0][0]*_p_lam[0] + _dP[0][1]*_p_lam[1] + _dP[0][2]*_p_lam[2],
@@ -23,7 +23,7 @@ F0<2>::grad(double df[2]) const
 
 template <>
 void
-F0<2>::hess(double d2f[2][2]) const
+F0<3, 2>::hess_impl(double d2f[2][2]) const
 {
   double tmp[6]; // workspace
   tmp[0] = 1 - _p_lam[0]*_p_lam[0]/_q; // (0, 0)
@@ -49,7 +49,7 @@ F0<2>::hess(double d2f[2][2]) const
 
 template <>
 void
-F0<2>::set_lambda(double const lam[2])
+F0<3, 2>::set_lambda_impl(double const lam[2])
 {
   _u_lam = _u0 + lam[0]*_du[0] + lam[1]*_du[1];
   _p_lam[0] = _p0[0] + lam[0]*_dP[0][0] + lam[1]*_dP[1][0];
@@ -61,8 +61,8 @@ F0<2>::set_lambda(double const lam[2])
 
 template <>
 void
-F0<2>::set_args(double const u[3], double s_hat, double const s[3],
-                double const p[3][3])
+F0<3, 2>::set_args_impl(double const u[3], double s_hat, double const s[3],
+                        double const p[3][3])
 {
   _sh = _h*((1 - _theta)*s_hat + _theta*(s[0] + s[1] + s[2])/3);
   _u0 = u[0];
@@ -81,14 +81,14 @@ F0<2>::set_args(double const u[3], double s_hat, double const s[3],
 
 template <>
 void
-F1<2>::eval(double & f) const
+F1<3, 2>::eval_impl(double & f) const
 {
   f = _u_lam + _h*_stheta*_l;
 }
 
 template <>
 void
-F1<2>::grad(double df[2]) const
+F1<3, 2>::grad_impl(double df[2]) const
 {
   double const dPt_dot_p[2] = {
     _dP[0][0]*_p_lam[0] + _dP[0][1]*_p_lam[1] + _dP[0][2]*_p_lam[2],
@@ -100,7 +100,7 @@ F1<2>::grad(double df[2]) const
 
 template <>
 void
-F1<2>::hess(double d2f[2][2]) const
+F1<3, 2>::hess_impl(double d2f[2][2]) const
 {
   double tmp[6]; // workspace
   tmp[0] = 1 - _p_lam[0]*_p_lam[0]/_q; // (0, 0)
@@ -135,8 +135,8 @@ F1<2>::hess(double d2f[2][2]) const
 
 template <>
 void
-F1<2>::set_args(double const u[3], double s_hat, double const s[3],
-                double const p[3][3])
+F1<3, 2>::set_args_impl(double const u[3], double s_hat, double const s[3],
+                        double const p[3][3])
 {
   _s_hat = s_hat;
   _s[0] = s[0];
@@ -160,7 +160,7 @@ F1<2>::set_args(double const u[3], double s_hat, double const s[3],
 
 template <>
 void
-F1<2>::set_lambda(double const lam[2])
+F1<3, 2>::set_lambda_impl(double const lam[2])
 {
   double const lam0 = 1 - lam[0] - lam[1], lam1 = lam[0], lam2 = lam[1];
   _stheta = (1 - _theta)*_s_hat + _theta*(lam0*_s[0] + lam1*_s[1] + lam2*_s[2]);

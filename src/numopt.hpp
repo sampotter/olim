@@ -95,9 +95,16 @@ namespace numopt {
                 bool * error, double tol = EPS(double), int niters = 0);
 #endif // USE_ARMADILLO
 
-  template <int d>
-  void sqp_baryplex(cost_func<d> * func, double * x, bool * error,
+  template <class cost_func_t, int n, int d>
+  struct sqp_baryplex {};
+
+  template <class cost_func_t>
+  struct sqp_baryplex<cost_func_t, 3, 2> {
+    void operator()(cost_func_t & func, double * x, bool * error,
                     double tol = EPS(double), int niters = 0);
+  };
 }
+
+#include "numopt.impl.hpp"
 
 #endif // __NUMOPT_HPP__

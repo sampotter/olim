@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <random>
 
 #include "cost_funcs.hpp"
 
@@ -24,7 +25,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = -0.5890290307208013;
     p[2][1] = -0.2937535977354161;
     p[2][2] = -0.8479262436379339;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -57,7 +58,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = -1.212847199674459;
     p[2][1] = 0.06619004842461142;
     p[2][2] = 0.652355888661374;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -90,7 +91,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = 0.23976325705858;
     p[2][1] = -0.6903611031112258;
     p[2][2] = -0.651553641750281;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -123,7 +124,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = 0.6769778056840295;
     p[2][1] = 0.8577325452053552;
     p[2][2] = -0.6911591253829914;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -156,7 +157,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = -0.4710699126831666;
     p[2][1] = 0.1370248741300503;
     p[2][2] = -0.2918633757535734;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -189,7 +190,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = 0.5953576738841018;
     p[2][1] = 1.046832784305232;
     p[2][2] = -0.197958632611842;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -222,7 +223,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = -0.5316201175070693;
     p[2][1] = 0.9725657280086532;
     p[2][2] = -0.5222504849935489;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -255,7 +256,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = 0.05907215505265444;
     p[2][1] = -1.466946730428247;
     p[2][2] = -1.625803266396234;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -288,7 +289,7 @@ TEST (cost_funcs, F0_works) {
     p[2][0] = -0.3908987322337722;
     p[2][1] = 0.4091820825473549;
     p[2][2] = -1.142428168121445;
-    F0<2> func(h, theta);
+    F0<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -326,7 +327,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = -1.044735848409628;
     p[2][1] = -0.3482668103352654;
     p[2][2] = 1.412561160729294;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -359,7 +360,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = 0.1124397105937409;
     p[2][1] = -0.3086249345470284;
     p[2][2] = 0.4566596091151506;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -392,7 +393,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = 0.6170350812805879;
     p[2][1] = 0.6127015037072735;
     p[2][2] = 0.2893811552948809;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -425,7 +426,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = 0.01135417110082006;
     p[2][1] = -0.04398862626670082;
     p[2][2] = 2.949092541315588;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -458,7 +459,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = -0.6547688518580145;
     p[2][1] = -0.2963483154065983;
     p[2][2] = -1.496918876447554;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -491,7 +492,7 @@ TEST (cost_funcs, F1_works) {
     p[2][0] = 0.2874003202431548;
     p[2][1] = 0.6329055770412402;
     p[2][2] = -1.459041869083612;
-    F1<2> func(h, theta);
+    F1<3, 2> func(h, theta);
     func.set_args(u, s_hat, s, p);
     func.set_lambda(lam);
     func.eval(f);
@@ -507,3 +508,16 @@ TEST (cost_funcs, F1_works) {
   }
 }
 
+std::random_device dev;
+std::mt19937 gen {dev()};
+std::normal_distribution<> dist {};
+
+TEST (cost_funcs, for_F0_dims_1_and_2_agree) {
+  double p[3][3];
+  for (int i = 0; i < 10; ++i) {
+  }
+}
+
+TEST (cost_funcs, for_F1_dims_1_and_2_agree) {
+  
+}

@@ -1,62 +1,59 @@
-* Things to tell Masha about
-  - [ ] bitvector rewrite
-  - [ ] skipping tetras
-  - [ ] projected newton
-  - [ ] show her a pathological case
-* Masha's todo list
+* Features
+** Masha's original todo list
    1. "Suppose slowness is smooth or Lipschitz continuous. Show that
       than one can use hierarchical update rules for saving CPU time."
    2. "3D: hierarchical update vs complete update"
    3. "Smart mesh"
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
-* Writeups
-  - [ ] algorithms
-* New todo
-  - [ ] Write an implementation of olim18 and olim26 that iterates over all valid tetrahedra
-* Bugs
-  - [ ] get ctest to fail when it turns into segmentation faults
-* New Newton's method (constrained) for tetrahedra
-  - [X] finish prototyping new tetra newton in MATLAB
-    - [X] get qpe working
-    - [X] get qpi working
-      - [X] fix case where minimum is in the interior and x0 is on the
-        boundary
-    - [X] replace quadprog with qpi in:
-      - [X] F0_tetra_test.m
-      - [X] F1_tetra_test.m
-  - [X] minimize Rayleigh quotients to find lambda_min for Hessians
-    - just need to do this by brute force since minimization <=>
-      solving nonlinear equations for zero
-  - [X] write C++ utility module for all this
-    - [X] write qpe
-    - [X] write qpi
-    - [X] write sqp
-    - [X] write tests
-  - [-] replace old C++
-    - [X] template version
-      - [X] F0
-        - [X] tri
-        - [X] tetra
-      - [X] F1
-        - [X] tri
-        - [X] tetra
-    - [-] general p0, p1, p2 version
-      - [-] F0
-        - [ ] tri
-        - [X] tetra
-      - [-] F1
-        - [ ] tri
-        - [X] tetra
-  - [X] add general speed func test for olim4_rhr
-  - [X] fix python constructors for 3D marchers
-  - [X] try removing _x0, _y0, _z0
+** SQP rewrite
+*** Loglog time-vs-accuracy plots
+*** Hierarchical update
+*** Trial node optimization
+    - We've more or less implemented this, but it has a bug
+    - It seems like the bug might be due to inconsistency of cost
+      functions
+*** Big olim3d plot
+    - Plot timings and errors for ALL 3d olims
+    - Need to optimize the SQP implementation a bit more before we can do this
+*** Instrumenting/measuring
+   - [ ] look at boost logging for this
+   - [ ] count number of types of updates
+     - compare with HU/TNO
+   - [ ] count number of qpi/sqp iterations
+   - [ ] Google benchmark?
+*** d > 2 nullspace method
+    - I sketched an outline of how this should work in the eikonal writeup
+*** Cost functions
+    - Need to add char vector optimizations
+*** F2
+    - We should be able to implement an "F2" that uses knowledge of
+      the speed function gradient
+    - Have it take another speed_func cache, but instead a
+      "speed_func_grad" cache or whatever
+    - Try different finite differences (that RBF-PDE book has some
+      useful information about this)
+    - Spectral differentiation
+*** Skipping updates
+*** Not doing redundant updates
+*** Misc
+  - [ ] get line_updates to conform with new template style
+    (e.g. "degree" template parameter)
+  - [ ] line search methods
+    - [ ] golden section
+    - [ ] zoom
+** Automated stats
+*** tools
+    - [[http://www.pytables.org/][pytables]]
+    - [[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks][git hooks]]
+    - [[https://restic.readthedocs.io/][restic]]
+    - [[https://www.backblaze.com/b2/][backblaze b2]]
+    - [[https://sqlite.org/][sqlite]]
+* General develop
+** Misc bugs
   - [ ] fix issue with symmetry in olim8_mp0 by printing
     updates. Maybe this will help with the issues with higher dim
     olim8's, since they use the same tri update implementation
-  - [ ] make cost_funcs take advantage of char vectors
-  - [ ] make sure to add "agrees_with_other_olim" test to all marchers
-    for default speed func
   - [-] need to fix slowness due to speed function evaluation in
     pybind11 bridge
     - [X] get marchers to copy data instead of evaluating functions
@@ -67,121 +64,35 @@
       - this might be more portable ultimately if we want to generate
         bindings for multiple languages and not require people to have
         pybind11 installed
+** Testing
+  - [ ] make sure to add "agrees_with_other_olim" test to all marchers
+    for default speed func
   - [ ] add the rest of the 3d speed funcs and extend the tests to use
     them and iterate over them
     - also make an array of pairs of 2d/3d speed funcs for simpler iteration
     - [ ] do big python-generated test---iterate over ALL 3D marchers?
   - [-] get all tests working
-    /check if it's just the speed functions being implemented/
-    /incorrectly---they haven't been tested before!/
     - [ ] olim18_mp0.test.cpp
     - [ ] olim18_mp1.test.cpp
     - [ ] olim18_rhr.test.cpp
     - [ ] olim26_mp0.test.cpp
     - [ ] olim26_mp1.test.cpp
     - [ ] olim26_rhr.test.cpp
-    - [X] olim4_mp0.test.cpp
-    - [X] olim4_mp1.test.cpp
-    - [X] olim4_rhr.test.cpp
-    - [X] olim6_mp0.test.cpp
-    - [X] olim6_mp1.test.cpp
-    - [X] olim6_rhr.test.cpp
-    - [X] olim8_mp0.test.cpp
-    - [X] olim8_mp1.test.cpp
-    - [X] olim8_rhr.test.cpp
-    - [X] update_rules.tetra_updates.test.cpp
-    - [X] update_rules.tri_updates.test.cpp
-  - [X] formulate F1 tri as an SQP
-    - this is essentially what we already did
-  - [X] get olim to conditionally use moore marcher or neumann marcher
-    depending on adj and diag bools
-  - [ ] merge neumann and moore marcher into the same template class,
-    at least
+** Refactoring
+  - [ ] merge neumann and moore marcher into the same template class
+  - [ ] do the same sort of thing but for olim3d
+** Optimization
+  - [ ] make cost_funcs take advantage of char vectors
   - [ ] get rid of "get_valid_neighbors" function and merge into
     "stage_neighbors_impl"
     - we can even optimize this a bit, since we'll be able to take
       advantage of overlapping neighborhoods
-  - [ ] do the same sort of thing but for olim3d
-  - [ ] consider removing speed estimators
-** big olim3d plot
-   - [ ] sort entries by how many tetra updates they have to do (i.e.,
-     fixed number for each bit, sum them up)
-** Enhancing update_rules
-   GOAL: we want to incorporate the *hierarchical update* (HU) and the
-   *trial node optimization* (TNO)
-*** HU
-    IDEA: skip higher dimensional updates by ordering the updates by
-    dimension:
-    - start with line updates, find argmin
-    - for tri updates, only do tri updates which contain argmin
-    - etc
-    - this is really only worth doing for >3D (we tried it for 2D and it didn't help much)
-    - [ ] do it in 3D
-    - [ ] add a CMake option to toggle it
-*** TNO
-    IDEA: Masha claims that if we're updating a trial node, then we
-    only have to do updates which contain the node which we're doing the update from
-    - [ ] implement this in 2D first since it should be easy to do and
-      easy to see the effects of
-    - [ ] then try for 3D---will be harder, but probably still worth it
-    - [ ] CMake option
-** Instrumenting/measuring
-   - [ ] look at boost logging for this
-   - [ ] count number of types of updates
-     - compare with HU/TNO
-   - [ ] count number of qpi/sqp iterations
-** (Kind of) removing Armadillo
-   GOAL: make it possible to optionally compile the library with
-   Armadillo. If it's included, then conditionally allow for the
-   marchers to use Armadillo in their implementation---but by default,
-   use the new "baryplex" functions from numopt.
-   - [X] conditional compilation
-   - [X] conditionally use in implementations of marchers
-** Optimizing the SQP solver
-*** implementing the nullspace method
-    - [X] start by implementing this for d = 2, and with only one
-      constraint in the active set---this should be enough to get us going
-    - NOTE! right now i'm assuming that a 2x2 G is stored in four
-      doubles---if we simplify this to take advantage of the fact that
-      G is symmetric later, make sure to fix this!
-*** implementing F0 and F1 using functors
-    - [X] basics
-      - [X] implement F0
-      - [X] implement F1
-    - [X] finish implement cost_funcs tests
-    - [X] optimize set_args (cache things)
-      - remove _p and replace with _p0
-    - [X] set_lambda (for repeat use while optimizing)
-    - [ ] char specialization (using variadic templates or tuples...?
-      not sure)
-*** stuff to look into later
-     - [ ] derive the nullspace method for d > 2 and more than one
-       constraint in the active set
-     - [ ] by default, the method will return optima outside of the
-       simplex---it's trivial to project them back into the
-       simplex. If we project, can we simplify the persuant steps of
-       the algorithm? Look into this
-     - [ ] F2
-     - [ ] separate nodes into "nodes" and "values"
-       - [ ] make it possible to just stick a numpy array's pointer in
-         the marcher and directly fill values there? (might cause
-         problems)
-** Automated stats
-*** tools
-    - [[http://www.pytables.org/][pytables]]
-    - [[https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks][git hooks]]
-    - [[https://restic.readthedocs.io/][restic]]
-    - [[https://www.backblaze.com/b2/][backblaze b2]]
-    - [[https://sqlite.org/][sqlite]]
-** Misc
-  - [ ] get line_updates to conform with new template style
-    (e.g. "degree" template parameter)
-  - [ ] line search methods
-    - [ ] golden section
-    - [ ] zoom
-*** higher dim
-    - [ ] use BFGS for fast inverse
-* Unconstrained method stuff
+  - [ ] separate nodes into "nodes" and "values"
+    - [ ] make it possible to just stick a numpy array's pointer in
+      the marcher and directly fill values there? (might cause
+      problems)
+* Archive (sort this)
+** Unconstrained method stuff
   once we get the constrained method working, we'll take a look at
   this---the stuff here doesn't make much sense for the constrained
   approach, since an optimized descent direction can't be used with
@@ -198,7 +109,7 @@
     - [ ] F1
       - [ ] tri
       - [ ] tetra
-* Collected from <2017-10-23 Mon>
+** Collected from <2017-10-23 Mon>
   - [ ] fix dP vs dP' fuckup
   - [-] get rid of tetraXXX and replace with tetra<d0, d1, d2>
     - [X] initial rewrite
@@ -266,7 +177,7 @@
     constrained and old method
   - [ ] use macro to capture tri update boilerplate (e.g. in mp1 tri
     updates)
-* OLIM
+** OLIM
   - [X] Get olim6_rhr_arma working in release mode (wtf?)
   - [X] Debug olim6_rhr_arma
   - [X] finite diff 3d tests:
@@ -325,7 +236,7 @@
   - [ ] olim6/18/26 LUT
   - [ ] consolidate olim_util in olim_updates
   - [ ] implement olim4_mp1! (missed this...)
-* Ideas
+** Ideas
 ** Adaptive neighborhoods
    - Maybe there's some way of selecting between different OLIMks
      depending on the speed function or function values, so in a
@@ -378,7 +289,7 @@
      infinity to some finite value and preserve minima. Now
      periodically interpolate this function and find its global
      minimum. Do a one-point update from that point.
-* Smart mesh
+** Smart mesh
   - [X] Add solution info structure and visualize output
   - [ ] Look at Masha's program and plots
   - [ ] Try to figure out how smart grid works
@@ -453,7 +364,7 @@
    - How can we generalize this to "volumetric" neighborhoods? The
      first "order" case is easy; the second "order" case is less
      obvious.
-* General
+** General
   - [ ] It would be good to conduct tests that don't just involve a
     single origin point. To this end:
     - [ ] Make it possible to initialize with a curve
@@ -545,11 +456,11 @@
   - [ ] Boundary conditions
     - [ ] "Normal BCs"?
     - [ ] Periodic BCs
-* Learning
+** Learning
   - [X] Reimplement 1oe fast marching method in C++ using Maria's
     simplified 1-point/2-point update
   - [X] Implement 8-point update
-* Implementation
+** Implementation
   - [ ] For olim6/18/26, add an intermediate template class with an
     integer template parameter which just implements
     get_valid_neighbors and stage_neighbors_impl (and maybe di, dj,

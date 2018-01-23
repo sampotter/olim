@@ -54,6 +54,8 @@
   - [ ] fix issue with symmetry in olim8_mp0 by printing
     updates. Maybe this will help with the issues with higher dim
     olim8's, since they use the same tri update implementation
+  - [ ] make sure to add "agrees_with_other_olim" test to all marchers
+    for default speed func
   - [-] need to fix slowness due to speed function evaluation in
     pybind11 bridge
     - [X] get marchers to copy data instead of evaluating functions

@@ -16,7 +16,7 @@ TEST (basic_marcher, quadrants_are_correct) {
 }
 
 TEST (basic_marcher, correct_corners_in_limit) {
-  correct_corners_in_limit<olim>(101, 1.86e-2);
+  correct_corners_in_limit<olim>(101, 2.7e-2);
 }
 
 TEST (basic_marcher, result_is_symmetric) {

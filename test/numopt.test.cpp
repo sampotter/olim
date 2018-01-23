@@ -77,8 +77,8 @@ TEST (numopt, test_qpe_baryplex) {
     c[0] = -0.1131775740682571;
     c[1] = 1.635999657278292;
     numopt::qpe_baryplex<2, 2>(G, c, x);
-    ASSERT_DOUBLE_EQ(x[0], 1.022590186764985);
-    ASSERT_DOUBLE_EQ(x[1], -0.0225901867649847);
+    ASSERT_NEAR(x[0], 1.022590186764985, 1e-14);
+    ASSERT_NEAR(x[1], -0.0225901867649847, 1e-14);
   }
 }
 
@@ -146,8 +146,8 @@ TEST (numopt, test_qpi_baryplex) {
       c[1] = -0.5639689170274268;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
       ASSERT_FALSE(error);
-      ASSERT_DOUBLE_EQ(x[0], 0.8682365591679995);
-      ASSERT_DOUBLE_EQ(x[1], 0.1317634408320019);
+      ASSERT_NEAR(x[0], 0.8682365591679995, 1e-14);
+      ASSERT_NEAR(x[1], 0.1317634408320019, 1e-14);
     }
     {
       G[0] = 0.1766826028295286;
@@ -158,8 +158,8 @@ TEST (numopt, test_qpi_baryplex) {
       c[1] = -0.2494890644739389;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
       ASSERT_FALSE(error);
-      ASSERT_DOUBLE_EQ(x[0], -4.440892098500626e-16);
-      ASSERT_DOUBLE_EQ(x[1], 1.000000000000005);
+      ASSERT_NEAR(x[0], -4.440892098500626e-16, 1e-14);
+      ASSERT_NEAR(x[1], 1.000000000000005, 1e-14);
     }
     {
       G[0] = 0.1398731795628713;
@@ -254,8 +254,8 @@ TEST (numopt, test_qpi_baryplex) {
       c[1] = -0.8395887473366136;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
       ASSERT_FALSE(error);
-      ASSERT_DOUBLE_EQ(x[0], 1.00000000000001);
-      ASSERT_DOUBLE_EQ(x[1], -8.881784197001252e-16);
+      ASSERT_NEAR(x[0], 1.00000000000001, 1e-14);
+      ASSERT_NEAR(x[1], -8.881784197001252e-16, 1e-14);
     }
     {
       G[0] = 0.3893554705283445;
@@ -266,8 +266,8 @@ TEST (numopt, test_qpi_baryplex) {
       c[1] = -0.2778719327876389;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
       ASSERT_FALSE(error);
-      ASSERT_DOUBLE_EQ(x[0], -4.440892098500626e-16);
-      ASSERT_DOUBLE_EQ(x[1], 1.0);
+      ASSERT_NEAR(x[0], -4.440892098500626e-16, 1e-14);
+      ASSERT_NEAR(x[1], 1.0, 1e-14);
     }
     {
       G[0] = 0.7925471686502944;
@@ -290,8 +290,8 @@ TEST (numopt, test_qpi_baryplex) {
       c[1] = -0.2856509715953298;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
       ASSERT_FALSE(error);
-      ASSERT_DOUBLE_EQ(x[0], 1.000000000000002);
-      ASSERT_DOUBLE_EQ(x[1], 6.661338147750939e-16);
+      ASSERT_NEAR(x[0], 1.000000000000002, 1e-14);
+      ASSERT_NEAR(x[1], 6.661338147750939e-16, 1e-14);
     }
   }
 }
@@ -832,8 +832,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1e-14);
+    ASSERT_NEAR(x[1], xgt[1], 3.5e-11);
   }
   {
     u[0] = 0.6240600881736895;
@@ -888,8 +888,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1e-14);
+    ASSERT_NEAR(x[1], xgt[1], 1.3e-13);
   }
   {
     u[0] = 0.8865119330761013;
@@ -916,8 +916,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1e-14);
+    ASSERT_NEAR(x[1], xgt[1], 1e-14);
   }
   {
     u[0] = 0.6596052529083072;
@@ -944,8 +944,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1.32e-13);
+    ASSERT_NEAR(x[1], xgt[1], 1e-14);
   }
   {
     u[0] = 0.683363243294653;
@@ -972,8 +972,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1.23e-13);
+    ASSERT_NEAR(x[1], xgt[1], 1.2e-13);
   }
   {
     u[0] = 0.6877960851201071;
@@ -1000,8 +1000,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 3.5e-13);
+    ASSERT_NEAR(x[1], xgt[1], 7.7e-14);
   }
   {
     u[0] = 0.5312092935824387;
@@ -1028,8 +1028,8 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
-    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
+    ASSERT_NEAR(x[0], xgt[0], 1e-14);
+    ASSERT_NEAR(x[1], xgt[1], 1.43e-14);
   }
   {
     u[0] = 0.0773468081126768;

@@ -17,7 +17,7 @@ TEST (olim4_rhr, quadrants_are_correct) {
 }
 
 TEST (olim4_rhr, correct_corners_in_limit) {
-  correct_corners_in_limit<olim_t>(101, 1.86e-2);
+  correct_corners_in_limit<olim_t>(101, 2.7e-2);
 }
 
 TEST (olim4_rhr, result_is_symmetric) {

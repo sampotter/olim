@@ -6,11 +6,11 @@ using olim_t = olim4_mp0;
 using olim3d_t = olim6_mp0;
 
 TEST (olim6_mp0, quadrants_are_correct) {
-  quadrants_are_correct<olim3d_t>(sqrt(2));
+  quadrants_are_correct<olim3d_t>(1.0 + sqrt(2)/2);
 }
 
 TEST (olim6_mp0, octants_are_correct) {
-  octants_are_correct<olim3d_t>(sqrt(2), sqrt(3));
+  octants_are_correct<olim3d_t>(1.0 + sqrt(2)/2, 1.0 + sqrt(2)/2 + sqrt(3)/3);
 }
 
 TEST (olim6_mp0, planes_are_correct) {

@@ -4,35 +4,30 @@
 #include <type_traits>
 
 #include "common.macros.hpp"
-#include "speed_est.hpp"
+#include "cost_funcs.hpp"
 #include "update_rules.utils.hpp"
 
 namespace update_rules {
-  template <class speed_est, char degree>
-  struct tri_updates: public speed_est {
-    using speed_est::speed_est;
-
+  struct mp0_tri_updates {
     template <char p0, char p1>
     double tri(
       double u0, double u1, double s, double s0, double s1, double h,
       ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
-
-  private:
-    template <char p0, char p1>
-    double tri_impl(
-      double u0, double u1, double s, double s0, double s1, double h,
-      ffvec<p0>, ffvec<p1>, double tol,
-      std::integral_constant<char, 0>) const;
-    template <char p0, char p1>
-    double tri_impl(
-      double u0, double u1, double s, double s0, double s1, double h,
-      ffvec<p0>, ffvec<p1>, double tol,
-      std::integral_constant<char, 1>) const;
   };
 
-  using mp0_tri_updates = tri_updates<mp_speed_est, 0>;
-  using mp1_tri_updates = tri_updates<mp_speed_est, 1>;
-  using rhr_tri_updates = tri_updates<rhr_speed_est, 0>;
+  struct mp1_tri_updates {;
+    template <char p0, char p1>
+    double tri(
+      double u0, double u1, double s, double s0, double s1, double h,
+      ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
+  };
+
+  struct rhr_tri_updates {
+    template <char p0, char p1>
+    double tri(
+      double u0, double u1, double s, double s0, double s1, double h,
+      ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
+  };
 }
 
 #include "update_rules.tri_updates.impl.hpp"

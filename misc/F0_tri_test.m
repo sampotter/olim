@@ -23,16 +23,16 @@ fprintf('p1 = (%g, %g, %g)\n', p1(1), p1(2), p1(3));
 
 du = u1 - u0;
 dp = p1 - p0;
-savg = (s0 + s1)/2;
-stheta = (1 - theta)*s + theta*savg;
-alpha = -du/(stheta*h);
+savg = @(lam) (1 - lam)*s0 + lam*s1;
+stheta = @(lam) (1 - theta)*s + theta*savg(lam);
+alpha = -du/(stheta(0.5)*h);
 
 u = @(lam) (1 - lam)*u0 + lam*u1;
 p = @(lam) p0 + lam*dp;
 q = @(lam) p(lam)'*p(lam);
 l = @(lam) sqrt(q(lam));
 
-F0 = @(lam) u(lam) + stheta*h*l(lam);
+F0 = @(lam) u(lam) + h*stheta(lam)*l(lam);
 
 Lams = linspace(-0.5, 1.5, 151);
 F0s = zeros(size(Lams), 'like', Lams);

@@ -14,38 +14,18 @@
 #include "common.macros.hpp"
 #include "olim_util.hpp"
 
-template <class speed_est, char degree>
-template <char p0, char p1>
-double
-update_rules::tri_updates<speed_est, degree>::tri(
-  double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>, double tol) const
-{
-  double T = tri_impl(
-    u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol,
-    std::integral_constant<char, degree> {});
-#if PRINT_UPDATES
-  printf("tri<%d, %d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n", degree, p0, p1,
-         u0, u1, s, s0, s1, h, T);
-#endif
-  return T;
-}
-
 #define l__(x) std::sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define check__(x) std::fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
 #define char_sqrt__(c) _sqrt_table[static_cast<int>(c)]
-#define l0__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
+#define s__(x) (s + (1 - x)*s0 + x*s1)/2
 
-/**
- * F0 specialization
- */
-template <class speed_est, char degree>
+#define F0_line__(i) (u##i + h*(s + s##i)*char_sqrt__(p##i##_dot_p##i)/2)
+
 template <char p0, char p1>
 double
-update_rules::tri_updates<speed_est, degree>::tri_impl(
+update_rules::mp0_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>, double tol, std::integral_constant<char, 0>) const
+  ffvec<p0>, ffvec<p1>, double tol) const
 {
   using std::min;
 
@@ -66,7 +46,63 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   double const du = u1 - u0;
-  double const sh = this->s_hat(s, s0, s1)*h;
+  double const alpha = -du/(s__(0.5)*h), alpha_sq = alpha*alpha;
+  double const tmp = alpha_sq - dp_dot_dp;
+  double const a = dp_dot_dp*tmp;
+  double const b = dp_dot_p0*tmp;
+  double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
+  double const disc = b*b - a*c;
+
+  double T;
+  if (disc < 0 || a == 0) {
+    T = min(F0_line__(0), F0_line__(1));
+  } else {
+    double const lhs = -b/a, rhs = sqrt(disc)/a;
+    double const lam1 = lhs - rhs, lam2 = lhs + rhs;
+    double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
+    T = lam < 0 || 1 < lam ?
+      min(F0_line__(0), F0_line__(1)) : u0 + lam*du + h*s__(lam)*l__(lam);
+  }
+#if PRINT_UPDATES
+  printf("tri<0, %d, %d>::update_impl(u0 = %g, u1 = %g, "
+         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
+         p0, p1, u0, u1, s, s0, s1, h, T);
+#endif
+  return T;
+}
+
+#undef F0_line__
+
+#define F0_line__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
+
+template <char p0, char p1>
+double
+update_rules::rhr_tri_updates::tri(
+  double u0, double u1, double s, double s0, double s1, double h,
+  ffvec<p0>, ffvec<p1>, double tol) const
+{
+  using std::min;
+
+  (void) s0;
+  (void) s1;
+  (void) tol;
+
+  static constexpr double _sqrt_table[4] = {
+    0.0,
+    1.0,
+    1.4142135623730951,
+    1.7320508075688772
+  };
+
+  constexpr char p0_dot_p0 = dot(p0, p0);
+  constexpr char p0_dot_p1 = dot(p0, p1);
+  constexpr char p1_dot_p1 = dot(p1, p1);
+  constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
+  constexpr char dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
+  constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
+
+  double const du = u1 - u0;
+  double const sh = s*h;
   double const alpha = -du/sh, alpha_sq = alpha*alpha;
   double const tmp = alpha_sq - dp_dot_dp;
   double const a = dp_dot_dp*tmp;
@@ -74,41 +110,45 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
+  double T;
   if (disc < 0 || a == 0) {
-    return std::min(l0__(0), l0__(1));
+    T = min(F0_line__(0), F0_line__(1));
   } else {
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
-    return lam < 0 || 1 < lam ?
-      min(l0__(0), l0__(1)) :
-      u0 + lam*du + sh*l__(lam);
+    T = lam < 0 || 1 < lam ?
+      min(F0_line__(0), F0_line__(1)) : u0 + lam*du + sh*l__(lam);
   }
+#if PRINT_UPDATES
+  printf("tri<0, %d, %d>::update_impl(u0 = %g, u1 = %g, "
+         "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, T);
+#endif
+  return T;
 }
 
 #undef l__
 #undef check__
 #undef char_sqrt__
-#undef l0__
+#undef s__
 
 #define u__(x) ((1 - (x))*u0 + (x)*u1)
 #define q__(x) ((dp_dot_dp*x + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define l__(x) std::sqrt(q__(x))
-#define s__(x) ((1 - theta)*s + theta*((1 - (x))*s0 + (x)*s1))
+#define s__(x) ((s + (1 - (x))*s0 + (x)*s1)/2)
 #define F1__(x) (u__(x) + h*s__(x)*l__(x))
-#define dF1__(x) (du + h*(ds*theta*q__(x) + s__(x)*dp_dot_plam)/l__(x))
+#define dF1__(x) (du + h*(ds*q__(x)/2 + s__(x)*dp_dot_plam)/l__(x))
 #define d2F1__(x) h*(s__(x)*dp_dot_plam*dp_dot_plam/q__(x) + \
-                     ds*theta*dp_dot_plam + 2*s__(x)*dp_dot_dp)/l__(x)
+                     ds*dp_dot_plam/2 + 2*s__(x)*dp_dot_dp)/l__(x)
 
 /**
  * F1 specialization
  */
-template <class speed_est, char degree>
 template <char p0, char p1>
 double
-update_rules::tri_updates<speed_est, degree>::tri_impl(
+update_rules::mp1_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
-  ffvec<p0>, ffvec<p1>, double tol, std::integral_constant<char, 1>) const
+  ffvec<p0>, ffvec<p1>, double tol) const
 {
   constexpr char p0_dot_p0 = dot(p0, p0);
   constexpr char p0_dot_p1 = dot(p0, p1);
@@ -118,7 +158,7 @@ update_rules::tri_updates<speed_est, degree>::tri_impl(
 
   constexpr double c1 = 1e-4;
 
-  double const ds = s1 - s0, du = u1 - u0, theta = this->theta();
+  double const ds = s1 - s0, du = u1 - u0;
 
   bool conv;
   double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;

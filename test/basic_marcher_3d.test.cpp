@@ -1,7 +1,6 @@
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"
 #include "olim.test.common.hpp"
-#include "test.hpp"
 
 int main() {
   using olim = basic_marcher;

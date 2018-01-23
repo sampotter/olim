@@ -1,53 +1,51 @@
-#include "numopt.hpp"
-#include "test.hpp"
+#include <gtest/gtest.h>
 
-#include <cstdio>
+#include "numopt.hpp"
 
 #if USE_ARMADILLO
 using namespace arma;
 #endif // USE_ARMADILLO
 
 #if USE_ARMADILLO
-void test_setdiff() {
+TEST (numopt, test_setdiff) {
   arma::uvec u = {2};
   arma::uvec v = numopt::setdiff(0, 4, u);
-  IS_TRUE(v.n_rows == 3);
-  IS_TRUE(v(0) == 0);
-  IS_TRUE(v(1) == 1);
-  IS_TRUE(v(2) == 3);
+  ASSERT_TRUE(v.n_rows == 3);
+  ASSERT_TRUE(v(0) == 0);
+  ASSERT_TRUE(v(1) == 1);
+  ASSERT_TRUE(v(2) == 3);
 }
 #endif // USE_ARMADILLO
 
 #if USE_ARMADILLO
-void test_qpez() {
+TEST (numopt, test_qpez) {
   {
     mat G = {{2, 1}, {1, 2}};
     vec c = {3, 2};
     mat A; A.eye(2, 2);
     vec x = numopt::qpez_schur(G, c, A);
-    IS_TRUE(all(abs(x) < 1e-15));
+    ASSERT_TRUE(all(abs(x) < 1e-15));
   }
   {
     mat G(2, 2); G.eye(2, 2);
     vec c = {1, 1};
     mat A = {{-1, 1}};
     vec x = numopt::qpez_schur(G, c, A);
-    IS_APPROX_EQUAL(x(0), -1.);
-    IS_APPROX_EQUAL(x(1), -1.);
+    ASSERT_DOUBLE_EQ(x(0), -1.);
+    ASSERT_DOUBLE_EQ(x(1), -1.);
   }
   {
     mat G(2, 2); G.eye(2, 2);
     vec c = {-1, -1};
     mat A = {{0, 1}};
     vec x = numopt::qpez_schur(G, c, A);
-    IS_APPROX_EQUAL(x(0), 1.);
-    IS_APPROX_EQUAL(x(1), 0.);
+    ASSERT_DOUBLE_EQ(x(0), 1.);
+    ASSERT_DOUBLE_EQ(x(1), 0.);
   }
 }
 #endif // USE_ARMADILLO
 
-
-void test_qpe_baryplex() {
+TEST (numopt, test_qpe_baryplex) {
   double G[4], c[2], x[2];
   {
     G[0] = 1.322471807186778;
@@ -57,8 +55,8 @@ void test_qpe_baryplex() {
     c[0] = -0.9821315257790478;
     c[1] = 0.6125112981669493;
     numopt::qpe_baryplex<2, 0>(G, c, x);
-    IS_APPROX_EQUAL(x[0], 0.0);
-    IS_APPROX_EQUAL(x[1], -0.5913625567833622);
+    ASSERT_DOUBLE_EQ(x[0], 0.0);
+    ASSERT_DOUBLE_EQ(x[1], -0.5913625567833622);
   }
   {
     G[0] = 1.47348599296532;
@@ -68,8 +66,8 @@ void test_qpe_baryplex() {
     c[0] = -0.9930190065496006;
     c[1] = 0.9749502248113115;
     numopt::qpe_baryplex<2, 1>(G, c, x);
-    IS_APPROX_EQUAL(x[0], 0.67392497199868);
-    IS_APPROX_EQUAL(x[1], 0.0);
+    ASSERT_DOUBLE_EQ(x[0], 0.67392497199868);
+    ASSERT_DOUBLE_EQ(x[1], 0.0);
   }
   {
     G[0] = 1.915991244131425;
@@ -79,13 +77,13 @@ void test_qpe_baryplex() {
     c[0] = -0.1131775740682571;
     c[1] = 1.635999657278292;
     numopt::qpe_baryplex<2, 2>(G, c, x);
-    IS_APPROX_EQUAL(x[0], 1.022590186764985);
-    IS_APPROX_EQUAL(x[1], -0.0225901867649847);
+    ASSERT_DOUBLE_EQ(x[0], 1.022590186764985);
+    ASSERT_DOUBLE_EQ(x[1], -0.0225901867649847);
   }
 }
 
 #if USE_ARMADILLO
-void test_qpi() {
+TEST (numopt, test_qpi) {
   mat G(2, 2); G.eye(2, 2);
   vec c = {-1./3, -1./3};
   mat A = {{1, 0}, {0, 1}, {-1, -1}};
@@ -96,26 +94,26 @@ void test_qpi() {
   bool error = false;
 
   x = numopt::qpi(G, c, A, b, nullptr, &error, tol, niters);
-  IS_FALSE(error);
-  IS_APPROX_EQUAL(x(0), 1./3);
-  IS_APPROX_EQUAL(x(1), 1./3);
+  ASSERT_FALSE(error);
+  ASSERT_DOUBLE_EQ(x(0), 1./3);
+  ASSERT_DOUBLE_EQ(x(1), 1./3);
 
   x = numopt::qpi(G, c, A, b, &x0, &error, tol, niters);
-  IS_FALSE(error);
-  IS_APPROX_EQUAL(x(0), 1./3);
-  IS_APPROX_EQUAL(x(1), 1./3);
+  ASSERT_FALSE(error);
+  ASSERT_DOUBLE_EQ(x(0), 1./3);
+  ASSERT_DOUBLE_EQ(x(1), 1./3);
 
   c(0) = -1;
   c(1) = -1;
   x = numopt::qpi(G, c, A, b, nullptr, &error, tol, niters);
-  IS_FALSE(error);
-  IS_APPROX_EQUAL(x(0), 1./2);
-  IS_APPROX_EQUAL(x(1), 1./2);
+  ASSERT_FALSE(error);
+  ASSERT_DOUBLE_EQ(x(0), 1./2);
+  ASSERT_DOUBLE_EQ(x(1), 1./2);
 
   x = numopt::qpi(G, c, A, b, &x0, &error, tol, niters);
-  IS_FALSE(error);
-  IS_APPROX_EQUAL(x(0), 1./2);
-  IS_APPROX_EQUAL(x(1), 1./2);
+  ASSERT_FALSE(error);
+  ASSERT_DOUBLE_EQ(x(0), 1./2);
+  ASSERT_DOUBLE_EQ(x(1), 1./2);
 
   G(0) = 0.013984781373164062;
   G(1) = -0.033870576813323353;
@@ -124,13 +122,13 @@ void test_qpi() {
   c(0) = 0.10047929410060422;
   c(1) = -0.087946136690885759;
   x = numopt::qpi(G, c, A, b, &x0, &error, tol, niters);
-  IS_FALSE(error);
-  IS_APPROX_EQUAL(x(0), 0.0);
-  IS_APPROX_EQUAL(x(1), 0.3138511630507365);
+  ASSERT_FALSE(error);
+  ASSERT_DOUBLE_EQ(x(0), 0.0);
+  ASSERT_DOUBLE_EQ(x(1), 0.3138511630507365);
 }
 #endif // USE_ARMADILLO
 
-void test_qpi_baryplex() {
+TEST (numopt, test_qpi_baryplex) {
   bool error;
   double G[4], c[2], x[2], x0[2];
   for (int i = 0; i < 2; ++i) {
@@ -147,9 +145,9 @@ void test_qpi_baryplex() {
       c[0] = -0.7577919164988186;
       c[1] = -0.5639689170274268;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.8682365591679995);
-      IS_APPROX_EQUAL(x[1], 0.1317634408320019);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.8682365591679995);
+      ASSERT_DOUBLE_EQ(x[1], 0.1317634408320019);
     }
     {
       G[0] = 0.1766826028295286;
@@ -159,9 +157,9 @@ void test_qpi_baryplex() {
       c[0] = 0.3105083186004987;
       c[1] = -0.2494890644739389;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], -4.440892098500626e-16);
-      IS_APPROX_EQUAL(x[1], 1.000000000000005);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], -4.440892098500626e-16);
+      ASSERT_DOUBLE_EQ(x[1], 1.000000000000005);
     }
     {
       G[0] = 0.1398731795628713;
@@ -171,9 +169,9 @@ void test_qpi_baryplex() {
       c[0] = -0.4335920223056836;
       c[1] = 0.3426244665386499;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.9999999999999999);
-      IS_APPROX_EQUAL(x[1], 0.0);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.9999999999999999);
+      ASSERT_DOUBLE_EQ(x[1], 0.0);
     }
     {
       G[0] = 0.7804349286530685;
@@ -183,9 +181,9 @@ void test_qpi_baryplex() {
       c[0] = 0.7147429038260958;
       c[1] = -0.2049660582997746;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.0);
-      IS_APPROX_EQUAL(x[1], 0.309566054146601);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.0);
+      ASSERT_DOUBLE_EQ(x[1], 0.309566054146601);
     }
     {
       G[0] = 0.03998793788429245;
@@ -195,9 +193,9 @@ void test_qpi_baryplex() {
       c[0] = 0.7172386513288385;
       c[1] = 1.630235289164729;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.0);
-      IS_APPROX_EQUAL(x[1], 0.0);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.0);
+      ASSERT_DOUBLE_EQ(x[1], 0.0);
     }
     {
       G[0] = 0.5996984878416955;
@@ -207,9 +205,9 @@ void test_qpi_baryplex() {
       c[0] = -0.1773751566188252;
       c[1] = -0.1960534878073328;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.2109897300222737);
-      IS_APPROX_EQUAL(x[1], 0.6735450359435763);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.2109897300222737);
+      ASSERT_DOUBLE_EQ(x[1], 0.6735450359435763);
     }
     {
       G[0] = 0.3049276224231295;
@@ -219,9 +217,9 @@ void test_qpi_baryplex() {
       c[0] = 0.8350881650726819;
       c[1] = -0.2437151403779522;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.0);
-      IS_APPROX_EQUAL(x[1], 0.3301873753989831);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.0);
+      ASSERT_DOUBLE_EQ(x[1], 0.3301873753989831);
     }
     {
       G[0] = 0.9288870480671484;
@@ -231,9 +229,9 @@ void test_qpi_baryplex() {
       c[0] = -0.6668906707013855;
       c[1] = 0.1873310245789398;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.71794592473764);
-      IS_APPROX_EQUAL(x[1], 0.0);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.71794592473764);
+      ASSERT_DOUBLE_EQ(x[1], 0.0);
     }
     {
       G[0] = 0.3120932443331088;
@@ -243,9 +241,9 @@ void test_qpi_baryplex() {
       c[0] = 0.1000928331393225;
       c[1] = -0.5445289299905477;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.0);
-      IS_APPROX_EQUAL(x[1], 0.6863178470336823);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.0);
+      ASSERT_DOUBLE_EQ(x[1], 0.6863178470336823);
     }
     {
       G[0] = 0.5111300221703463;
@@ -255,9 +253,9 @@ void test_qpi_baryplex() {
       c[0] = -2.138355269439939;
       c[1] = -0.8395887473366136;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 1.00000000000001);
-      IS_APPROX_EQUAL(x[1], -8.881784197001252e-16);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 1.00000000000001);
+      ASSERT_DOUBLE_EQ(x[1], -8.881784197001252e-16);
     }
     {
       G[0] = 0.3893554705283445;
@@ -267,9 +265,9 @@ void test_qpi_baryplex() {
       c[0] = 1.098424617888623;
       c[1] = -0.2778719327876389;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], -4.440892098500626e-16);
-      IS_APPROX_EQUAL(x[1], 1.0);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], -4.440892098500626e-16);
+      ASSERT_DOUBLE_EQ(x[1], 1.0);
     }
     {
       G[0] = 0.7925471686502944;
@@ -279,9 +277,9 @@ void test_qpi_baryplex() {
       c[0] = 0.2819840636705562;
       c[1] = 0.03347988224445142;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 0.0);
-      IS_APPROX_EQUAL(x[1], 0.0);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 0.0);
+      ASSERT_DOUBLE_EQ(x[1], 0.0);
     }
     {
       G[0] = 0.4667997832499873;
@@ -291,15 +289,15 @@ void test_qpi_baryplex() {
       c[0] = -1.75021236844679;
       c[1] = -0.2856509715953298;
       numopt::qpi_baryplex<2>(G, c, x0, x, &error);
-      IS_FALSE(error);
-      IS_APPROX_EQUAL(x[0], 1.000000000000002);
-      IS_APPROX_EQUAL(x[1], 6.661338147750939e-16);
+      ASSERT_FALSE(error);
+      ASSERT_DOUBLE_EQ(x[0], 1.000000000000002);
+      ASSERT_DOUBLE_EQ(x[1], 6.661338147750939e-16);
     }
   }
 }
 
 #if USE_ARMADILLO
-void test_sqp() {
+TEST (numopt, test_sqp) {
   {
     double u0, u1, u2, h, s, s0, s1, s2, theta;
     vec p0(3), p1(3), p2(3);
@@ -378,45 +376,45 @@ void test_sqp() {
      * For the first test, verify that the functions we defined above
      * are correct.
      */
-    IS_APPROX_EQUAL(u(x0), 0.182393082927495);
-    IS_APPROX_EQUAL(du()(0), 0.06058885344725118);
-    IS_APPROX_EQUAL(du()(1), 0.1166335908297372);
-    IS_APPROX_EQUAL(p(x0)(0), -0.7005742596907008);
-    IS_APPROX_EQUAL(p(x0)(1), 0.6921058176066054);
-    IS_APPROX_EQUAL(p(x0)(2), -0.4019715930660842);
-    IS_APPROX_EQUAL(dP()(0, 0), 0.08363342077698399);
-    IS_APPROX_EQUAL(dP()(1, 0), 0.3327004862980814);
-    IS_APPROX_EQUAL(dP()(2, 0), -0.09155357654484941);
-    IS_APPROX_EQUAL(dP()(0, 1), 0.2091345538433411);
-    IS_APPROX_EQUAL(dP()(1, 1), -1.312438879863992);
-    IS_APPROX_EQUAL(dP()(2, 1), -0.7147087641301992);
-    IS_APPROX_EQUAL(q(x0), 1.131395917738167);
-    IS_APPROX_EQUAL(l(x0), 1.06367096309816);
-    IS_APPROX_EQUAL(sh(), 0.1697073884474699);
+    ASSERT_DOUBLE_EQ(u(x0), 0.182393082927495);
+    ASSERT_DOUBLE_EQ(du()(0), 0.06058885344725118);
+    ASSERT_DOUBLE_EQ(du()(1), 0.1166335908297372);
+    ASSERT_DOUBLE_EQ(p(x0)(0), -0.7005742596907008);
+    ASSERT_DOUBLE_EQ(p(x0)(1), 0.6921058176066054);
+    ASSERT_DOUBLE_EQ(p(x0)(2), -0.4019715930660842);
+    ASSERT_DOUBLE_EQ(dP()(0, 0), 0.08363342077698399);
+    ASSERT_DOUBLE_EQ(dP()(1, 0), 0.3327004862980814);
+    ASSERT_DOUBLE_EQ(dP()(2, 0), -0.09155357654484941);
+    ASSERT_DOUBLE_EQ(dP()(0, 1), 0.2091345538433411);
+    ASSERT_DOUBLE_EQ(dP()(1, 1), -1.312438879863992);
+    ASSERT_DOUBLE_EQ(dP()(2, 1), -0.7147087641301992);
+    ASSERT_DOUBLE_EQ(q(x0), 1.131395917738167);
+    ASSERT_DOUBLE_EQ(l(x0), 1.06367096309816);
+    ASSERT_DOUBLE_EQ(sh(), 0.1697073884474699);
     {
       mat C = cprojp(x0);
-      IS_APPROX_EQUAL(C(0, 0), 0.5661958067496247);
-      IS_APPROX_EQUAL(C(1, 0), 0.4285604298155035);
-      IS_APPROX_EQUAL(C(2, 0), -0.2489057515709858);
-      IS_APPROX_EQUAL(C(0, 1), 0.4285604298155035);
-      IS_APPROX_EQUAL(C(1, 1), 0.576619947752222);
-      IS_APPROX_EQUAL(C(2, 1), 0.2458970142209899);
-      IS_APPROX_EQUAL(C(0, 2), -0.2489057515709858);
-      IS_APPROX_EQUAL(C(1, 2), 0.2458970142209899);
-      IS_APPROX_EQUAL(C(2, 2), 0.8571842454981533);
+      ASSERT_DOUBLE_EQ(C(0, 0), 0.5661958067496247);
+      ASSERT_DOUBLE_EQ(C(1, 0), 0.4285604298155035);
+      ASSERT_DOUBLE_EQ(C(2, 0), -0.2489057515709858);
+      ASSERT_DOUBLE_EQ(C(0, 1), 0.4285604298155035);
+      ASSERT_DOUBLE_EQ(C(1, 1), 0.576619947752222);
+      ASSERT_DOUBLE_EQ(C(2, 1), 0.2458970142209899);
+      ASSERT_DOUBLE_EQ(C(0, 2), -0.2489057515709858);
+      ASSERT_DOUBLE_EQ(C(1, 2), 0.2458970142209899);
+      ASSERT_DOUBLE_EQ(C(2, 2), 0.8571842454981533);
     }
-    IS_APPROX_EQUAL(f(x0), 0.3629059042422889);
-    IS_APPROX_EQUAL(df(x0)(0), 0.09385069562055104);
-    IS_APPROX_EQUAL(df(x0)(1), -0.005830975252270845);
-    IS_APPROX_EQUAL(d2f(x0)(0, 0), 0.01398478137316401);
-    IS_APPROX_EQUAL(d2f(x0)(1, 0), -0.03387057681332327);
-    IS_APPROX_EQUAL(d2f(x0)(0, 1), -0.03387057681332326);
-    IS_APPROX_EQUAL(d2f(x0)(1, 1), 0.2802160611291685);
+    ASSERT_DOUBLE_EQ(f(x0), 0.3629059042422889);
+    ASSERT_DOUBLE_EQ(df(x0)(0), 0.09385069562055104);
+    ASSERT_DOUBLE_EQ(df(x0)(1), -0.005830975252270845);
+    ASSERT_DOUBLE_EQ(d2f(x0)(0, 0), 0.01398478137316401);
+    ASSERT_DOUBLE_EQ(d2f(x0)(1, 0), -0.03387057681332327);
+    ASSERT_DOUBLE_EQ(d2f(x0)(0, 1), -0.03387057681332326);
+    ASSERT_DOUBLE_EQ(d2f(x0)(1, 1), 0.2802160611291685);
 
     vec x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.6240600881736895;
     u1 = 0.6791355408657477;
@@ -440,9 +438,9 @@ void test_sqp() {
     p2(2) = 0.652355888661374;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.7150370784006941;
     u1 = 0.9037205605563163;
@@ -466,9 +464,9 @@ void test_sqp() {
     p2(2) = -0.651553641750281;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.8865119330761013;
     u1 = 0.0286741524641061;
@@ -492,9 +490,9 @@ void test_sqp() {
     p2(2) = -0.6911591253829914;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.6596052529083072;
     u1 = 0.5185949425105382;
@@ -518,9 +516,9 @@ void test_sqp() {
     p2(2) = -0.2918633757535734;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.683363243294653;
     u1 = 0.5465931145903228;
@@ -544,9 +542,9 @@ void test_sqp() {
     p2(2) = -0.197958632611842;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.6877960851201071;
     u1 = 0.3592282104018606;
@@ -570,9 +568,9 @@ void test_sqp() {
     p2(2) = -0.5222504849935489;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.5312092935824387;
     u1 = 0.1088179382730454;
@@ -596,9 +594,9 @@ void test_sqp() {
     p2(2) = -1.625803266396234;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_TRUE(fabs(x(1)) < 1e-12);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_TRUE(fabs(x(1)) < 1e-12);
 
     u0 = 0.0773468081126768;
     u1 = 0.9138004107795679;
@@ -622,9 +620,9 @@ void test_sqp() {
     p2(2) = -1.142428168121445;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     auto stheta = [&] (vec const & x) -> double {
       return (1 - theta)*s + theta*((1 - sum(x))*s0 + x(0)*s1 + x(1)*s2);
@@ -669,9 +667,9 @@ void test_sqp() {
     p2(2) = 1.412561160729294;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.9174938324161169;
     u1 = 0.7135740115943158;
@@ -695,9 +693,9 @@ void test_sqp() {
     p2(2) = 0.4566596091151506;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.3606365710022027;
     u1 = 0.7565095435019443;
@@ -721,9 +719,9 @@ void test_sqp() {
     p2(2) = 0.2893811552948809;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.6604379663126019;
     u1 = 0.04755467311386607;
@@ -747,9 +745,9 @@ void test_sqp() {
     p2(2) = 2.949092541315588;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.3531418129389555;
     u1 = 0.4494435565717483;
@@ -773,9 +771,9 @@ void test_sqp() {
     p2(2) = -1.496918876447554;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
 
     u0 = 0.2684388213972831;
     u1 = 0.2578461701126047;
@@ -799,14 +797,14 @@ void test_sqp() {
     p2(2) = -1.459041869083612;
 
     x = numopt::sqp(f, df, d2f, A, b, x0, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x(0), xgt(0));
-    IS_APPROX_EQUAL(x(1), xgt(1));
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x(0), xgt(0));
+    ASSERT_DOUBLE_EQ(x(1), xgt(1));
   }
 }
 #endif // USE_ARMADILLO
 
-void test_sqp_baryplex() {
+TEST (numopt, test_sqp_baryplex) {
   bool error;
   double u[3], h, s_hat, s[3], theta, x[2], xgt[2], p[3][3];
   {
@@ -833,9 +831,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.6240600881736895;
@@ -861,9 +859,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.7150370784006941;
@@ -889,9 +887,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.8865119330761013;
@@ -917,9 +915,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.6596052529083072;
@@ -945,9 +943,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.683363243294653;
@@ -973,9 +971,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.6877960851201071;
@@ -1001,9 +999,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.5312092935824387;
@@ -1029,9 +1027,9 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
   {
     u[0] = 0.0773468081126768;
@@ -1057,20 +1055,8 @@ void test_sqp_baryplex() {
     F0<2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex(&func, x, &error);
-    IS_FALSE(error);
-    IS_APPROX_EQUAL(x[0], xgt[0]);
-    IS_APPROX_EQUAL(x[1], xgt[1]);
+    ASSERT_FALSE(error);
+    ASSERT_DOUBLE_EQ(x[0], xgt[0]);
+    ASSERT_DOUBLE_EQ(x[1], xgt[1]);
   }
-}
-
-int main() {
-#if USE_ARMADILLO
-  test_setdiff();
-  test_qpez();
-  test_qpi();
-  test_sqp();
-#endif // USE_ARMADILLO0
-  test_qpe_baryplex();
-  test_qpi_baryplex();
-  test_sqp_baryplex();
 }

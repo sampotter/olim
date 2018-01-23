@@ -1,8 +1,10 @@
+#include <gtest/gtest.h>
+
+#include <cmath>
+#include <limits>
+
 #include "qroots.hpp"
 #include "speed_funcs.hpp"
-#include "test.hpp"
-
-#include <limits>
 
 void sigma_works_1() {
   double a[] = {
@@ -32,7 +34,7 @@ void sigma_works_1() {
   };
   double * polys[] = {a, b, c, d, e};
 
-  IS_TRUE(sigma(polys, 0.1) == 2);
+  ASSERT_TRUE(sigma(polys, 0.1) == 2);
 }
 
 void sigma_works_2() {
@@ -64,10 +66,10 @@ void sigma_works_2() {
   double * polys[] = {a, b, c, d, e};
   int lhs = sigma(polys, 0), oldlhs = oldsigma(polys, 0);
   int rhs = sigma(polys, 1), oldrhs = oldsigma(polys, 1);
-  IS_TRUE(lhs == 2);
-  IS_TRUE(oldlhs == 2);
-  IS_TRUE(rhs == 2);
-  IS_TRUE(oldrhs == 2);
+  ASSERT_TRUE(lhs == 2);
+  ASSERT_TRUE(oldlhs == 2);
+  ASSERT_TRUE(rhs == 2);
+  ASSERT_TRUE(oldrhs == 2);
 }
 
 void sigma_works_3() {
@@ -100,8 +102,8 @@ void sigma_works_3() {
   double eps = std::numeric_limits<double>::epsilon();
   int lhs = sigma(polys, 0 + eps), oldlhs = oldsigma(polys, 1);
   int rhs = sigma(polys, 0 + eps), oldrhs = oldsigma(polys, 1);
-  IS_TRUE(lhs == oldlhs);
-  IS_TRUE(rhs == oldrhs);
+  ASSERT_TRUE(lhs == oldlhs);
+  ASSERT_TRUE(rhs == oldrhs);
 }
 
 void sturm_works_1() {
@@ -131,7 +133,7 @@ void sturm_works_1() {
     -0.006034391692523379
   };
   double * polys[] = {a, b, c, d, e};
-  IS_TRUE(sturm(polys, 0, 1) == 0);
+  ASSERT_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 void sturm_works_2() {
@@ -161,11 +163,11 @@ void sturm_works_2() {
     0.0185546875
   };
   double * polys[] = {a, b, c, d, e};
-  IS_TRUE(sturm(polys, 0, 1) == 2);
-  IS_TRUE(sturm(polys, 0, 0.5) == 1);
-  IS_TRUE(sturm(polys, 0.5, 1) == 1);
-  IS_TRUE(sturm(polys, 0.4, 0.5) == 0);
-  IS_TRUE(sturm(polys, 0.49999999999999994, 0.5) == 0);
+  ASSERT_TRUE(sturm(polys, 0, 1) == 2);
+  ASSERT_TRUE(sturm(polys, 0, 0.5) == 1);
+  ASSERT_TRUE(sturm(polys, 0.5, 1) == 1);
+  ASSERT_TRUE(sturm(polys, 0.4, 0.5) == 0);
+  ASSERT_TRUE(sturm(polys, 0.49999999999999994, 0.5) == 0);
 }
 
 void sturm_works_3() {
@@ -195,7 +197,7 @@ void sturm_works_3() {
     0.000057748375077573313
   };
   double * polys[] = {a, b, c, d, e};
-  IS_TRUE(sturm(polys, 0, 1) == 0);
+  ASSERT_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 void sturm_works_4() {
@@ -225,7 +227,7 @@ void sturm_works_4() {
     0.5305424594038346
   };
   double * polys[] = {a, b, c, d, e};
-  IS_TRUE(sturm(polys, 0, 1) == 0);
+  ASSERT_TRUE(sturm(polys, 0, 1) == 0);
 }
 
 // Some helper functions for testing the roots returned by qroots:
@@ -248,18 +250,18 @@ void qroots_works_1() {
   double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
   double roots[4] = {-1, -1, -1, -1};
   qroots(a, roots, 0, 1);
-  IS_TRUE(num_roots(roots) == 2);
-  IS_TRUE(contains_root(roots, 0.25));
-  IS_TRUE(contains_root(roots, 0.75));
+  ASSERT_TRUE(num_roots(roots) == 2);
+  ASSERT_TRUE(contains_root(roots, 0.25));
+  ASSERT_TRUE(contains_root(roots, 0.75));
 }
 
 void qroots_works_2() {
   double a[5] = { -0.803056, 2.86611, -1.10611, -2.56, -0.64};
   double roots[4] = {-1, -1, -1, -1};
   qroots(a, roots, 0, 1);
-  IS_TRUE(num_roots(roots) == 2);
-  IS_TRUE(contains_root(roots, 0.432017, 1e-6));
-  IS_TRUE(contains_root(roots, 0.4828, 1e-5));
+  ASSERT_TRUE(num_roots(roots) == 2);
+  ASSERT_TRUE(contains_root(roots, 0.432017, 1e-6));
+  ASSERT_TRUE(contains_root(roots, 0.4828, 1e-5));
 }
 
 int main() {

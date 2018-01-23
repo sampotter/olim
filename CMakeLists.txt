@@ -3,6 +3,8 @@ project (fastmarching)
 cmake_minimum_required (VERSION 3.4 FATAL_ERROR)
 
 include (CMakeDependentOption)
+include (GoogleTest)
+include (gtest.cmake)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
@@ -159,6 +161,8 @@ endif ()
 # We don't use any of these test targets when we're building our
 # Release build, so save time by skipping them.
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  find_package (Threads) # required by gtest
+
   set (tests
 	basic_marcher
 	basic_marcher_3d
@@ -186,14 +190,10 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
-	target_link_libraries (${test}.test fmm)
+	target_link_libraries (${test}.test fmm gtest ${CMAKE_THREAD_LIBS_INIT})
 	target_include_directories (
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-	add_test (
-	  NAME ${test} COMMAND ${CMAKE_COMMAND}
-	  -DTEST_PROGRAM=$<TARGET_FILE:${test}.test>
-	  -DSOURCEDIR=${CMAKE_CURRENT_SOURCE_DIR}
-	  -P ${CMAKE_CURRENT_SOURCE_DIR}/runtest.cmake)
+    gtest_discover_tests (${test}.test)
   endforeach ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 

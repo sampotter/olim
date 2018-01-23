@@ -1,8 +1,7 @@
-#include "common.defs.hpp"
-#include "test.hpp"
-#include "update_rules.tetra_updates.hpp"
+#include <gtest/gtest.h>
 
-#include <cmath>
+#include "common.defs.hpp"
+#include "update_rules.tetra_updates.hpp"
 
 static update_rules::rhr_tetra_updates updates;
 
@@ -49,11 +48,11 @@ void tetra111_is_symmetric() {
   double val210 = TETRA111(r, u2, u1, u0, s, s0, s1, s2, h);
   double val102 = TETRA111(r, u1, u0, u2, s, s0, s1, s2, h);
   double val021 = TETRA111(r, u0, u2, u1, s, s0, s1, s2, h);
-  IS_APPROX_EQUAL(val012, val120);
-  IS_APPROX_EQUAL(val120, val201);
-  IS_APPROX_EQUAL(val201, val210);
-  IS_APPROX_EQUAL(val210, val102);
-  IS_APPROX_EQUAL(val102, val021);
+  ASSERT_DOUBLE_EQ(val012, val120);
+  ASSERT_DOUBLE_EQ(val120, val201);
+  ASSERT_DOUBLE_EQ(val201, val210);
+  ASSERT_DOUBLE_EQ(val210, val102);
+  ASSERT_DOUBLE_EQ(val102, val021);
 
   u0 = 2.4;
   u1 = 2.2;
@@ -64,11 +63,11 @@ void tetra111_is_symmetric() {
   val210 = TETRA111(r, u2, u1, u0, s, s0, s1, s2, h);
   val102 = TETRA111(r, u1, u0, u2, s, s0, s1, s2, h);
   val021 = TETRA111(r, u0, u2, u1, s, s0, s1, s2, h);
-  IS_APPROX_EQUAL(val012, val120);
-  IS_APPROX_EQUAL(val120, val201);
-  IS_APPROX_EQUAL(val201, val210);
-  IS_APPROX_EQUAL(val210, val102);
-  IS_APPROX_EQUAL(val102, val021);
+  ASSERT_DOUBLE_EQ(val012, val120);
+  ASSERT_DOUBLE_EQ(val120, val201);
+  ASSERT_DOUBLE_EQ(val201, val210);
+  ASSERT_DOUBLE_EQ(val210, val102);
+  ASSERT_DOUBLE_EQ(val102, val021);
 }
 
 void tetra122_is_symmetric() {
@@ -78,7 +77,7 @@ void tetra122_is_symmetric() {
   double s = 1, s0 = 1.0, s1 = 1.0, s2 = 1.0, h = 1;
   double val012 = TETRA122(updates, u0, u1, u2, s, s0, s1, s2, h);
   double val021 = TETRA122(updates, u0, u2, u1, s, s0, s1, s2, h);
-  IS_APPROX_EQUAL(val012, val021);
+  ASSERT_DOUBLE_EQ(val012, val021);
 }
 
 void tetra222_is_symmetric() {
@@ -92,11 +91,11 @@ void tetra222_is_symmetric() {
   double val210 = TETRA222(updates, u2, u1, u0, s, s0, s1, s2, h);
   double val102 = TETRA222(updates, u1, u0, u2, s, s0, s1, s2, h);
   double val021 = TETRA222(updates, u0, u2, u1, s, s0, s1, s2, h);
-  IS_APPROX_EQUAL(val012, val120);
-  IS_APPROX_EQUAL(val120, val201);
-  IS_APPROX_EQUAL(val201, val210);
-  IS_APPROX_EQUAL(val210, val102);
-  IS_APPROX_EQUAL(val102, val021);
+  ASSERT_DOUBLE_EQ(val012, val120);
+  ASSERT_DOUBLE_EQ(val120, val201);
+  ASSERT_DOUBLE_EQ(val201, val210);
+  ASSERT_DOUBLE_EQ(val210, val102);
+  ASSERT_DOUBLE_EQ(val102, val021);
 
   u0 = 2.4;
   u1 = 2.2;
@@ -107,11 +106,11 @@ void tetra222_is_symmetric() {
   val210 = TETRA222(updates, u2, u1, u0, s, s0, s1, s2, h);
   val102 = TETRA222(updates, u1, u0, u2, s, s0, s1, s2, h);
   val021 = TETRA222(updates, u0, u2, u1, s, s0, s1, s2, h);
-  IS_APPROX_EQUAL(val012, val120);
-  IS_APPROX_EQUAL(val120, val201);
-  IS_APPROX_EQUAL(val201, val210);
-  IS_APPROX_EQUAL(val210, val102);
-  IS_APPROX_EQUAL(val102, val021);
+  ASSERT_DOUBLE_EQ(val012, val120);
+  ASSERT_DOUBLE_EQ(val120, val201);
+  ASSERT_DOUBLE_EQ(val201, val210);
+  ASSERT_DOUBLE_EQ(val210, val102);
+  ASSERT_DOUBLE_EQ(val102, val021);
 }
 
 void tetra111_works() {
@@ -122,7 +121,7 @@ void tetra111_works() {
     double s = 1.0, s0 = 1.0, s1 = 1.0, s2 = 1.0;
     double h = 1.0/7.0;
     double uhat = 1.95377665722661;
-    IS_APPROX_EQUAL(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
+    ASSERT_DOUBLE_EQ(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
   }
   {
     double u0 = 0.6714002359494359;
@@ -131,7 +130,7 @@ void tetra111_works() {
     double s = 1, s0 = 1.0, s1 = 1.0, s2 = 1.0;
     double h = 0.02040816326530612;
     double uhat = 0.6726606175825081;
-    IS_APPROX_EQUAL(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
+    ASSERT_DOUBLE_EQ(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
   }
   {
     double u0 = 0.8701508258299168;
@@ -140,7 +139,7 @@ void tetra111_works() {
     double s = 1, s0 = 1.0, s1 = 1.0, s2 = 1.0;
     double h = 0.03703703703703703;
     double uhat = 0.9064782064785435;
-    IS_APPROX_EQUAL(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
+    ASSERT_DOUBLE_EQ(TETRA111(updates, u0, u1, u2, s, s0, s1, s2, h), uhat);
   }
 }
 
@@ -156,7 +155,7 @@ void tetra122_works() {
     double s2 = 1;
     double h = 1;
     double uhat = 2.781997898655415;
-    IS_APPROX_EQUAL(
+    ASSERT_DOUBLE_EQ(
       r.tetra(u0, u1, u2, s, s0, s1, s2, h,
               ffvec<P001> {}, ffvec<P101> {}, ffvec<P110> {}),
       uhat);
@@ -164,20 +163,20 @@ void tetra122_works() {
 }
 
 void tetra123_works() {
-  IS_APPROX_EQUAL(TETRA123(updates, 0, 0, 0, 1, 1, 1, 1, 1), 1.0);
+  ASSERT_DOUBLE_EQ(TETRA123(updates, 0, 0, 0, 1, 1, 1, 1, 1), 1.0);
 }
 
 template <class rules>
 void tetra222_works() {
   rules r;
-  IS_APPROX_EQUAL(TETRA222(r, 0, 0, 0, 1, 1, 1, 1, 1), 2.0/sqrt(3));
+  ASSERT_DOUBLE_EQ(TETRA222(r, 0, 0, 0, 1, 1, 1, 1, 1), 2.0/sqrt(3));
   {
     double u0 = 0.18181818181818182;
     double u1 = 0.33244129540839806;
     double u2 = 0.33244129540839812;
     double h = 0.18181818181818182;
     double U = 0.4389479204314718;
-    IS_APPROX_EQUAL(TETRA222(r, u0, u1, u2, 1, 1, 1, 1, h), U);
+    ASSERT_DOUBLE_EQ(TETRA222(r, u0, u1, u2, 1, 1, 1, 1, h), U);
   }
 }
 
@@ -188,7 +187,7 @@ void mp1_tetra123_works() {
 
   u0 = 0.889163, u1 = 0.817579, u2 = 0.75, s = 1, s0 = 1, s1 = 1, s2 = 1,
     h = 0.25, U = 1.1189646747175703;
-  IS_APPROX_EQUAL(TETRA123(mp1, u0, u1, u2, s, s0, s1, s2, h), U);
+  ASSERT_DOUBLE_EQ(TETRA123(mp1, u0, u1, u2, s, s0, s1, s2, h), U);
 }
 
 int main() {

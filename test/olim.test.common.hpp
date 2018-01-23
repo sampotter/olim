@@ -1,12 +1,14 @@
 #ifndef __OLIM_TEST_COMMON_HPP__
 #define __OLIM_TEST_COMMON_HPP__
 
+#include <gtest/gtest.h>
+
 #include <cassert>
 #include <type_traits>
 #include <vector>
 
+#include "common.defs.hpp"
 #include "speed_funcs.hpp"
-#include "test.hpp"
 #include "typedefs.h"
 
 template <class olim>
@@ -14,7 +16,7 @@ void trivial_case_works() {
   olim m {1, 1};
   m.add_boundary_node(0, 0);
   m.run();
-  IS_APPROX_EQUAL(m.get_value(0, 0), 0.0);
+  ASSERT_DOUBLE_EQ(m.get_value(0, 0), 0.0);
 }
 
 template <class olim>
@@ -22,7 +24,7 @@ void adjacent_update_works() {
   olim m {2, 1, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
-  IS_APPROX_EQUAL(m.get_value(1, 0), 0.5);
+  ASSERT_DOUBLE_EQ(m.get_value(1, 0), 0.5);
 }
 
 template <class olim>
@@ -31,10 +33,10 @@ void correct_corners_in_limit(int n, double tol) {
   olim m {n, n, h, (speed_func) default_speed_func, 1., 1.};
   m.add_boundary_node(n/2, n/2);
   m.run();
-  IS_APPROX_EQUAL(m.get_value(0, n - 1), sqrt(2), tol);
-  IS_APPROX_EQUAL(m.get_value(0, n - 1), sqrt(2), tol);
-  IS_APPROX_EQUAL(m.get_value(n - 1, 0), sqrt(2), tol);
-  IS_APPROX_EQUAL(m.get_value(n - 1, n - 1), sqrt(2), tol);
+  ASSERT_NEAR(m.get_value(0, n - 1), sqrt2, tol);
+  ASSERT_NEAR(m.get_value(0, n - 1), sqrt2, tol);
+  ASSERT_NEAR(m.get_value(n - 1, 0), sqrt2, tol);
+  ASSERT_NEAR(m.get_value(n - 1, n - 1), sqrt2, tol);
 }
 
 template <class olim>
@@ -52,10 +54,10 @@ void quadrants_are_correct(
     olim m {n, n, h, (speed_func) default_speed_func, x0[i], y0[i]};
     m.add_boundary_node(i0, j0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(i0, j0), 0.0);
-    IS_APPROX_EQUAL(m.get_value((i0 + 1) % 2, j0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(i0, (j0 + 1) % 2), 1.0);
-    IS_APPROX_EQUAL(m.get_value((i0 + 1) % 2, (j0 + 1) % 2), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(i0, j0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value((i0 + 1) % 2, j0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(i0, (j0 + 1) % 2), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value((i0 + 1) % 2, (j0 + 1) % 2), diag_value);
   }
 }
 
@@ -74,37 +76,37 @@ void quadrants_are_correct(
     olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), diag_value);
   }
   {
     olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), 1.0);
   }
   {
     olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), 1.0);
   }
   {
     olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 1, 0};
     m.add_boundary_node(1, 1, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 1, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), 0.0);
   }
 
   /**
@@ -114,37 +116,37 @@ void quadrants_are_correct(
     olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), diag_value);
   }
   {
     olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), diag_value);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), 1.0);
   }
   {
     olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 0.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), 1.0);
   }
   {
     olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 1};
     m.add_boundary_node(1, 0, 1);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(1, 0, 1), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), 0.0);
   }
 
   /**
@@ -154,37 +156,37 @@ void quadrants_are_correct(
     olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), diag_value);
   }
   {
     olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), diag_value);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), 1.0);
   }
   {
     olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 0.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), 1.0);
   }
   {
     olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 1};
     m.add_boundary_node(0, 1, 1);
     m.run();
-    IS_APPROX_EQUAL(m.get_value(0, 0, 0), diag_value);
-    IS_APPROX_EQUAL(m.get_value(0, 0, 1), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 0), 1.0);
-    IS_APPROX_EQUAL(m.get_value(0, 1, 1), 0.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 0, 1), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 0), 1.0);
+    ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), 0.0);
   }
 }
 
@@ -199,14 +201,14 @@ void octants_are_correct(double diag2val, double diag3val) {
         olim3d m {n, n, n, h, (speed_func_3d) default_speed_func, x0, y0, z0};
         m.add_boundary_node(i, j, k);
         m.run();
-        IS_APPROX_EQUAL(m.get_value(i, j, k), 0.0);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, k), 1.0);
-        IS_APPROX_EQUAL(m.get_value(i, j, (k + 1) % 2), 1.0);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, (j + 1) % 2, k), diag2val);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, j, (k + 1) % 2), diag2val);
-        IS_APPROX_EQUAL(m.get_value(i, (j + 1) % 2, (k + 1) % 2), diag2val);
-        IS_APPROX_EQUAL(m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),
+        ASSERT_DOUBLE_EQ(m.get_value(i, j, k), 0.0);
+        ASSERT_DOUBLE_EQ(m.get_value((i + 1) % 2, j, k), 1.0);
+        ASSERT_DOUBLE_EQ(m.get_value(i, (j + 1) % 2, k), 1.0);
+        ASSERT_DOUBLE_EQ(m.get_value(i, j, (k + 1) % 2), 1.0);
+        ASSERT_DOUBLE_EQ(m.get_value((i + 1) % 2, (j + 1) % 2, k), diag2val);
+        ASSERT_DOUBLE_EQ(m.get_value((i + 1) % 2, j, (k + 1) % 2), diag2val);
+        ASSERT_DOUBLE_EQ(m.get_value(i, (j + 1) % 2, (k + 1) % 2), diag2val);
+        ASSERT_DOUBLE_EQ(m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),
                         diag3val);
       }
     }
@@ -235,9 +237,9 @@ void planes_are_correct(
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       double U = m.get_value(i, j);
-      IS_APPROX_EQUAL(U, m3d.get_value(i, j, n/2));
-      IS_APPROX_EQUAL(U, m3d.get_value(i, n/2, j));
-      IS_APPROX_EQUAL(U, m3d.get_value(n/2, i, j));
+      ASSERT_DOUBLE_EQ(U, m3d.get_value(i, j, n/2));
+      ASSERT_DOUBLE_EQ(U, m3d.get_value(i, n/2, j));
+      ASSERT_DOUBLE_EQ(U, m3d.get_value(n/2, i, j));
     }
   }
 }
@@ -251,13 +253,13 @@ void result_is_symmetric(speed_func s = default_speed_func, int n = 11) {
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-      IS_APPROX_EQUAL(m.get_value(i, j), m.get_value(i, j_));
+      ASSERT_DOUBLE_EQ(m.get_value(i, j), m.get_value(i, j_));
     }
   }
 
   for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
     for (int j = 0; j < n; ++j) {
-      IS_APPROX_EQUAL(m.get_value(i, j), m.get_value(i_, j));
+      ASSERT_DOUBLE_EQ(m.get_value(i, j), m.get_value(i_, j));
     }
   }
 }
@@ -272,7 +274,7 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
-        IS_APPROX_EQUAL(m.get_value(i, j, k), m.get_value(i, j, k_));
+        ASSERT_DOUBLE_EQ(m.get_value(i, j, k), m.get_value(i, j, k_));
       }
     }
   }
@@ -280,7 +282,7 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   for (int i = 0; i < n; ++i) {
     for (int k = 0; k < n; ++k) {
       for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-        IS_APPROX_EQUAL(m.get_value(i, j, k), m.get_value(i, j_, k));
+        ASSERT_DOUBLE_EQ(m.get_value(i, j, k), m.get_value(i, j_, k));
       }
     }
   }
@@ -288,7 +290,7 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   for (int j = 0; j < n; ++j) {
     for (int k = 0; k < n; ++k) {
       for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
-        IS_APPROX_EQUAL(m.get_value(i, j, k), m.get_value(i_, j, k));
+        ASSERT_DOUBLE_EQ(m.get_value(i, j, k), m.get_value(i_, j, k));
       }
     }
   }
@@ -326,7 +328,7 @@ void two_by_two_by_three_cells_are_correct() {
             a_ = imax == 3 ? a : jmax == 3 ? b : c;
             b_ = imax == 3 ? b : jmax == 3 ? c : a;
             c_ = imax == 3 ? c : jmax == 3 ? a : b;
-            IS_APPROX_EQUAL(m.get_value(i, j, k), m_gt.get_value(a_, b_, c_));
+            ASSERT_DOUBLE_EQ(m.get_value(i, j, k), m_gt.get_value(a_, b_, c_));
           }
         }
       }
@@ -351,7 +353,7 @@ void plane_boundaries_are_correct() {
   m.run();
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      IS_APPROX_EQUAL(m.get_value(i, j, 1), 1.0);
+      ASSERT_DOUBLE_EQ(m.get_value(i, j, 1), 1.0);
     }
   }
 }
@@ -371,7 +373,7 @@ void olims_agree(speed_func s = default_speed_func, int n = 11) {
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      IS_APPROX_EQUAL(m1.get_value(i, j), m2.get_value(i, j));
+      ASSERT_DOUBLE_EQ(m1.get_value(i, j), m2.get_value(i, j));
     }
   }
 }
@@ -392,7 +394,7 @@ void agrees_with_other_olim3d(int n = 11) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        IS_APPROX_EQUAL(m1.get_value(i, j, k), m2.get_value(i, j, k));
+        ASSERT_DOUBLE_EQ(m1.get_value(i, j, k), m2.get_value(i, j, k));
       }
     }
   }

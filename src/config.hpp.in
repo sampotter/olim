@@ -7,5 +7,5 @@
 #cmakedefine01 USE_ARMADILLO
 
 #ifdef EIKONAL_DEBUG
-#    cmakedefine PRINT_UPDATES @PRINT_UPDATES@
+#    cmakedefine01 PRINT_UPDATES
 #endif

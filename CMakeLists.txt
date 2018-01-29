@@ -146,6 +146,9 @@ if (${BUILD_PYTHON_BINDINGS})
   # recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
   # statically link the fmm target into this module.
   find_package (pybind11 REQUIRED)
+  if (NOT ${pybind11_FOUND})
+    add_subdirectory (external/pybind11)
+  endif ()
   if (${COMPILE_ALL_3D_MARCHERS})
     pybind11_add_module (eikonal MODULE
       ${GENERATED_PY_EIKONAL_CPP_PATH}

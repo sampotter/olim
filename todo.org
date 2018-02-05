@@ -35,7 +35,17 @@
       useful information about this)
     - Spectral differentiation
 *** Skipping updates
+    - [ ] Masha had an idea for how to use the Poincare index theorem
+      for doing this in 3D
+    - [ ] For F0: still need to implement "polytope check" for higher
+      dim... and correctly define the polytope using the supporting
+      hyperplane theore
+    - [ ] Need to come up with a way to do this for F1
 *** Not doing redundant updates
+    - [ ] Could just go through and do this check manually and
+      programmatically build a list of updates to do. This should be
+      easy to code and the savings would be worth it, provided that
+      everything works correctly
 *** Misc
   - [ ] get line_updates to conform with new template style
     (e.g. "degree" template parameter)

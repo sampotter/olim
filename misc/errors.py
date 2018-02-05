@@ -91,10 +91,10 @@ if __name__ == '__main__':
         with h5py.File(args.hdf5_path, 'w') as hdf5_file:
             prod = itertools.product(speedfuncs.speed_funcs(), marchers, Ms)
             for s, marcher, M in prod:
-                dataset_name = '%s/%s/ptwise%s' % (
+                dataset_name = '%s/%s/ptwise%d' % (
                     speedfuncs.get_speed_func_name(s),
                     marcher_names[marcher],
-                    str(M))
+                    M)
                 print(dataset_name)
                 f = speedfuncs.get_soln_func(s)
                 ptwise_error = get_ptwise_error(s, f, M)

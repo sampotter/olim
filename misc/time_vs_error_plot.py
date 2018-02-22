@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 
 sys.path.insert(0, '../build/Release')
@@ -23,6 +25,8 @@ from speedfuncs3d import get_speed_func_name, get_soln_func, speed_funcs
 from wx.lib.mixins.listctrl import CheckListCtrlMixin, ColumnSorterMixin, \
     ListCtrlAutoWidthMixin
 
+plotdata = dict()
+
 def get_dataset_names(f):
     mnames = list(f.keys())
     snames = list(f[mnames[0]].keys())
@@ -38,20 +42,54 @@ class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
 class LogLogPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
-        self.parent = parent
 
-        global fig, ax, canvas, legend
-        fig = mpl.figure.Figure()
-        ax = fig.add_subplot(111)
-        legend = ax.legend()
-        legend.set_visible(False)
-        canvas = mpl_backend.FigureCanvas(self, wx.ID_ANY, fig)
+        d = dict()
+        d['fig'] = mpl.figure.Figure()
+        d['ax'] = d['fig'].add_subplot(111)
+        d['ax'].set_xlabel(self._xlabel)
+        d['ax'].set_ylabel(self._ylabel)
+        d['legend'] = d['ax'].legend()
+        d['legend'].set_visible(False)
+        d['canvas'] = mpl_backend.FigureCanvas(self, wx.ID_ANY, d['fig'])
+
+        plotdata[self._plotdata_key] = d
 
         self._sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self._sizer.Add(canvas, flag=wx.EXPAND, proportion=1)
+        self._sizer.Add(d['canvas'], flag=wx.EXPAND, proportion=1)
         self.SetSizer(self._sizer)
 
-class DatasetSelectPanel(wx.Panel, ColumnSorterMixin):
+class LogLogTimeVsRmsErrorPanel(LogLogPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_time_vs_rms_error'
+        self._xlabel = 'Time'
+        self._ylabel = 'RMS Error'
+        LogLogPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogTimeVsMaxErrorPanel(LogLogPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_time_vs_max_error'
+        self._xlabel = 'Time'
+        self._ylabel = 'Max Error'
+        LogLogPanel.__init__(self, parent, *args, **kwargs)
+
+class ErrorVolPanel(wx.Panel):
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        d = dict()
+        d['fig'] = mpl.figure.Figure()
+        d['ax'] = d['fig'].add_subplot(111)
+        d['legend'] = d['ax'].legend()
+        d['legend'].set_visible(False)
+        d['canvas'] = mpl_backend.FigureCanvas(self, wx.ID_ANY, d['fig'])
+
+        plotdata['errorvol'] = d
+
+        self._sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self._sizer.Add(d['canvas'], flag=wx.EXPAND, proportion=1)
+        self.SetSizer(self._sizer)
+
+class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
@@ -91,35 +129,139 @@ class DatasetSelectPanel(wx.Panel, ColumnSorterMixin):
     
     def OnCheckItem(self, index, flag):
         dataset_name = self._dataset_names[index]
+        d = plotdata[self._plotdata_key]
+        print(self._plotdata_key)
         if not flag:
             self._plots[dataset_name].remove()
             del self._plots[dataset_name]
             if len(self._plots) == 0:
-                assert legend.get_visible()
-                legend.set_visible(False)
+                assert d['legend'].get_visible()
+                d['legend'].set_visible(False)
         else:
             t = hdf5_file[dataset_name + '/t']
             rms = hdf5_file[dataset_name + '/rms']
-            line, = ax.loglog(t, rms, 'o-', label=dataset_name)
+            line, = d['ax'].loglog(t, rms, 'o-', label=dataset_name)
             self._plots[dataset_name] = line
             if len(self._plots) == 1:
-                assert not legend.get_visible()
-                legend.set_visible(True)
-        ax.legend()
-        canvas.draw()
+                assert not d['legend'].get_visible()
+                d['legend'].set_visible(True)
+        d['ax'].legend()
+        d['canvas'].draw()
+
+class LogLogTimeVsRmsErrorControlPanel(LogLogControlPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_time_vs_rms_error'
+        LogLogControlPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogTimeVsMaxErrorControlPanel(LogLogControlPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_time_vs_max_error'
+        LogLogControlPanel.__init__(self, parent, *args, **kwargs)
+
+class ErrorVolControlPanel(wx.Panel):
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self._list = wx.ListCtrl(
+            self, -1, style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+        self._list.InsertColumn(0, 'OLIM')
+        self._list.InsertColumn(1, 'Type')
+        self._list.InsertColumn(2, 'Function')
+
+        self._dataset_names = list(get_dataset_names(hdf5_file))
+
+        for dataset_name in self._dataset_names:
+            mname, sname = dataset_name.split('/')
+            if mname == 'basic_3d':
+                olim, type_ = 'basic_3d', 'finite_diff'
+            else:
+                olim, type_ = mname.split('_')
+            index = self._list.InsertItem(sys.maxsize, olim)
+            self._list.SetItem(index, 1, type_)
+            self._list.SetItem(index, 2, sname)
+
+        self._list.SetColumnWidth(0, wx.LIST_AUTOSIZE)
+        self._list.SetColumnWidth(1, wx.LIST_AUTOSIZE)
+        self._list.SetColumnWidth(2, wx.LIST_AUTOSIZE_USEHEADER)
+
+        self._sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self._sizer.Add(self._list, flag=wx.EXPAND, proportion=1)
+        self.SetSizer(self._sizer)
+
+class DatasetSelectPanel(wx.Panel):
+    def __init__(self, parent, *args, **kwargs):
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self._panels = dict()
+        self._panels['loglog_time_vs_rms_error'] = \
+            LogLogTimeVsRmsErrorControlPanel(self)
+        self._panels['loglog_time_vs_max_error'] = \
+            LogLogTimeVsMaxErrorControlPanel(self)
+        self._panels['error_vol_control'] = ErrorVolControlPanel(self)
+
+        self._sizer = wx.BoxSizer(wx.HORIZONTAL)
+        for panel in self._panels.values():
+            panel.Hide()
+            self._sizer.Add(panel, flag=wx.EXPAND, proportion=1)
+        self.SetSizer(self._sizer)
+
+        self._panels['loglog_time_vs_rms_error'].Show()
+
+    def switch_control_panels(self, key):
+        print(key)
+        k = next((k for k in self._panels if self._panels[k].IsShown()), None)
+        if k == key:
+            return
+        self._panels[k].Hide()
+        self._panels[key].Show()
+        self.Layout()
+
+class NotebookPanel(wx.Panel):
+    def __init__(self, parent, dataset_select_panel, *args, **kwargs):
+        self._parent = parent
+        self._dataset_select_panel = dataset_select_panel
+
+        wx.Panel.__init__(self, parent, *args, **kwargs)
+
+        self._notebook = aui.AuiNotebook(self)
+        self._notebook.Bind(aui.EVT_AUINOTEBOOK_PAGE_CHANGED, self.page_changed)
+
+        self._pages_and_labels = [
+            (LogLogTimeVsRmsErrorPanel(self._notebook), 'Time vs. RMS Error'),
+            (LogLogTimeVsMaxErrorPanel(self._notebook), 'Time vs. Max Error'),
+            (ErrorVolPanel(self._notebook), "3D Error")
+        ]
+        for page, label in self._pages_and_labels:
+            self._notebook.AddPage(page, label)
+
+        self._sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self._sizer.Add(self._notebook, flag=wx.EXPAND, proportion=1)
+        self.SetSizer(self._sizer)
+
+    def page_changed(self, event):
+        keys = ['loglog_time_vs_rms_error', 'loglog_time_vs_max_error',
+                'error_vol_control']
+        old_sel = event.GetOldSelection()
+        if old_sel == -1:
+            return
+        sel = event.GetSelection()
+        self._dataset_select_panel.switch_control_panels(keys[sel])
 
 class PlotFrame(wx.Frame):
     def __init__(self, parent, id=-1, title="test",
                  pos=wx.DefaultPosition, size=(800, 600),
                  style=wx.DEFAULT_FRAME_STYLE):
         wx.Frame.__init__(self, parent, id, title, pos, size, style)
+
         self._mgr = aui.AuiManager()
         self._mgr.SetManagedWindow(self)
+
         self._panels = dict()
-        self._panels['loglog'] = LogLogPanel(self)
         self._panels['dataset_select'] = DatasetSelectPanel(self)
+        self._panels['notebook'] = NotebookPanel(
+            self, self._panels['dataset_select'])
         self._mgr.AddPane(
-            self._panels['loglog'],
+            self._panels['notebook'],
             aui.AuiPaneInfo().CenterPane())
         self._mgr.AddPane(
             self._panels['dataset_select'],
@@ -142,7 +284,11 @@ class PlotApp(wx.App):
     def OnInit(self):
         return True
         
-def rms(x): return np.sqrt(x.dot(x)/x.size)
+def rms(x):
+    y = x.flatten()
+    n = y.size
+    assert(n > 0)
+    return np.sqrt(y.dot(y)/n)
 
 def get_ns(args):
     minpow = args.minpow
@@ -155,15 +301,6 @@ def get_dataset_name(Marcher, s):
     mname = get_marcher_name(Marcher)
     sname = get_speed_func_name(s)
     return '%s/%s' % (mname.replace(' ', '_'), sname)
-
-def get_rms(Marcher, s, ns):
-    return np.array([
-        rms((get_exact_soln(get_soln_func(s), n) -
-             compute_soln(Marcher, s, n)).flatten())
-        for n in ns])
-
-def get_times(Marcher, s, ns):
-    return np.array([time_marcher(Marcher, s, n) for n in ns])
 
 INITIAL_SIZE = (1000, 800)
 
@@ -181,12 +318,30 @@ if __name__ == '__main__':
         print("%s doesn't exist... creating" % path)
         with h5py.File(path, 'w') as f:
             ns = get_ns(args)
+            print(list(ns))
+
             prod = product(marchers, speed_funcs())
             for M, s in prod:
                 name = get_dataset_name(M, s)
                 print(name)
-                f.create_dataset(name + '/rms', data=get_rms(M, s, ns))
-                f.create_dataset(name + '/t', data=get_times(M, s, ns))
+
+                print('- computing exact solutions')
+                us = [get_exact_soln(get_soln_func(s), n) for n in ns]
+                for n, u in zip(ns, us):
+                    f.create_dataset(name + '/u' + str(n), data=u)
+
+                print('- computing numerical solutions')
+                Us = [compute_soln(M, s, n) for n in ns]
+                for n, U in zip(ns, Us):
+                    f.create_dataset(name + '/U' + str(n), data=u)
+
+                print('- evaluating errors')
+                RMSs = [rms(u - U) for u, U in zip(us, Us)]
+                f.create_dataset(name + '/rms', data=RMSs)
+
+                print('- collecting CPU times')
+                Ts = [time_marcher(M, s, n) for n in ns]
+                f.create_dataset(name + '/t', data=Ts)
 
     global hdf5_file
     hdf5_file = h5py.File(path, 'r')

@@ -130,7 +130,6 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
     def OnCheckItem(self, index, flag):
         dataset_name = self._dataset_names[index]
         d = plotdata[self._plotdata_key]
-        print(self._plotdata_key)
         if not flag:
             self._plots[dataset_name].remove()
             del self._plots[dataset_name]
@@ -164,6 +163,10 @@ class ErrorVolControlPanel(wx.Panel):
 
         self._list = wx.ListCtrl(
             self, -1, style=wx.LC_REPORT | wx.SUNKEN_BORDER)
+
+        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnItemSelected,
+                  self._list)
+
         self._list.InsertColumn(0, 'OLIM')
         self._list.InsertColumn(1, 'Type')
         self._list.InsertColumn(2, 'Function')
@@ -188,6 +191,9 @@ class ErrorVolControlPanel(wx.Panel):
         self._sizer.Add(self._list, flag=wx.EXPAND, proportion=1)
         self.SetSizer(self._sizer)
 
+    def OnItemSelected(self, event):
+        print('todo')
+
 class DatasetSelectPanel(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
@@ -208,7 +214,6 @@ class DatasetSelectPanel(wx.Panel):
         self._panels['loglog_time_vs_rms_error'].Show()
 
     def switch_control_panels(self, key):
-        print(key)
         k = next((k for k in self._panels if self._panels[k].IsShown()), None)
         if k == key:
             return

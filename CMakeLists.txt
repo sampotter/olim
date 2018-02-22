@@ -6,7 +6,7 @@ include (CMakeDependentOption)
 include (GoogleTest)
 include (gtest.cmake)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c++1z")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra -std=c++1z")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG -DRELWITHDEBINFO")
@@ -145,9 +145,15 @@ if (${BUILD_PYTHON_BINDINGS})
   # We probably aren't doing this the best way---as it is, we end up
   # recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
   # statically link the fmm target into this module.
-  find_package (pybind11 REQUIRED)
+  find_package (pybind11 QUIET)
   if (NOT ${pybind11_FOUND})
-    add_subdirectory (external/pybind11)
+	message (STATUS "Couldn't find system pybind11 install")
+	if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/pybind11)
+	  message (FATAL_ERROR "Couldn't find pybind11 submodule")
+	else ()
+	  message (STATUS "Using pybind11 provided by git submodule")
+      add_subdirectory (external/pybind11)
+	endif ()
   endif ()
   if (${COMPILE_ALL_3D_MARCHERS})
     pybind11_add_module (eikonal MODULE

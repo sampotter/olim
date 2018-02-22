@@ -1,6 +1,7 @@
 #include "fmm.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "basic_marcher.hpp"
 #include "basic_marcher_3d.hpp"

@@ -3,6 +3,8 @@
 
 #include <src/config.hpp>
 
+#include <functional>
+
 #include "abstract_marcher.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"

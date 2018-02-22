@@ -1,6 +1,8 @@
 #ifndef __MARCHER_3D_HPP__
 #define __MARCHER_3D_HPP__
 
+#include <functional>
+
 #include "abstract_marcher.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"

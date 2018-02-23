@@ -22,6 +22,9 @@ def rms(x):
     assert(n > 0)
     return np.sqrt(y.dot(y)/n)
 
+def linf_error(x):
+    return np.linalg.norm(x.flatten(), np.inf)
+
 def get_ns(args):
     minpow = args.minpow
     maxpow = args.maxpow
@@ -66,6 +69,8 @@ if __name__ == '__main__':
             print('- evaluating errors')
             RMSs = [rms(u - U) for u, U in zip(us, Us)]
             f.create_dataset(name + '/rms', data=RMSs)
+            max_errors = [linf_error(u - U) for u, U in zip(us, Us)]
+            f.create_dataset(name + '/max', data=max_errors)
 
             print('- collecting CPU times')
             Ts = [time_marcher(M, s, n) for n in ns]

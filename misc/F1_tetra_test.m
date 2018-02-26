@@ -18,4 +18,8 @@ for i = 1:size(X)
     end
 end
 
+ndiv = 5;
+W = plot_winding_number(dF1, ndiv);
+fprintf('W = %g\n', W);
+
 F0_plot;

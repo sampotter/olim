@@ -64,7 +64,7 @@ if __name__ == '__main__':
             print('- computing numerical solutions')
             Us = [compute_soln(M, s, n) for n in ns]
             for n, U in zip(ns, Us):
-                f.create_dataset(name + '/U' + str(n), data=u)
+                f.create_dataset(name + '/U' + str(n), data=U)
 
             print('- evaluating errors')
             RMSs = [rms(u - U) for u, U in zip(us, Us)]

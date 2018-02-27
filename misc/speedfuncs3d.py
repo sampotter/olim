@@ -6,6 +6,7 @@ def s0(x, y, z): return 1
 s0 = np.vectorize(s0)
 f0 = r
 
+# bad
 s1 = lambda x, y, z: 1 - np.sin(r(x, y, z))
 f1 = lambda x, y, z: np.cos(r(x, y, z)) + r(x, y, z) - 1;
 
@@ -15,21 +16,25 @@ f2 = lambda x, y, z: np.power(x + y + z, 2)/(2*np.sqrt(3))
 s3 = r;
 f3 = lambda x, y, z: np.power(r(x, y, z), 2)/2
 
+# bad
 s5 = lambda x, y, z: np.power(x, 18) + np.power(y, 18) + np.power(z, 18)
 f5 = lambda x, y, z: (np.power(x, 10) + np.power(y, 10) + np.power(z, 10))/10
 
+# bad
 s6 = lambda x, y, z: 4*np.sqrt(
     np.power(-np.power(x, 2) + np.power(y, 2) + np.power(z, 2), 2)*
     (np.power(x, 2) + np.power(y, 2) + np.power(z, 2)))
 f6 = lambda x, y, z: np.power(
     np.power(x, 2) - np.power(y, 2) - np.power(z, 2), 2)
 
+# bad
 s8 = lambda x, y, z: np.power(
     1 + np.sqrt(np.power(x, 2) + np.power(y, 2) + np.power(z, 2)), -2)
 f8 = lambda x, y, z: 1 - np.divide(
     1,
     1 + np.sqrt(np.power(x, 2) + np.power(y, 2) + np.power(z, 2)))
 
+# bad
 a = 10
 s9 = lambda x, y, z: 2*a*np.sqrt(
     np.multiply(
@@ -58,6 +63,11 @@ _speed_func_names = {
 
 def get_speed_func_name(s):
     return _speed_func_names[s]
+
+_speed_funcs_by_name = {
+    _speed_func_names[k]: k for k in _speed_func_names.keys()}
+def get_speed_func_by_name(name):
+    return _speed_funcs_by_name[name]
 
 for func in _speed_funcs + _soln_funcs:
     func.dim = 3

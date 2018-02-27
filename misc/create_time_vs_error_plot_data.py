@@ -14,7 +14,8 @@ import os.path
 from common3d import compute_soln, get_exact_soln, get_marcher_name, marchers, \
     time_marcher
 from itertools import product
-from speedfuncs3d import get_speed_func_name, get_soln_func, speed_funcs
+from speedfuncs3d import get_speed_func_name, get_speed_func_by_name, \
+    get_soln_func, speed_funcs
 
 def rms(x):
     y = x.flatten()
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--maxpow', type=int, default=7)
     parser.add_argument('--step', type=int, default=2)
     parser.add_argument('--hdf5_path', type=str, default='time_vs_error.hdf5')
+    parser.add_argument('--speed_funcs', type=str)
     args = parser.parse_args()
 
     path = args.hdf5_path
@@ -51,7 +53,14 @@ if __name__ == '__main__':
         ns = get_ns(args)
         print(list(ns))
 
-        prod = product(marchers, speed_funcs())
+        if args.speed_funcs is not None:
+            speed_funcs_ = [
+                get_speed_func_by_name(name) for name in
+                args.speed_funcs.split(',')]
+        else:
+            speed_funcs_ = speed_funcs()
+
+        prod = product(marchers, speed_funcs_)
         for M, s in prod:
             name = get_dataset_name(M, s)
             print(name)

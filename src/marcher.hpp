@@ -37,14 +37,7 @@ protected:
   Node & operator()(int i, int j);
   Node const & operator()(int i, int j) const;
   void pre_stage(int i, int j);
-#if TRIAL_NODE_OPTIMIZATION
-  void post_stage(int i, int j);
-#endif // TRIAL_NODE_OPTIMIZATION
-#if TRIAL_NODE_OPTIMIZATION
-  void update(int i, int j, int src, bool is_trial);
-#else
   void update(int i, int j);
-#endif // TRIAL_NODE_OPTIMIZATION
   bool in_bounds(int i, int j) const;
   double speed(int i, int j);
   bool is_valid(int i, int j) const;
@@ -52,9 +45,6 @@ protected:
   
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, double & T) = 0;
-#if TRIAL_NODE_OPTIMIZATION
-  virtual void update_impl(int i, int j, int src, double & T) = 0;
-#endif // TRIAL_NODE_OPTIMIZATION
 
 private:
   void init();

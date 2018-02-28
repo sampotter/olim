@@ -28,17 +28,9 @@ void neumann_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
   for (int k = 0; k < 4; ++k) {
     a = i + __di(k), b = j + __dj(k);
     if (this->in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
-#if TRIAL_NODE_OPTIMIZATION
-      this->update(a, b, (k + 2) % 4, this->operator()(a, b).is_trial());
-#else
       this->update(a, b);
-#endif // TRIAL_NODE_OPTIMIZATION
     }
   }
-
-#if TRIAL_NODE_OPTIMIZATION
-  for (int k = 0; k < 4; ++k) this->post_stage(i + __di(k), j + __dj(k));
-#endif // TRIAL_NODE_OPTIMIZATION
 }
 
 template <class Node>

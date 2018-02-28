@@ -164,6 +164,9 @@ void olim3d<
   tetra_updates, groups>::update_impl(int i, int j, int k, double & T)
 {
   using std::min;
+#if PRINT_UPDATES
+  printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
   abstract_node * nb[26];
   memset(nb, 0x0, 26*sizeof(abstract_node *));
@@ -270,6 +273,10 @@ void olim3d<
       TETRA(5, 1, 6, 101, 011, 111);
     }
   }
+
+#if PRINT_UPDATES
+  printf("olim3d::update_impl: T <- %g\n", T);
+#endif
 }
 
 #undef LINE

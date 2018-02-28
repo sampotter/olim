@@ -141,18 +141,19 @@ class ErrorVolPanel(wx.SplitterWindow):
         index = event.GetInt()
         d = plotdata['errorvol']
         d['slice_plane'] = self._axis_names[index]
-        d['ax'].imshow(d['data'][[
+        d['im'].set_data(d['data'][[
             np.index_exp[:, :, d['slice']['xy']],
             np.index_exp[d['slice']['yz'], :, :],
             np.index_exp[:, d['slice']['xz'], :]
         ][index]])
         d['canvas'].draw()
+        self._slice_slider.SetValue(d['slice'][d['slice_plane']])
 
     def HandleSliderEvent(self, event):
         index = event.GetInt()
         d = plotdata['errorvol']
         d['slice'][d['slice_plane']] = index
-        d['ax'].imshow(d['data'][[
+        d['im'].set_data(d['data'][[
             np.index_exp[:, :, index],
             np.index_exp[index, :, :],
             np.index_exp[:, index, :]
@@ -186,11 +187,12 @@ class ErrorVolPanel(wx.SplitterWindow):
         d['slice']['yz'] = int(n/2)
         d['slice']['xz'] = int(n/2)
 
-        d['ax'].imshow(d['data'][:, :, d['slice'][d['slice_plane']]])
+        d['im'].set_data(d['data'][:, :, d['slice'][d['slice_plane']]])
 
         vmin = d['data'].min()
         vmax = d['data'].max()
         d['colorbar'].set_clim(vmin, vmax)
+        d['colorbar'].draw_all()
 
         d['canvas'].draw()
 
@@ -318,7 +320,6 @@ class ErrorVolControlPanel(wx.Panel):
         d['sizes'] = sizes
 
         n = sizes[int(len(sizes)/2)] # middle element... why not
-        print(dsetname + '/u%d' % n)
         u = np.array(hdf5_file[dsetname + '/u%d' % n])
         U = np.array(hdf5_file[dsetname + '/U%d' % n])
         d['data'] = u - U
@@ -331,7 +332,7 @@ class ErrorVolControlPanel(wx.Panel):
         d['slice']['yz'] = int(n/2)
         d['slice']['xz'] = int(n/2)
 
-        d['ax'].imshow(d['data'][:, :, d['slice']['xy']])
+        d['im'] = d['ax'].imshow(d['data'][:, :, d['slice']['xy']])
 
         vmin = d['data'].min()
         vmax = d['data'].max()
@@ -446,12 +447,12 @@ INITIAL_SIZE = (1000, 800)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--hdf5_path', type=str)
+    parser.add_argument('path', type=str)
     args = parser.parse_args()
 
     global hdf5_file
-    if args.hdf5_path is not None:
-        hdf5_file = h5py.File(args.hdf5_path, 'r')
+    if args.path is not None:
+        hdf5_file = h5py.File(args.path, 'r')
     else:
         hdf5_file = None
 

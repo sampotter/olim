@@ -89,6 +89,15 @@ struct groups_t {
   static constexpr bool group_V = V;
   static constexpr bool group_VI_a = VI_a;
   static constexpr bool group_VI_b = VI_b;
+
+  // TODO: a more precise way (and more complicated...) way to do this
+  // would be to chop the neighbors into [0, 6), [6, 18), and [18, 26)
+  // and then return a bool for which are used. Computing these bools
+  // isn't complicated, but actually using them to structure the
+  // marcher's memory usage is.
+  static constexpr int nneib =
+    group_V || group_VI_a || group_VI_b ? 26 :
+    group_I || group_II || group_III || group_IV_b ? 18 : 6;
 };
 
 using olim6_groups = groups_t<0, 0, 0, 1, 0, 0, 0, 0>;

@@ -10,6 +10,7 @@
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
+#include <type_traits>
 
 #include "common.defs.hpp"
 #include "common.macros.hpp"
@@ -46,20 +47,33 @@ double update_rules::tetra_updates<derived>::tetra(
   double s_hat = s;
   double s_[3] = {s0, s1, s2};
   double p[3][3];
+
   memcpy((void *) p[0], (void *) p0, 3*sizeof(double));
   memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
   memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
+
   using cost_func_t = typename derived::cost_func;
+
   cost_func_t func {h, static_cast<derived const *>(this)->theta()};
   func.set_args(u, s_hat, s_, p);
-  double lambda[2], F0;
+
+  double lambda[2], value;
   bool error;
   numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
   sqp(func, lambda, &error);
   assert(!error);
-  func.set_lambda(lambda); // TODO: maybe unnecessary
-  func.eval(F0);
-  return F0;
+
+  if (std::is_same<derived, mp0_tetra_updates>::value) {
+    F1<3, 2> eval_func {h, static_cast<derived const *>(this)->theta()};
+    eval_func.set_args(u, s_hat, s_, p);
+    eval_func.set_lambda(lambda);
+    eval_func.eval(value);
+  } else {
+    func.set_lambda(lambda); // TODO: maybe unnecessary
+    func.eval(value);
+  }
+
+  return value;
 }
 
 #endif // __UPDATE_RULES_TETRA_UPDATES_IMPL_HPP__

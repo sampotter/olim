@@ -62,6 +62,7 @@ marcher_template = Template('''
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
+    .def("step", &${cpp_class_name}::step)
     .def(
       "addBoundaryNode",
       py::overload_cast<int, int, double>(
@@ -137,6 +138,7 @@ marcher3d_template = Template('''
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
+    .def("step", &${cpp_class_name}::step)
     .def(
       "addBoundaryNode",
       py::overload_cast<int, int, int, double>(

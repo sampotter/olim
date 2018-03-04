@@ -64,7 +64,7 @@ update_rules::mp0_tri_updates::tri(
       min(F0_line__(0), F0_line__(1)) : u0 + lam*du + h*s__(lam)*l__(lam);
   }
 #if PRINT_UPDATES
-  printf("tri<0, %d, %d>::update_impl(u0 = %g, u1 = %g, "
+  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, T);
 #endif
@@ -121,7 +121,7 @@ update_rules::rhr_tri_updates::tri(
       min(F0_line__(0), F0_line__(1)) : u0 + lam*du + sh*l__(lam);
   }
 #if PRINT_UPDATES
-  printf("tri<0, %d, %d>::update_impl(u0 = %g, u1 = %g, "
+  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, T);
 #endif
   return T;
@@ -190,6 +190,11 @@ update_rules::mp1_tri_updates::tri(
     lam[0] = lam[1];
     F1[0] = F1[1];
   } while (!conv);
+#if PRINT_UPDATES
+  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
+         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
+         p0, p1, u0, u1, s, s0, s1, h, F1[1]);
+#endif
   return F1[1];
 }
 

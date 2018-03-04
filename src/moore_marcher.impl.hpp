@@ -12,6 +12,9 @@ template <class Node>
 void moore_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
   int i = static_cast<Node *>(n)->get_i();
   int j = static_cast<Node *>(n)->get_j();
+#if PRINT_UPDATES
+  printf("moore_marcher::stage_neighbors_impl(i = %d, j = %d)\n", i, j);
+#endif
 
   // TODO: see comment in neumann_marcher::stage_neighbors_impl
 

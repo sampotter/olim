@@ -143,6 +143,9 @@ void olim3d<
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
+#if PRINT_UPDATES
+  printf("olim3d::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
   for (int l = 0; l < groups::nneib; ++l) {
     this->stage(i + __di(l), j + __dj(l), k + __dk(l));

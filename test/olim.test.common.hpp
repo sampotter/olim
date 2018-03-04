@@ -223,6 +223,10 @@ void planes_are_correct(
 {
   assert(n % 2 == 1);
 
+  assert(n >= 5); // There are speed functions which break with n =
+                  // 3... TODO: why? does this have to do with how big
+                  // h is? Is some kind of CFL condition violated?
+
   double h = 2.0/(n - 1);
   
   olim m {n, n, h, s, 1, 1};
@@ -246,8 +250,8 @@ void planes_are_correct(
 
 template <class olim>
 void result_is_symmetric(speed_func s = default_speed_func, int n = 11) {
-  double x0 = (n - 1)/2.0;
-  olim m {n, n, 1.0, s, x0, x0};
+  double h = 2.0/(n - 1);
+  olim m {n, n, h, s, 1, 1};
   m.add_boundary_node(n/2, n/2);
   m.run();
 
@@ -266,8 +270,8 @@ void result_is_symmetric(speed_func s = default_speed_func, int n = 11) {
 
 template <class olim3d>
 void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
-  double x0 = (n - 1)/2.0;
-  olim3d m {n, n, n, 1.0, s, x0, x0, x0};
+  double h = 2.0/(n - 1);
+  olim3d m {n, n, n, h, s, 1, 1, 1};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 

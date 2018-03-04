@@ -12,6 +12,8 @@ struct abstract_node {
   inline void set_value(double value) { _value = value; }
   inline int get_heap_pos() const { return _heap_pos; }
   inline void set_heap_pos(int pos) { _heap_pos = pos; }
+  inline state get_state() const { return _state; }
+  inline void set_state(state s) { _state = s; }
   inline bool is_valid() const { return _state == state::valid; }
   inline bool is_trial() const { return _state == state::trial; }
   inline bool is_far() const { return _state == state::far; }

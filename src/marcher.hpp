@@ -33,9 +33,10 @@ struct marcher: public abstract_marcher {
   int get_width() const { return _width; }
   void * get_s_cache_data() { return (void *) _s_cache; }
 
-protected:
   Node & operator()(int i, int j);
   Node const & operator()(int i, int j) const;
+
+protected:
   void pre_stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;

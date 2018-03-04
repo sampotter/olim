@@ -34,9 +34,10 @@ struct marcher_3d: public abstract_marcher {
   int get_depth() const { return _depth; }
   void * get_s_cache_data() { return (void *) _s_cache; }
 
-protected:
   Node & operator()(int i, int j, int k);
   Node const & operator()(int i, int j, int k) const;
+
+protected:
   void update(int i, int j, int k);
   void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;

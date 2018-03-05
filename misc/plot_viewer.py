@@ -71,6 +71,27 @@ class LogLogTimeVsMaxErrorPanel(LogLogPanel):
         self._ylabel = 'Max Error'
         LogLogPanel.__init__(self, parent, *args, **kwargs)
 
+class LogLogSizeVsRmsErrorPanel(LogLogPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_rms_error'
+        self._xlabel = 'Problem Size (n)'
+        self._ylabel = 'RMS Error'
+        LogLogPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogSizeVsMaxErrorPanel(LogLogPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_max_error'
+        self._xlabel = 'Problem Size (n)'
+        self._ylabel = 'Max Error'
+        LogLogPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogSizeVsTimePanel(LogLogPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_time'
+        self._xlabel = 'Problem Size (n)'
+        self._ylabel = 'Time'
+        LogLogPanel.__init__(self, parent, *args, **kwargs)
+
 class ErrorVolPanel(wx.SplitterWindow):
     def __init__(self, parent, *args, **kwargs):
         wx.SplitterWindow.__init__(
@@ -248,9 +269,9 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
                     assert d['legend'].get_visible()
                     d['legend'].set_visible(False)
             else:
-                t = hdf5_file[dsetname + '/t']
-                rms = hdf5_file[dsetname + '/' + self._dataset_path_final]
-                line, = d['ax'].loglog(t, rms, 'o-', label=dsetname)
+                X = hdf5_file[dsetname + '/' + self._x_axis_key]
+                Y = hdf5_file[dsetname + '/' + self._y_axis_key]
+                line, = d['ax'].loglog(X, Y, 'o-', label=dsetname)
                 self._plots[dsetname] = line
                 if len(self._plots) == 1:
                     assert not d['legend'].get_visible()
@@ -261,13 +282,36 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
 class LogLogTimeVsRmsErrorControlPanel(LogLogControlPanel):
     def __init__(self, parent, *args, **kwargs):
         self._plotdata_key = 'loglog_time_vs_rms_error'
-        self._dataset_path_final = 'rms'
+        self._x_axis_key = 't'
+        self._y_axis_key = 'rms'
         LogLogControlPanel.__init__(self, parent, *args, **kwargs)
 
 class LogLogTimeVsMaxErrorControlPanel(LogLogControlPanel):
     def __init__(self, parent, *args, **kwargs):
         self._plotdata_key = 'loglog_time_vs_max_error'
-        self._dataset_path_final = 'max'
+        self._x_axis_key = 't'
+        self._y_axis_key = 'max'
+        LogLogControlPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogSizeVsRmsErrorControlPanel(LogLogControlPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_rms_error'
+        self._x_axis_key = 'n'
+        self._y_axis_key = 'rms'
+        LogLogControlPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogSizeVsMaxErrorControlPanel(LogLogControlPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_max_error'
+        self._x_axis_key = 'n'
+        self._y_axis_key = 'max'
+        LogLogControlPanel.__init__(self, parent, *args, **kwargs)
+
+class LogLogSizeVsTimeControlPanel(LogLogControlPanel):
+    def __init__(self, parent, *args, **kwargs):
+        self._plotdata_key = 'loglog_size_vs_time'
+        self._x_axis_key = 'n'
+        self._y_axis_key = 't'
         LogLogControlPanel.__init__(self, parent, *args, **kwargs)
 
 class ErrorVolControlPanel(wx.Panel):
@@ -347,10 +391,11 @@ class DatasetSelectPanel(wx.Panel):
         wx.Panel.__init__(self, parent, *args, **kwargs)
 
         self._panels = dict()
-        self._panels['loglog_time_vs_rms_error'] = \
-            LogLogTimeVsRmsErrorControlPanel(self)
-        self._panels['loglog_time_vs_max_error'] = \
-            LogLogTimeVsMaxErrorControlPanel(self)
+        self._panels['loglog_time_vs_rms_error'] = LogLogTimeVsRmsErrorControlPanel(self)
+        self._panels['loglog_time_vs_max_error'] = LogLogTimeVsMaxErrorControlPanel(self)
+        self._panels['loglog_size_vs_rms_error'] = LogLogSizeVsRmsErrorControlPanel(self)
+        self._panels['loglog_size_vs_max_error'] = LogLogSizeVsMaxErrorControlPanel(self)
+        self._panels['loglog_size_vs_time'] = LogLogSizeVsTimeControlPanel(self)
         self._panels['error_vol_control'] = ErrorVolControlPanel(self)
 
         self._sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -388,6 +433,9 @@ class NotebookPanel(wx.Panel):
         self._pages_and_labels = [
             (LogLogTimeVsRmsErrorPanel(self._notebook), 'Time vs. RMS Error'),
             (LogLogTimeVsMaxErrorPanel(self._notebook), 'Time vs. Max Error'),
+            (LogLogSizeVsRmsErrorPanel(self._notebook), 'Size vs. RMS Error'),
+            (LogLogSizeVsMaxErrorPanel(self._notebook), 'Size vs. Max Error'),
+            (LogLogSizeVsTimePanel(self._notebook), 'Size vs. Time'),
             (error_vol_panel, "3D Error")
         ]
         for page, label in self._pages_and_labels:
@@ -399,7 +447,8 @@ class NotebookPanel(wx.Panel):
 
     def page_changed(self, event):
         keys = ['loglog_time_vs_rms_error', 'loglog_time_vs_max_error',
-                'error_vol_control']
+                'loglog_size_vs_rms_error', 'loglog_size_vs_max_error',
+                'loglog_size_vs_time', 'error_vol_control']
         old_sel = event.GetOldSelection()
         if old_sel == -1:
             return

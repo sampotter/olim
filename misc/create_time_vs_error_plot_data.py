@@ -54,6 +54,7 @@ def parse_args():
 def create_datasets(f, M_by_s, ns):
     for Marcher, s in M_by_s:
         name = get_dataset_name(Marcher, s)
+        f.create_dataset(name + '/n', (len(ns),), dtype=np.int)
         for n in ns:
             shape = (n, n, n)
             f.create_dataset(name + '/u' + str(n), shape, dtype=np.float)
@@ -62,9 +63,11 @@ def create_datasets(f, M_by_s, ns):
         f.create_dataset(name + '/max', (len(ns),), dtype=np.float)
         f.create_dataset(name + '/t', (len(ns),), dtype=np.float)
 
-def collect_results(Marcher, s, ns):
+def populate_datasets(Marcher, s, ns):
     name = get_dataset_name(Marcher, s)
     print(name)
+
+    f[name + '/n'][:] = ns
 
     print('- computing exact solutions')
     us = [get_exact_soln(get_soln_func(s), n) for n in ns]
@@ -106,4 +109,4 @@ if __name__ == '__main__':
         for i, (Marcher, s) in enumerate(product(marchers, speed_funcs_)):
             if i % size != rank:
                 continue
-            collect_results(Marcher, s, ns)
+            populate_datasets(Marcher, s, ns)

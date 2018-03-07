@@ -14,6 +14,9 @@ f2 = lambda x, y: np.power(x + y, 2)/(2*np.sqrt(2))
 s3 = r;
 f3 = lambda x, y: (np.power(x, 2) + np.power(y, 2))/2
 
+s4 = lambda x, y: np.sqrt(49*x**2 + 30*np.sqrt(3)*x*y + 19*y**2)/4
+f4 = lambda x, y: (13*x**2 + 6*np.sqrt(3)*x*y + 7*y**2)/16
+
 s5 = lambda x, y: np.sqrt(np.power(x, 18) + np.power(y, 18))
 f5 = lambda x, y: (np.power(x, 10) + np.power(y, 10))/10
 
@@ -34,9 +37,9 @@ f9 = lambda x, y: 1 - np.divide(1, np.exp(a*(np.power(x, 2) + np.power(y, 2))))
 
 # TODO: star_s
 
-_speed_funcs = [s0, s1, s2, s3, s5, s6, s8, s9]
+_speed_funcs = [s0, s1, s2, s3, s4, s5, s6, s8, s9]
 
-_soln_funcs = [f0, f1, f2, f3, f5, f6, f8, f9]
+_soln_funcs = [f0, f1, f2, f3, f4, f5, f6, f8, f9]
 
 for func in _speed_funcs + _soln_funcs:
     func.dim = 2
@@ -49,6 +52,7 @@ _speed_func_names = {
     s1: 's1',
     s2: 's2',
     s3: 's3',
+    s4: 's4',
     s5: 's5',
     s6: 's6',
     s8: 's8',

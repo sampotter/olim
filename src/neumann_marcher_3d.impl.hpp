@@ -23,7 +23,6 @@ void neumann_marcher_3d<Node>::stage_neighbors_impl(abstract_node * n) {
   int i = static_cast<Node *>(n)->get_i();
   int j = static_cast<Node *>(n)->get_j();
   int k = static_cast<Node *>(n)->get_k();
-
 #if PRINT_UPDATES
   printf("neumann_marcher_3d::stage_neighbors_impl(i = %d, j = %d, k = %d)\n",
          i, j, k);

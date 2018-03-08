@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 
 sys.path.insert(0, '../build/Release')
@@ -50,7 +52,7 @@ marcher_names = {
     eik.Olim8Rect: "olim8rhr"
 }
 
-def get_ptwise_error(s, f, M):
+def get_ptwise_error(marcher, s, f, M):
     u = get_exact_soln(f, M)
     U = compute_soln(marcher, s, M)
     return u - U
@@ -64,9 +66,9 @@ def compute_errors(s, f, Ms):
         E[marcher][i] = e
         print("%s (M = %d, e = %g)" % (marcher_names[marcher], M, e))
 
-    ptwise_errors = {marcher: get_ptwise_error(s, f, M) for marcher in marchers}
+    ptwise_errors = {m: get_ptwise_error(m, s, f, M) for m in marchers}
 
-    return E, ptwise_error
+    return E, ptwise_errors
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

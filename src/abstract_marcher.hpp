@@ -6,6 +6,7 @@
 
 struct abstract_marcher {
   void run();
+  void step();
   virtual ~abstract_marcher() {}
 protected:
   abstract_marcher(size_t initial_heap_size = 256ul);

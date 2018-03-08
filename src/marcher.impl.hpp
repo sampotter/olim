@@ -164,36 +164,16 @@ Node const & marcher<Node>::operator()(int i, int j) const {
 template <class Node>
 void marcher<Node>::pre_stage(int i, int j) {
   if (in_bounds(i, j) && operator()(i, j).is_far()) {
-#if !TRIAL_NODE_OPTIMIZATION
     operator()(i, j).set_trial();
-#endif // TRIAL_NODE_OPTIMIZATION
     insert_into_heap(&operator()(i, j));
   }
 }
 
-#if TRIAL_NODE_OPTIMIZATION
 template <class Node>
-void marcher<Node>::post_stage(int i, int j) {
-  if (in_bounds(i, j) && operator()(i, j).is_far()) {
-    operator()(i, j).set_trial();
-  }
-}
-#endif // TRIAL_NODE_OPTIMIZATION
-
-template <class Node>
-#if TRIAL_NODE_OPTIMIZATION
-void marcher<Node>::update(int i, int j, int src, bool is_trial) {
-#else
 void marcher<Node>::update(int i, int j) {
-#endif // TRIAL_NODE_OPTIMIZATION
   assert(in_bounds(i, j));
   double T = INF(double);
-#if TRIAL_NODE_OPTIMIZATION
-  if (is_trial) {
-    update_impl(i, j, src, T);
-  } else
-#endif // TRIAL_NODE_OPTIMIZATION
-    update_impl(i, j, T);
+  update_impl(i, j, T);
   auto n = &operator()(i, j);
   if (T <= n->get_value()) {
     n->set_value(T);

@@ -15,8 +15,6 @@ set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
-option (TRIAL_NODE_OPTIMIZATION
-  "Use the 'far node optimization' during updates." ON)
 option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
 
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
@@ -114,6 +112,9 @@ if (${BUILD_PYTHON_BINDINGS})
 	COMMAND ${CMAKE_COMMAND} -E copy
 	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
       ${GENERATE_PY_EIKONAL_CPP_SCRIPT}
+    COMMAND ${CMAKE_COMMAND} -E copy
+      ${CMAKE_CURRENT_SOURCE_DIR}/py_eikonal.extra_defs.cpp
+      py_eikonal.extra_defs.cpp
 	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
 	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${FMM_SRC_FILES})
 

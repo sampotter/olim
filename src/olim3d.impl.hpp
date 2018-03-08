@@ -121,7 +121,7 @@ void olim3d<
    * based on which groups are being used
    */
   int a, b, c;
-  for (int l = 0; l < 26; ++l) {
+  for (int l = 0; l < groups::nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && this->is_valid(a, b, c)) {
       nb[l] = &this->operator()(a, b, c);
@@ -143,13 +143,16 @@ void olim3d<
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
+#if PRINT_UPDATES
+  printf("olim3d::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
-  for (int l = 0; l < 26; ++l) {
+  for (int l = 0; l < groups::nneib; ++l) {
     this->stage(i + __di(l), j + __dj(l), k + __dk(l));
   }
 
   int a, b, c;
-  for (int l = 0; l < 26; ++l) {
+  for (int l = 0; l < groups::nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
       this->update(a, b, c);
@@ -164,13 +167,16 @@ void olim3d<
   tetra_updates, groups>::update_impl(int i, int j, int k, double & T)
 {
   using std::min;
+#if PRINT_UPDATES
+  printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
 
-  abstract_node * nb[26];
-  memset(nb, 0x0, 26*sizeof(abstract_node *));
+  abstract_node * nb[groups::nneib];
+  memset(nb, 0x0, groups::nneib*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k), s_[26];
-  for (int l = 0; l < 26; ++l) {
+  double h = this->get_h(), s = this->speed(i, j, k), s_[groups::nneib];
+  for (int l = 0; l < groups::nneib; ++l) {
     if (nb[l]) {
       s_[l] = this->speed(i + __di(l), j + __dj(l), k + __dk(l));
     }
@@ -270,6 +276,10 @@ void olim3d<
       TETRA(5, 1, 6, 101, 011, 111);
     }
   }
+
+#if PRINT_UPDATES
+  printf("olim3d::update_impl: T <- %g\n", T);
+#endif
 }
 
 #undef LINE

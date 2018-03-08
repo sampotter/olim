@@ -14,9 +14,8 @@ TEST (olim26_mp0, octants_are_correct) {
 }
 
 TEST (olim26_mp0, planes_are_correct) {
-  for (int i = 0; i < 2; ++i) {
-    planes_are_correct<olim_t, olim3d_t>(speed_funcs[i], speed_funcs_3d[i]);
-  }
+  planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1], 9);
 }
 
 TEST (olim26_mp0, result_is_symmetric) {

@@ -13,10 +13,25 @@ void abstract_marcher::run() {
 #endif // PRINT_UPDATES
   abstract_node * n {nullptr};
   while (!_heap.empty()) {
+#if PRINT_UPDATES
+    // This is "fake", but still useful for debugging
+    // purposes---nominally, calling 'run' is just calling 'step'
+    // repeatedly until the solution is fully computed
+    puts("abstract_marcher::step()");
+#endif
     n = get_next_node();
     n->set_valid();
     stage_neighbors(n);
   }
+}
+
+void abstract_marcher::step() {
+#if PRINT_UPDATES
+  puts("abstract_marcher::step()");
+#endif
+  auto * n = get_next_node();
+  n->set_valid();
+  stage_neighbors(n);
 }
 
 abstract_marcher::abstract_marcher(size_t initial_heap_size):

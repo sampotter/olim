@@ -62,6 +62,11 @@ marcher_template = Template('''
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
+    .def("step", &${cpp_class_name}::step)
+    .def("__getitem__", [] (${cpp_class_name} const & m,
+                            std::tuple<int, int> index) {
+        return m(std::get<0>(index), std::get<1>(index));
+    })
     .def(
       "addBoundaryNode",
       py::overload_cast<int, int, double>(
@@ -86,7 +91,7 @@ marchers3d = {
 
 # TODO: see comment above for `marcher_template' variable.
 marcher3d_template = Template('''
-  py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
+py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
     .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
         auto const format =
           py::format_descriptor<${cpp_class_name}::float_type>::format();
@@ -137,6 +142,11 @@ marcher3d_template = Template('''
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
+    .def("step", &${cpp_class_name}::step)
+    .def("__getitem__", [] (${cpp_class_name} const & m,
+                            std::tuple<int, int, int> index) {
+        return m(std::get<0>(index), std::get<1>(index), std::get<2>(index));
+    })
     .def(
       "addBoundaryNode",
       py::overload_cast<int, int, int, double>(
@@ -148,7 +158,7 @@ marcher3d_template = Template('''
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a);
 ''')
 
-def build_src_txt(compile_all_olim3d):
+def build_src_txt(args):
     src_txt = '''
 #include <limits>
 
@@ -162,7 +172,7 @@ def build_src_txt(compile_all_olim3d):
 #include <olim.hpp>
 #include <olim3d.hpp>
 '''
-    if compile_all_olim3d:
+    if args.all_olim3d:
         src_txt += '#include "py.olim3d.hpp"\n'
     src_txt += '''
 namespace py = pybind11;
@@ -174,26 +184,29 @@ using speed_function_3d = std::function<double(double, double, double)>;
 PYBIND11_MODULE(eikonal, m) {
   m.doc() = "Testing testing";
 '''
+
     for k in sorted(marchers.keys()):
         v = marchers[k]
         src_txt += marcher_template.substitute(
             cpp_class_name=k, py_class_name=v)
+
     for k in sorted(marchers3d.keys()):
         v = marchers3d[k]
         src_txt += marcher3d_template.substitute(
             cpp_class_name=k, py_class_name=v)
-    if compile_all_olim3d:
+
+    if args.all_olim3d:
         src_txt += '''  m.def("olim3d", &olim3d_group_spec, "TODO", "s_cache"_a, "h"_a, "marcher"_a, 
-    "cost_func"_a, "bd_points"_a);
-}'''
-    else:
-        src_txt += '''
-}'''
-    return src_txt
+    "cost_func"_a, "bd_points"_a);'''
+
+    with open('py_eikonal.extra_defs.cpp') as f:
+        src_txt += f.read()
+
+    return src_txt + '}'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--all_olim3d', action='store_true')
     args = parser.parse_args()
-    src_txt = build_src_txt(args.all_olim3d)
+    src_txt = build_src_txt(args)
     print(src_txt.strip())

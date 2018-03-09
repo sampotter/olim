@@ -404,4 +404,93 @@ void agrees_with_other_olim3d(int n = 11) {
   }
 }
 
+template <class olim, class olim3d>
+void planes_are_correct_nonsymmetric(
+  double (* s3d)(double, double, double),
+  double (* fxy)(double, double),
+  double (* fyz)(double, double),
+  double (* fxz)(double, double),
+  int n = 11)
+{
+  double h = 2.0/(n - 1);
+  int i0 = n/2;
+
+  olim3d m3d {n, n, n, h, s3d, 1, 1, 1};
+  m3d.add_boundary_node(i0, i0, i0);
+  m3d.run();
+
+  for (int i = 0; i < n; ++i) {
+    double y = i*h - 1;
+    for (int j = 0; j < n; ++j) {
+      double x = j*h - 1;
+      double u = fxy(x, y);
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, j, 0), u);
+    }
+  }
+
+  for (int i = 0; i < n; ++i) {
+    double y = i*h - 1;
+    for (int k = 0; k < n; ++k) {
+      double z = k*h - 1;
+      double u = fyz(y, z);
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, 0, k), u);
+    }
+  }
+
+  for (int j = 0; j < n; ++j) {
+    double x = j*h - 1;
+    for (int k = 0; k < n; ++k) {
+      double z = k*h - 1;
+      double u = fxz(x, z);
+      ASSERT_DOUBLE_EQ(m3d.get_value(0, j, k), u);
+    }
+  }
+}
+
+template <class olim, class olim3d>
+void planes_agree_nonsymmetric(
+  double (* s3d)(double, double, double),
+  double (* sxy)(double, double),
+  double (* syz)(double, double),
+  double (* sxz)(double, double),
+  int n = 11)
+{
+  double h = 2.0/(n - 1);
+  int i0 = n/2;
+
+  olim3d m3d {n, n, n, h, s3d, 1, 1, 1};
+  m3d.add_boundary_node(i0, i0, i0);
+  m3d.run();
+
+  olim mxy {n, n, h, sxy, 1, 1};
+  mxy.add_boundary_node(i0, i0);
+  mxy.run();
+
+  olim myz {n, n, h, syz, 1, 1};
+  myz.add_boundary_node(i0, i0);
+  myz.run();
+
+  olim mxz {n, n, h, sxz, 1, 1};
+  mxz.add_boundary_node(i0, i0);
+  mxz.run();
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, j, 0), mxy.get_value(i, j));
+    }
+  }
+
+  for (int i = 0; i < n; ++i) {
+    for (int k = 0; k < n; ++k) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, 0, k), myz.get_value(i, k));
+    }
+  }
+
+  for (int j = 0; j < n; ++j) {
+    for (int k = 0; k < n; ++k) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(0, j, k), mxz.get_value(j, k));
+    }
+  }
+}
+
 #endif // __OLIM_TEST_COMMON_HPP__

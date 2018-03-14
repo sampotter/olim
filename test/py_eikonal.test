@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import sys
+sys.path.insert(0, '@CMAKE_CURRENT_SOURCE_DIR@/misc')
+
+import eikonal as eik
+import numpy as np
+import speedfuncs3d as sf3d
+import unittest
+
+from itertools import product as prod
+
+class TestPybind11Wrapper(unittest.TestCase):
+    def test_3d_speed_func_orientation(self):
+        h = 1
+        diam = 2
+        ni, nj, nk = (2, 3, 4)
+        nx, ny, nz = (nj, ni, nk)
+        ix, ij, iz = (1, 0, 2)
+        xdiam, ydiam, zdiam = ((nx - 1)/diam, (ny - 1)/diam, (nz - 1)/diam)
+        lx = np.linspace(-xdiam, xdiam, nx)
+        ly = np.linspace(-ydiam, ydiam, ny)
+        lz = np.linspace(-zdiam, zdiam, nz)
+        x, y, z = np.meshgrid(lx, ly, lz)
+        S = sf3d.s4(x, y, z)
+        m = eik.Olim6Rect(S, h)
+        for i, j, k in prod(range(ni), range(nj), range(nk)):
+            self.assertEqual(m.speed(i, j, k), S[i, j, k])
+
+if __name__ == '__main__':
+    unittest.main()
+
+# Local Variables:
+# mode: python
+# End:

@@ -72,7 +72,7 @@ double f3(double x, double y) {
 }
 
 double s4(double x, double y, double z) {
-  return sqrt(10*x*x + 37*y*y + 54*y*z + 37*z*z + 6*sqrt2*x*(z - y))/16;
+  return sqrt(10*x*x + 37*y*y + 54*y*z + 37*z*z + 6*sqrt2*x*(z - y))/4;
 }
 
 double f4(double x, double y, double z) {

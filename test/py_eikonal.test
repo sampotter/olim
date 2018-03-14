@@ -11,7 +11,22 @@ import unittest
 from itertools import product as prod
 
 class TestPybind11Wrapper(unittest.TestCase):
-    def test_3d_speed_func_orientation(self):
+    def test__marcher__dimensions(self):
+        ni, nj = (2, 3)
+        S = np.ones((ni, nj))
+        m = eik.Olim4Rect(S)
+        self.assertEqual(m.get_height(), ni)
+        self.assertEqual(m.get_width(), nj)
+
+    def test__marcher_3d__dimensions(self):
+        ni, nj, nk = (2, 3, 4)
+        S = np.ones((ni, nj, nk))
+        m = eik.Olim6Rect(S)
+        self.assertEqual(m.get_height(), ni)
+        self.assertEqual(m.get_width(), nj)
+        self.assertEqual(m.get_depth(), nk)
+
+    def test__marhcer_3d__speed_func_orientation(self):
         h = 1
         diam = 2
         ni, nj, nk = (2, 3, 4)

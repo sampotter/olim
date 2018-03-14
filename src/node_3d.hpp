@@ -14,7 +14,7 @@ struct node_3d: public abstract_node {
   inline void set_j(int j) { _j = j; }
   inline int get_k() const { return _k; }
   inline void set_k(int k) { _k = k; }
-private:
+EIKONAL_PRIVATE:
   int _i {-1}, _j {-1}, _k {-1};
 };
 

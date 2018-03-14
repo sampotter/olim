@@ -1,6 +1,8 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
+#include "common.macros.hpp"
+
 // TODO: this is an awful hack that we're going to use for now---we
 // obviously don't want to use virtual functions in a hot path like
 // this. We're just going this route until we take care of some other
@@ -49,7 +51,7 @@ struct F0: public cost_func<F0<n, d>, n, d> {
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
-private:
+EIKONAL_PRIVATE:
   double _sh;
   double _u0;
   double _du[d];
@@ -72,7 +74,7 @@ struct F1: public cost_func<F1<n, d>, n, d> {
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
-private:
+EIKONAL_PRIVATE:
   double _s_hat;
   double _stheta;
   double _s[d + 1];

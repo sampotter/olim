@@ -7,6 +7,8 @@
 #include <cstring>
 #include <iostream>
 
+#include "common.macros.hpp"
+
 template <class Node>
 struct heap
 {
@@ -22,7 +24,7 @@ struct heap
   void insert(Node * n);
   void swim(Node * n);
   void print() const;
-private:
+EIKONAL_PRIVATE:
   void grow();
   void swim(int pos);
   void sink(int pos);

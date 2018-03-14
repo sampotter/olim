@@ -8,7 +8,7 @@ struct abstract_marcher {
   void run();
   void step();
   virtual ~abstract_marcher() {}
-protected:
+EIKONAL_PROTECTED:
   abstract_marcher(size_t initial_heap_size = 256ul);
   void stage_neighbors(abstract_node * n);
   abstract_node * get_next_node();
@@ -16,7 +16,7 @@ protected:
   void insert_into_heap(abstract_node * n);
 
   heap<abstract_node> _heap;
-private:
+EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n) = 0;
 };
 

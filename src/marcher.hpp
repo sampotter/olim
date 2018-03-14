@@ -36,7 +36,7 @@ struct marcher: public abstract_marcher {
   Node & operator()(int i, int j);
   Node const & operator()(int i, int j) const;
 
-protected:
+EIKONAL_PROTECTED:
   void pre_stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;
@@ -47,7 +47,7 @@ protected:
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, double & T) = 0;
 
-private:
+EIKONAL_PRIVATE:
   void init();
 
   Node * _nodes;

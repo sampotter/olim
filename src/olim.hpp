@@ -26,7 +26,7 @@ struct olim: public std::conditional_t<
   static constexpr int num_neighbors = diag_updates ? 8 : 4;
 
   using neighborhood_t::neighborhood_t;
-private:
+EIKONAL_PRIVATE:
   virtual void update_impl(int i, int j, double & T);
 };
 

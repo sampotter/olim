@@ -7,7 +7,7 @@
 struct basic_marcher_3d: public neumann_marcher_3d<node_3d>
 {
   using neumann_marcher_3d::neumann_marcher_3d;
-private:
+EIKONAL_PRIVATE:
   virtual void update_impl(int i, int j, int k, double & T);
 };
 

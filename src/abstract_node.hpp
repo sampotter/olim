@@ -20,7 +20,7 @@ struct abstract_node {
   inline void set_valid() { _state = state::valid; }
   inline void set_trial() { _state = state::trial; }
   inline void set_far() { _state = state::far; }
-protected:
+EIKONAL_PROTECTED:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};
   int _heap_pos {-1};

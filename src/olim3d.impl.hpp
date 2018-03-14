@@ -175,10 +175,10 @@ void olim3d<
   memset(nb, 0x0, groups::nneib*sizeof(abstract_node *));
   get_valid_neighbors(i, j, k, nb);
 
-  double h = this->get_h(), s = this->speed(i, j, k), s_[groups::nneib];
+  double h = this->get_h(), s = this->get_speed(i, j, k), s_[groups::nneib];
   for (int l = 0; l < groups::nneib; ++l) {
     if (nb[l]) {
-      s_[l] = this->speed(i + __di(l), j + __dj(l), k + __dk(l));
+      s_[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));
     }
   }
 

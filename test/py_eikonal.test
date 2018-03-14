@@ -25,7 +25,8 @@ class TestPybind11Wrapper(unittest.TestCase):
         S = sf3d.s4(x, y, z)
         m = eik.Olim6Rect(S, h)
         for i, j, k in prod(range(ni), range(nj), range(nk)):
-            self.assertEqual(m.speed(i, j, k), S[i, j, k])
+            msg = 'i = %d, j = %d, k = %d' % (i, j, k)
+            self.assertEqual(m.getSpeed(i, j, k), S[i, j, k], msg=msg)
 
 if __name__ == '__main__':
     unittest.main()

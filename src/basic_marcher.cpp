@@ -20,7 +20,7 @@ void basic_marcher::update_impl(int i, int j, double & T) {
 
   abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
   get_valid_neighbors(i, j, nb);
-  double sh = get_h()*speed(i, j);
+  double sh = get_h()*get_speed(i, j);
 
   double T1 = min(nb[0] ? VAL(0) : INF(double), nb[2] ? VAL(2) : INF(double));
   double T2 = min(nb[1] ? VAL(1) : INF(double), nb[3] ? VAL(3) : INF(double));

@@ -193,7 +193,7 @@ bool marcher_3d<Node>::in_bounds(int i, int j, int k) const {
 }
 
 template <class Node>
-double marcher_3d<Node>::speed(int i, int j, int k) {
+double marcher_3d<Node>::get_speed(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
   return _s_cache[__linear_index(i, j, k)];
 }

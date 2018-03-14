@@ -74,6 +74,7 @@ marcher_template = Template('''
       "i"_a,
       "j"_a,
       "value"_a = 0.0)
+    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a);
 ''')
 
@@ -155,6 +156,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "j"_a,
       "k"_a,
       "value"_a = 0.0)
+    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a);
 ''')
 

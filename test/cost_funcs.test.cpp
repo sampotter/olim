@@ -507,17 +507,3 @@ TEST (cost_funcs, F1_works) {
     ASSERT_NEAR(d2f[1][1], 0.2980850527574, 1e-14);
   }
 }
-
-std::random_device dev;
-std::mt19937 gen {dev()};
-std::normal_distribution<> dist {};
-
-TEST (cost_funcs, for_F0_dims_1_and_2_agree) {
-  double p[3][3];
-  for (int i = 0; i < 10; ++i) {
-  }
-}
-
-TEST (cost_funcs, for_F1_dims_1_and_2_agree) {
-  
-}

@@ -1,5 +1,7 @@
 import numpy as np
 
+sqrt2 = np.sqrt(2)
+
 r = lambda x, y: np.sqrt(np.power(x, 2) + np.power(y, 2))
 
 s0 = lambda x, y: np.ones(x.shape)
@@ -9,13 +11,19 @@ s1 = lambda x, y: 1 - np.sin(r(x, y))
 f1 = lambda x, y: np.cos(r(x, y)) + r(x, y) - 1;
 
 s2 = lambda x, y: np.abs(x + y)
-f2 = lambda x, y: np.power(x + y, 2)/(2*np.sqrt(2))
+f2 = lambda x, y: np.power(x + y, 2)/(2*sqrt2)
 
 s3 = r;
 f3 = lambda x, y: (np.power(x, 2) + np.power(y, 2))/2
 
-s4 = lambda x, y: np.sqrt(49*x**2 + 30*np.sqrt(3)*x*y + 19*y**2)/4
-f4 = lambda x, y: (13*x**2 + 6*np.sqrt(3)*x*y + 7*y**2)/16
+s4xy = lambda x, y: np.sqrt(10*x*x - 6*sqrt2*x*y + 37*y*y)/4
+f4xy = lambda x, y: (6*x*x - 2*sqrt2*x*y + 11*y*y)/16
+
+s4xz = lambda x, z: np.sqrt(10*x*x + 6*sqrt2*x*z + 37*z*z)/4
+f4xz = lambda x, z: (6*x*x + 2*sqrt2*x*z + 11*z*z)/16
+
+s4yz = lambda y, z: np.sqrt(37*y*y + 54*y*z + 37*z*z)/4
+f4yz = lambda y, z: (11*y*y + 10*y*z + 11*z*z)/16
 
 s5 = lambda x, y: np.sqrt(np.power(x, 18) + np.power(y, 18))
 f5 = lambda x, y: (np.power(x, 10) + np.power(y, 10))/10
@@ -37,9 +45,9 @@ f9 = lambda x, y: 1 - np.divide(1, np.exp(a*(np.power(x, 2) + np.power(y, 2))))
 
 # TODO: star_s
 
-_speed_funcs = [s0, s1, s2, s3, s4, s5, s6, s8, s9]
+_speed_funcs = [s0, s1, s2, s3, s4xy, s4xz, s4yz, s5, s6, s8, s9]
 
-_soln_funcs = [f0, f1, f2, f3, f4, f5, f6, f8, f9]
+_soln_funcs = [f0, f1, f2, f3, f4xy, s4xz, s4yz, f5, f6, f8, f9]
 
 for func in _speed_funcs + _soln_funcs:
     func.dim = 2
@@ -52,7 +60,9 @@ _speed_func_names = {
     s1: 's1',
     s2: 's2',
     s3: 's3',
-    s4: 's4',
+    s4xy: 's4xy',
+    s4xz: 's4xz',
+    s4yz: 's4yz',
     s5: 's5',
     s6: 's6',
     s8: 's8',

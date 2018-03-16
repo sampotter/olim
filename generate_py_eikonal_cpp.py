@@ -34,7 +34,7 @@ marcher_template = Template('''
       };
     })
     .def(
-      py::init([] (py::array_t<double, py::array::c_style | py::array::forcecast> arr, double h) {
+      py::init([] (py::array_t<double, py::array::f_style | py::array::forcecast> arr, double h) {
         py::buffer_info info = arr.request();
         if (info.format != py::format_descriptor<double>::format()) {
           throw std::runtime_error("Bad format: expected double array");
@@ -74,7 +74,10 @@ marcher_template = Template('''
       "i"_a,
       "j"_a,
       "value"_a = 0.0)
-    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a);
+    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
+    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a)
+    .def("get_height", &${cpp_class_name}::get_height)
+    .def("get_width", &${cpp_class_name}::get_width);
 ''')
 
 marchers3d = {
@@ -100,8 +103,12 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
           sizeof(${cpp_class_name}::float_type),
           format,
           ${cpp_class_name}::ndim,
-          {m_.get_height(), m_.get_width(), m_.get_depth()},
-          {
+          { // i, j, k
+            m_.get_height(),
+            m_.get_width(),
+            m_.get_depth(),
+          },
+          { // i, j, k
             sizeof(${cpp_class_name}::node_type)*m_.get_width(),
             sizeof(${cpp_class_name}::node_type),
             sizeof(${cpp_class_name}::node_type)*m_.get_width()*m_.get_height(),
@@ -109,7 +116,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
         };
       })
     .def(
-      py::init([] (py::array_t<double, py::array::c_style | py::array::forcecast> arr, double h) {
+      py::init([] (py::array_t<double, py::array::f_style | py::array::forcecast> arr, double h) {
         py::buffer_info info = arr.request();
         if (info.format != py::format_descriptor<double>::format()) {
           throw std::runtime_error("Bad format: expected double array");
@@ -155,7 +162,11 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "j"_a,
       "k"_a,
       "value"_a = 0.0)
-    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a);
+    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
+    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
+    .def("get_height", &${cpp_class_name}::get_height)
+    .def("get_width", &${cpp_class_name}::get_width)
+    .def("get_depth", &${cpp_class_name}::get_depth);
 ''')
 
 def build_src_txt(args):

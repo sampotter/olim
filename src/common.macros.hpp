@@ -20,4 +20,12 @@
 #define SPEED_ARGS_2(i, j) s, s_[i], s_[j]
 #define SPEED_ARGS_3(i, j, k) s, s_[i], s_[j], s_[k]
 
+#ifdef EIKONAL_DEBUG
+#  define EIKONAL_PROTECTED public
+#  define EIKONAL_PRIVATE public
+#else
+#  define EIKONAL_PROTECTED protected
+#  define EIKONAL_PRIVATE private
+#endif
+
 #endif // __COMMON_MACROS_HPP__

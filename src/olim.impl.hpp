@@ -55,10 +55,10 @@ void olim<node, line_updates, tri_updates, adj_updates,
   memset(nb, 0x0, num_neighbors*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, nb);
 
-  double h = this->get_h(), s = this->speed(i, j), s_[num_neighbors];
+  double h = this->get_h(), s = this->get_speed(i, j), s_[num_neighbors];
   for (int k = 0; k < num_neighbors; ++k) {
     if (nb[k]) {
-      s_[k] = this->speed(i + __di(k), j + __dj(k));
+      s_[k] = this->get_speed(i + __di(k), j + __dj(k));
     }
   }
 

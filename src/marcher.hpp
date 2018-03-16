@@ -28,6 +28,7 @@ struct marcher: public abstract_marcher {
   void add_boundary_node(double i, double j, double value = 0.0);
   void add_boundary_nodes(Node const * nodes, int num_nodes);
   Node * get_node_pointer() const { return _nodes; }
+  double get_speed(int i, int j) const;
   double get_value(int i, int j) const;
   int get_height() const { return _height; }
   int get_width() const { return _width; }
@@ -36,18 +37,17 @@ struct marcher: public abstract_marcher {
   Node & operator()(int i, int j);
   Node const & operator()(int i, int j) const;
 
-protected:
+EIKONAL_PROTECTED:
   void pre_stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;
-  double speed(int i, int j);
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, double & T) = 0;
 
-private:
+EIKONAL_PRIVATE:
   void init();
 
   Node * _nodes;

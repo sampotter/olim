@@ -171,8 +171,8 @@ endif ()
 # We don't use any of these test targets when we're building our
 # Release build, so save time by skipping them.
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  # First, take care of our C++ tests.
   find_package (Threads) # required by gtest
-
   set (tests
 	basic_marcher
 	basic_marcher_3d
@@ -197,13 +197,22 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	qroots
 	update_rules.tetra_updates
 	update_rules.tri_updates)
-
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
 	target_link_libraries (${test}.test fmm gtest ${CMAKE_THREAD_LIBS_INIT})
 	target_include_directories (
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     gtest_discover_tests (${test}.test)
+  endforeach ()
+
+  # Now, add our Python tests.
+  set (python_tests
+    py_eikonal)
+  foreach (test ${python_tests})
+    configure_file (
+      ${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.test
+      ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
+    add_test (${test}.test ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
   endforeach ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 

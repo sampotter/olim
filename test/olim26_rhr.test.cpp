@@ -30,3 +30,11 @@ TEST (olim26_rhr, two_by_two_by_three_cells_are_correct) {
 TEST (olim26_rhr, plane_boundaries_are_correct) {
   plane_boundaries_are_correct<olim3d_t>();
 }
+
+TEST (olim26_rhr, planes_are_correct_nonsymmetric) {
+  planes_are_correct_nonsymmetric<olim_t, olim3d_t>(s4, f4xy, f4yz, f4xz);
+}
+
+TEST (olim26_rhr, planes_agree_nonsymmetric) {
+  planes_agree_nonsymmetric<olim_t, olim3d_t>(s4, s4xy, s4yz, s4xz);
+}

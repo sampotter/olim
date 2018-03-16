@@ -11,7 +11,7 @@ struct node: public abstract_node {
   inline void set_i(int i) { _i = i; }
   inline int get_j() const { return _j; }
   inline void set_j(int j) { _j = j; }
-private:
+EIKONAL_PRIVATE:
   int _i {-1}, _j {-1};
 };
 

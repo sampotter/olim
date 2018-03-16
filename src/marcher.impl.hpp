@@ -187,7 +187,7 @@ bool marcher<Node>::in_bounds(int i, int j) const {
 }
 
 template <class Node>
-double marcher<Node>::speed(int i, int j) {
+double marcher<Node>::get_speed(int i, int j) const {
   assert(in_bounds(i, j));
   return _s_cache[_width*i + j];
 }

@@ -61,10 +61,10 @@ void quadrants_are_correct(
   }
 }
 
-template <class olim3d>
+template <class olim3d_t>
 void quadrants_are_correct(
   double diag_value,
-  std::enable_if_t<olim3d::ndim == 3> * = 0)
+  std::enable_if_t<olim3d_t::ndim == 3> * = 0)
 {
   int n = 2;
   double h = 1;
@@ -73,7 +73,7 @@ void quadrants_are_correct(
    * Tests for quadrants in the x-y plane:
    */
   {
-    olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 0, 0};
+    olim3d_t m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
@@ -82,7 +82,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), diag_value);
   }
   {
-    olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 0, 0};
+    olim3d_t m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -91,7 +91,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), 1.0);
   }
   {
-    olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 1, 0};
+    olim3d_t m {n, n, 1, h, (speed_func_3d) default_speed_func, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -100,7 +100,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 1, 0), 1.0);
   }
   {
-    olim3d m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 1, 0};
+    olim3d_t m {n, n, 1, h, (speed_func_3d) default_speed_func, 1, 1, 0};
     m.add_boundary_node(1, 1, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
@@ -113,7 +113,7 @@ void quadrants_are_correct(
    * Tests for quadrants in the x-z plane:
    */
   {
-    olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
+    olim3d_t m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
@@ -122,7 +122,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), diag_value);
   }
   {
-    olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 0};
+    olim3d_t m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -131,7 +131,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), 1.0);
   }
   {
-    olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
+    olim3d_t m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -140,7 +140,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(1, 0, 1), 1.0);
   }
   {
-    olim3d m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 1};
+    olim3d_t m {n, 1, n, h, (speed_func_3d) default_speed_func, 0, 1, 1};
     m.add_boundary_node(1, 0, 1);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
@@ -153,7 +153,7 @@ void quadrants_are_correct(
    * Tests for quadrants in the y-z plane:
    */
   {
-    olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
+    olim3d_t m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 0.0);
@@ -162,7 +162,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), diag_value);
   }
   {
-    olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 0};
+    olim3d_t m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -171,7 +171,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
+    olim3d_t m {1, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), 1.0);
@@ -180,7 +180,7 @@ void quadrants_are_correct(
     ASSERT_DOUBLE_EQ(m.get_value(0, 1, 1), 1.0);
   }
   {
-    olim3d m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 1};
+    olim3d_t m {1, n, n, h, (speed_func_3d) default_speed_func, 1, 0, 1};
     m.add_boundary_node(0, 1, 1);
     m.run();
     ASSERT_DOUBLE_EQ(m.get_value(0, 0, 0), diag_value);
@@ -190,7 +190,7 @@ void quadrants_are_correct(
   }
 }
 
-template <class olim3d>
+template <class olim3d_t>
 void octants_are_correct(double diag2val, double diag3val) {
   int n = 2;
   double h = 1;
@@ -198,7 +198,7 @@ void octants_are_correct(double diag2val, double diag3val) {
     for (int j = 0; j < 2; ++j) {
       for (int k = 0; k < 2; ++k) {
         double x0 = j, y0 = i, z0 = k;
-        olim3d m {n, n, n, h, (speed_func_3d) default_speed_func, x0, y0, z0};
+        olim3d_t m {n, n, n, h, (speed_func_3d) default_speed_func, x0, y0, z0};
         m.add_boundary_node(i, j, k);
         m.run();
         ASSERT_DOUBLE_EQ(m.get_value(i, j, k), 0.0);
@@ -215,7 +215,7 @@ void octants_are_correct(double diag2val, double diag3val) {
   }
 }
 
-template <class olim, class olim3d>
+template <class olim, class olim3d_t>
 void planes_are_correct(
   speed_func s = (speed_func) default_speed_func,
   speed_func_3d s3d = (speed_func_3d) default_speed_func,
@@ -233,7 +233,7 @@ void planes_are_correct(
   m.add_boundary_node(n/2, n/2);
   m.run();
   
-  olim3d m3d {n, n, n, h, s3d, 1, 1, 1};
+  olim3d_t m3d {n, n, n, h, s3d, 1, 1, 1};
   m3d.add_boundary_node(n/2, n/2, n/2);
   m3d.run();
 
@@ -268,10 +268,10 @@ void result_is_symmetric(speed_func s = default_speed_func, int n = 11) {
   }
 }
 
-template <class olim3d>
+template <class olim3d_t>
 void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   double h = 2.0/(n - 1);
-  olim3d m {n, n, n, h, s, 1, 1, 1};
+  olim3d_t m {n, n, n, h, s, 1, 1, 1};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
@@ -300,11 +300,11 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
   }
 }
 
-template <class olim3d>
+template <class olim3d_t>
 void two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
-  olim3d m_gt {3, 2, 2, 1, (speed_func_3d) default_speed_func, 0, 0, 0};
+  olim3d_t m_gt {3, 2, 2, 1, (speed_func_3d) default_speed_func, 0, 0, 0};
   m_gt.add_boundary_node(0, 0, 0);
   m_gt.run();
 
@@ -319,7 +319,7 @@ void two_by_two_by_three_cells_are_correct() {
       int k0 = (kmax - 1)*((corner & 4) >> 2);
 
       double x0 = j0, y0 = i0, z0 = k0;
-      olim3d m {imax, jmax, kmax, 1, (speed_func_3d) default_speed_func, x0, y0, z0};
+      olim3d_t m {imax, jmax, kmax, 1, (speed_func_3d) default_speed_func, x0, y0, z0};
       m.add_boundary_node(i0, j0, k0);
       m.run();
 
@@ -340,16 +340,16 @@ void two_by_two_by_three_cells_are_correct() {
   }
 }
 
-template <class olim3d>
+template <class olim3d_t>
 void plane_boundaries_are_correct() {
   int n = 2;
   double h = 1;
-  olim3d m {n, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
+  olim3d_t m {n, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
 
-  typename olim3d::node_type nodes[4];
+  typename olim3d_t::node_type nodes[4];
   for (int i = 0, k = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      nodes[k++] = typename olim3d::node_type {i, j, 0};
+      nodes[k++] = typename olim3d_t::node_type {i, j, 0};
     }
   }
   m.add_boundary_nodes(nodes, 4);
@@ -382,16 +382,16 @@ void olims_agree(speed_func s = default_speed_func, int n = 11) {
   }
 }
 
-template <class olim3d, class other_olim3d>
-void agrees_with_other_olim3d(int n = 11) {
+template <class olim3d_t, class other_olim3d_t>
+void agrees_with_other_olim3d_t(int n = 11) {
   double h = 2.0/(n - 1);
   int i0 = n/2;
 
-  olim3d m1 {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
+  olim3d_t m1 {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
   m1.add_boundary_node(i0, i0, i0);
   m1.run();
 
-  other_olim3d m2 {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
+  other_olim3d_t m2 {n, n, n, h, (speed_func_3d) default_speed_func, 1, 1, 1};
   m2.add_boundary_node(i0, i0, i0);
   m2.run();
 
@@ -400,6 +400,123 @@ void agrees_with_other_olim3d(int n = 11) {
       for (int k = 0; k < n; ++k) {
         ASSERT_DOUBLE_EQ(m1.get_value(i, j, k), m2.get_value(i, j, k));
       }
+    }
+  }
+}
+
+template <class olim, class olim3d_t>
+void planes_are_correct_nonsymmetric(
+  double (* s3d)(double, double, double),
+  double (* fxy)(double, double),
+  double (* fyz)(double, double),
+  double (* fxz)(double, double),
+  int n1 = 2,
+  int n2 = 3,
+  int n3 = 4,
+  int i1 = 0,
+  int i2 = 1,
+  int i3 = 2,
+  double h = 1,
+  double diam = 2)
+{
+  double x0 = (n2 - 1)/diam, y0 = (n1 - 1)/diam, z0 = (n3 - 1)/diam;
+
+  olim3d_t m3d {n1, n2, n3, h, s3d, x0, y0, z0};
+  m3d.add_boundary_node(i1, i2, i3);
+  m3d.run();
+
+  printf("U:\n");
+  for (int k = 0; k < n3; ++k) {
+    for (int i = 0; i < n1; ++i) {
+      for (int j = 0; j < n2; ++j) {
+        printf(" %0.4g", m3d.get_value(i, j, k));
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+
+  printf("s:\n");
+  for (int k = 0; k < n3; ++k) {
+    for (int i = 0; i < n1; ++i) {
+      for (int j = 0; j < n2; ++j) {
+        printf(" %0.4g", m3d.get_speed(i, j, k));
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+
+  for (int i = 0; i < n1; ++i) {
+    double y = i*h - y0;
+    for (int j = 0; j < n2; ++j) {
+      double x = j*h - x0;
+      double u = fxy(x, y);
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, j, 0), u);
+    }
+  }
+
+  for (int i = 0; i < n1; ++i) {
+    double y = i*h - y0;
+    for (int k = 0; k < n3; ++k) {
+      double z = k*h - z0;
+      double u = fyz(y, z);
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, 0, k), u);
+    }
+  }
+
+  for (int j = 0; j < n2; ++j) {
+    double x = j*h - x0;
+    for (int k = 0; k < n3; ++k) {
+      double z = k*h - z0;
+      double u = fxz(x, z);
+      ASSERT_DOUBLE_EQ(m3d.get_value(0, j, k), u);
+    }
+  }
+}
+
+template <class olim, class olim3d_t>
+void planes_agree_nonsymmetric(
+  double (* s3d)(double, double, double),
+  double (* sxy)(double, double),
+  double (* syz)(double, double),
+  double (* sxz)(double, double),
+  int n = 11)
+{
+  double h = 2.0/(n - 1);
+  int i0 = n/2;
+
+  olim3d_t m3d {n, n, n, h, s3d, 1, 1, 1};
+  m3d.add_boundary_node(i0, i0, i0);
+  m3d.run();
+
+  olim mxy {n, n, h, sxy, 1, 1};
+  mxy.add_boundary_node(i0, i0);
+  mxy.run();
+
+  olim myz {n, n, h, syz, 1, 1};
+  myz.add_boundary_node(i0, i0);
+  myz.run();
+
+  olim mxz {n, n, h, sxz, 1, 1};
+  mxz.add_boundary_node(i0, i0);
+  mxz.run();
+
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, j, 0), mxy.get_value(i, j));
+    }
+  }
+
+  for (int i = 0; i < n; ++i) {
+    for (int k = 0; k < n; ++k) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(i, 0, k), myz.get_value(i, k));
+    }
+  }
+
+  for (int j = 0; j < n; ++j) {
+    for (int k = 0; k < n; ++k) {
+      ASSERT_DOUBLE_EQ(m3d.get_value(0, j, k), mxz.get_value(j, k));
     }
   }
 }

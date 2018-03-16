@@ -15,13 +15,11 @@ f2 = lambda x, y, z: np.power(x + y + z, 2)/(2*np.sqrt(3))
 s3 = r;
 f3 = lambda x, y, z: (x**2 + y**2 + z**2)/2
 
-# s = 1/4 Sqrt[10 x^2+37 y^2+54 y z+37 z^2+6 Sqrt[2] x (-y+z)]
 s4 = lambda x, y, z: np.sqrt(
-    10*x**2 + 37*y**2 + 52*y*z + 37*z**2 + 6*np.sqrt(2)*x*(z - z))/4
+    10*x*x + 37*y*y + 54*y*z + 37*z*z + 6*np.sqrt(2)*x*(z - y))/4
 
-# f = {1/16 (6 x^2+11 y^2+10 y z+11 z^2+2 Sqrt[2] x (-y+z))}
 f4 = lambda x, y, z: (
-    6*x**2 + 11*y**2 + 10*y*z + 11*z**2 + 2*np.sqrt(2)*x*(z - y))/16
+    6*x*x + 11*y*y + 10*y*z + 11*z*z + 2*np.sqrt(2)*x*(z - y))/16
 
 s5 = lambda x, y, z: np.sqrt(x**18 + y**18 + z**18)
 f5 = lambda x, y, z: (x**10 + y**10 + z**10)/10

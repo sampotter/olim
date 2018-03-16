@@ -28,6 +28,7 @@ struct marcher_3d: public abstract_marcher {
   void add_boundary_node(double x, double y, double z, double value = 0.0);
   void add_boundary_nodes(Node const * nodes, int num_nodes);
   Node * get_node_pointer() const { return _nodes; }
+  double get_speed(int i, int j, int k) const;
   double get_value(int i, int j, int k) const;
   int get_height() const { return _height; }
   int get_width() const { return _width; }
@@ -37,18 +38,17 @@ struct marcher_3d: public abstract_marcher {
   Node & operator()(int i, int j, int k);
   Node const & operator()(int i, int j, int k) const;
 
-protected:
+EIKONAL_PROTECTED:
   void update(int i, int j, int k);
   void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
-  double speed(int i, int j, int k);
   bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }
 
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, int k, double & T) = 0;
   
-private:
+EIKONAL_PRIVATE:
   void init();
 
   Node * _nodes;

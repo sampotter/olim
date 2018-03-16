@@ -4,6 +4,11 @@
 #include <cassert>
 #include <cmath>
 
+#define __linear_index(i, j, k) (_width*(_height*k + i) + j)
+#define __x(l) (h*l - x0)
+#define __y(l) (h*l - y0)
+#define __z(l) (h*l - z0)
+
 static inline size_t get_initial_heap_size(int width, int height, int depth) {
   return static_cast<size_t>(std::max(8.0, std::log(width*height*depth)));
 }
@@ -45,7 +50,7 @@ marcher_3d<Node>::marcher_3d(
   for (int k = 0; k < depth; ++k) {
     for (int j = 0; j < width; ++j) {
       for (int i = 0; i < height; ++i) {
-        ptr[width*(height*k + i) + j] = s(h*j - x0, h*i - y0, h*k - z0);
+        ptr[__linear_index(i, j, k)] = s(__x(j), __y(i), __z(k));
       }
     }
   }
@@ -151,13 +156,13 @@ double marcher_3d<Node>::get_value(int i, int j, int k) const {
 template <class Node>
 Node & marcher_3d<Node>::operator()(int i, int j, int k) {
   assert(in_bounds(i, j, k));
-  return _nodes[_width*(_height*k + i) + j];
+  return _nodes[__linear_index(i, j, k)];
 }
 
 template <class Node>
 Node const & marcher_3d<Node>::operator()(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
-  return _nodes[_width*(_height*k + i) + j];
+  return _nodes[__linear_index(i, j, k)];
 }
 
 template <class Node>
@@ -188,9 +193,9 @@ bool marcher_3d<Node>::in_bounds(int i, int j, int k) const {
 }
 
 template <class Node>
-double marcher_3d<Node>::speed(int i, int j, int k) {
+double marcher_3d<Node>::get_speed(int i, int j, int k) const {
   assert(in_bounds(i, j, k));
-  return _s_cache[_width*(_height*k + i) + j];
+  return _s_cache[__linear_index(i, j, k)];
 }
 
 template <class Node>
@@ -210,5 +215,10 @@ void marcher_3d<Node>::init() {
     }
   }
 }
+
+#undef __linear_index
+#undef __x
+#undef __y
+#undef __z
 
 #endif // __MARCHER_3D_IMPL_HPP__

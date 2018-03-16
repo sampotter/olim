@@ -42,14 +42,14 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
     groups::group_V || groups::group_VI_b;
 
   using marcher_3d<node>::marcher_3d;
-protected:
+EIKONAL_PROTECTED:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
 
   static constexpr int num_neighbors =
     groups::group_V || groups::group_VI_a || groups::group_VI_b ? 26 :
     (groups::group_I || groups::group_II || groups::group_III ||
      groups::group_IV_b ? 18 : 6);
-private:
+EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
 };

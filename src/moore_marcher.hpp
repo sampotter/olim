@@ -6,9 +6,9 @@
 template <class Node>
 struct moore_marcher: public marcher<Node> {
   using marcher<Node>::marcher;
-protected:
+EIKONAL_PROTECTED:
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb);
-private:
+EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n);
 };
 

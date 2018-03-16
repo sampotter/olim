@@ -6,7 +6,7 @@
 
 struct basic_marcher: public neumann_marcher<node> {
   using neumann_marcher::neumann_marcher;
-private:
+EIKONAL_PRIVATE:
   virtual void update_impl(int i, int j, double & T);
 };
 

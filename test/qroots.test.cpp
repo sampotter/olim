@@ -6,7 +6,7 @@
 #include "qroots.hpp"
 #include "speed_funcs.hpp"
 
-void sigma_works_1() {
+TEST (qroots, sigma_works_1) {
   double a[] = {
     -0.0019249999999999998,
     -0.0010000000000000002,
@@ -37,7 +37,7 @@ void sigma_works_1() {
   ASSERT_TRUE(sigma(polys, 0.1) == 2);
 }
 
-void sigma_works_2() {
+TEST (qroots, sigma_works_2) {
   double a[] = {
     -0.99000016666583334,
     0.0098791278581576019,
@@ -72,7 +72,7 @@ void sigma_works_2() {
   ASSERT_TRUE(oldrhs == 2);
 }
 
-void sigma_works_3() {
+TEST (qroots, sigma_works_3) {
   double a[] = {
     0,
     0.000050000000000000002,
@@ -106,7 +106,7 @@ void sigma_works_3() {
   ASSERT_TRUE(rhs == oldrhs);
 }
 
-void sturm_works_1() {
+TEST (qroots, sturm_works_1) {
   double a[] = {
     -0.0019249999999999998,
     -0.0010000000000000002,
@@ -136,7 +136,7 @@ void sturm_works_1() {
   ASSERT_TRUE(sturm(polys, 0, 1) == 0);
 }
 
-void sturm_works_2() {
+TEST (qroots, sturm_works_2) {
   double a[] = {
     0.0044039823074159008,
     -0.018607964614831808,
@@ -170,7 +170,7 @@ void sturm_works_2() {
   ASSERT_TRUE(sturm(polys, 0.49999999999999994, 0.5) == 0);
 }
 
-void sturm_works_3() {
+TEST (qroots, sturm_works_3) {
   double a[] = {
     0.000075000000000000007,
     -0.00020000000000000001,
@@ -200,7 +200,7 @@ void sturm_works_3() {
   ASSERT_TRUE(sturm(polys, 0, 1) == 0);
 }
 
-void sturm_works_4() {
+TEST (qroots, sturm_works_4) {
   double a[] = {
     -0.99476271779816383,
     -0.0040797065327272484,
@@ -246,7 +246,7 @@ static bool contains_root(double const * roots, double root,
     fabs(roots[3] - root)/fabs(root) < tol;
 }
 
-void qroots_works_1() {
+TEST (qroots, qroots_works_1) {
   double a[5] = {-2.25, 11.8125, -10.8125, -2, 1};
   double roots[4] = {-1, -1, -1, -1};
   qroots(a, roots, 0, 1);
@@ -255,23 +255,11 @@ void qroots_works_1() {
   ASSERT_TRUE(contains_root(roots, 0.75));
 }
 
-void qroots_works_2() {
+TEST (qroots, qroots_works_2) {
   double a[5] = { -0.803056, 2.86611, -1.10611, -2.56, -0.64};
   double roots[4] = {-1, -1, -1, -1};
   qroots(a, roots, 0, 1);
   ASSERT_TRUE(num_roots(roots) == 2);
   ASSERT_TRUE(contains_root(roots, 0.432017, 1e-6));
   ASSERT_TRUE(contains_root(roots, 0.4828, 1e-5));
-}
-
-int main() {
-  sigma_works_1();
-  sigma_works_2();
-  sigma_works_3();
-  sturm_works_1();
-  sturm_works_2();
-  sturm_works_3();
-  sturm_works_4();
-  qroots_works_1();
-  qroots_works_2();
 }

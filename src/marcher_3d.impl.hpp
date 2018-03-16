@@ -5,9 +5,9 @@
 #include <cmath>
 
 #define __linear_index(i, j, k) (_width*(_height*k + i) + j)
-#define __x(i) (h*i - x0)
-#define __y(i) (h*i - y0)
-#define __z(i) (h*i - z0)
+#define __x(l) (h*l - x0)
+#define __y(l) (h*l - y0)
+#define __z(l) (h*l - z0)
 
 static inline size_t get_initial_heap_size(int width, int height, int depth) {
   return static_cast<size_t>(std::max(8.0, std::log(width*height*depth)));

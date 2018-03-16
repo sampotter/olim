@@ -103,8 +103,12 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
           sizeof(${cpp_class_name}::float_type),
           format,
           ${cpp_class_name}::ndim,
-          {m_.get_height(), m_.get_width(), m_.get_depth()},
-          {
+          { // i, j, k
+            m_.get_height(),
+            m_.get_width(),
+            m_.get_depth(),
+          },
+          { // i, j, k
             sizeof(${cpp_class_name}::node_type)*m_.get_width(),
             sizeof(${cpp_class_name}::node_type),
             sizeof(${cpp_class_name}::node_type)*m_.get_width()*m_.get_height(),

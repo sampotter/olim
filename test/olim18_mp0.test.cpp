@@ -14,7 +14,7 @@ TEST (olim18_mp0, octants_are_correct) {
 }
 
 TEST (olim18_mp0, planes_are_correct) {
-  // planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
   planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1]);
 }
 

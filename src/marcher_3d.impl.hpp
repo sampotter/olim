@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#define __linear_index(i, j, k) (_width*(_height*k + i) + j)
+#define __linear_index(i, j, k) (_height*(_width*k + j) + i) // column-major
 #define __x(l) (h*l - x0)
 #define __y(l) (h*l - y0)
 #define __z(l) (h*l - z0)

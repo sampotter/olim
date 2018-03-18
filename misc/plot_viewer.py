@@ -48,6 +48,7 @@ class LogLogPanel(wx.Panel):
         d['ax'].set_xlabel(self._xlabel)
         d['ax'].set_ylabel(self._ylabel)
         d['legend'] = d['ax'].legend()
+        assert d['legend'] is not None
         d['legend'].set_visible(False)
         d['canvas'] = mpl_backend.FigureCanvas(self, wx.ID_ANY, d['fig'])
 
@@ -111,6 +112,7 @@ class ErrorVolPanel(wx.SplitterWindow):
         d['fig'] = mpl.figure.Figure()
         d['ax'] = d['fig'].add_subplot(111)
         d['legend'] = d['ax'].legend()
+        assert d['legend'] is not None
         d['legend'].set_visible(False)
         d['canvas'] = mpl_backend.FigureCanvas(
             self._top_panel, wx.ID_ANY, d['fig'])
@@ -266,6 +268,7 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
                 self._plots[dsetname].remove()
                 del self._plots[dsetname]
                 if len(self._plots) == 0:
+                    assert d['legend'] is not None
                     assert d['legend'].get_visible()
                     d['legend'].set_visible(False)
             else:
@@ -274,6 +277,7 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
                 line, = d['ax'].loglog(X, Y, 'o-', label=dsetname)
                 self._plots[dsetname] = line
                 if len(self._plots) == 1:
+                    assert d['legend'] is not None
                     assert not d['legend'].get_visible()
                     d['legend'].set_visible(True)
             d['ax'].legend()

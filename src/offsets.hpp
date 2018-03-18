@@ -1,6 +1,8 @@
 #ifndef __OFFSETS_HPP__
 #define __OFFSETS_HPP__
 
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 namespace {
   template <int d>
   struct offsets_size {
@@ -9,9 +11,6 @@ namespace {
   };
 }
 
-template <> int offsets_size<2>::size = 8;
-template <> int offsets_size<3>::size = 26;
-
 namespace {
   template <int d> constexpr int di[offsets_size<d>::size];
   template <int d> constexpr int dj[offsets_size<d>::size];
@@ -19,5 +18,7 @@ namespace {
 }
 
 #include "offsets.impl.hpp"
+
+#pragma GCC diagnostic pop
 
 #endif // __OFFSETS_HPP__

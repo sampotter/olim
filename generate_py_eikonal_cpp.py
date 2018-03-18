@@ -109,8 +109,8 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
             m_.get_depth(),
           },
           { // i, j, k
-            sizeof(${cpp_class_name}::node_type)*m_.get_width(),
             sizeof(${cpp_class_name}::node_type),
+            sizeof(${cpp_class_name}::node_type)*m_.get_width(),
             sizeof(${cpp_class_name}::node_type)*m_.get_width()*m_.get_height(),
           }
         };
@@ -139,6 +139,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
         int height = static_cast<int>(info.shape[0]); // height
         int width = static_cast<int>(info.shape[1]); // width
         int depth = static_cast<int>(info.shape[2]); // depth
+
         auto m_ptr = new ${cpp_class_name} {height, width, depth, h, no_speed_func};
         memcpy(
           (double *) m_ptr->get_s_cache_data(),

@@ -7,19 +7,14 @@
    4. "Smart mesh for 6 point update"
    5. "Predictive smart mesh"
 ** SQP rewrite
-*** Loglog time-vs-accuracy plots
 *** Hierarchical update
-*** Trial node optimization
-    - We've more or less implemented this, but it has a bug
-    - It seems like the bug might be due to inconsistency of cost
-      functions
 *** Big olim3d plot
     - Plot timings and errors for ALL 3d olims
     - Need to optimize the SQP implementation a bit more before we can do this
 *** Instrumenting/measuring
    - [ ] look at boost logging for this
    - [ ] count number of types of updates
-     - compare with HU/TNO
+     - compare with HU
    - [ ] count number of qpi/sqp iterations
    - [ ] Google benchmark?
 *** d > 2 nullspace method

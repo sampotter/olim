@@ -16,6 +16,7 @@ option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
+option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
@@ -57,6 +58,11 @@ set (FMM_SRC_FILES
   src/numopt.cpp
   src/qroots.cpp
   src/speed_funcs.cpp)
+
+if (${COLLECT_STATS})
+  list (APPEND FMM_SRC_FILES src/stats.cpp)
+  list (SORT FMM_SRC_FILES)
+endif ()
 
 add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})

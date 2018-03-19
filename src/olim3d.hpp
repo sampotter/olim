@@ -3,6 +3,9 @@
 
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
+#if COLLECT_STATS
+#    include "stats.hpp"
+#endif
 #include "update_rules.line_updates.hpp"
 #include "update_rules.tetra_updates.hpp"
 #include "update_rules.tri_updates.hpp"
@@ -41,7 +44,27 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
   static constexpr bool do_tri23_updates =
     groups::group_V || groups::group_VI_b;
 
-  using marcher_3d<node>::marcher_3d;
+  olim3d(int height, int width, int depth, double h, no_speed_func_t const &):
+    marcher_3d<node> {height, width, depth, h, no_speed_func_t {}},
+    _node_stats {new olim3d_node_stats[height*width*depth]} {}
+
+  olim3d(int height, int width, int depth, double h = 1,
+         std::function<double(double, double, double)> speed =
+         static_cast<speed_func_3d>(default_speed_func),
+         double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
+    marcher_3d<node> {height, width, depth, h, speed, x0, y0, z0},
+    _node_stats {new olim3d_node_stats[height*width*depth]} {}
+
+  olim3d(int height, int width, int depth, double h, double const * s_cache):
+    marcher_3d<node> {height, width, depth, h, s_cache},
+    _node_stats {new olim3d_node_stats[height*width*depth]} {}
+
+  virtual ~olim3d() { delete[] _node_stats; }
+
+#if COLLECT_STATS
+  void dump_stats() const;
+#endif
+
 EIKONAL_PROTECTED:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
 
@@ -52,6 +75,13 @@ EIKONAL_PROTECTED:
 EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
+  void init();
+
+#if COLLECT_STATS
+  olim3d_node_stats & get_node_stats(int i, int j, int k);
+  olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
+  olim3d_node_stats * _node_stats {nullptr};
+#endif
 };
 
 template <class groups>

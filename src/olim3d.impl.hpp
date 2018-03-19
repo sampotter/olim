@@ -1,7 +1,15 @@
 #ifndef __OLIM3D_IMPL_HPP__
 #define __OLIM3D_IMPL_HPP__
 
+#if COLLECT_STATS
+#    include <cstdio>
+#endif
+
+#include <src/config.hpp>
 #include "offsets.hpp"
+#if COLLECT_STATS
+#  include "update_rules.utils.hpp"
+#endif
 
 #define __di(l) di<3>[l]
 #define __dj(l) dj<3>[l]
@@ -72,11 +80,28 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
+#if COLLECT_STATS
+#  define UPDATE_LINE_STATS(d) do {    \
+    node_stats.inc_line_updates(d);   \
+  } while (0)
+#else
+#  define UPDATE_LINE_STATS(d) do {} while (0)
+#endif
+
 #define LINE(i, d) do {                                             \
     if (nb[i]) {                                                    \
       T = min(T, this->template line<d>(VAL(i), SPEED_ARGS(i), h)); \
+      UPDATE_LINE_STATS(d);                                         \
     }                                                               \
   } while (0)
+
+#if COLLECT_STATS
+#  define UPDATE_TRI_STATS(p0, p1) do {                 \
+    node_stats.inc_tri_updates(weight(p0), weight(p1)); \
+  } while (0)
+#else
+#  define UPDATE_TRI_STATS(p0, p1) do {} while (0)
+#endif
 
 #define TRI(i, j, p0, p1) do {                  \
     int l0 = inds[i], l1 = inds[j];             \
@@ -90,25 +115,59 @@ constexpr int oct2inds[8][7] = {
           h,                                    \
           ffvec<P ## p0> {},                    \
           ffvec<P ## p1> {}));                  \
+      UPDATE_TRI_STATS(P ## p0, P ## p1);       \
     }                                           \
   } while (0)
 
-#define TETRA(i, j, k, p0, p1, p2) do {             \
-    int l0 = inds[i], l1 = inds[j], l2 = inds[k];   \
-    if (nb[l0] && nb[l1] && nb[l2]) {               \
-      T = min(                                      \
-        T,                                          \
-        this->tetra(                                \
-          VAL(l0),                                  \
-          VAL(l1),                                  \
-          VAL(l2),                                  \
-          SPEED_ARGS(l0, l1, l2),                   \
-          h,                                        \
-          ffvec<P ## p0> {},                        \
-          ffvec<P ## p1> {},                        \
-          ffvec<P ## p2> {}));                      \
-    }                                               \
+#if COLLECT_STATS
+#  define UPDATE_TETRA_STATS(p0, p1, p2) do {                           \
+    node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2));   \
   } while (0)
+#else
+#  define UPDATE_TETRA_STATS(p0, p1, p2) do {} while (0)
+#endif
+
+#define TETRA(i, j, k, p0, p1, p2) do {                 \
+    int l0 = inds[i], l1 = inds[j], l2 = inds[k];       \
+    if (nb[l0] && nb[l1] && nb[l2]) {                   \
+      T = min(                                          \
+        T,                                              \
+        this->tetra(                                    \
+          VAL(l0),                                      \
+          VAL(l1),                                      \
+          VAL(l2),                                      \
+          SPEED_ARGS(l0, l1, l2),                       \
+          h,                                            \
+          ffvec<P ## p0> {},                            \
+          ffvec<P ## p1> {},                            \
+          ffvec<P ## p2> {}));                          \
+      UPDATE_TETRA_STATS(P ## p0, P ## p1, P ## p2);    \
+    }                                                   \
+  } while (0)
+
+#if COLLECT_STATS
+
+template <class node, class line_updates, class tri_updates,
+          class tetra_updates, class groups>
+void olim3d<
+  node, line_updates, tri_updates, tetra_updates,
+  groups>::dump_stats() const
+{
+  for (int k = 0; k < this->get_depth(); ++k) {
+    for (int j = 0; j < this->get_width(); ++j) {
+      for (int i = 0; i < this->get_height(); ++i) {
+        auto const & stats = this->get_node_stats(i, j, k);
+        printf("%d, %d, %d: line = %d, tri = %d, tetra = %d\n",
+               i, j, k,
+               stats.num_line_updates(),
+               stats.num_tri_updates(),
+               stats.num_tetra_updates());
+      }
+    }
+  }
+}
+
+#endif // COLLECT_STATS
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
@@ -181,6 +240,10 @@ void olim3d<
       s_[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));
     }
   }
+
+#if COLLECT_STATS
+  auto & node_stats = get_node_stats(i, j, k);
+#endif
 
   /**
    * Line updates:
@@ -296,5 +359,27 @@ void olim3d<
 #undef __di
 #undef __dj
 #undef __dk
+
+#if COLLECT_STATS
+
+template <class node, class line_updates, class tri_updates,
+          class tetra_updates, class groups>
+olim3d_node_stats &
+olim3d<node, line_updates, tri_updates, tetra_updates,
+       groups>::get_node_stats(int i, int j, int k)
+{
+  return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
+}
+
+template <class node, class line_updates, class tri_updates,
+          class tetra_updates, class groups>
+olim3d_node_stats const &
+olim3d<node, line_updates, tri_updates, tetra_updates,
+       groups>::get_node_stats(int i, int j, int k) const
+{
+  return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
+}
+
+#endif // COLLECT_STATS
 
 #endif // __OLIM3D_IMPL_HPP__

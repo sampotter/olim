@@ -5,6 +5,7 @@
 #cmakedefine01 TRIAL_NODE_OPTIMIZATION
 #cmakedefine01 HIERARCHICAL_UPDATES
 #cmakedefine01 USE_ARMADILLO
+#cmakedefine01 COLLECT_STATS
 
 #ifdef EIKONAL_DEBUG
 #    cmakedefine01 PRINT_UPDATES

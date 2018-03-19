@@ -55,7 +55,6 @@ set (FMM_SRC_FILES
   src/cost_funcs.cpp
   src/fmm.cpp
   src/numopt.cpp
-  src/olim_util.cpp
   src/qroots.cpp
   src/speed_funcs.cpp)
 

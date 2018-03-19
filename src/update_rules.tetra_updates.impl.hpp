@@ -15,7 +15,6 @@
 #include "common.defs.hpp"
 #include "common.macros.hpp"
 #include "numopt.hpp"
-#include "olim_util.hpp"
 #include "update_rules.tetra_updates.util.hpp"
 
 template <class derived>

@@ -175,7 +175,7 @@ namespace numopt {
       *error = false;
     }
 
-    double xprev[2], p[2], y[2], alpha, alpha_new;
+    double xprev[2], p[2] = {0, 0}, y[2], alpha, alpha_new;
     if (x0) {
       x[0] = x0[0];
       x[1] = x0[1];

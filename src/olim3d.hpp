@@ -45,23 +45,35 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
     groups::group_V || groups::group_VI_b;
 
   olim3d(int height, int width, int depth, double h, no_speed_func_t const &):
-    marcher_3d<node> {height, width, depth, h, no_speed_func_t {}},
-    _node_stats {new olim3d_node_stats[height*width*depth]} {}
+      marcher_3d<node> {height, width, depth, h, no_speed_func_t {}}
+#if COLLECT_STATS
+    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
+#else
+    {}
+#endif
 
   olim3d(int height, int width, int depth, double h = 1,
          std::function<double(double, double, double)> speed =
          static_cast<speed_func_3d>(default_speed_func),
          double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
-    marcher_3d<node> {height, width, depth, h, speed, x0, y0, z0},
-    _node_stats {new olim3d_node_stats[height*width*depth]} {}
+
+      marcher_3d<node> {height, width, depth, h, speed, x0, y0, z0}
+#if COLLECT_STATS
+    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
+#else
+    {}
+#endif
 
   olim3d(int height, int width, int depth, double h, double const * s_cache):
-    marcher_3d<node> {height, width, depth, h, s_cache},
-    _node_stats {new olim3d_node_stats[height*width*depth]} {}
-
-  virtual ~olim3d() { delete[] _node_stats; }
+      marcher_3d<node> {height, width, depth, h, s_cache}
+#if COLLECT_STATS
+    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
+#else
+    {}
+#endif
 
 #if COLLECT_STATS
+  virtual ~olim3d() { delete[] _node_stats; }
   void dump_stats() const;
 #endif
 

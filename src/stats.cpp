@@ -13,6 +13,10 @@ olim3d_node_stats::olim3d_node_stats() {
     _num_tri_updates + static_cast<int>(tri_update::NUM),
     0);
   std::fill(
+    _num_degenerate_tri_updates,
+    _num_degenerate_tri_updates + static_cast<int>(tri_update::NUM),
+    0);
+  std::fill(
     _num_tetra_updates,
     _num_tetra_updates + static_cast<int>(tetra_update::NUM),
     0);
@@ -40,20 +44,36 @@ int olim3d_node_stats::num_tri_updates() const {
   return tmp;
 }
 
-void olim3d_node_stats::inc_tri_updates(int d1, int d2) {
+int olim3d_node_stats::num_degenerate_tri_updates() const {
+  int tmp = 0;
+  for (int i = 0; i < static_cast<int>(tri_update::NUM); ++i) {
+    tmp += _num_degenerate_tri_updates[i];
+  }
+  return tmp;
+}
+
+static int get_tri_index(int d1, int d2) {
+  int i = -1;
   if (d1 > d2) std::swap(d1, d2);
   if (d1 == 1) {
-    if (d2 == 1) ++_num_tri_updates[0];
-    else if (d2 == 2) ++_num_tri_updates[1];
-    else if (d2 == 3) ++_num_tri_updates[2];
+    if (d2 == 1) i = 0;
+    else if (d2 == 2) i = 1;
+    else if (d2 == 3) i = 2;
     else assert(false);
   } else if (d1 == 2) {
-    if (d2 == 2) ++_num_tri_updates[3];
-    else if (d2 == 3) ++_num_tri_updates[4];
+    if (d2 == 2) i = 3;
+    else if (d2 == 3) i = 4;
     else assert(false);
   } else {
     assert(false);
   }
+  return i;
+}
+
+void olim3d_node_stats::inc_tri_updates(int d1, int d2, bool degenerate) {
+  int i = get_tri_index(d1, d2);
+  if (degenerate) ++_num_degenerate_tri_updates[i];
+  ++_num_tri_updates[i];
 }
 
 int olim3d_node_stats::num_tetra_updates() const {

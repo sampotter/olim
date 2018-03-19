@@ -21,7 +21,7 @@
 #define F0_line__(i) (u##i + h*(s + s##i)*char_sqrt__(p##i##_dot_p##i)/2)
 
 template <char p0, char p1>
-double
+update_return_t
 update_rules::mp0_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -53,12 +53,23 @@ update_rules::mp0_tri_updates::tri(
   double const disc = b*b - a*c;
 
   double T;
+#if COLLECT_STATS
+  bool degenerate = false;
+#endif
   if (disc < 0 || a == 0) {
     T = min(F0_line__(0), F0_line__(1));
+#if COLLECT_STATS
+    degenerate = true;
+#endif
   } else {
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
+#if COLLECT_STATS
+    if (lam < EPS(double) || 1 - EPS(double) < lam) {
+      degenerate = true;
+    }
+#endif
     T = lam < 0 || 1 < lam ?
       min(F0_line__(0), F0_line__(1)) : u0 + lam*du + h*s__(lam)*l__(lam);
   }
@@ -67,7 +78,11 @@ update_rules::mp0_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, T);
 #endif
+#if COLLECT_STATS
+  return {T, degenerate};
+#else
   return T;
+#endif
 }
 
 #undef F0_line__
@@ -75,7 +90,7 @@ update_rules::mp0_tri_updates::tri(
 #define F0_line__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
 
 template <char p0, char p1>
-double
+update_return_t
 update_rules::rhr_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -110,12 +125,23 @@ update_rules::rhr_tri_updates::tri(
   double const disc = b*b - a*c;
 
   double T;
+#if COLLECT_STATS
+  bool degenerate = false;
+#endif
   if (disc < 0 || a == 0) {
     T = min(F0_line__(0), F0_line__(1));
+#if COLLECT_STATS
+    degenerate = true;
+#endif
   } else {
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
+#if COLLECT_STATS
+    if (lam < EPS(double) || 1 - EPS(double) < lam) {
+      degenerate = true;
+    }
+#endif
     T = lam < 0 || 1 < lam ?
       min(F0_line__(0), F0_line__(1)) : u0 + lam*du + sh*l__(lam);
   }
@@ -123,7 +149,11 @@ update_rules::rhr_tri_updates::tri(
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, T);
 #endif
+#if COLLECT_STATS
+  return {T, degenerate};
+#else
   return T;
+#endif
 }
 
 #undef l__
@@ -144,7 +174,7 @@ update_rules::rhr_tri_updates::tri(
  * F1 specialization
  */
 template <char p0, char p1>
-double
+update_return_t
 update_rules::mp1_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -194,7 +224,11 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, F1[1]);
 #endif
+#if COLLECT_STATS
+  return {F1[1], lam[1] < EPS(double) || 1 - EPS(double) < lam[1]};
+#else
   return F1[1];
+#endif
 }
 
 #undef u__

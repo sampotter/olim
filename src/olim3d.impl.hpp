@@ -96,26 +96,32 @@ constexpr int oct2inds[8][7] = {
   } while (0)
 
 #if COLLECT_STATS
-#  define UPDATE_TRI_STATS(p0, p1) do {                 \
-    node_stats.inc_tri_updates(weight(p0), weight(p1)); \
+#  define UPDATE_TRI_STATS(tmp, p0, p1) do {                        \
+    bool degenerate = tmp.second;                                   \
+    node_stats.inc_tri_updates(weight(p0), weight(p1), degenerate); \
   } while (0)
 #else
-#  define UPDATE_TRI_STATS(p0, p1) do {} while (0)
+#  define UPDATE_TRI_STATS(tmp, p0, p1) do {} while (0)
+#endif
+
+#if COLLECT_STATS
+#  define __get_T(tmp) tmp.first
+#else
+#  define __get_T(tmp) tmp
 #endif
 
 #define TRI(i, j, p0, p1) do {                  \
     int l0 = inds[i], l1 = inds[j];             \
     if (nb[l0] && nb[l1]) {                     \
-      T = min(                                  \
-        T,                                      \
-        this->tri(                              \
+      auto tmp = this->tri(                     \
           VAL(l0),                              \
           VAL(l1),                              \
           SPEED_ARGS(l0, l1),                   \
           h,                                    \
           ffvec<P ## p0> {},                    \
-          ffvec<P ## p1> {}));                  \
-      UPDATE_TRI_STATS(P ## p0, P ## p1);       \
+          ffvec<P ## p1> {});                   \
+      T = min(T, __get_T(tmp));                 \
+      UPDATE_TRI_STATS(tmp, P ## p0, P ## p1);  \
     }                                           \
   } while (0)
 
@@ -157,9 +163,10 @@ void olim3d<
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
         auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: line = %d, tri = %d, tetra = %d\n",
+        printf("%d, %d, %d: line = %d, tri = %d/%d, tetra = %d\n",
                i, j, k,
                stats.num_line_updates(),
+               stats.num_degenerate_tri_updates(),
                stats.num_tri_updates(),
                stats.num_tetra_updates());
       }

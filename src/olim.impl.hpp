@@ -34,9 +34,16 @@
     ffvec<P ## p0> {},                          \
     ffvec<P ## p1> {})
 
+#if COLLECT_STATS
+#  define __get_T(tmp) tmp.first
+#else
+#  define __get_T(tmp) tmp
+#endif
+
 #define DO_TRI(i, j, p0, p1) do {               \
     if (nb[i] && nb[j]) {                       \
-      T = min(T, TRI(i, j, p0, p1));            \
+      auto tmp = TRI(i, j, p0, p1);             \
+      T = min(T, __get_T(tmp));                 \
     }                                           \
   } while (0)
 

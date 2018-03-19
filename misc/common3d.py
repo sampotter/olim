@@ -99,12 +99,17 @@ def toc():
         raise RuntimeError("tic() hasn't been called")
 
 def time_marcher(Marcher, s, n, ntrials=10):
+    print('  - n = %d' % n)
     h = 2/(n - 1)
     l = np.linspace(-1, 1, n)
+    i = int(n/2)
     x, y, z = np.meshgrid(l, l, l)
     s_cache = s(x, y, z)
-    def do_trial():
+    def do_trial(trial):
         tic()
-        Marcher(s_cache, h)
+        m = Marcher(s_cache, h)
+        m.addBoundaryNode(i, i, i)
+        m.run()
         return toc()
-    return min(do_trial() for _ in range(ntrials))
+    times = min(do_trial(t) for t in range(ntrials))
+    return times

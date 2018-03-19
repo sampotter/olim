@@ -48,6 +48,7 @@ def parse_args():
     p.add_argument('-m', '--minpow', type=int, default=3)
     p.add_argument('-M', '--maxpow', type=int, default=7)
     p.add_argument('-s', '--step', type=int, default=2)
+    p.add_argument('-t', '--trials', type=int, default=10)
     p.add_argument('--speed_funcs', type=str)
     return p.parse_args()
 
@@ -63,7 +64,7 @@ def create_datasets(f, M_by_s, ns):
         f.create_dataset(name + '/max', (len(ns),), dtype=np.float)
         f.create_dataset(name + '/t', (len(ns),), dtype=np.float)
 
-def populate_datasets(Marcher, s, ns):
+def populate_datasets(Marcher, s, ns, t):
     name = get_dataset_name(Marcher, s)
     print(name)
 
@@ -84,7 +85,7 @@ def populate_datasets(Marcher, s, ns):
     f[name + '/max'][:] = [linf_error(u - U) for u, U in zip(us, Us)]
 
     print('- collecting CPU times')
-    f[name + '/t'][:] = [time_marcher(Marcher, s, n) for n in ns]
+    f[name + '/t'][:] = [time_marcher(Marcher, s, n, ntrials=t) for n in ns]
 
 if __name__ == '__main__':
     args = parse_args()
@@ -109,4 +110,4 @@ if __name__ == '__main__':
         for i, (Marcher, s) in enumerate(product(marchers, speed_funcs_)):
             if i % size != rank:
                 continue
-            populate_datasets(Marcher, s, ns)
+            populate_datasets(Marcher, s, ns, args.trials)

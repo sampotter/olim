@@ -1,0 +1,12 @@
+* Plots to add
+
+  - Circle boundary
+
+* Things to measure
+
+  - [ ] number of types of updates
+    - count the number of types of updates
+      - # line/tri/tetra updates
+      - or by degree vector (e.g. # (1, 2) tri updates vs (2, 2))
+
+  - [ ] number of times each node is visited

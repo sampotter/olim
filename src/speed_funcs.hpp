@@ -45,7 +45,9 @@ double f6(double x, double y);
 double s7(double x, double y);
 double f7(double x, double y);
 
-#pragma GCC diagnostic ignored "-Wunused-variable"
+#ifndef __clang__
+#    pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 static std::array<speed_func, 10> speed_funcs {{
   default_speed_func, s1, s2, s3, s4xy, s4xz, s4yz, s5, s6, s7
@@ -59,6 +61,8 @@ static std::array<double(*)(double, double, double), 3> speed_funcs_3d {{
   default_speed_func, s1, s4
 }};
 
-#pragma GCC diagnostic pop
+#ifndef __clang__
+#    pragma GCC diagnostic pop
+#endif
 
 #endif // __SPEED_FUNCS_HPP__

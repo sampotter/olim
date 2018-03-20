@@ -252,54 +252,13 @@ void olim3d<
   auto & node_stats = get_node_stats(i, j, k);
 #endif
 
-  /**
-   * Line updates:
-   */
-  for (int l = 0; l < 6; ++l) LINE(l, 1);
-  if (do_line2_updates) for (int l = 6; l < 18; ++l) LINE(l, 2);
-  if (do_line3_updates) for (int l = 18; l < 26; ++l) LINE(l, 3);
-
   int const * inds;
+
+  /**
+   * Tetrahedron updates:
+   */
   for (int octant = 0; octant < 8; ++octant) {
     inds = oct2inds[octant];
-
-    /**
-     * Triangle updates:
-     */
-    if (should_do_xyz_planar_updates(octant)) {
-      if (do_tri11_updates) {
-        TRI(0, 2, 001, 010);
-        TRI(2, 4, 010, 100);
-        TRI(4, 0, 100, 001);
-      }
-      if (do_tri12_updates) {
-        TRI(0, 1, 001, 011);
-        TRI(2, 1, 010, 011);
-        TRI(2, 3, 010, 110);
-        TRI(4, 3, 100, 110);
-        TRI(4, 5, 100, 101);
-        TRI(0, 5, 001, 101);
-      }
-    }
-    if (do_tri13_updates) {
-      TRI(0, 6, 001, 111);
-      TRI(2, 6, 010, 111);
-      TRI(4, 6, 100, 111);
-    }
-    if (do_tri22_updates) {
-      TRI(1, 3, 011, 110);
-      TRI(3, 5, 110, 101);
-      TRI(5, 1, 101, 011);
-    }
-    if (do_tri23_updates) {
-      TRI(1, 6, 011, 111);
-      TRI(3, 6, 110, 111);
-      TRI(5, 6, 101, 111);
-    }
-
-    /**
-     * Tetrahedron updates:
-     */
     if (groups::group_I) {
       TETRA(1, 2, 3, 011, 010, 110);
       TETRA(3, 4, 5, 110, 100, 101);
@@ -344,6 +303,60 @@ void olim3d<
       TETRA(1, 3, 6, 011, 110, 111);
       TETRA(3, 5, 6, 110, 101, 111);
       TETRA(5, 1, 6, 101, 011, 111);
+    }
+  }
+
+  /**
+   * Triangle updates:
+   */
+  for (int octant = 0; octant < 8; ++octant) {
+    inds = oct2inds[octant];
+    if (should_do_xyz_planar_updates(octant)) {
+      if (do_tri11_updates) {
+        TRI(0, 2, 001, 010);
+        TRI(2, 4, 010, 100);
+        TRI(4, 0, 100, 001);
+      }
+      if (do_tri12_updates) {
+        TRI(0, 1, 001, 011);
+        TRI(2, 1, 010, 011);
+        TRI(2, 3, 010, 110);
+        TRI(4, 3, 100, 110);
+        TRI(4, 5, 100, 101);
+        TRI(0, 5, 001, 101);
+      }
+    }
+    if (do_tri13_updates) {
+      TRI(0, 6, 001, 111);
+      TRI(2, 6, 010, 111);
+      TRI(4, 6, 100, 111);
+    }
+    if (do_tri22_updates) {
+      TRI(1, 3, 011, 110);
+      TRI(3, 5, 110, 101);
+      TRI(5, 1, 101, 011);
+    }
+    if (do_tri23_updates) {
+      TRI(1, 6, 011, 111);
+      TRI(3, 6, 110, 111);
+      TRI(5, 6, 101, 111);
+    }
+  }
+
+  /**
+   * Line updates:
+   */
+  for (int l = 0; l < 6; ++l) {
+    LINE(l, 1);
+  }
+  if (do_line2_updates) {
+    for (int l = 6; l < 18; ++l) {
+      LINE(l, 2);
+    }
+  }
+  if (do_line3_updates) {
+    for (int l = 18; l < 26; ++l) {
+      LINE(l, 3);
     }
   }
 

@@ -1,7 +1,7 @@
 * Optimization
   Use different branches for these...
-  - [ ] Better "update sequencing" algorithms
-    - [ ] basic
+  - [-] Better "update sequencing" algorithms
+    - [X] basic
       - check number of updates again after and compare
       - compare timings
     - [ ] basic w/ unconstrained and update skipping

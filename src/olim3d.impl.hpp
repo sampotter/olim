@@ -80,9 +80,76 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
+// tri11 updates
+#define __index02 0
+#define __index20 0
+#define __index24 1
+#define __index42 1
+#define __index04 2
+#define __index40 2
+
+// planar tri12 updates
+#define __index01 3
+#define __index10 3
+#define __index05 4
+#define __index50 4
+#define __index21 5
+#define __index12 5
+#define __index23 6
+#define __index32 6
+#define __index34 7
+#define __index43 7
+#define __index45 8
+#define __index54 8
+
+// nonplanar tri12 updates
+#define __index03 9
+#define __index30 9
+#define __index14 10
+#define __index41 10
+#define __index25 11
+#define __index52 11
+
+// tri13 updates
+#define __index06 12
+#define __index60 12
+#define __index26 13
+#define __index62 13
+#define __index46 14
+#define __index64 14
+
+// tri22 updates
+#define __index13 15
+#define __index31 15
+#define __index35 16
+#define __index53 16
+#define __index15 17
+#define __index51 17
+
+// tri23 updates
+#define __index16 18
+#define __index61 18
+#define __index36 19
+#define __index63 19
+#define __index56 20
+#define __index65 20
+
+#define __is_planar_tri_update(i, j) ((__index##i##j) < 9)
+
+#define __get_tri_skip_list(i, j)               \
+  (__is_planar_tri_update(i, j) ? planar_tri_skip_list : tri_skip_list)
+
+#define __get_tri_index(i, j)                                           \
+  (__is_planar_tri_update(i, j) ? (__index##i##j) : (__index##i##j) - 9)
+
+#define __get_offset(i, j) (__is_planar_tri_update(i, j) ? 9 : 12)
+
+#define __skip_tri(i, j)                                    \
+  __get_tri_skip_list(i, j)[__get_offset(i, j)*octant + __get_tri_index(i, j)]
+
 #if COLLECT_STATS
-#  define UPDATE_LINE_STATS(d) do {    \
-    node_stats.inc_line_updates(d);   \
+#  define UPDATE_LINE_STATS(d) do {             \
+    node_stats.inc_line_updates(d);             \
   } while (0)
 #else
 #  define UPDATE_LINE_STATS(d) do {} while (0)
@@ -111,17 +178,19 @@ constexpr int oct2inds[8][7] = {
 #endif
 
 #define TRI(i, j, p0, p1) do {                  \
-    int l0 = inds[i], l1 = inds[j];             \
-    if (nb[l0] && nb[l1]) {                     \
-      auto tmp = this->tri(                     \
+    if (!__skip_tri(i, j)) {                    \
+      int l0 = inds[i], l1 = inds[j];           \
+      if (nb[l0] && nb[l1]) {                   \
+        auto tmp = this->tri(                   \
           VAL(l0),                              \
           VAL(l1),                              \
           SPEED_ARGS(l0, l1),                   \
           h,                                    \
-          ffvec<P ## p0> {},                    \
-          ffvec<P ## p1> {});                   \
-      T = min(T, __get_T(tmp));                 \
-      UPDATE_TRI_STATS(tmp, P ## p0, P ## p1);  \
+          ffvec<P##p0> {},                      \
+          ffvec<P##p1> {});                     \
+        T = min(T, __get_T(tmp));               \
+        UPDATE_TRI_STATS(tmp, P##p0, P##p1);    \
+      }                                         \
     }                                           \
   } while (0)
 
@@ -133,22 +202,25 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_TETRA_STATS(p0, p1, p2) do {} while (0)
 #endif
 
-#define TETRA(i, j, k, p0, p1, p2) do {                 \
-    int l0 = inds[i], l1 = inds[j], l2 = inds[k];       \
-    if (nb[l0] && nb[l1] && nb[l2]) {                   \
-      T = min(                                          \
-        T,                                              \
-        this->tetra(                                    \
-          VAL(l0),                                      \
-          VAL(l1),                                      \
-          VAL(l2),                                      \
-          SPEED_ARGS(l0, l1, l2),                       \
-          h,                                            \
-          ffvec<P ## p0> {},                            \
-          ffvec<P ## p1> {},                            \
-          ffvec<P ## p2> {}));                          \
-      UPDATE_TETRA_STATS(P ## p0, P ## p1, P ## p2);    \
-    }                                                   \
+#define TETRA(i, j, k, p0, p1, p2) do {             \
+    int l0 = inds[i], l1 = inds[j], l2 = inds[k];   \
+    if (nb[l0] && nb[l1] && nb[l2]) {               \
+      T = min(                                      \
+        T,                                          \
+        this->tetra(                                \
+          VAL(l0),                                  \
+          VAL(l1),                                  \
+          VAL(l2),                                  \
+          SPEED_ARGS(l0, l1, l2),                   \
+          h,                                        \
+          ffvec<P##p0> {},                          \
+          ffvec<P##p1> {},                          \
+          ffvec<P##p2> {}));                        \
+      UPDATE_TETRA_STATS(P##p0, P##p1, P##p2);      \
+      __skip_tri(i, j) = 0x1;                       \
+      __skip_tri(j, k) = 0x1;                       \
+      __skip_tri(i, k) = 0x1;                       \
+    }                                               \
   } while (0)
 
 #if COLLECT_STATS
@@ -253,6 +325,15 @@ void olim3d<
 #endif
 
   int const * inds;
+
+  /**
+   * These two arrays are used to keep track of which triangle updates
+   * should be skipped.
+   */
+  char planar_tri_skip_list[8*9]; // this is inefficient--only need [4][9]
+  char tri_skip_list[8*12];
+  memset((void *) planar_tri_skip_list, 0x0, sizeof(char)*8*9);
+  memset((void *) tri_skip_list, 0x0, sizeof(char)*8*12);
 
   /**
    * Tetrahedron updates:
@@ -368,6 +449,13 @@ void olim3d<
 #undef LINE
 #undef TRI
 #undef TETRA
+
+#undef __is_planar_tri_update
+#undef __get_tri_skip_list
+#undef __get_tri_index
+#undef __get_offset
+#undef __skip_tri
+
 #undef P001
 #undef P010
 #undef P011

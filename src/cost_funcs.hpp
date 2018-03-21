@@ -3,11 +3,6 @@
 
 #include "common.macros.hpp"
 
-// TODO: this is an awful hack that we're going to use for now---we
-// obviously don't want to use virtual functions in a hot path like
-// this. We're just going this route until we take care of some other
-// things that are higher priority.
-
 /**
  * An explanation of the template arguments:
  * - derived: the effective derived subclass (this implementation uses

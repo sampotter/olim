@@ -134,6 +134,8 @@ constexpr int oct2inds[8][7] = {
 #define __index56 20
 #define __index65 20
 
+#define __skip_line(i) line_skip_list[oct2inds[octant][i]]
+
 #define __is_planar_tri_update(i, j) ((__index##i##j) < 9)
 
 #define __get_tri_skip_list(i, j)               \
@@ -155,11 +157,13 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_LINE_STATS(d) do {} while (0)
 #endif
 
-#define LINE(i, d) do {                                             \
-    if (nb[i]) {                                                    \
-      T = min(T, this->template line<d>(VAL(i), SPEED_ARGS(i), h)); \
-      UPDATE_LINE_STATS(d);                                         \
-    }                                                               \
+#define LINE(i, d) do {                                                 \
+    if (!line_skip_list[i]) {                                           \
+      if (nb[i]) {                                                      \
+        T = min(T, this->template line<d>(VAL(i), SPEED_ARGS(i), h));   \
+        UPDATE_LINE_STATS(d);                                           \
+      }                                                                 \
+    }                                                                   \
   } while (0)
 
 #if COLLECT_STATS
@@ -190,6 +194,8 @@ constexpr int oct2inds[8][7] = {
           ffvec<P##p1> {});                     \
         T = min(T, __get_T(tmp));               \
         UPDATE_TRI_STATS(tmp, P##p0, P##p1);    \
+        __skip_line(i) = 0x1;                   \
+        __skip_line(j) = 0x1;                   \
       }                                         \
     }                                           \
   } while (0)
@@ -220,6 +226,9 @@ constexpr int oct2inds[8][7] = {
       __skip_tri(i, j) = 0x1;                       \
       __skip_tri(j, k) = 0x1;                       \
       __skip_tri(i, k) = 0x1;                       \
+      __skip_line(i) = 0x1;                         \
+      __skip_line(j) = 0x1;                         \
+      __skip_line(k) = 0x1;                         \
     }                                               \
   } while (0)
 
@@ -327,13 +336,15 @@ void olim3d<
   int const * inds;
 
   /**
-   * These two arrays are used to keep track of which triangle updates
-   * should be skipped.
+   * These arrays are used to keep track of which triangle and line
+   * updates should be skipped.
    */
   char planar_tri_skip_list[8*9]; // this is inefficient--only need [4][9]
   char tri_skip_list[8*12];
+  char line_skip_list[26];
   memset((void *) planar_tri_skip_list, 0x0, sizeof(char)*8*9);
   memset((void *) tri_skip_list, 0x0, sizeof(char)*8*12);
+  memset((void *) line_skip_list, 0x0, sizeof(char)*26);
 
   /**
    * Tetrahedron updates:

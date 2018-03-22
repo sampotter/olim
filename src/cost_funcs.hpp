@@ -3,10 +3,18 @@
 
 #include "common.macros.hpp"
 
-// TODO: this is an awful hack that we're going to use for now---we
-// obviously don't want to use virtual functions in a hot path like
-// this. We're just going this route until we take care of some other
-// things that are higher priority.
+/**
+ * TODO: this was a vaguely interesting way to go about implementing
+ * the cost functions, but this isn't a particularly flexible
+ * approach. It would be better to define a POD type structure which
+ * contains the parameters, and then define a set of free functions
+ * operating on that structure for each cost function. This way
+ * (i.e. for mp0wr) we don't need to waste time reconstructing the
+ * cost function and setting arguments, we can just reevaluate using a
+ * different cost function. This approach should also give us the
+ * simultaneous benefits of organization via OO and speed via "having
+ * everything inline in the loop".
+ */
 
 /**
  * An explanation of the template arguments:
@@ -90,5 +98,131 @@ EIKONAL_PRIVATE:
   double _h;
   double _theta;
 };
+
+template <class derived, char p0, char p1, char p2, int d>
+struct cost_func_bv {
+  inline void eval(double & f) const {
+    static_cast<derived const *>(this)->eval_impl(f);
+  }
+
+  inline void grad(double df[d]) const {
+    static_cast<derived const *>(this)->grad_impl(df);
+  }
+
+  inline void hess(double d2f[d][d]) const {
+    static_cast<derived const *>(this)->hess_impl(d2f);
+  }
+
+  inline void set_lambda(double const lambda[d]) {
+    static_cast<derived *>(this)->set_lambda_impl(lambda);
+  }
+
+  inline void set_args(double const u[d + 1], double s_hat,
+                       double const s[d + 1]) {
+    static_cast<derived *>(this)->set_args_impl(u, s_hat, s);
+  }
+};
+
+// TODO: if this is the "general template", we would ideally like to
+// replace "p0, p1, p2" with something like "char... ps"---not sure if
+// we can still specialize the way we want to if we do this, though
+template <char p0, char p1, char p2, int d>
+struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
+  F0_bv(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
+  void grad_impl(double df[d]) const;
+  void hess_impl(double d2f[d][d]) const;
+  void set_lambda_impl(double const lambda[d]);
+  void set_args_impl(double const u[d + 1], double s_hat,
+                     double const s[d + 1]);
+EIKONAL_PRIVATE:
+  double _sh;
+  double _u0;
+  double _du[d];
+  double _u_lam;
+  double _l;
+  double _q;
+  double _p_lam[3];
+  double _h;
+  double _theta;
+};
+
+// Specialization for d = 2
+template <char p0, char p1, char p2>
+struct F0_bv<p0, p1, p2, 2>:
+  public cost_func_bv<F0_bv<p0, p1, p2, 2>, p0, p1, p2, 2>
+{
+  F0_bv(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
+  void grad_impl(double df[2]) const;
+  void hess_impl(double d2f[2][2]) const;
+  void set_lambda_impl(double const lambda[2]);
+  void set_args_impl(double const u[3], double s_hat,
+                     double const s[3]);
+EIKONAL_PRIVATE:
+  double _sh;
+  double _u0;
+  double _du[2];
+  double _u_lam;
+  double _l;
+  double _q;
+  double _p_lam[3];
+  double _h;
+  double _theta;
+};
+
+// TODO: see comment for F0_bv<p0, p1, p2, d>
+template <char p0, char p1, char p2, int d>
+struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
+  F1_bv(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
+  void grad_impl(double df[d]) const;
+  void hess_impl(double d2f[d][d]) const;
+  void set_lambda_impl(double const lambda[d]);
+  void set_args_impl(double const u[d + 1], double s_hat,
+                     double const s[d + 1]);
+EIKONAL_PRIVATE:
+  double _s_hat;
+  double _stheta;
+  double _s0;
+  double _ds[d];
+  double _q;
+  double _l;
+  double _u_lam;
+  double _u0;
+  double _du[d];
+  double _p_lam[3];
+  double _h;
+  double _theta;
+};
+
+// Specialization for d = 2
+template <char p0, char p1, char p2>
+struct F1_bv<p0, p1, p2, 2>:
+  public cost_func_bv<F1_bv<p0, p1, p2, 2>, p0, p1, p2, 2>
+{
+  F1_bv(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
+  void grad_impl(double df[2]) const;
+  void hess_impl(double d2f[2][2]) const;
+  void set_lambda_impl(double const lambda[2]);
+  void set_args_impl(double const u[3], double s_hat,
+                     double const s[3]);
+EIKONAL_PRIVATE:
+  double _s_hat;
+  double _stheta;
+  double _s0;
+  double _ds[2];
+  double _q;
+  double _l;
+  double _u_lam;
+  double _u0;
+  double _du[2];
+  double _p_lam[3];
+  double _h;
+  double _theta;
+};
+
+#include "cost_funcs.impl.hpp"
 
 #endif // __COST_FUNCS_HPP__

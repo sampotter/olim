@@ -1,7 +1,9 @@
 #ifndef __OFFSETS_HPP__
 #define __OFFSETS_HPP__
 
-#pragma GCC diagnostic ignored "-Wunused-variable"
+#ifndef __clang__
+#    pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
 
 namespace {
   template <int d>
@@ -19,6 +21,8 @@ namespace {
 
 #include "offsets.impl.hpp"
 
-#pragma GCC diagnostic pop
+#ifndef __clang__
+#    pragma GCC diagnostic pop
+#endif
 
 #endif // __OFFSETS_HPP__

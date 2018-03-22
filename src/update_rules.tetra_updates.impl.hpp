@@ -19,7 +19,7 @@
 
 template <class derived>
 template <char p0, char p1, char p2>
-double update_rules::tetra_updates<derived>::tetra(
+update_return_t update_rules::tetra_updates<derived>::tetra(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h,
   ffvec<p0>, ffvec<p1>, ffvec<p2>) const
@@ -61,7 +61,7 @@ double update_rules::tetra_updates<derived>::tetra(
 }
 
 template <class derived>
-double update_rules::tetra_updates<derived>::tetra(
+update_return_t update_rules::tetra_updates<derived>::tetra(
   double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
@@ -107,7 +107,11 @@ double update_rules::tetra_updates<derived>::tetra(
          u0, u1, u2, s, s0, s1, s2, h, value);
 #endif
 
+#if COLLECT_STATS
+  return {value, func.degenerate_lambda()};
+#else
   return value;
+#endif
 }
 
 #endif // __UPDATE_RULES_TETRA_UPDATES_IMPL_HPP__

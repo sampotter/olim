@@ -19,7 +19,7 @@
 
 template <class derived>
 template <char p0, char p1, char p2>
-double update_rules::tetra_updates<derived>::tetra(
+update_return_t update_rules::tetra_updates<derived>::tetra(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h,
   ffvec<p0>, ffvec<p1>, ffvec<p2>) const
@@ -27,7 +27,7 @@ double update_rules::tetra_updates<derived>::tetra(
   double p0_vec[3] = {component(p0, 0), component(p0, 1), component(p0, 2)};
   double p1_vec[3] = {component(p1, 0), component(p1, 1), component(p1, 2)};
   double p2_vec[3] = {component(p2, 0), component(p2, 1), component(p2, 2)};
-  double tmp = tetra(p0_vec, p1_vec, p2_vec, u0, u1, u2, s, s0, s1, s2, h);
+  auto tmp = tetra(p0_vec, p1_vec, p2_vec, u0, u1, u2, s, s0, s1, s2, h);
 #if PRINT_UPDATES
   printf("tetra<%d, %d, %d>(u0 = %g, u1 = %g, u2 = %g, s = %g, "
          "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
@@ -37,7 +37,7 @@ double update_rules::tetra_updates<derived>::tetra(
 }
 
 template <class derived>
-double update_rules::tetra_updates<derived>::tetra(
+update_return_t update_rules::tetra_updates<derived>::tetra(
   double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
@@ -72,7 +72,11 @@ double update_rules::tetra_updates<derived>::tetra(
     func.eval(value);
   }
 
+#if COLLECT_STATS
+  return {value, func.degenerate_lambda()};
+#else
   return value;
+#endif
 }
 
 #endif // __UPDATE_RULES_TETRA_UPDATES_IMPL_HPP__

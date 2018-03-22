@@ -1,6 +1,8 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
+#include <src/config.hpp>
+
 #include "common.macros.hpp"
 
 // TODO: this is an awful hack that we're going to use for now---we
@@ -30,7 +32,21 @@ struct cost_func {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
+#if COLLECT_STATS
+  inline bool degenerate_lambda() const {
+    double lam0 = 0;
+    for (int i = 0; i < d; ++i) {
+      lam0 += _lam[i];
+      if (_lam[i] < EPS(double)) return true;
+    }
+    return lam0 > 1 - EPS(double);
+  }
+#endif
+
   inline void set_lambda(double const lambda[d]) {
+#if COLLECT_STATS
+    for (int i = 0; i < d; ++i) _lam[i] = lambda[i];
+#endif
     static_cast<derived *>(this)->set_lambda_impl(lambda);
   }
 
@@ -40,6 +56,11 @@ struct cost_func {
                        double const p[d + 1][n]) {
     static_cast<derived *>(this)->set_args_impl(u, s_hat, s, p);
   }
+
+#if COLLECT_STATS
+EIKONAL_PRIVATE:
+  double _lam[d];
+#endif
 };
 
 template <int n, int d>

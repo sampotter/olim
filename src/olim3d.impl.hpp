@@ -114,41 +114,42 @@ constexpr int oct2inds[8][7] = {
     int l0 = inds[i], l1 = inds[j];             \
     if (nb[l0] && nb[l1]) {                     \
       auto tmp = this->tri(                     \
-          VAL(l0),                              \
-          VAL(l1),                              \
-          SPEED_ARGS(l0, l1),                   \
-          h,                                    \
-          ffvec<P ## p0> {},                    \
-          ffvec<P ## p1> {});                   \
+        VAL(l0),                                \
+        VAL(l1),                                \
+        SPEED_ARGS(l0, l1),                     \
+        h,                                      \
+        ffvec<P ## p0> {},                      \
+        ffvec<P ## p1> {});                     \
       T = min(T, __get_T(tmp));                 \
       UPDATE_TRI_STATS(tmp, P ## p0, P ## p1);  \
     }                                           \
   } while (0)
 
 #if COLLECT_STATS
-#  define UPDATE_TETRA_STATS(p0, p1, p2) do {                           \
-    node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2));   \
+#  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
+    bool degenerate = tmp.second;                                       \
+    node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
+                                 degenerate);                           \
   } while (0)
 #else
 #  define UPDATE_TETRA_STATS(p0, p1, p2) do {} while (0)
 #endif
 
-#define TETRA(i, j, k, p0, p1, p2) do {                 \
-    int l0 = inds[i], l1 = inds[j], l2 = inds[k];       \
-    if (nb[l0] && nb[l1] && nb[l2]) {                   \
-      T = min(                                          \
-        T,                                              \
-        this->tetra(                                    \
-          VAL(l0),                                      \
-          VAL(l1),                                      \
-          VAL(l2),                                      \
-          SPEED_ARGS(l0, l1, l2),                       \
-          h,                                            \
-          ffvec<P ## p0> {},                            \
-          ffvec<P ## p1> {},                            \
-          ffvec<P ## p2> {}));                          \
-      UPDATE_TETRA_STATS(P ## p0, P ## p1, P ## p2);    \
-    }                                                   \
+#define TETRA(i, j, k, p0, p1, p2) do {                     \
+    int l0 = inds[i], l1 = inds[j], l2 = inds[k];           \
+    if (nb[l0] && nb[l1] && nb[l2]) {                       \
+      auto tmp = this->tetra(                               \
+        VAL(l0),                                            \
+        VAL(l1),                                            \
+        VAL(l2),                                            \
+        SPEED_ARGS(l0, l1, l2),                             \
+        h,                                                  \
+        ffvec<P ## p0> {},                                  \
+        ffvec<P ## p1> {},                                  \
+        ffvec<P ## p2> {});                                 \
+      T = min(T, __get_T(tmp));                             \
+      UPDATE_TETRA_STATS(tmp, P ## p0, P ## p1, P ## p2);   \
+    }                                                       \
   } while (0)
 
 #if COLLECT_STATS
@@ -163,11 +164,12 @@ void olim3d<
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
         auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: line = %d, tri = %d/%d, tetra = %d\n",
+        printf("%d, %d, %d: line = %d, tri = %d/%d, tetra = %d/%d\n",
                i, j, k,
                stats.num_line_updates(),
                stats.num_degenerate_tri_updates(),
                stats.num_tri_updates(),
+               stats.num_degenerate_tetra_updates(),
                stats.num_tetra_updates());
       }
     }

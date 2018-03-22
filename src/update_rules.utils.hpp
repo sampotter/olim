@@ -4,6 +4,18 @@
 #include <cassert>
 #include <utility>
 
+/**
+ * This typedef allows us to optionally return whether an update was
+ * degenerate or not (which only makes sense for d > 1 updates). This
+ * is only done if the COLLECT_STATS compiler flag is set in the CMake
+ * build.
+ */
+#if COLLECT_STATS
+using update_return_t = std::pair<double, bool>;
+#else
+using update_return_t = double;
+#endif
+
 template <char c>
 using ffvec = std::integral_constant<char, c>;
 

@@ -7,12 +7,6 @@
 #include "cost_funcs.hpp"
 #include "update_rules.utils.hpp"
 
-#if COLLECT_STATS
-using update_return_t = std::pair<double, bool>;
-#else
-using update_return_t = double;
-#endif
-
 namespace update_rules {
   struct mp0_tri_updates {
     template <char p0, char p1>

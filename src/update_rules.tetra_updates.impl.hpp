@@ -24,16 +24,40 @@ double update_rules::tetra_updates<derived>::tetra(
   double s0, double s1, double s2, double h,
   ffvec<p0>, ffvec<p1>, ffvec<p2>) const
 {
-  double p0_vec[3] = {component(p0, 0), component(p0, 1), component(p0, 2)};
-  double p1_vec[3] = {component(p1, 0), component(p1, 1), component(p1, 2)};
-  double p2_vec[3] = {component(p2, 0), component(p2, 1), component(p2, 2)};
-  double tmp = tetra(p0_vec, p1_vec, p2_vec, u0, u1, u2, s, s0, s1, s2, h);
+  double u[3] = {u0, u1, u2};
+  double s_hat = s;
+  double s_[3] = {s0, s1, s2};
+
+  using cost_func_t = typename derived::template cost_func<p0, p1, p2>;
+
+  cost_func_t func {h, static_cast<derived const *>(this)->theta()};
+  func.set_args(u, s_hat, s_);
+
+  double lambda[2], value;
+  bool error;
+  numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
+  sqp(func, lambda, &error);
+  assert(!error);
+
+  // TODO: awful hack for now---need to fix the way we've organized
+  // the cost functions
+  if (std::is_same<derived, mp0_tetra_updates>::value) {
+    F1_bv<p0, p1, p2, 2> eval_func {h, static_cast<derived const *>(this)->theta()};
+    eval_func.set_args(u, s_hat, s_);
+    eval_func.set_lambda(lambda);
+    eval_func.eval(value);
+  } else {
+    func.set_lambda(lambda); // TODO: maybe unnecessary
+    func.eval(value);
+  }
+
 #if PRINT_UPDATES
   printf("tetra<%d, %d, %d>(u0 = %g, u1 = %g, u2 = %g, s = %g, "
          "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
-         p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, tmp);
+         p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, value);
 #endif
-  return tmp;
+
+  return value;
 }
 
 template <class derived>
@@ -76,6 +100,12 @@ double update_rules::tetra_updates<derived>::tetra(
     func.set_lambda(lambda); // TODO: maybe unnecessary
     func.eval(value);
   }
+
+#if PRINT_UPDATES
+  printf("tetra(u0 = %g, u1 = %g, u2 = %g, s = %g, "
+         "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
+         u0, u1, u2, s, s0, s1, s2, h, value);
+#endif
 
   return value;
 }

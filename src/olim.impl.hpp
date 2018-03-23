@@ -95,6 +95,9 @@ void olim<node, line_updates, tri_updates, adj_updates,
 #undef LINE
 #undef DO_LINE
 #undef TRI
+
+#undef __get_T
+
 #undef DO_TRI
 
 #endif // __OLIM_IMPL_HPP__

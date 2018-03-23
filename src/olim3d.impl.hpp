@@ -167,70 +167,71 @@ constexpr int oct2inds[8][7] = {
   } while (0)
 
 #if COLLECT_STATS
-#  define UPDATE_TRI_STATS(tmp, p0, p1) do {                        \
-    bool degenerate = tmp.second;                                   \
-    node_stats.inc_tri_updates(weight(p0), weight(p1), degenerate); \
+#  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
+    node_stats.inc_tri_updates(weight(p0), weight(p1), tmp.degenerate,  \
+                               tmp.hierarchical);                       \
   } while (0)
 #else
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {} while (0)
 #endif
 
 #if COLLECT_STATS
-#  define __get_T(tmp) tmp.first
+#  define __get_T(tmp) tmp.value
 #else
 #  define __get_T(tmp) tmp
 #endif
 
-#define TRI(i, j, p0, p1) do {                  \
-    if (!__skip_tri(i, j)) {                    \
-      int l0 = inds[i], l1 = inds[j];           \
-      if (nb[l0] && nb[l1]) {                   \
-        auto tmp = this->tri(                   \
-          VAL(l0),                              \
-          VAL(l1),                              \
-          SPEED_ARGS(l0, l1),                   \
-          h,                                    \
-          ffvec<P##p0> {},                      \
-          ffvec<P##p1> {});                     \
-        T = min(T, __get_T(tmp));               \
-        UPDATE_TRI_STATS(tmp, P##p0, P##p1);    \
-        __skip_line(i) = 0x1;                   \
-        __skip_line(j) = 0x1;                   \
-      }                                         \
-    }                                           \
+#define TRI(i, j, p0, p1) do {                              \
+    if (!__skip_tri(i, j)) {                                \
+      int l0 = inds[i], l1 = inds[j];                       \
+      if (nb[l0] && nb[l1]) {                               \
+        auto tmp = this->tri(                               \
+          VAL(l0),                                          \
+          VAL(l1),                                          \
+          SPEED_ARGS(l0, l1),                               \
+          h,                                                \
+          ffvec<P##p0> {},                                  \
+          ffvec<P##p1> {});                                 \
+        T = min(T, __get_T(tmp));                           \
+        tmp.hierarchical = l0 == argmin || l1 == argmin;    \
+        UPDATE_TRI_STATS(tmp, P##p0, P##p1);                \
+        __skip_line(i) = 0x1;                               \
+        __skip_line(j) = 0x1;                               \
+      }                                                     \
+    }                                                       \
   } while (0)
 
 #if COLLECT_STATS
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
-    bool degenerate = tmp.second;                                       \
     node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
-                                 degenerate);                           \
+                                 tmp.degenerate, tmp.hierarchical);     \
   } while (0)
 #else
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {} while (0)
 #endif
 
-#define TETRA(i, j, k, p0, p1, p2) do {                     \
-    int l0 = inds[i], l1 = inds[j], l2 = inds[k];           \
-    if (nb[l0] && nb[l1] && nb[l2]) {                       \
-      auto tmp = this->tetra(                               \
-        VAL(l0),                                            \
-        VAL(l1),                                            \
-        VAL(l2),                                            \
-        SPEED_ARGS(l0, l1, l2),                             \
-        h,                                                  \
-        ffvec<P ## p0> {},                                  \
-        ffvec<P ## p1> {},                                  \
-        ffvec<P ## p2> {});                                 \
-      T = min(T, __get_T(tmp));                             \
-      UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);         \
-      __skip_tri(i, j) = 0x1;                               \
-      __skip_tri(j, k) = 0x1;                               \
-      __skip_tri(i, k) = 0x1;                               \
-      __skip_line(i) = 0x1;                                 \
-      __skip_line(j) = 0x1;                                 \
-      __skip_line(k) = 0x1;                                 \
-    }                                                       \
+#define TETRA(i, j, k, p0, p1, p2) do {                                 \
+    int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
+    if (nb[l0] && nb[l1] && nb[l2]) {                                   \
+      auto tmp = this->tetra(                                           \
+        VAL(l0),                                                        \
+        VAL(l1),                                                        \
+        VAL(l2),                                                        \
+        SPEED_ARGS(l0, l1, l2),                                         \
+        h,                                                              \
+        ffvec<P ## p0> {},                                              \
+        ffvec<P ## p1> {},                                              \
+        ffvec<P ## p2> {});                                             \
+      T = min(T, __get_T(tmp));                                         \
+      tmp.hierarchical = l0 == argmin || l1 == argmin || l2 == argmin;  \
+      UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
+      __skip_tri(i, j) = 0x1;                                           \
+      __skip_tri(j, k) = 0x1;                                           \
+      __skip_tri(i, k) = 0x1;                                           \
+      __skip_line(i) = 0x1;                                             \
+      __skip_line(j) = 0x1;                                             \
+      __skip_line(k) = 0x1;                                             \
+    }                                                                   \
   } while (0)
 
 #if COLLECT_STATS
@@ -245,13 +246,15 @@ void olim3d<
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
         auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: line = %d, tri = %d/%d, tetra = %d/%d\n",
+        printf("%d, %d, %d: line = %d, tri = %d/%d (%d), tetra = %d/%d (%d)\n",
                i, j, k,
                stats.num_line_updates(),
                stats.num_degenerate_tri_updates(),
                stats.num_tri_updates(),
+               stats.num_hu_tri_updates(),
                stats.num_degenerate_tetra_updates(),
-               stats.num_tetra_updates());
+               stats.num_tetra_updates(),
+               stats.num_hu_tetra_updates());
       }
     }
   }
@@ -333,6 +336,49 @@ void olim3d<
 
 #if COLLECT_STATS
   auto & node_stats = get_node_stats(i, j, k);
+#endif
+
+  /**
+   * Determine the index of the minimizing line update here. We want
+   * to check and see how many updates we would save by doing a poor
+   * man's "hierarchical update".
+   */
+#if COLLECT_STATS
+  int argmin = -1;
+  {
+    double Tnew;
+    for (int l = 0; l < 6; ++l) {
+      if (nb[l]) {
+        Tnew = this->template line<1>(VAL(l), SPEED_ARGS(l), h);
+        if (Tnew <= T) {
+          T = Tnew;
+          argmin = l;
+        }
+      }
+    }
+    if (do_line2_updates) {
+      for (int l = 6; l < 18; ++l) {
+        if (nb[l]) {
+          Tnew = this->template line<2>(VAL(l), SPEED_ARGS(l), h);
+          if (Tnew <= T) {
+            T = Tnew;
+            argmin = l;
+          }
+        }
+      }
+    }
+    if (do_line3_updates) {
+      for (int l = 18; l < 26; ++l) {
+        if (nb[l]) {
+          Tnew = this->template line<3>(VAL(l), SPEED_ARGS(l), h);
+          if (Tnew <= T) {
+            T = Tnew;
+            argmin = l;
+          }
+        }
+      }
+    }
+  }
 #endif
 
   int const * inds;

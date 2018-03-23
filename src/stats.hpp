@@ -35,16 +35,20 @@ struct olim3d_node_stats {
   void inc_line_updates(int d);
   int num_tri_updates() const;
   int num_degenerate_tri_updates() const;
-  void inc_tri_updates(int d1, int d2, bool degenerate);
+  int num_hu_tri_updates() const;
+  void inc_tri_updates(int d1, int d2, bool degenerate, bool hu);
   int num_tetra_updates() const;
   int num_degenerate_tetra_updates() const;
-  void inc_tetra_updates(int d1, int d2, int d3, bool degenerate);
+  int num_hu_tetra_updates() const;
+  void inc_tetra_updates(int d1, int d2, int d3, bool degenerate, bool hu);
 private:
   int _num_line_updates[static_cast<int>(line_update::NUM)];
   int _num_tri_updates[static_cast<int>(tri_update::NUM)];
   int _num_degenerate_tri_updates[static_cast<int>(tri_update::NUM)];
+  int _num_hu_tri_updates[static_cast<int>(tri_update::NUM)];
   int _num_tetra_updates[static_cast<int>(tetra_update::NUM)];
   int _num_degenerate_tetra_updates[static_cast<int>(tetra_update::NUM)];
+  int _num_hu_tetra_updates[static_cast<int>(tetra_update::NUM)];
 };
 
 #endif // __STATS_HPP_HPP__

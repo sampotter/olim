@@ -36,7 +36,7 @@ static update_rules::rhr_tetra_updates updates;
     ffvec<P001> {}, ffvec<P011> {}, ffvec<P111> {})
 
 #if COLLECT_STATS
-double get_T(update_return_t const & tmp) { return tmp.first; }
+double get_T(update_return_t const & tmp) { return tmp.value; }
 #else
 double get_T(double tmp) { return tmp; }
 #endif

@@ -11,7 +11,12 @@
  * build.
  */
 #if COLLECT_STATS
-using update_return_t = std::pair<double, bool>;
+struct update_return_t {
+  update_return_t(double T, bool deg): value {T}, degenerate {deg} {}
+  double value;
+  bool degenerate {false};
+  bool hierarchical {false};
+};
 #else
 using update_return_t = double;
 #endif

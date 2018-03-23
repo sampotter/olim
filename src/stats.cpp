@@ -52,6 +52,14 @@ int olim3d_node_stats::num_degenerate_tri_updates() const {
   return tmp;
 }
 
+int olim3d_node_stats::num_hu_tri_updates() const {
+  int tmp = 0;
+  for (int i = 0; i < static_cast<int>(tri_update::NUM); ++i) {
+    tmp += _num_hu_tri_updates[i];
+  }
+  return tmp;
+}
+
 static int get_tri_index(int d1, int d2) {
   int i = -1;
   if (d1 > d2) std::swap(d1, d2);
@@ -70,9 +78,10 @@ static int get_tri_index(int d1, int d2) {
   return i;
 }
 
-void olim3d_node_stats::inc_tri_updates(int d1, int d2, bool degenerate) {
+void olim3d_node_stats::inc_tri_updates(int d1, int d2, bool deg, bool hu) {
   int i = get_tri_index(d1, d2);
-  if (degenerate) ++_num_degenerate_tri_updates[i];
+  if (deg) ++_num_degenerate_tri_updates[i];
+  if (hu) ++_num_hu_tri_updates[i];
   ++_num_tri_updates[i];
 }
 
@@ -88,6 +97,14 @@ int olim3d_node_stats::num_degenerate_tetra_updates() const {
   int tmp = 0;
   for (int i = 0; i < static_cast<int>(tetra_update::NUM); ++i) {
     tmp += _num_degenerate_tetra_updates[i];
+  }
+  return tmp;
+}
+
+int olim3d_node_stats::num_hu_tetra_updates() const {
+  int tmp = 0;
+  for (int i = 0; i < static_cast<int>(tetra_update::NUM); ++i) {
+    tmp += _num_hu_tetra_updates[i];
   }
   return tmp;
 }
@@ -127,9 +144,9 @@ static int get_tetra_index(int d1, int d2, int d3) {
   return i;
 }
 
-void olim3d_node_stats::inc_tetra_updates(int d1, int d2, int d3,
-                                          bool degenerate) {
+void olim3d_node_stats::inc_tetra_updates(int d1, int d2, int d3, bool deg, bool hu) {
   int i = get_tetra_index(d1, d2, d3);
-  if (degenerate) ++_num_degenerate_tetra_updates[i];
+  if (deg) ++_num_degenerate_tetra_updates[i];
+  if (hu) ++_num_hu_tetra_updates[i];
   ++_num_tetra_updates[i];
 }

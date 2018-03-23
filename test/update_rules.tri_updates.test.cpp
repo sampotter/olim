@@ -75,9 +75,9 @@ update_return_t tri23(update_rules::rhr_tri_updates const & tri_updates,
  */
 
 #if COLLECT_STATS
-double get_T(std::pair<double, bool> tmp) { return tmp.first; }
+double get_T(update_return_t tmp) { return tmp.value; }
 #else
-double get_T(double tmp) { return tmp; }
+double get_T(update_return_t tmp) { return tmp; }
 #endif
 
 TEST (tri_updates, rhr_tri11_works) {

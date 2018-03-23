@@ -35,7 +35,7 @@
     ffvec<P ## p1> {})
 
 #if COLLECT_STATS
-#  define __get_T(tmp) tmp.first
+#  define __get_T(tmp) tmp.value
 #else
 #  define __get_T(tmp) tmp
 #endif

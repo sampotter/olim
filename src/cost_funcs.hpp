@@ -134,7 +134,21 @@ struct cost_func_bv {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
+#if COLLECT_STATS
+  inline bool degenerate_lambda() const {
+    double lam0 = 0;
+    for (int i = 0; i < d; ++i) {
+      lam0 += _lam[i];
+      if (_lam[i] < EPS(double)) return true;
+    }
+    return lam0 > 1 - EPS(double);
+  }
+#endif
+
   inline void set_lambda(double const lambda[d]) {
+#if COLLECT_STATS
+    for (int i = 0; i < d; ++i) _lam[i] = lambda[i];
+#endif
     static_cast<derived *>(this)->set_lambda_impl(lambda);
   }
 
@@ -142,6 +156,11 @@ struct cost_func_bv {
                        double const s[d + 1]) {
     static_cast<derived *>(this)->set_args_impl(u, s_hat, s);
   }
+
+#if COLLECT_STATS
+EIKONAL_PRIVATE:
+  double _lam[d];
+#endif
 };
 
 // TODO: if this is the "general template", we would ideally like to

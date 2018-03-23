@@ -57,7 +57,11 @@ update_return_t update_rules::tetra_updates<derived>::tetra(
          p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, value);
 #endif
 
+#if COLLECT_STATS
+  return {value, func.degenerate_lambda()};
+#else
   return value;
+#endif
 }
 
 template <class derived>

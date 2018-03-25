@@ -34,16 +34,10 @@
     ffvec<P ## p0> {},                          \
     ffvec<P ## p1> {})
 
-#if COLLECT_STATS
-#  define __get_T(tmp) tmp.value
-#else
-#  define __get_T(tmp) tmp
-#endif
-
 #define DO_TRI(i, j, p0, p1) do {               \
     if (nb[i] && nb[j]) {                       \
       auto tmp = TRI(i, j, p0, p1);             \
-      T = min(T, __get_T(tmp));                 \
+      T = min(T, tmp.value);                    \
     }                                           \
   } while (0)
 
@@ -95,8 +89,6 @@ void olim<node, line_updates, tri_updates, adj_updates,
 #undef LINE
 #undef DO_LINE
 #undef TRI
-
-#undef __get_T
 
 #undef DO_TRI
 

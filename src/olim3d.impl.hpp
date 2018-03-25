@@ -167,17 +167,12 @@ constexpr int oct2inds[8][7] = {
 #if COLLECT_STATS
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
     tmp.hierarchical = l0 == argmin || l1 == argmin;                    \
-    node_stats.inc_tri_updates(weight(p0), weight(p1), tmp.degenerate,  \
+    node_stats.inc_tri_updates(weight(p0), weight(p1),                  \
+                               tmp.is_degenerate(),                     \
                                tmp.hierarchical);                       \
   } while (0)
 #else
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {} while (0)
-#endif
-
-#if COLLECT_STATS
-#  define __get_T(tmp) tmp.value
-#else
-#  define __get_T(tmp) tmp
 #endif
 
 #define TRI(i, j, p0, p1) do {                                  \
@@ -191,7 +186,7 @@ constexpr int oct2inds[8][7] = {
           h,                                                    \
           ffvec<P##p0> {},                                      \
           ffvec<P##p1> {});                                     \
-        T = min(T, __get_T(tmp));                               \
+        T = min(T, tmp.value);                                  \
         UPDATE_TRI_STATS(tmp, P##p0, P##p1);                    \
       }                                                         \
     }                                                           \
@@ -201,7 +196,8 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
     tmp.hierarchical = l0 == argmin || l1 == argmin || l2 == argmin;    \
     node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
-                                 tmp.degenerate, tmp.hierarchical);     \
+                                 tmp.is_degenerate(),                   \
+                                 tmp.hierarchical);                     \
   } while (0)
 #else
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {} while (0)
@@ -220,7 +216,7 @@ constexpr int oct2inds[8][7] = {
         ffvec<P ## p0> {},                                              \
         ffvec<P ## p1> {},                                              \
         ffvec<P ## p2> {});                                             \
-      T = min(T, __get_T(tmp));                                         \
+      T = min(T, tmp.value);                                            \
       UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
       __skip_tri(i, j) = 0x1;                                           \
       __skip_tri(j, k) = 0x1;                                           \

@@ -21,7 +21,7 @@
 #define F0_line__(i) (u##i + h*(s + s##i)*char_sqrt__(p##i##_dot_p##i)/2)
 
 template <char p0, char p1>
-update_return_t
+update_return_t<1>
 update_rules::mp0_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -52,37 +52,30 @@ update_rules::mp0_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  double T;
-#if COLLECT_STATS
-  bool degenerate = false;
-#endif
+  update_return_t<1> update;
   if (disc < 0 || a == 0) {
-    T = min(F0_line__(0), F0_line__(1));
-#if COLLECT_STATS
-    degenerate = true;
-#endif
+    double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
+    if (tmp0 < tmp1) {
+      update.value = tmp0;
+      update.lambda[0] = 0;
+    } else {
+      update.value = tmp1;
+      update.lambda[0] = 1;
+    }
   } else {
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
-    double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
-#if COLLECT_STATS
-    if (lam < EPS(double) || 1 - EPS(double) < lam) {
-      degenerate = true;
-    }
-#endif
-    T = lam < 0 || 1 < lam ?
-      min(F0_line__(0), F0_line__(1)) : u0 + lam*du + h*s__(lam)*l__(lam);
+    update.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
+    update.value = update.lambda[0] < 0 || 1 < update.lambda[0] ?
+      min(F0_line__(0), F0_line__(1)) :
+      u0 + update.lambda[0]*du + h*s__(update.lambda[0])*l__(update.lambda[0]);
   }
 #if PRINT_UPDATES
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         p0, p1, u0, u1, s, s0, s1, h, T);
+         p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
-#if COLLECT_STATS
-  return {T, degenerate};
-#else
-  return T;
-#endif
+  return update;
 }
 
 #undef F0_line__
@@ -90,7 +83,7 @@ update_rules::mp0_tri_updates::tri(
 #define F0_line__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
 
 template <char p0, char p1>
-update_return_t
+update_return_t<1>
 update_rules::rhr_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -124,36 +117,29 @@ update_rules::rhr_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  double T;
-#if COLLECT_STATS
-  bool degenerate = false;
-#endif
+  update_return_t<1> update;
   if (disc < 0 || a == 0) {
-    T = min(F0_line__(0), F0_line__(1));
-#if COLLECT_STATS
-    degenerate = true;
-#endif
+    double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
+    if (tmp0 < tmp1) {
+      update.value = tmp0;
+      update.lambda[0] = 0;
+    } else {
+      update.value = tmp1;
+      update.lambda[0] = 1;
+    }
   } else {
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
-    double const lam = check__(lam1) < check__(lam2) ? lam1 : lam2;
-#if COLLECT_STATS
-    if (lam < EPS(double) || 1 - EPS(double) < lam) {
-      degenerate = true;
-    }
-#endif
-    T = lam < 0 || 1 < lam ?
-      min(F0_line__(0), F0_line__(1)) : u0 + lam*du + sh*l__(lam);
+    update.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
+    update.value = update.lambda[0] < 0 || 1 < update.lambda[0] ?
+      min(F0_line__(0), F0_line__(1)) :
+      u0 + update.lambda[0]*du + sh*l__(update.lambda[0]);
   }
 #if PRINT_UPDATES
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, T);
+         "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, update.value);
 #endif
-#if COLLECT_STATS
-  return {T, degenerate};
-#else
-  return T;
-#endif
+  return update;
 }
 
 #undef l__
@@ -174,7 +160,7 @@ update_rules::rhr_tri_updates::tri(
  * F1 specialization
  */
 template <char p0, char p1>
-update_return_t
+update_return_t<1>
 update_rules::mp1_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -224,11 +210,10 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, F1[1]);
 #endif
-#if COLLECT_STATS
-  return {F1[1], lam[1] < EPS(double) || 1 - EPS(double) < lam[1]};
-#else
-  return F1[1];
-#endif
+  update_return_t<1> update;
+  update.value = F1[1];
+  update.lambda[0] = lam[1];
+  return update;
 }
 
 #undef u__

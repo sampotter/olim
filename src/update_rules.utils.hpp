@@ -10,16 +10,23 @@
  * is only done if the COLLECT_STATS compiler flag is set in the CMake
  * build.
  */
-#if COLLECT_STATS
+template <int d>
 struct update_return_t {
-  update_return_t(double T, bool deg): value {T}, degenerate {deg} {}
-  double value;
-  bool degenerate {false};
+  double value {INF(double)};
+  double lambda[d];
+#ifdef COLLECT_STATS
+  inline bool is_degenerate() const {
+    bool deg = false;
+    double lam0 = 1;
+    for (int i = 0; i < d; ++i) {
+      deg = deg || lambda[i] < EPS(double);
+      lam0 -= lambda[i];
+    }
+    return deg || lam0 > 1 - EPS(double);
+  }
   bool hierarchical {false};
-};
-#else
-using update_return_t = double;
 #endif
+};
 
 template <char c>
 using ffvec = std::integral_constant<char, c>;

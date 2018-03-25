@@ -8,11 +8,11 @@ namespace update_rules {
   template <class derived>
   struct tetra_updates {
     template <char p0, char p1, char p2>
-    update_return_t tetra(
+    update_return_t<2> tetra(
       double u0, double u1, double u2, double s,
       double s0, double s1, double s2, double h,
       ffvec<p0>, ffvec<p1>, ffvec<p2>) const;
-    update_return_t tetra(
+    update_return_t<2> tetra(
       double const * p0, double const * p1, double const * p2,
       double u0, double u1, double u2, double s,
       double s0, double s1, double s2, double h) const;

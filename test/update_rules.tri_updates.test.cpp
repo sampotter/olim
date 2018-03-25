@@ -22,32 +22,32 @@ update_rules::rhr_tri_updates rhr;
 #define P111 7
 
 template <char p0, char p1>
-update_return_t<1> tri(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri(update_rules::rhr_tri_updates const & tri_updates,
            double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<p0> {}, ffvec<p1> {});
 }
 
-update_return_t<1> tri11(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri11(update_rules::rhr_tri_updates const & tri_updates,
              double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P01> {}, ffvec<P10> {});
 }
 
-update_return_t<1> tri12(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri12(update_rules::rhr_tri_updates const & tri_updates,
              double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P01> {}, ffvec<P11> {});
 }
 
-update_return_t<1> tri13(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri13(update_rules::rhr_tri_updates const & tri_updates,
              double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P001> {}, ffvec<P111> {});
 }
 
-update_return_t<1> tri22(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri22(update_rules::rhr_tri_updates const & tri_updates,
              double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P011> {}, ffvec<P101> {});
 }
 
-update_return_t<1> tri23(update_rules::rhr_tri_updates const & tri_updates,
+update_info<1> tri23(update_rules::rhr_tri_updates const & tri_updates,
              double u0, double u1, double s, double h) {
   return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P011> {}, ffvec<P111> {});
 }
@@ -74,7 +74,7 @@ update_return_t<1> tri23(update_rules::rhr_tri_updates const & tri_updates,
  * rhr tri11 tests
  */
 
-double get_T(update_return_t<1> tmp) { return tmp.value; }
+double get_T(update_info<1> const & tmp) { return tmp.value; }
 
 TEST (tri_updates, rhr_tri11_works) {
   double t = get_T(tri<P01, P10>(rhr, 0.0, 0.0, 1.0, 1.0));

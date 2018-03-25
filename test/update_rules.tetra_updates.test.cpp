@@ -36,7 +36,7 @@ static update_rules::rhr_tetra_updates updates;
     ffvec<P001> {}, ffvec<P011> {}, ffvec<P111> {})
 
 template <int d>
-double get_T(update_return_t<d> const & tmp) { return tmp.value; }
+double get_T(update_info<d> const & tmp) { return tmp.value; }
 
 template <class rules>
 void tetra111_is_symmetric() {

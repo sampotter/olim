@@ -21,7 +21,7 @@
 #define F0_line__(i) (u##i + h*(s + s##i)*char_sqrt__(p##i##_dot_p##i)/2)
 
 template <char p0, char p1>
-update_return_t<1>
+update_info<1>
 update_rules::mp0_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -52,7 +52,7 @@ update_rules::mp0_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  update_return_t<1> update;
+  update_info<1> update;
   if (disc < 0 || a == 0) {
     double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
     if (tmp0 < tmp1) {
@@ -83,7 +83,7 @@ update_rules::mp0_tri_updates::tri(
 #define F0_line__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
 
 template <char p0, char p1>
-update_return_t<1>
+update_info<1>
 update_rules::rhr_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -117,7 +117,7 @@ update_rules::rhr_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  update_return_t<1> update;
+  update_info<1> update;
   if (disc < 0 || a == 0) {
     double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
     if (tmp0 < tmp1) {
@@ -160,7 +160,7 @@ update_rules::rhr_tri_updates::tri(
  * F1 specialization
  */
 template <char p0, char p1>
-update_return_t<1>
+update_info<1>
 update_rules::mp1_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
@@ -210,7 +210,7 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, F1[1]);
 #endif
-  update_return_t<1> update;
+  update_info<1> update;
   update.value = F1[1];
   update.lambda[0] = lam[1];
   return update;

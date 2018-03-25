@@ -11,7 +11,7 @@
  * build.
  */
 template <int d>
-struct update_return_t {
+struct update_info {
   double value {INF(double)};
   double lambda[d];
 #ifdef COLLECT_STATS

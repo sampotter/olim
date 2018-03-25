@@ -19,7 +19,7 @@
 
 template <class derived>
 template <char p0, char p1, char p2>
-update_return_t<2> update_rules::tetra_updates<derived>::tetra(
+update_info<2> update_rules::tetra_updates<derived>::tetra(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h,
   ffvec<p0>, ffvec<p1>, ffvec<p2>) const
@@ -33,7 +33,7 @@ update_return_t<2> update_rules::tetra_updates<derived>::tetra(
   cost_func_t func {h, static_cast<derived const *>(this)->theta()};
   func.set_args(u, s_hat, s_);
 
-  update_return_t<2> update;
+  update_info<2> update;
   bool error;
   numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
   sqp(func, update.lambda, &error);
@@ -61,7 +61,7 @@ update_return_t<2> update_rules::tetra_updates<derived>::tetra(
 }
 
 template <class derived>
-update_return_t<2> update_rules::tetra_updates<derived>::tetra(
+update_info<2> update_rules::tetra_updates<derived>::tetra(
   double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
@@ -83,7 +83,7 @@ update_return_t<2> update_rules::tetra_updates<derived>::tetra(
   cost_func_t func {h, static_cast<derived const *>(this)->theta()};
   func.set_args(u, s_hat, s_, p);
 
-  update_return_t<2> update;
+  update_info<2> update;
   bool error;
   numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
   sqp(func, update.lambda, &error);

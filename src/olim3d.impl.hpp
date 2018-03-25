@@ -134,8 +134,6 @@ constexpr int oct2inds[8][7] = {
 #define __index56 20
 #define __index65 20
 
-#define __skip_line(i) line_skip_list[oct2inds[octant][i]]
-
 #define __is_planar_tri_update(i, j) ((__index##i##j) < 9)
 
 #define __get_tri_skip_list(i, j)               \
@@ -168,6 +166,7 @@ constexpr int oct2inds[8][7] = {
 
 #if COLLECT_STATS
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
+    tmp.hierarchical = l0 == argmin || l1 == argmin;                    \
     node_stats.inc_tri_updates(weight(p0), weight(p1), tmp.degenerate,  \
                                tmp.hierarchical);                       \
   } while (0)
@@ -181,28 +180,26 @@ constexpr int oct2inds[8][7] = {
 #  define __get_T(tmp) tmp
 #endif
 
-#define TRI(i, j, p0, p1) do {                              \
-    if (!__skip_tri(i, j)) {                                \
-      int l0 = inds[i], l1 = inds[j];                       \
-      if (nb[l0] && nb[l1]) {                               \
-        auto tmp = this->tri(                               \
-          VAL(l0),                                          \
-          VAL(l1),                                          \
-          SPEED_ARGS(l0, l1),                               \
-          h,                                                \
-          ffvec<P##p0> {},                                  \
-          ffvec<P##p1> {});                                 \
-        T = min(T, __get_T(tmp));                           \
-        tmp.hierarchical = l0 == argmin || l1 == argmin;    \
-        UPDATE_TRI_STATS(tmp, P##p0, P##p1);                \
-        __skip_line(i) = 0x1;                               \
-        __skip_line(j) = 0x1;                               \
-      }                                                     \
-    }                                                       \
+#define TRI(i, j, p0, p1) do {                                  \
+    if (!__skip_tri(i, j)) {                                    \
+      int l0 = inds[i], l1 = inds[j];                           \
+      if ((l0 == argmin || l1 == argmin) && nb[l0] && nb[l1]) { \
+        auto tmp = this->tri(                                   \
+          VAL(l0),                                              \
+          VAL(l1),                                              \
+          SPEED_ARGS(l0, l1),                                   \
+          h,                                                    \
+          ffvec<P##p0> {},                                      \
+          ffvec<P##p1> {});                                     \
+        T = min(T, __get_T(tmp));                               \
+        UPDATE_TRI_STATS(tmp, P##p0, P##p1);                    \
+      }                                                         \
+    }                                                           \
   } while (0)
 
 #if COLLECT_STATS
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
+    tmp.hierarchical = l0 == argmin || l1 == argmin || l2 == argmin;    \
     node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
                                  tmp.degenerate, tmp.hierarchical);     \
   } while (0)
@@ -212,7 +209,8 @@ constexpr int oct2inds[8][7] = {
 
 #define TETRA(i, j, k, p0, p1, p2) do {                                 \
     int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
-    if (nb[l0] && nb[l1] && nb[l2]) {                                   \
+    if ((l0 == argmin || l1 == argmin || l2 == argmin) &&               \
+        nb[l0] && nb[l1] && nb[l2]) {                                   \
       auto tmp = this->tetra(                                           \
         VAL(l0),                                                        \
         VAL(l1),                                                        \
@@ -223,14 +221,10 @@ constexpr int oct2inds[8][7] = {
         ffvec<P ## p1> {},                                              \
         ffvec<P ## p2> {});                                             \
       T = min(T, __get_T(tmp));                                         \
-      tmp.hierarchical = l0 == argmin || l1 == argmin || l2 == argmin;  \
       UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
       __skip_tri(i, j) = 0x1;                                           \
       __skip_tri(j, k) = 0x1;                                           \
       __skip_tri(i, k) = 0x1;                                           \
-      __skip_line(i) = 0x1;                                             \
-      __skip_line(j) = 0x1;                                             \
-      __skip_line(k) = 0x1;                                             \
     }                                                                   \
   } while (0)
 
@@ -339,11 +333,10 @@ void olim3d<
 #endif
 
   /**
-   * Determine the index of the minimizing line update here. We want
-   * to check and see how many updates we would save by doing a poor
-   * man's "hierarchical update".
+   * Determine the index of the minimizing line update here. We only
+   * do tri or tetra updates if they have the vertex corresponding to
+   * the minimal line update as one of their own vertices.
    */
-#if COLLECT_STATS
   int argmin = -1;
   {
     double Tnew;
@@ -379,7 +372,6 @@ void olim3d<
       }
     }
   }
-#endif
 
   int const * inds;
 
@@ -389,10 +381,8 @@ void olim3d<
    */
   char planar_tri_skip_list[8*9]; // this is inefficient--only need [4][9]
   char tri_skip_list[8*12];
-  char line_skip_list[26];
   memset((void *) planar_tri_skip_list, 0x0, sizeof(char)*8*9);
   memset((void *) tri_skip_list, 0x0, sizeof(char)*8*12);
-  memset((void *) line_skip_list, 0x0, sizeof(char)*26);
 
   /**
    * Tetrahedron updates:
@@ -480,23 +470,6 @@ void olim3d<
       TRI(1, 6, 011, 111);
       TRI(3, 6, 110, 111);
       TRI(5, 6, 101, 111);
-    }
-  }
-
-  /**
-   * Line updates:
-   */
-  for (int l = 0; l < 6; ++l) {
-    LINE(l, 1);
-  }
-  if (do_line2_updates) {
-    for (int l = 6; l < 18; ++l) {
-      LINE(l, 2);
-    }
-  }
-  if (do_line3_updates) {
-    for (int l = 18; l < 26; ++l) {
-      LINE(l, 3);
     }
   }
 

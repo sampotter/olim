@@ -1,11 +1,11 @@
-u0 = rand;
-u1 = rand;
-u2 = rand;
-h = rand;
-s = rand;
-s0 = rand;
-s1 = rand;
-s2 = rand;
+h = 0.001;
+u0 = h*rand;
+u1 = h*rand;
+u2 = h*rand;
+s = h*rand;
+s0 = h*rand;
+s1 = h*rand;
+s2 = h*rand;
 theta = rand;
 
 p0 = randn(3, 1);

@@ -3,7 +3,7 @@
 #include <src/config.hpp>
 
 int main() {
-  int n = 17;
+  int n = 65;
   olim26_mp1 m {n, n, n, 2./(n-1), (speed_func_3d) s4, 1., 1., 1.};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();

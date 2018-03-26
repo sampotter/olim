@@ -6,6 +6,8 @@ include (CMakeDependentOption)
 include (GoogleTest)
 include (gtest.cmake)
 
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra -Werror -std=c++1z")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO

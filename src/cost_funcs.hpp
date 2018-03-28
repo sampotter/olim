@@ -36,7 +36,7 @@ struct cost_func {
     static_cast<derived const *>(this)->grad_impl(df);
   }
 
-  inline void hess(double d2f[d][d]) const {
+  inline void hess(double d2f[d*(d + 1)/2]) const {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
@@ -76,7 +76,7 @@ struct F0: public cost_func<F0<n, d>, n, d> {
   F0(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d][d]) const;
+  void hess_impl(double d2f[d*(d + 1)/2]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
@@ -99,7 +99,7 @@ struct F1: public cost_func<F1<n, d>, n, d> {
   F1(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d][d]) const;
+  void hess_impl(double d2f[d*(d + 1)/2]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
@@ -130,7 +130,7 @@ struct cost_func_bv {
     static_cast<derived const *>(this)->grad_impl(df);
   }
 
-  inline void hess(double d2f[d][d]) const {
+  inline void hess(double d2f[d*(d + 1)/2]) const {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
@@ -171,18 +171,18 @@ struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F0_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d][d]) const;
+  void hess_impl(double d2f[d*(d + 1)/2]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);
+  // TODO: can probably delete this
 EIKONAL_PRIVATE:
   double _sh;
   double _u0;
   double _du[d];
   double _u_lam;
   double _l;
-  double _q;
-  double _p_lam[3];
+  double _y[d];
   double _h;
   double _theta;
 };
@@ -195,18 +195,19 @@ struct F0_bv<p0, p1, p2, 2>:
   F0_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[2]) const;
-  void hess_impl(double d2f[2][2]) const;
+  void hess_impl(double d2f[3]) const;
   void set_lambda_impl(double const lambda[2]);
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
 EIKONAL_PRIVATE:
+  static int _dPt_dP[3];
+
   double _sh;
   double _u0;
   double _du[2];
   double _u_lam;
   double _l;
-  double _q;
-  double _p_lam[3];
+  double _y[2];
   double _h;
   double _theta;
 };
@@ -217,21 +218,20 @@ struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F1_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d][d]) const;
+  void hess_impl(double d2f[d*(d + 1)/2]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);
 EIKONAL_PRIVATE:
   double _s_hat;
-  double _stheta;
+  double _sh;
   double _s0;
   double _ds[d];
-  double _q;
   double _l;
   double _u_lam;
   double _u0;
   double _du[d];
-  double _p_lam[3];
+  double _y[d];
   double _h;
   double _theta;
 };
@@ -244,21 +244,22 @@ struct F1_bv<p0, p1, p2, 2>:
   F1_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[2]) const;
-  void hess_impl(double d2f[2][2]) const;
+  void hess_impl(double d2f[3]) const;
   void set_lambda_impl(double const lambda[2]);
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
 EIKONAL_PRIVATE:
+  static int _dPt_dP[3];
+
   double _s_hat;
-  double _stheta;
+  double _sh;
   double _s0;
   double _ds[2];
-  double _q;
   double _l;
   double _u_lam;
   double _u0;
   double _du[2];
-  double _p_lam[3];
+  double _y[2];
   double _h;
   double _theta;
 };

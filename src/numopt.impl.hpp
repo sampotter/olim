@@ -5,7 +5,7 @@
 #include <cmath>
 
 #define __compute_lambda_min() do {                                 \
-    double half_tr = (G[0] + G[3])/2, det = G[0]*G[3] - G[1]*G[2];  \
+    double half_tr = (G[0] + G[2])/2, det = G[0]*G[2] - G[1]*G[1];  \
     lambda_min = half_tr - sqrt(half_tr*half_tr - det);             \
   } while (0)                                                       \
 
@@ -18,7 +18,7 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
 
   if (error) *error = false;
 
-  double G[4], x0[2], x1[2] = {1./3, 1./3}, c[2], g[2], f0, f1,
+  double G[3], x0[2], x1[2] = {1./3, 1./3}, c[2], g[2], f0, f1,
     lambda_min, qpi_tol, c1 = 1e-4, alpha;
   bool qpi_error, found_opt;
   int k = 0, qpi_niters = 10;
@@ -28,17 +28,17 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
 
   while (true) {
     // Compute Hessian and perturb it if it isn't positive definite
-    func.hess((double (*)[2]) &G);
+    func.hess(G);
     __compute_lambda_min();
     if (lambda_min < 0) {
       G[0] -= 1.1*lambda_min;
-      G[3] -= 1.1*lambda_min;
+      G[2] -= 1.1*lambda_min;
     }
 
     // Compute load vector for quadratic program
     func.grad(c);
     c[0] -= G[0]*x1[0] + G[1]*x1[1];
-    c[1] -= G[2]*x1[0] + G[3]*x1[1];
+    c[1] -= G[1]*x1[0] + G[2]*x1[1];
 
     // Compute descent direction by solving inequality-constrained
     // quadratic program

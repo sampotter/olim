@@ -51,7 +51,7 @@ namespace numopt {
   qpe_baryplex<2, 0>(double const * G, double const * c, double * x)
   {
     x[0] = 0.0;
-    x[1] = -c[1]/G[3];
+    x[1] = -c[1]/G[2];
   }
 }
 
@@ -70,7 +70,7 @@ namespace numopt {
   void
   qpe_baryplex<2, 2>(double const * G, double const * c, double * x)
   {
-    double pZ = ((G[3] - G[0])/2 + c[1] - c[0])/(G[0] - G[1] - G[2] + G[3]);
+    double pZ = ((G[2] - G[0])/2 + c[1] - c[0])/(G[0] - 2*G[1] + G[2]);
     x[0] = 0.5 + pZ;
     x[1] = 0.5 - pZ;
   }
@@ -146,15 +146,15 @@ arma::vec numopt::qpi(
 #endif // USE_ARMADILLO
 
 #define __compute_p() do {                          \
-    double det = G[0]*G[3] - G[1]*G[2];             \
-    p[0] = -(x[0] + (G[3]*c[0] - G[1]*c[1])/det);   \
-    p[1] = -(x[1] + (G[0]*c[1] - G[2]*c[0])/det);   \
+    double det = G[0]*G[2] - G[1]*G[1];             \
+    p[0] = -(x[0] + (G[2]*c[0] - G[1]*c[1])/det);   \
+    p[1] = -(x[1] + (G[0]*c[1] - G[1]*c[0])/det);   \
   } while (0)
 
 
 #define __compute_y() do {                      \
-    y[0] = G[0]*x[0] + G[2]*x[1] + c[0];        \
-    y[1] = G[1]*x[0] + G[3]*x[1] + c[1];        \
+    y[0] = G[0]*x[0] + G[1]*x[1] + c[0];        \
+    y[1] = G[1]*x[0] + G[2]*x[1] + c[1];        \
   } while (0)
 
 #define __num_active()                                                  \

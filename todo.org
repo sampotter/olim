@@ -4,9 +4,18 @@
     - [X] basic
       - check number of updates again after and compare
       - compare timings
-    - [ ] basic w/ unconstrained and update skipping
+    - [ ] unconstrained
+    - [ ] update skipping
+      + winding number opt is a little hard to do
     - [ ] hierarchical update
-  - [ ] cost_funcs need to use template parameters!
+  - [X] cost_funcs need to use template parameters!
+** Optimizing cost funcs
+   - [ ] separate args from cost funcs
+   - [X] d2f[3] instead of d2f[2][2]
+   - [ ] look at where the cost funcs are used, and replace "compute hess"
+     with "multiply with hess", etc.
+   - [ ] inline template stuff
+   - [ ] remove armadillo (less confusing)
 * Features
 ** Masha's original todo list
    1. "Suppose slowness is smooth or Lipschitz continuous. Show that

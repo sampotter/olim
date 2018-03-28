@@ -200,8 +200,6 @@ struct F0_bv<p0, p1, p2, 2>:
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
 EIKONAL_PRIVATE:
-  static int _dPt_dP[3];
-
   double _sh;
   double _u0;
   double _du[2];
@@ -249,8 +247,6 @@ struct F1_bv<p0, p1, p2, 2>:
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
 EIKONAL_PRIVATE:
-  static int _dPt_dP[3];
-
   double _s_hat;
   double _sh;
   double _s0;

@@ -12,6 +12,11 @@ constexpr char dp(char i) {
 
 #define __dP(i, j) dp<p##i, p0>(j)
 
+#define __dPt_dP(i, j) (                        \
+    dp<p##i, p0>(0)*dp<p##j, p0>(0) +           \
+    dp<p##i, p0>(1)*dp<p##j, p0>(1) +           \
+    dp<p##i, p0>(2)*dp<p##j, p0>(2))
+
 template <char p0, char p1, char p2>
 void
 F0_bv<p0, p1, p2, 2>::eval_impl(double & f) const
@@ -31,9 +36,9 @@ template <char p0, char p1, char p2>
 void
 F0_bv<p0, p1, p2, 2>::hess_impl(double d2f[3]) const
 {
-  d2f[0] = _sh*(_dPt_dP[0] - _y[0]*_y[0])/_l;
-  d2f[1] = _sh*(_dPt_dP[1] - _y[0]*_y[1])/_l;
-  d2f[2] = _sh*(_dPt_dP[2] - _y[1]*_y[1])/_l;
+  d2f[0] = _sh*(__dPt_dP(1, 1) - _y[0]*_y[0])/_l;
+  d2f[1] = _sh*(__dPt_dP(1, 2) - _y[0]*_y[1])/_l;
+  d2f[2] = _sh*(__dPt_dP(2, 2) - _y[1]*_y[1])/_l;
 }
 
 template <char p0, char p1, char p2>
@@ -83,9 +88,9 @@ template <char p0, char p1, char p2>
 void
 F1_bv<p0, p1, p2, 2>::hess_impl(double d2f[3]) const
 {
-  d2f[0] = _sh*(_dPt_dP[0] - _y[0]*_y[0])/_l + 2*_h*_theta*_y[0]*_ds[0];
-  d2f[1] = _sh*(_dPt_dP[1] - _y[0]*_y[1])/_l + _h*_theta*(_y[0]*_ds[1] + _y[1]*_ds[0]);
-  d2f[2] = _sh*(_dPt_dP[2] - _y[1]*_y[1])/_l + 2*_h*_theta*_y[1]*_ds[1];
+  d2f[0] = _sh*(__dPt_dP(1, 1) - _y[0]*_y[0])/_l + 2*_h*_theta*_y[0]*_ds[0];
+  d2f[1] = _sh*(__dPt_dP(1, 2) - _y[0]*_y[1])/_l + _h*_theta*(_y[0]*_ds[1] + _y[1]*_ds[0]);
+  d2f[2] = _sh*(__dPt_dP(2, 2) - _y[1]*_y[1])/_l + 2*_h*_theta*_y[1]*_ds[1];
 }
 
 template <char p0, char p1, char p2>

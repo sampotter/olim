@@ -59,14 +59,24 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
       // TODO: use x0 instead of tmp to save space
       double tmp[2], lhs, rhs;
 recompute:
+
+      // TODO: the falling two lines should be lifted out of this loop
       func.grad(tmp);
       rhs = f1 + c1*(tmp[0]*g[0] + tmp[1]*g[1]);
+
       tmp[0] = x1[0] + alpha*g[0];
       tmp[1] = x1[1] + alpha*g[1];
       func.set_lambda(tmp);
       func.eval(lhs);
       if (lhs > rhs) {
         alpha /= 2;
+
+        // TODO: it looks like we're flip-flopping back and forth
+        // between evaluating at x1 and evaluating at our trial
+        // point---the only reason we reset to x1 is so that we can
+        // grab the gradient there... we could also just cache the
+        // gradient so that we don't have to constantly be
+        // reevaluating
         func.set_lambda(x1);
         goto recompute;
       }

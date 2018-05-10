@@ -81,6 +81,19 @@ def get_exact_soln(f, M):
     l = np.linspace(-1, 1, M)
     return f(*np.meshgrid(l, l, l))
 
+def get_exact_soln_2d(f, M):
+    l = np.linspace(-1, 1, M)
+    return f(*np.meshgrid(l, l))
+
+def compute_soln_2d(marcher, s, n):
+    l = np.linspace(-1, 1, n)
+    h = 2/(n - 1)
+    i = int(n/2)
+    m = marcher(s(*np.meshgrid(l, l)), h)
+    m.addBoundaryNode(i, i)
+    m.run()
+    return np.array(m)
+
 def compute_soln(marcher, s, M):
     l = np.linspace(-1, 1, M)
     m = marcher(s(*np.meshgrid(l, l, l)), 2/(M - 1))

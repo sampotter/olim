@@ -151,7 +151,6 @@ arma::vec numopt::qpi(
     p[1] = -(x[1] + (G[0]*c[1] - G[1]*c[0])/det);   \
   } while (0)
 
-
 #define __compute_y() do {                      \
     y[0] = G[0]*x[0] + G[1]*x[1] + c[0];        \
     y[1] = G[1]*x[0] + G[2]*x[1] + c[1];        \
@@ -199,19 +198,12 @@ namespace numopt {
       if (num_active == 0) {
         __compute_p();
       } else if (num_active == 1) {
-        // TODO: fix this so that we just immediately compute p
-        double x_[2];
-        if (active[0]) {
-          qpe_baryplex<2, 0>(G, c, x_);
-        } else if (active[1]) {
-          qpe_baryplex<2, 1>(G, c, x_);
-        } else if (active[2]) {
-          qpe_baryplex<2, 2>(G, c, x_);
-        } else {
-          assert(false);
-        }
-        p[0] = x_[0] - xprev[0];
-        p[1] = x_[1] - xprev[1];
+        if (active[0]) qpe_baryplex<2, 0>(G, c, p);
+        else if (active[1]) qpe_baryplex<2, 1>(G, c, p);
+        else if (active[2]) qpe_baryplex<2, 2>(G, c, p);
+        else assert(false);
+        p[0] -= xprev[0];
+        p[1] -= xprev[1];
       } else if (num_active == 2) {
         p[0] = p[1] = 0.0;
       }

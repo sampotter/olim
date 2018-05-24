@@ -4,6 +4,19 @@
 #include <cassert>
 #include <utility>
 
+template <int dim>
+double norm2(double const * p);
+
+template <>
+inline double norm2<2>(double const * p) {
+  return std::sqrt(p[0]*p[0] + p[1]*p[1]);
+}
+
+template <>
+inline double norm2<3>(double const * p) {
+  return std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+}
+
 /**
  * This typedef allows us to optionally return whether an update was
  * degenerate or not (which only makes sense for d > 1 updates). This

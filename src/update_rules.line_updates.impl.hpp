@@ -2,25 +2,13 @@
 #define __UPDATE_RULES_LINE_UPDATES_IMPL_HPP__
 
 #include "common.defs.hpp"
+#include "update_rules.utils.hpp"
 
 #include <src/config.hpp>
 
 #if PRINT_UPDATES
 #    include <cstdio>
 #endif
-
-template <int dim>
-double norm2(double const * p);
-
-template <>
-inline double norm2<2>(double const * p) {
-  return std::sqrt(p[0]*p[0] + p[1]*p[1]);
-}
-
-template <>
-inline double norm2<3>(double const * p) {
-  return std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
-}
 
 namespace update_rules {
   template <>

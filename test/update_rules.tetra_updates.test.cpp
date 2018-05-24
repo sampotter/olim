@@ -5,7 +5,7 @@
 #include "common.defs.hpp"
 #include "update_rules.tetra_updates.hpp"
 
-static update_rules::rhr_tetra_updates updates;
+static update_rules::rhr_tetra_updates_bv updates;
 
 #define P001 1
 #define P010 2
@@ -149,7 +149,7 @@ void tetra111_works() {
 }
 
 void tetra122_works() {
-  update_rules::mp0_tetra_updates r;
+  update_rules::mp0_tetra_updates_bv r;
   {
     double u0 = 1.9915638315627207;
     double u1 = 1.4142135623730949;
@@ -185,7 +185,7 @@ void tetra222_works() {
   }
 }
 
-update_rules::mp1_tetra_updates mp1;
+update_rules::mp1_tetra_updates_bv mp1;
 
 void mp1_tetra123_works() {
   double u0, u1, u2, s, s0, s1, s2, h, U;
@@ -196,9 +196,9 @@ void mp1_tetra123_works() {
 }
 
 TEST (tetra_updates, tetra111_is_symmetric) {
-  tetra111_is_symmetric<update_rules::mp0_tetra_updates>();
-  tetra111_is_symmetric<update_rules::mp1_tetra_updates>();
-  tetra111_is_symmetric<update_rules::rhr_tetra_updates>();
+  tetra111_is_symmetric<update_rules::mp0_tetra_updates_bv>();
+  tetra111_is_symmetric<update_rules::mp1_tetra_updates_bv>();
+  tetra111_is_symmetric<update_rules::rhr_tetra_updates_bv>();
 }
 
 TEST (tetra_updates, tetra122_is_symmetric) {
@@ -222,9 +222,9 @@ TEST (tetra_updates, tetra123_works) {
 }
 
 TEST (tetra_updates, tetra222_works) {
-  tetra222_works<update_rules::mp0_tetra_updates>();
-  tetra222_works<update_rules::mp1_tetra_updates>();
-  tetra222_works<update_rules::rhr_tetra_updates>();
+  tetra222_works<update_rules::mp0_tetra_updates_bv>();
+  tetra222_works<update_rules::mp1_tetra_updates_bv>();
+  tetra222_works<update_rules::rhr_tetra_updates_bv>();
 }
 
 TEST (tetra_updates, mp1_tetra123_works) {

@@ -9,6 +9,19 @@
 #    include <cstdio>
 #endif
 
+template <int dim>
+double norm2(double const * p);
+
+template <>
+inline double norm2<2>(double const * p) {
+  return std::sqrt(p[0]*p[0] + p[1]*p[1]);
+}
+
+template <>
+inline double norm2<3>(double const * p) {
+  return std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+}
+
 namespace update_rules {
   template <>
   inline double
@@ -54,6 +67,30 @@ namespace update_rules {
 
   template <>
   inline double
+  rhr_line_updates::line<2>(double const * p0, double u0, double s, double s0,
+                            double h) const {
+    (void) s0;
+#if PRINT_UPDATES
+#  error Not implemented
+#else
+    return u0 + s*h*norm2<2>(p0);
+#endif
+  }
+
+  template <>
+  inline double
+  rhr_line_updates::line<3>(double const * p0, double u0, double s, double s0,
+                            double h) const {
+    (void) s0;
+#if PRINT_UPDATES
+#  error Not implemented
+#else
+    return u0 + s*h*norm2<3>(p0);
+#endif
+  }
+
+  template <>
+  inline double
   mp_line_updates::line<1>(double u0, double s, double s0, double h) const {
 #if PRINT_UPDATES
     double tmp = u0 + (s + s0)*h/2;
@@ -87,6 +124,28 @@ namespace update_rules {
     return tmp;
 #else
     return u0 + (s + s0)*h*sqrt3/2;
+#endif
+  }
+
+  template <>
+  inline double
+  mp_line_updates::line<2>(double const * p0, double u0, double s, double s0,
+                           double h) const {
+#if PRINT_UPDATES
+#  error Not implemented
+#else
+    return u0 + (s + s0)*h*norm2<2>(p0)/2;
+#endif
+  }
+
+  template <>
+  inline double
+  mp_line_updates::line<3>(double const * p0, double u0, double s, double s0,
+                           double h) const {
+#if PRINT_UPDATES
+#  error Not implemented
+#else
+    return u0 + (s + s0)*h*norm2<3>(p0)/2;
 #endif
   }
 }

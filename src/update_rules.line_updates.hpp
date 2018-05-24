@@ -3,13 +3,21 @@
 
 namespace update_rules {
   struct rhr_line_updates {
-    template <int D>
+    template <int degree>
     double line(double u0, double s, double s0, double h) const;
+
+    template <int dim>
+    double line(double const * p0, double u0, double s, double s0, double h)
+      const;
   };
 
   struct mp_line_updates {
-    template <int D>
+    template <int degree>
     double line(double u0, double s, double s0, double h) const;
+
+    template <int dim>
+    double line(double const * p0, double u0, double s, double s0, double h)
+      const;
   };
 }
 

@@ -91,8 +91,8 @@ marchers3d = {
     'olim26_mp0': 'Olim26Mid0',
     'olim26_mp1': 'Olim26Mid1',
     'olim26_rhr': 'Olim26Rect',
-    'olim3d_hu_mp0': 'Olim3dHuMp0',
-    'olim3d_hu_mp1': 'Olim3dHuMp1',
+    'olim3d_hu_mp0': 'Olim3dHuMid0',
+    'olim3d_hu_mp1': 'Olim3dHuMid1',
     'olim3d_hu_rhr': 'Olim3dHuRect'}
 
 # TODO: see comment above for `marcher_template' variable.

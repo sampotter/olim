@@ -237,6 +237,8 @@ class LogLogControlPanel(wx.Panel, ColumnSorterMixin):
                 mname, sname = dataset_name.split('/')
                 if mname == 'basic_3d':
                     olim, type_ = 'basic_3d', 'finite_diff'
+                elif 'hu' in mname:
+                    olim, type_ = mname[:9], mname[10:]
                 else:
                     olim, type_ = mname.split('_')
                 index = self._list.InsertItem(sys.maxsize, olim)
@@ -337,6 +339,8 @@ class ErrorVolControlPanel(wx.Panel):
                 mname, sname = dsetname.split('/')
                 if mname == 'basic_3d':
                     olim, type_ = 'basic_3d', 'finite_diff'
+                elif 'hu' in mname:
+                    olim, type_ = mname[:9], mname[10:]
                 else:
                     olim, type_ = mname.split('_')
                 index = self._list.InsertItem(sys.maxsize, olim)

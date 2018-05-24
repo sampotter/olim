@@ -12,7 +12,10 @@ marchers = [
     eik.Olim18Rect,
     eik.Olim26Mid0,
     eik.Olim26Mid1,
-    eik.Olim26Rect
+    eik.Olim26Rect,
+    eik.Olim3dHuMid0,
+    eik.Olim3dHuMid1,
+    eik.Olim3dHuRect
 ]
 
 olim6_marchers = [
@@ -61,7 +64,10 @@ _marcher_names = {
     eik.Olim18Rect: 'olim18 rhr',
     eik.Olim26Mid0: 'olim26 mp0',
     eik.Olim26Mid1: 'olim26 mp1',
-    eik.Olim26Rect: 'olim26 rhr'
+    eik.Olim26Rect: 'olim26 rhr',
+    eik.Olim3dHuMid0: 'olim3d hu mp0',
+    eik.Olim3dHuMid1: 'olim3d hu mp1',
+    eik.Olim3dHuRect: 'olim3d hu rhr'
 }
 
 def get_marcher_name(marcher):

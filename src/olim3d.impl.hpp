@@ -485,6 +485,12 @@ void olim3d<
 #endif
 }
 
+#define __dist(p, q)                            \
+  std::sqrt(                                    \
+    std::pow(q[0] - p[0], 2) +                  \
+    std::pow(q[1] - p[1], 2) +                  \
+    std::pow(q[2] - p[2], 2))
+
 template <class node, class line_updates, class tri_updates,
           class tetra_updates>
 void olim3d_hu<
@@ -495,6 +501,13 @@ void olim3d_hu<
 #if PRINT_UPDATES
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
+
+  // TODO: an idea for an optimization: count the number of valid
+  // neighbors, and create an array of indices of that size storing
+  // the indices of the valid neighbors. Make s[] the same size. Then,
+  // we only have to deal with the valid neighbors directly and don't
+  // need to check "if (nb[l]) { ... }" over and over again. We could
+  // also use alloca to implement this efficiently.
 
   abstract_node * nb[26];
   memset(nb, 0x0, 26*sizeof(abstract_node *));
@@ -507,19 +520,79 @@ void olim3d_hu<
     }
   }
 
+  // TODO: not currently using this---but should... implement
 #if COLLECT_STATS
   auto & node_stats = get_node_stats(i, j, k);
 #endif
 
-  // TODO: implement
-  (void) s;
-  (void) h;
-  (void) T;
+  double Tnew, T1 = INF(double), T2 = INF(double), T3 = INF(double);
+  int l0, l1;
+  double p0[3], p1[3], p2[3];
+
+  for (int l = 0; l < 26; ++l) {
+    p0[0] = __di(l);
+    p0[1] = __dj(l);
+    p0[2] = __dk(l);
+    if (nb[l]) {
+      Tnew = this->template line<3>(p0, VAL(l), SPEED_ARGS(l), h);
+      if (Tnew < T1) {
+        T1 = Tnew;
+        l0 = l;
+      }
+    }
+  }
+  p0[0] = __di(l0);
+  p0[1] = __dj(l0);
+  p0[2] = __dk(l0);
+
+  // Next, find the minimal triangle update containing l0.
+
+  for (int l = 0; l < 26; ++l) {
+    p1[0] = __di(l);
+    p1[1] = __dj(l);
+    p1[2] = __dk(l);
+    // TODO: using d <= sqrt2 here---try sqrt3, too
+    if (__dist(p0, p1) <= sqrt2 + EPS(double)) {
+      Tnew = this->template tri<3>(
+        p0, p1, VAL(l0), VAL(l1), SPEED_ARGS(l0, l1), h).value;
+      if (Tnew < T2) {
+        T2 = Tnew;
+        l1 = l;
+      }
+    }
+  }
+  p1[0] = __di(l1);
+  p1[1] = __dj(l1);
+  p1[2] = __dk(l1);
+
+  // Do the tetrahedron updates such that p2 is sufficiently near p0
+  // and p1.
+
+  for (int l2 = 0; l2 < 26; ++l2) {
+    p2[0] = __di(l2);
+    p2[1] = __dj(l2);
+    p2[2] = __dk(l2);
+    // TODO: using d <= sqrt2 here---try sqrt3, too
+    if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
+        __dist(p1, p2) <= sqrt2 + EPS(double)) {
+      Tnew = this->template tetra(
+        p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h).value;
+      if (Tnew < T3) {
+        T3 = Tnew;
+      }
+    }
+  }
+
+  // Finally, set T to be the minimum of T1, T2, and T3.
+
+  T = min(T1, min(T2, T3));
 
 #if PRINT_UPDATES
   printf("olim3d_hu::update_impl: T <- %g\n", T);
 #endif
 }
+
+#undef __dist
 
 #undef LINE
 #undef TRI

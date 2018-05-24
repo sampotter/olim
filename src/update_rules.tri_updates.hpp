@@ -13,6 +13,10 @@ namespace update_rules {
     update_info<1> tri(
       double u0, double u1, double s, double s0, double s1, double h,
       ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
+    template <int d>
+    update_info<1> tri(
+      double const * p0, double const * p1, double u0, double u1,
+      double s, double s0, double s1, double h, double tol = EPS(double)) const;
   };
 
   struct mp1_tri_updates {;
@@ -20,6 +24,10 @@ namespace update_rules {
     update_info<1> tri(
       double u0, double u1, double s, double s0, double s1, double h,
       ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
+    template <int d>
+    update_info<1> tri(
+      double const * p0, double const * p1, double u0, double u1,
+      double s, double s0, double s1, double h, double tol = EPS(double)) const;
   };
 
   struct rhr_tri_updates {
@@ -27,6 +35,10 @@ namespace update_rules {
     update_info<1> tri(
       double u0, double u1, double s, double s0, double s1, double h,
       ffvec<p0>, ffvec<p1>, double tol = EPS(double)) const;
+    template <int d>
+    update_info<1> tri(
+      double const * p0, double const * p1, double u0, double u1,
+      double s, double s0, double s1, double h, double tol = EPS(double)) const;
   };
 }
 

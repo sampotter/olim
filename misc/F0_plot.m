@@ -18,6 +18,9 @@ else
     plot(out.xs(1, 1:out.iters), out.xs(2, 1:out.iters), '-o'); hold on;
     plot(out.xs(1, out.iters), out.xs(2, out.iters), '*m'); hold on;
 end
+plot(lam01(1), lam01(2), '*b'); hold on;
+plot(lam02(1), lam02(2), '*b'); hold on;
+plot(lam12(1), lam12(2), '*b'); hold on;
 colorbar;
 
 subplot(2, 2, 2);

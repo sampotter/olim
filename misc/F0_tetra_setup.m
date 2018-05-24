@@ -1,4 +1,4 @@
-h = 0.001;
+h = 0.5;
 u0 = h*rand;
 u1 = h*rand;
 u2 = h*rand;
@@ -11,6 +11,9 @@ theta = rand;
 p0 = randn(3, 1);
 p1 = randn(3, 1);
 p2 = randn(3, 1);
+% p0 = [1; 1; 0];
+% p1 = [0; 1; 1];
+% p2 = [1; 0; 1];
 
 du1 = u1 - u0;
 du2 = u2 - u0;

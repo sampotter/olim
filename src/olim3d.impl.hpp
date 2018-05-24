@@ -226,11 +226,11 @@ constexpr int oct2inds[8][7] = {
 
 #if COLLECT_STATS
 
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-void olim3d<
-  node, line_updates, tri_updates, tetra_updates,
-  groups>::dump_stats() const
+template <class base_olim3d, class node, class line_updates, class tri_updates,
+          class tetra_updates, int nneib>
+void abstract_olim3d<
+  node, line_updates, tri_updates, tetra_updates, groups,
+  nneib>::dump_stats() const
 {
   for (int k = 0; k < this->get_depth(); ++k) {
     for (int j = 0; j < this->get_width(); ++j) {
@@ -252,18 +252,18 @@ void olim3d<
 
 #endif // COLLECT_STATS
 
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-void olim3d<
-  node, line_updates, tri_updates, tetra_updates,
-  groups>::get_valid_neighbors(int i, int j, int k, abstract_node ** nb)
+template <class base_olim3d, class node, class line_updates, class tri_updates,
+          class tetra_updates, int nneib>
+void abstract_olim3d<
+  base_olim3d, node, line_updates, tri_updates, tetra_updates,
+  nneib>::get_valid_neighbors(int i, int j, int k, abstract_node ** nb)
 {
   /**
    * TODO: conditionally only stage the neighbors that are necessary
    * based on which groups are being used
    */
   int a, b, c;
-  for (int l = 0; l < groups::nneib; ++l) {
+  for (int l = 0; l < nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && this->is_valid(a, b, c)) {
       nb[l] = &this->operator()(a, b, c);
@@ -271,11 +271,12 @@ void olim3d<
   }
 }
 
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-void olim3d<
-  node, line_updates, tri_updates,
-  tetra_updates, groups>::stage_neighbors_impl(abstract_node * n)
+template <
+  class base_olim3d, class node, class line_updates, class tri_updates,
+  class tetra_updates, int nneib>
+void abstract_olim3d<
+  base_olim3d, node, line_updates, tri_updates, tetra_updates,
+  nneib>::stage_neighbors_impl(abstract_node * n)
 {
   /**
    * TODO: conditionally only stage the neighbors that are necessary
@@ -289,12 +290,12 @@ void olim3d<
   printf("olim3d::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
-  for (int l = 0; l < groups::nneib; ++l) {
+  for (int l = 0; l < nneib; ++l) {
     this->stage(i + __di(l), j + __dj(l), k + __dk(l));
   }
 
   int a, b, c;
-  for (int l = 0; l < groups::nneib; ++l) {
+  for (int l = 0; l < nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
       this->update(a, b, c);
@@ -302,11 +303,21 @@ void olim3d<
   }
 }
 
+template <
+  class base_olim3d, class node, class line_updates, class tri_updates,
+  class tetra_updates, int nneib>
+void abstract_olim3d<
+  base_olim3d, node, line_updates, tri_updates, tetra_updates,
+  nneib>::update_impl(int i, int j, int k, double & T)
+{
+  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, T);
+}
+
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
 void olim3d<
-  node, line_updates, tri_updates,
-  tetra_updates, groups>::update_impl(int i, int j, int k, double & T)
+  node, line_updates, tri_updates, tetra_updates,
+  groups>::update_crtp(int i, int j, int k, double & T)
 {
   using std::min;
 #if PRINT_UPDATES
@@ -315,7 +326,7 @@ void olim3d<
 
   abstract_node * nb[groups::nneib];
   memset(nb, 0x0, groups::nneib*sizeof(abstract_node *));
-  get_valid_neighbors(i, j, k, nb);
+  this->get_valid_neighbors(i, j, k, nb);
 
   double h = this->get_h(), s = this->get_speed(i, j, k), s_[groups::nneib];
   for (int l = 0; l < groups::nneib; ++l) {
@@ -345,7 +356,7 @@ void olim3d<
         }
       }
     }
-    if (do_line2_updates) {
+    if (groups::do_line2_updates) {
       for (int l = 6; l < 18; ++l) {
         if (nb[l]) {
           Tnew = this->template line<2>(VAL(l), SPEED_ARGS(l), h);
@@ -356,7 +367,7 @@ void olim3d<
         }
       }
     }
-    if (do_line3_updates) {
+    if (groups::do_line3_updates) {
       for (int l = 18; l < 26; ++l) {
         if (nb[l]) {
           Tnew = this->template line<3>(VAL(l), SPEED_ARGS(l), h);
@@ -438,12 +449,12 @@ void olim3d<
   for (int octant = 0; octant < 8; ++octant) {
     inds = oct2inds[octant];
     if (should_do_xyz_planar_updates(octant)) {
-      if (do_tri11_updates) {
+      if (groups::do_tri11_updates) {
         TRI(0, 2, 001, 010);
         TRI(2, 4, 010, 100);
         TRI(4, 0, 100, 001);
       }
-      if (do_tri12_updates) {
+      if (groups::do_tri12_updates) {
         TRI(0, 1, 001, 011);
         TRI(2, 1, 010, 011);
         TRI(2, 3, 010, 110);
@@ -452,17 +463,17 @@ void olim3d<
         TRI(0, 5, 001, 101);
       }
     }
-    if (do_tri13_updates) {
+    if (groups::do_tri13_updates) {
       TRI(0, 6, 001, 111);
       TRI(2, 6, 010, 111);
       TRI(4, 6, 100, 111);
     }
-    if (do_tri22_updates) {
+    if (groups::do_tri22_updates) {
       TRI(1, 3, 011, 110);
       TRI(3, 5, 110, 101);
       TRI(5, 1, 101, 011);
     }
-    if (do_tri23_updates) {
+    if (groups::do_tri23_updates) {
       TRI(1, 6, 011, 111);
       TRI(3, 6, 110, 111);
       TRI(5, 6, 101, 111);
@@ -499,19 +510,21 @@ void olim3d<
 #if COLLECT_STATS
 
 template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
+          class tetra_updates, class groups, int nneib>
 olim3d_node_stats &
-olim3d<node, line_updates, tri_updates, tetra_updates,
-       groups>::get_node_stats(int i, int j, int k)
+abstract_olim3d<
+  node, line_updates, tri_updates, tetra_updates, groups,
+  nneib>::get_node_stats(int i, int j, int k)
 {
   return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
 }
 
 template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
+          class tetra_updates, class groups, int nneib>
 olim3d_node_stats const &
-olim3d<node, line_updates, tri_updates, tetra_updates,
-       groups>::get_node_stats(int i, int j, int k) const
+abstract_olim3d<
+  node, line_updates, tri_updates, tetra_updates, groups,
+  nneib>::get_node_stats(int i, int j, int k) const
 {
   return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
 }

@@ -38,12 +38,13 @@ struct groups_t {
     (I || II || III || IV_b ? 18 : 6);
 };
 
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups>
-struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
-               public tetra_updates, public groups
+template <class base_olim3d, class node, class line_updates, class tri_updates,
+          class tetra_updates, int nneib>
+struct abstract_olim3d: public marcher_3d<node>, public line_updates,
+                        public tri_updates, public tetra_updates
 {
-  olim3d(int height, int width, int depth, double h, no_speed_func_t const &):
+  abstract_olim3d(int height, int width, int depth, double h,
+                  no_speed_func_t const &):
       marcher_3d<node> {height, width, depth, h, no_speed_func_t {}}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
@@ -51,11 +52,10 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
     {}
 #endif
 
-  olim3d(int height, int width, int depth, double h = 1,
-         std::function<double(double, double, double)> speed =
-         static_cast<speed_func_3d>(default_speed_func),
-         double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
-
+  abstract_olim3d(int height, int width, int depth, double h = 1,
+                  std::function<double(double, double, double)> speed =
+                    static_cast<speed_func_3d>(default_speed_func),
+                  double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
       marcher_3d<node> {height, width, depth, h, speed, x0, y0, z0}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
@@ -63,7 +63,8 @@ struct olim3d: public marcher_3d<node>, public line_updates, public tri_updates,
     {}
 #endif
 
-  olim3d(int height, int width, int depth, double h, double const * s_cache):
+  abstract_olim3d(int height, int width, int depth, double h,
+                  double const * s_cache):
       marcher_3d<node> {height, width, depth, h, s_cache}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
@@ -89,6 +90,23 @@ EIKONAL_PRIVATE:
   olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
   olim3d_node_stats * _node_stats {nullptr};
 #endif
+};
+
+template <
+  class node, class line_updates, class tri_updates, class tetra_updates,
+  class groups>
+struct olim3d:
+  public abstract_olim3d<
+    olim3d<node, line_updates, tri_updates, tetra_updates, groups>,
+    node, line_updates, tri_updates, tetra_updates, groups::nneib>,
+  public groups
+{
+  using abstract_olim3d<
+    olim3d<node, line_updates, tri_updates, tetra_updates, groups>,
+    node, line_updates, tri_updates, tetra_updates,
+    groups::nneib>::abstract_olim3d;
+
+  void update_crtp(int i, int j, int k, double & T);
 };
 
 template <class groups>

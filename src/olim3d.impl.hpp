@@ -530,10 +530,10 @@ void olim3d_hu<
   double p0[3], p1[3], p2[3];
 
   for (int l = 0; l < 26; ++l) {
-    p0[0] = __di(l);
-    p0[1] = __dj(l);
-    p0[2] = __dk(l);
     if (nb[l]) {
+      p0[0] = __di(l);
+      p0[1] = __dj(l);
+      p0[2] = __dk(l);
       Tnew = this->template line<3>(p0, VAL(l), SPEED_ARGS(l), h);
       if (Tnew < T1) {
         T1 = Tnew;
@@ -548,16 +548,18 @@ void olim3d_hu<
   // Next, find the minimal triangle update containing l0.
 
   for (int l = 0; l < 26; ++l) {
-    p1[0] = __di(l);
-    p1[1] = __dj(l);
-    p1[2] = __dk(l);
-    // TODO: using d <= sqrt2 here---try sqrt3, too
-    if (__dist(p0, p1) <= sqrt2 + EPS(double)) {
-      Tnew = this->template tri<3>(
-        p0, p1, VAL(l0), VAL(l1), SPEED_ARGS(l0, l1), h).value;
-      if (Tnew < T2) {
-        T2 = Tnew;
-        l1 = l;
+    if (l != l0 && nb[l]) {
+      p1[0] = __di(l);
+      p1[1] = __dj(l);
+      p1[2] = __dk(l);
+      // TODO: using d <= sqrt2 here---try sqrt3, too
+      if (__dist(p0, p1) <= sqrt2 + EPS(double)) {
+        Tnew = this->template tri<3>(
+          p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h).value;
+        if (Tnew < T2) {
+          T2 = Tnew;
+          l1 = l;
+        }
       }
     }
   }
@@ -565,20 +567,42 @@ void olim3d_hu<
   p1[1] = __dj(l1);
   p1[2] = __dk(l1);
 
+  // We'll use the scalar triple product (dot(p x q, r)) to check if
+  // three points are coplanar. We precompute the cross product of p0
+  // and p1 here so that we only have to compute a dot product up
+  // ahead.
+
+  double const p0_cross_p1[3] = {
+    p0[1]*p1[2] - p0[2]*p1[1],
+    p0[2]*p1[0] - p0[0]*p1[2],
+    p0[0]*p1[1] - p0[1]*p1[0]
+  };
+
   // Do the tetrahedron updates such that p2 is sufficiently near p0
   // and p1.
 
   for (int l2 = 0; l2 < 26; ++l2) {
-    p2[0] = __di(l2);
-    p2[1] = __dj(l2);
-    p2[2] = __dk(l2);
-    // TODO: using d <= sqrt2 here---try sqrt3, too
-    if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
-        __dist(p1, p2) <= sqrt2 + EPS(double)) {
-      Tnew = this->template tetra(
-        p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h).value;
-      if (Tnew < T3) {
-        T3 = Tnew;
+    if (l2 != l1 && l2 != l0 && nb[l2]) {
+      p2[0] = __di(l2);
+      p2[1] = __dj(l2);
+      p2[2] = __dk(l2);
+
+      // Check if p0, p1, and p2 are coplanar: if they are, we can
+      // skip the tetrahedron update.
+      if (fabs(p0_cross_p1[0]*p2[0] +
+               p0_cross_p1[1]*p0[1] +
+               p0_cross_p1[2]*p0[2]) < EPS(double)) {
+        continue;
+      }
+
+      // TODO: using d <= sqrt2 here---try sqrt3, too
+      if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
+          __dist(p1, p2) <= sqrt2 + EPS(double)) {
+        Tnew = this->template tetra(
+          p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h).value;
+        if (Tnew < T3) {
+          T3 = Tnew;
+        }
       }
     }
   }

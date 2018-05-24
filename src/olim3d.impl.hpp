@@ -526,7 +526,7 @@ void olim3d_hu<
 #endif
 
   double Tnew, T1 = INF(double), T2 = INF(double), T3 = INF(double);
-  int l0, l1;
+  int l0 = -1, l1 = -1;
   double p0[3], p1[3], p2[3];
 
   for (int l = 0; l < 26; ++l) {
@@ -541,6 +541,7 @@ void olim3d_hu<
       }
     }
   }
+  assert(l0 != -1);
   p0[0] = __di(l0);
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
@@ -563,45 +564,55 @@ void olim3d_hu<
       }
     }
   }
+  // There may only be a single valid neighbor, in which case we
+  // should jump to the coda of this function and skip the tetrahedron
+  // updates.
+  if (l1 == -1) {
+    assert(std::isinf(T2));
+    goto coda;
+  }
   p1[0] = __di(l1);
   p1[1] = __dj(l1);
   p1[2] = __dk(l1);
 
-  // We'll use the scalar triple product (dot(p x q, r)) to check if
-  // three points are coplanar. We precompute the cross product of p0
-  // and p1 here so that we only have to compute a dot product up
-  // ahead.
+  {
+    // We'll use the scalar triple product (dot(p x q, r)) to check if
+    // three points are coplanar. We precompute the cross product of p0
+    // and p1 here so that we only have to compute a dot product up
+    // ahead.
 
-  double const p0_cross_p1[3] = {
-    p0[1]*p1[2] - p0[2]*p1[1],
-    p0[2]*p1[0] - p0[0]*p1[2],
-    p0[0]*p1[1] - p0[1]*p1[0]
-  };
+    double const p0_cross_p1[3] = {
+      p0[1]*p1[2] - p0[2]*p1[1],
+      p0[2]*p1[0] - p0[0]*p1[2],
+      p0[0]*p1[1] - p0[1]*p1[0]
+    };
 
-  // Do the tetrahedron updates such that p2 is sufficiently near p0
-  // and p1.
+    // Do the tetrahedron updates such that p2 is sufficiently near p0
+    // and p1.
 
-  for (int l2 = 0; l2 < 26; ++l2) {
-    if (l2 != l1 && l2 != l0 && nb[l2]) {
-      p2[0] = __di(l2);
-      p2[1] = __dj(l2);
-      p2[2] = __dk(l2);
+    for (int l2 = 0; l2 < 26; ++l2) {
+      if (l2 != l1 && l2 != l0 && nb[l2]) {
+        p2[0] = __di(l2);
+        p2[1] = __dj(l2);
+        p2[2] = __dk(l2);
 
-      // Check if p0, p1, and p2 are coplanar: if they are, we can
-      // skip the tetrahedron update.
-      if (fabs(p0_cross_p1[0]*p2[0] +
-               p0_cross_p1[1]*p0[1] +
-               p0_cross_p1[2]*p0[2]) < EPS(double)) {
-        continue;
-      }
+        // Check if p0, p1, and p2 are coplanar: if they are, we can
+        // skip the tetrahedron update.
+        if (fabs(p0_cross_p1[0]*p2[0] +
+                 p0_cross_p1[1]*p0[1] +
+                 p0_cross_p1[2]*p0[2]) < EPS(double)) {
+          continue;
+        }
 
-      // TODO: using d <= sqrt2 here---try sqrt3, too
-      if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
-          __dist(p1, p2) <= sqrt2 + EPS(double)) {
-        Tnew = this->template tetra(
-          p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h).value;
-        if (Tnew < T3) {
-          T3 = Tnew;
+        // TODO: using d <= sqrt2 here---try sqrt3, too
+        if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
+            __dist(p1, p2) <= sqrt2 + EPS(double)) {
+          Tnew = this->template tetra(
+            p0, p1, p2, VAL(l0), VAL(l1), VAL(l2),
+            SPEED_ARGS(l0, l1, l2), h).value;
+          if (Tnew < T3) {
+            T3 = Tnew;
+          }
         }
       }
     }
@@ -609,6 +620,7 @@ void olim3d_hu<
 
   // Finally, set T to be the minimum of T1, T2, and T3.
 
+coda:
   T = min(T1, min(T2, T3));
 
 #if PRINT_UPDATES

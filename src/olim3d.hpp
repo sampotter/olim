@@ -109,20 +109,6 @@ struct olim3d:
   void update_crtp(int i, int j, int k, double & T);
 };
 
-template <
-  class node, class line_updates, class tri_updates, class tetra_updates>
-struct olim3d_hu:
-  public abstract_olim3d<
-    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
-    node, line_updates, tri_updates, tetra_updates, 26>
-{
-  using abstract_olim3d<
-    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
-    node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
-
-  void update_crtp(int i, int j, int k, double & T);
-};
-
 template <class groups>
 using olim3d_mp0 = olim3d<
   node_3d,
@@ -161,6 +147,38 @@ using olim26_groups = groups_t<0, 0, 0, 0, 0, 1, 0, 0>;
 using olim26_mp0 = olim3d_mp0<olim26_groups>;
 using olim26_mp1 = olim3d_mp1<olim26_groups>;
 using olim26_rhr = olim3d_rhr<olim26_groups>;
+
+template <
+  class node, class line_updates, class tri_updates, class tetra_updates>
+struct olim3d_hu:
+  public abstract_olim3d<
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    node, line_updates, tri_updates, tetra_updates, 26>
+{
+  using abstract_olim3d<
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
+
+  void update_crtp(int i, int j, int k, double & T);
+};
+
+using olim3d_hu_rhr = olim3d_hu<
+  node_3d,
+  update_rules::rhr_line_updates,
+  update_rules::rhr_tri_updates,
+  update_rules::rhr_tetra_updates>;
+
+using olim3d_hu_mp0 = olim3d_hu<
+  node_3d,
+  update_rules::mp_line_updates,
+  update_rules::mp0_tri_updates,
+  update_rules::mp0_tetra_updates>;
+
+using olim3d_hu_mp1 = olim3d_hu<
+  node_3d,
+  update_rules::mp_line_updates,
+  update_rules::mp1_tri_updates,
+  update_rules::mp1_tetra_updates>;
 
 #include "olim3d.impl.hpp"
 

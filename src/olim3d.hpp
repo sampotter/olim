@@ -109,6 +109,20 @@ struct olim3d:
   void update_crtp(int i, int j, int k, double & T);
 };
 
+template <
+  class node, class line_updates, class tri_updates, class tetra_updates>
+struct olim3d_hu:
+  public abstract_olim3d<
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    node, line_updates, tri_updates, tetra_updates, 26>
+{
+  using abstract_olim3d<
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
+
+  void update_crtp(int i, int j, int k, double & T);
+};
+
 template <class groups>
 using olim3d_mp0 = olim3d<
   node_3d,

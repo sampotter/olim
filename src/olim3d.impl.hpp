@@ -485,6 +485,42 @@ void olim3d<
 #endif
 }
 
+template <class node, class line_updates, class tri_updates,
+          class tetra_updates>
+void olim3d_hu<
+  node, line_updates, tri_updates,
+  tetra_updates>::update_crtp(int i, int j, int k, double & T)
+{
+  using std::min;
+#if PRINT_UPDATES
+  printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+#endif
+
+  abstract_node * nb[26];
+  memset(nb, 0x0, 26*sizeof(abstract_node *));
+  this->get_valid_neighbors(i, j, k, nb);
+
+  double h = this->get_h(), s = this->get_speed(i, j, k), s_[26];
+  for (int l = 0; l < 26; ++l) {
+    if (nb[l]) {
+      s_[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));
+    }
+  }
+
+#if COLLECT_STATS
+  auto & node_stats = get_node_stats(i, j, k);
+#endif
+
+  // TODO: implement
+  (void) s;
+  (void) h;
+  (void) T;
+
+#if PRINT_UPDATES
+  printf("olim3d_hu::update_impl: T <- %g\n", T);
+#endif
+}
+
 #undef LINE
 #undef TRI
 #undef TETRA

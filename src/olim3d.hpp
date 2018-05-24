@@ -73,21 +73,22 @@ struct abstract_olim3d: public marcher_3d<node>, public line_updates,
 #endif
 
 #if COLLECT_STATS
-  virtual ~olim3d() { delete[] _node_stats; }
+  virtual ~abstract_olim3d() { delete[] _node_stats; }
   void dump_stats() const;
 #endif
 
 EIKONAL_PROTECTED:
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
+#if COLLECT_STATS
+  olim3d_node_stats & get_node_stats(int i, int j, int k);
+  olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
+#endif
 
 EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, double & T);
   void init();
-
 #if COLLECT_STATS
-  olim3d_node_stats & get_node_stats(int i, int j, int k);
-  olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
   olim3d_node_stats * _node_stats {nullptr};
 #endif
 };

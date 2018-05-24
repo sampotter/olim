@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
+
+#include "common.macros.hpp"
 
 olim3d_node_stats::olim3d_node_stats() {
   std::fill(
@@ -34,6 +37,16 @@ int olim3d_node_stats::num_line_updates(int d) const {
 void olim3d_node_stats::inc_line_updates(int d) {
   assert(d == 1 || d == 2 || d == 3);
   ++_num_line_updates[d - 1];
+}
+
+void olim3d_node_stats::inc_line_updates(double const * p, int n) {
+  int d = 0;
+  for (int i = 0; i < n; ++i) {
+    if (fabs(p[i]) > EPS(double)) {
+      ++d;
+    }
+  }
+  inc_line_updates(d);
 }
 
 int olim3d_node_stats::num_tri_updates() const {
@@ -76,6 +89,16 @@ static int get_tri_index(int d1, int d2) {
     assert(false);
   }
   return i;
+}
+
+void olim3d_node_stats::inc_tri_updates(double const * p0, double const * p1,
+                                        int n, bool deg, bool hu) {
+  int d1 = 0, d2 = 0;
+  for (int i = 0; i < n; ++i) {
+    if (fabs(p0[i]) > EPS(double)) ++d1;
+    if (fabs(p1[i]) > EPS(double)) ++d2;
+  }
+  inc_tri_updates(d1, d2, deg, hu);
 }
 
 void olim3d_node_stats::inc_tri_updates(int d1, int d2, bool deg, bool hu) {
@@ -142,6 +165,18 @@ static int get_tetra_index(int d1, int d2, int d3) {
   }
   assert(i >= 0);
   return i;
+}
+
+void olim3d_node_stats::inc_tetra_updates(double const * p0, double const * p1,
+                                          double const * p2, int n, bool deg,
+                                          bool hu) {
+  int d1 = 0, d2 = 0, d3 = 0;
+  for (int i = 0; i < n; ++i) {
+    if (fabs(p0[i]) > EPS(double)) ++d1;
+    if (fabs(p1[i]) > EPS(double)) ++d2;
+    if (fabs(p2[i]) > EPS(double)) ++d3;
+  }
+  inc_tetra_updates(d1, d2, d3, deg, hu);
 }
 
 void olim3d_node_stats::inc_tetra_updates(int d1, int d2, int d3, bool deg, bool hu) {

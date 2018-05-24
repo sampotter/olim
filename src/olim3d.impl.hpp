@@ -229,7 +229,7 @@ constexpr int oct2inds[8][7] = {
 template <class base_olim3d, class node, class line_updates, class tri_updates,
           class tetra_updates, int nneib>
 void abstract_olim3d<
-  node, line_updates, tri_updates, tetra_updates, groups,
+  base_olim3d, node, line_updates, tri_updates, tetra_updates,
   nneib>::dump_stats() const
 {
   for (int k = 0; k < this->get_depth(); ++k) {
@@ -336,7 +336,7 @@ void olim3d<
   }
 
 #if COLLECT_STATS
-  auto & node_stats = get_node_stats(i, j, k);
+  auto & node_stats = this->get_node_stats(i, j, k);
 #endif
 
   /**
@@ -522,7 +522,7 @@ void olim3d_hu<
 
   // TODO: not currently using this---but should... implement
 #if COLLECT_STATS
-  auto & node_stats = get_node_stats(i, j, k);
+  auto & node_stats = this->get_node_stats(i, j, k);
 #endif
 
   double Tnew, T1 = INF(double), T2 = INF(double), T3 = INF(double);
@@ -535,6 +535,9 @@ void olim3d_hu<
       p0[1] = __dj(l);
       p0[2] = __dk(l);
       Tnew = this->template line<3>(p0, VAL(l), SPEED_ARGS(l), h);
+#if COLLECT_STATS
+      node_stats.inc_line_updates(p0, 3);
+#endif
       if (Tnew < T1) {
         T1 = Tnew;
         l0 = l;
@@ -555,8 +558,12 @@ void olim3d_hu<
       p1[2] = __dk(l);
       // TODO: using d <= sqrt2 here---try sqrt3, too
       if (__dist(p0, p1) <= sqrt2 + EPS(double)) {
-        Tnew = this->template tri<3>(
-          p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h).value;
+        auto const tmp = this->template tri<3>(
+          p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
+#if COLLECT_STATS
+        node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
+#endif
+        Tnew = tmp.value;
         if (Tnew < T2) {
           T2 = Tnew;
           l1 = l;
@@ -607,9 +614,12 @@ void olim3d_hu<
         // TODO: using d <= sqrt2 here---try sqrt3, too
         if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
             __dist(p1, p2) <= sqrt2 + EPS(double)) {
-          Tnew = this->template tetra(
-            p0, p1, p2, VAL(l0), VAL(l1), VAL(l2),
-            SPEED_ARGS(l0, l1, l2), h).value;
+          auto const tmp = this->template tetra(
+            p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
+#if COLLECT_STATS
+          node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
+#endif
+          Tnew = tmp.value;
           if (Tnew < T3) {
             T3 = Tnew;
           }

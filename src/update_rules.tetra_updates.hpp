@@ -19,6 +19,13 @@ namespace update_rules {
   };
 
   struct mp0_tetra_updates: tetra_updates<mp0_tetra_updates> {
+    template <int n, int d>
+    using cost_func = F0<n, d>;
+
+    inline double theta() const { return 0.5; }
+  };
+
+  struct mp0_tetra_updates_bv: tetra_updates<mp0_tetra_updates_bv> {
     template <char p0, char p1, char p2>
     using cost_func = F0_bv<p0, p1, p2, 2>;
 
@@ -26,6 +33,13 @@ namespace update_rules {
   };
 
   struct mp1_tetra_updates: tetra_updates<mp1_tetra_updates> {
+    template <int n, int d>
+    using cost_func = F1<n, d>;
+
+    inline double theta() const { return 0.5; }
+  };
+
+  struct mp1_tetra_updates_bv: tetra_updates<mp1_tetra_updates_bv> {
     template <char p0, char p1, char p2>
     using cost_func = F1_bv<p0, p1, p2, 2>;
 
@@ -33,6 +47,13 @@ namespace update_rules {
   };
 
   struct rhr_tetra_updates: tetra_updates<rhr_tetra_updates> {
+    template <int n, int d>
+    using cost_func = F0<n, d>;
+
+    inline double theta() const { return 0.0; }
+  };
+
+  struct rhr_tetra_updates_bv: tetra_updates<rhr_tetra_updates_bv> {
     template <char p0, char p1, char p2>
     using cost_func = F0_bv<p0, p1, p2, 2>;
 

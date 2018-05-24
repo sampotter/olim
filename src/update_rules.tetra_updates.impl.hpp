@@ -78,7 +78,7 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
   memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
   memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
 
-  using cost_func_t = typename derived::cost_func;
+  using cost_func_t = typename derived::template cost_func<3, 2>;
 
   cost_func_t func {h, static_cast<derived const *>(this)->theta()};
   func.set_args(u, s_hat, s_, p);

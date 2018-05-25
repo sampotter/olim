@@ -282,11 +282,24 @@ update_rules::mp1_tri_updates::tri(
 
   double const ds = s1 - s0, du = u1 - u0;
 
-  // TODO: check gradients at endpoints to see if we can skip this
-  // triangle update
+  update_info<1> update;
+
+  // Check gradients at endpoints to see if we can skip this update
+  double dp_dot_plam = dp_dot_p0;
+  if (dF1__(0) > 0) {
+    update.value = F1__(0);
+    update.lambda[0] = 0;
+    return update;
+  }
+  dp_dot_plam += dp_dot_dp;
+  if (dF1__(1) < 0) {
+    update.value = F1__(1);
+    update.lambda[0] = 1;
+    return update;
+  }
 
   bool conv;
-  double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;
+  double lam[2], F1[2], dF1, d2F1, g, alpha;
   lam[0] = 0.5;
   F1[0] = F1__(lam[0]);
   do {
@@ -320,7 +333,6 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, F1[1]);
 #endif
-  update_info<1> update;
   update.value = F1[1];
   update.lambda[0] = lam[1];
   return update;
@@ -348,8 +360,23 @@ update_rules::mp1_tri_updates::tri(
 
   double const ds = s1 - s0, du = u1 - u0;
 
+  update_info<1> update;
+
+  double dp_dot_plam = dp_dot_p0;
+  if (dF1__(0) > 0) {
+    update.value = F1__(0);
+    update.lambda[0] = 0;
+    return update;
+  }
+  dp_dot_plam += dp_dot_dp;
+  if (dF1__(1) < 0) {
+    update.value = F1__(1);
+    update.lambda[0] = 1;
+    return update;
+  }
+
   bool conv;
-  double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;
+  double lam[2], F1[2], dF1, d2F1, g, alpha;
   lam[0] = 0.5;
   F1[0] = F1__(lam[0]);
   do {
@@ -383,7 +410,6 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          d, u0, u1, s, s0, s1, h, update.value);
 #endif
-  update_info<1> update;
   update.value = F1[1];
   update.lambda[0] = lam[1];
   return update;

@@ -62,6 +62,7 @@ cost_func<derived, n, d>::lag_mult(double const lam[2], double * mu, int * k)
       assert(false);
     }
   } else if (num_active == 2) {
+    // TODO: we can do this in place without defining A and b
     double A[3], b[2];
     if ((active_set[0] == 0 && active_set[1] == 2) ||
         (active_set[0] == 2 && active_set[1] == 0)) {

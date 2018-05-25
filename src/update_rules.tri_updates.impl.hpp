@@ -282,6 +282,9 @@ update_rules::mp1_tri_updates::tri(
 
   double const ds = s1 - s0, du = u1 - u0;
 
+  // TODO: check gradients at endpoints to see if we can skip this
+  // triangle update
+
   bool conv;
   double lam[2], F1[2], dF1, d2F1, g, dp_dot_plam, alpha;
   lam[0] = 0.5;

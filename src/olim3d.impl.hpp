@@ -523,7 +523,6 @@ void olim3d_hu<
     }
   }
 
-  // TODO: not currently using this---but should... implement
 #if COLLECT_STATS
   auto & node_stats = this->get_node_stats(i, j, k);
   node_stats.inc_num_visits();
@@ -553,6 +552,10 @@ void olim3d_hu<
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
 
+  // Create a cache for the minimizing lambdas to use for skipping
+  // tetrahedron updates. Don't bother initializing it.
+  double arglam[26];
+
   // Next, find the minimal triangle update containing l0.
 
   for (int l = 0; l < 26; ++l) {
@@ -560,19 +563,23 @@ void olim3d_hu<
       p1[0] = __di(l);
       p1[1] = __dj(l);
       p1[2] = __dk(l);
+
       // TODO: using d <= sqrt2 here---try sqrt3, too
-      if (__dist(p0, p1) <= sqrt2 + EPS(double)) {
-        auto const tmp = this->template tri<3>(
-          p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
-#if COLLECT_STATS
-        node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
-#endif
-        Tnew = tmp.value;
-        if (Tnew < T2) {
-          T2 = Tnew;
-          l1 = l;
-        }
+      if (__dist(p0, p1) >= sqrt2 + 1e2*EPS(double)) {
+        continue;
       }
+
+      auto const tmp = this->template tri<3>(
+        p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
+#if COLLECT_STATS
+      node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
+#endif
+      Tnew = tmp.value;
+      if (Tnew < T2) {
+        T2 = Tnew;
+        l1 = l;
+      }
+      arglam[l] = tmp.lambda[0];
     }
   }
   // There may only be a single valid neighbor, in which case we
@@ -610,23 +617,67 @@ void olim3d_hu<
         // Check if p0, p1, and p2 are coplanar: if they are, we can
         // skip the tetrahedron update.
         if (fabs(p0_cross_p1[0]*p2[0] +
-                 p0_cross_p1[1]*p0[1] +
-                 p0_cross_p1[2]*p0[2]) < EPS(double)) {
+                 p0_cross_p1[1]*p2[1] +
+                 p0_cross_p1[2]*p2[2]) < 1e2*EPS(double)) {
           continue;
         }
 
         // TODO: using d <= sqrt2 here---try sqrt3, too
-        if (__dist(p0, p2) <= sqrt2 + EPS(double) &&
-            __dist(p1, p2) <= sqrt2 + EPS(double)) {
-          auto const tmp = this->template tetra(
-            p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
+        if (__dist(p0, p2) > sqrt2 + 1e2*EPS(double) ||
+            __dist(p1, p2) > sqrt2 + 1e2*EPS(double)) {
+          continue;
+        }
+
+        // Compute Lagrange multipliers to see if we can skip the
+        // tetrahedron update.
+
+        // TODO: this is pretty inefficient! we will just end up
+        // redoing the setup phase for this cost_func once we get
+        // inside tetra in the next section
+        typename tetra_updates::template cost_func<3, 2> func(h, this->theta());
+        {
+          double U[3] = {VAL(l0), VAL(l1), VAL(l2)};
+          double S[3] = {s_[l0], s_[l1], s_[l2]};
+          double P[3][3] = {
+            {p0[0], p0[1], p0[2]},
+            {p1[0], p1[1], p1[2]},
+            {p2[0], p2[1], p2[2]}
+          };
+          func.set_args(U, s, S, P);
+        }
+
+        double mu[2], lam[2];
+        int k;
+
+        // We get the first two checks for free using arglam
+
+        lam[0] = arglam[l0];
+        lam[1] = 0;
+        func.lag_mult(lam, mu, &k);
+        if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
+          continue;
+        }
+
+        lam[0] = 0;
+        lam[1] = arglam[l1];
+        func.lag_mult(lam, mu, &k);
+        if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
+          continue;
+        }
+
+        // The triangle update corresponding to [p1, p2] hasn't been
+        // done yet, so do this to get lambda
+        // TODO: let's see how this works without this for now...
+
+        // Finally, do the tetrahedron update
+        auto const tmp = this->template tetra(
+          p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
 #if COLLECT_STATS
-          node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
+        node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
 #endif
-          Tnew = tmp.value;
-          if (Tnew < T3) {
-            T3 = Tnew;
-          }
+        Tnew = tmp.value;
+        if (Tnew < T3) {
+          T3 = Tnew;
         }
       }
     }

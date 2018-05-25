@@ -330,6 +330,9 @@ void olim3d<
   memset(nb, 0x0, groups::nneib*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, k, nb);
 
+  // TODO: once we know the number of neighbors that are actually
+  // valid, we can alloca and reduce the size of the arrays that
+  // follow (just create an array of indices)
   double h = this->get_h(), s = this->get_speed(i, j, k), s_[groups::nneib];
   for (int l = 0; l < groups::nneib; ++l) {
     if (nb[l]) {

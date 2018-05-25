@@ -30,6 +30,8 @@ enum class tetra_update: int {
 
 struct olim3d_node_stats {
   olim3d_node_stats();
+  void inc_num_visits();
+  int num_visits() const;
   int num_line_updates() const;
   int num_line_updates(int d) const;
   void inc_line_updates(double const * p0, int n);
@@ -47,6 +49,7 @@ struct olim3d_node_stats {
                          double const * p2, int n, bool degenerate, bool hu);
   void inc_tetra_updates(int d1, int d2, int d3, bool degenerate, bool hu);
 private:
+  int _num_visits {0};
   int _num_line_updates[static_cast<int>(line_update::NUM)];
   int _num_tri_updates[static_cast<int>(tri_update::NUM)];
   int _num_degenerate_tri_updates[static_cast<int>(tri_update::NUM)];

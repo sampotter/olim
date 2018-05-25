@@ -25,6 +25,14 @@ olim3d_node_stats::olim3d_node_stats() {
     0);
 }
 
+void olim3d_node_stats::inc_num_visits() {
+  ++_num_visits;
+}
+
+int olim3d_node_stats::num_visits() const {
+  return _num_visits;
+}
+
 int olim3d_node_stats::num_line_updates() const {
   return _num_line_updates[0] + _num_line_updates[1] + _num_line_updates[2];
 }

@@ -236,8 +236,10 @@ void abstract_olim3d<
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
         auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: line = %d, tri = %d/%d (%d), tetra = %d/%d (%d)\n",
+        printf("%d, %d, %d: visits = %d, line = %d, tri = %d/%d (%d), "
+               "tetra = %d/%d (%d)\n",
                i, j, k,
+               stats.num_visits(),
                stats.num_line_updates(),
                stats.num_degenerate_tri_updates(),
                stats.num_tri_updates(),
@@ -337,6 +339,7 @@ void olim3d<
 
 #if COLLECT_STATS
   auto & node_stats = this->get_node_stats(i, j, k);
+  node_stats.inc_num_visits();
 #endif
 
   /**
@@ -523,6 +526,7 @@ void olim3d_hu<
   // TODO: not currently using this---but should... implement
 #if COLLECT_STATS
   auto & node_stats = this->get_node_stats(i, j, k);
+  node_stats.inc_num_visits();
 #endif
 
   double Tnew, T1 = INF(double), T2 = INF(double), T3 = INF(double);

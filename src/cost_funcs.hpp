@@ -40,6 +40,8 @@ struct cost_func {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
+  void lag_mult(double const lambda[d], double * mu, int * k);
+
 #if COLLECT_STATS
   inline bool degenerate_lambda() const {
     double lam0 = 0;

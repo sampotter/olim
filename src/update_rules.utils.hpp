@@ -18,7 +18,7 @@ inline double norm2<3>(double const * p) {
 }
 
 /**
- * This typedef allows us to optionally return whether an update was
+ * This class allows us to optionally return whether an update was
  * degenerate or not (which only makes sense for d > 1 updates). This
  * is only done if the COLLECT_STATS compiler flag is set in the CMake
  * build.

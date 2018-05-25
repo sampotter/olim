@@ -20,11 +20,9 @@
 
 /**
  * An explanation of the template arguments:
- * - derived: the effective derived subclass (this implementation uses
- *   CRTP)
- * - n: the dimension of the ambient space
- * - d: the affine dimension of the simplex (i.e. domain of the cost
- *   function)
+ * - derived: the effective derived subclass (cost_func uses CRTP)
+ * - n: the dimension of the ambient space (where each p_i lives)
+ * - d: the dimension of the domain of the cost function
  */
 template <class derived, int n, int d>
 struct cost_func {

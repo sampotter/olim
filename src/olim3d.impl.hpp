@@ -155,15 +155,6 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_LINE_STATS(d) do {} while (0)
 #endif
 
-#define LINE(i, d) do {                                                 \
-    if (!line_skip_list[i]) {                                           \
-      if (nb[i]) {                                                      \
-        T = min(T, this->template line<d>(VAL(i), SPEED_ARGS(i), h));   \
-        UPDATE_LINE_STATS(d);                                           \
-      }                                                                 \
-    }                                                                   \
-  } while (0)
-
 #if COLLECT_STATS
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
     tmp.hierarchical = l0 == argmin || l1 == argmin;                    \

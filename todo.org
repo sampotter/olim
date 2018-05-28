@@ -1,3 +1,11 @@
+* <2018-05-26 Sat>
+  - [ ] KKT skipping for my bitvec solver
+  - [ ] alloca
+  - [ ] compile time QR
+  - [X] runtime QR
+  - [ ] warm start tri mp1 (we already have the exact solver)
+  - [ ] exact tetra solver
+  - [ ] warm start tetra mp1
 * Optimization
   Use different branches for these...
   - [-] Better "update sequencing" algorithms

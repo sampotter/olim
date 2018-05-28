@@ -18,6 +18,7 @@ option (OLIM8_ADJ_UPDATES
   "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
 option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
+option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 
 option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)

@@ -296,11 +296,23 @@ void abstract_olim3d<
     this->stage(i + __di(l), j + __dj(l), k + __dk(l));
   }
 
-  int a, b, c;
-  for (int l = 0; l < nneib; ++l) {
+  int a, b, c, l;
+  for (l = 0; l < std::min(6, nneib); ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update(a, b, c);
+      this->update(a, b, c, (l + 3) % 6);
+    }
+  }
+  for (l = 6; l < std::min(18, nneib); ++l) {
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
+      this->update(a, b, c, 22 - 2*(l/2) + (l % 2));
+    }
+  }
+  for (l = 18; l < std::min(26, nneib); ++l) {
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
+      this->update(a, b, c, 42 - 2*(l/2) + (l % 2));
     }
   }
 }
@@ -310,17 +322,21 @@ template <
   class tetra_updates, int nneib>
 void abstract_olim3d<
   base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::update_impl(int i, int j, int k, double & T)
+  nneib>::update_impl(int i, int j, int k, int parent, double & T)
 {
-  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, T);
+  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, parent, T);
 }
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
 void olim3d<
   node, line_updates, tri_updates, tetra_updates,
-  groups>::update_crtp(int i, int j, int k, double & T)
+  groups>::update_crtp(int i, int j, int k, int parent, double & T)
 {
+  // TODO: not currently using this. An easy way to use it would be to
+  // map each parent index to a list of octants to iterate over.
+  (void) parent;
+
   using std::min;
 #if PRINT_UPDATES
   printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
@@ -501,7 +517,7 @@ template <class node, class line_updates, class tri_updates,
           class tetra_updates>
 void olim3d_hu<
   node, line_updates, tri_updates,
-  tetra_updates>::update_crtp(int i, int j, int k, double & T)
+  tetra_updates>::update_crtp(int i, int j, int k, int parent, double & T)
 {
   using std::min;
 #if PRINT_UPDATES
@@ -535,6 +551,16 @@ void olim3d_hu<
   int l0 = -1, l1 = -1;
   double p0[3], p1[3], p2[3];
 
+#if HU_USE_PARENT_NODE
+  l0 = parent;
+  p0[0] = __di(l0);
+  p0[1] = __dj(l0);
+  p0[2] = __dk(l0);
+  T1 = this->template line<3>(p0, VAL(l0), SPEED_ARGS(l0), h);
+#if COLLECT_STATS
+  node_stats.inc_line_updates(p0, 3);
+#endif
+#else
   for (int l = 0; l < 26; ++l) {
     if (nb[l]) {
       p0[0] = __di(l);
@@ -554,6 +580,7 @@ void olim3d_hu<
   p0[0] = __di(l0);
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
+#endif
 
   // Create a cache for the minimizing lambdas to use for skipping
   // tetrahedron updates. Don't bother initializing it.

@@ -39,14 +39,14 @@ struct marcher_3d: public abstract_marcher {
   Node const & operator()(int i, int j, int k) const;
 
 EIKONAL_PROTECTED:
-  void update(int i, int j, int k);
+  void update(int i, int j, int k, int parent);
   void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
   bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }
 
   virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb) = 0;
-  virtual void update_impl(int i, int j, int k, double & T) = 0;
+  virtual void update_impl(int i, int j, int k, int parent, double & T) = 0;
   
 EIKONAL_PRIVATE:
   void init();

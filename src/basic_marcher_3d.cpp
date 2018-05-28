@@ -15,7 +15,10 @@
 
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
-void basic_marcher_3d::update_impl(int i, int j, int k, double & T) {
+void basic_marcher_3d::update_impl(int i, int j, int k, int parent, double & T) {
+  // TODO: not currently using this, but could do so easily.
+  (void) parent;
+
   using std::min;
 
   abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};

@@ -86,7 +86,7 @@ EIKONAL_PROTECTED:
 
 EIKONAL_PRIVATE:
   virtual void stage_neighbors_impl(abstract_node * n);
-  virtual void update_impl(int i, int j, int k, double & T);
+  virtual void update_impl(int i, int j, int k, int parent, double & T);
   void init();
 #if COLLECT_STATS
   olim3d_node_stats * _node_stats {nullptr};
@@ -107,7 +107,7 @@ struct olim3d:
     node, line_updates, tri_updates, tetra_updates,
     groups::nneib>::abstract_olim3d;
 
-  void update_crtp(int i, int j, int k, double & T);
+  void update_crtp(int i, int j, int k, int parent, double & T);
 };
 
 template <class groups>
@@ -160,7 +160,7 @@ struct olim3d_hu:
     olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
     node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
 
-  void update_crtp(int i, int j, int k, double & T);
+  void update_crtp(int i, int j, int k, int parent, double & T);
 };
 
 using olim3d_hu_rhr = olim3d_hu<

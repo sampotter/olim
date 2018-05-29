@@ -13,15 +13,14 @@
     X[2] /= det;                                \
   } while (0)
 
-template <class derived, int n, int d>
-void
-cost_func<derived, n, d>::lag_mult(double const lam[2], double * mu, int * k)
-{
-  set_lambda(lam);
+template <int d>
+inline void lag_mult_impl(double df[2], double d2f[3], double const lam[2],
+                          double * mu, int * k) {
+  static_assert(d == 2, "Haven't implemented lag_mult_impl for d != 2");
 
   // First, find the active set for lam
 
-  int active_set[d] = {-1, -1};
+  int active_set[2] = {-1, -1};
   int num_active = 0;
 
   if (fabs(lam[1]) < EPS(double)) active_set[num_active++] = 1;
@@ -29,12 +28,6 @@ cost_func<derived, n, d>::lag_mult(double const lam[2], double * mu, int * k)
   if (fabs(1 - lam[0] - lam[1]) < EPS(double)) active_set[num_active++] = 2;
 
   *k = num_active;
-
-  // Compute the gradient and the inverse of the Hessian
-
-  double df[2], d2f[3], p[2];
-
-  grad(df);
 
   // If the active_set is {0, 1}, mu = -df, and we can return early.
   if (num_active == 2 &&
@@ -45,9 +38,8 @@ cost_func<derived, n, d>::lag_mult(double const lam[2], double * mu, int * k)
     return;
   }
 
-  hess(d2f);
   __invert2x2inplace(d2f);
-
+  double p[2];
   p[0] = d2f[0]*df[0] + d2f[1]*df[1];
   p[1] = d2f[1]*df[0] + d2f[2]*df[1];
 
@@ -91,6 +83,32 @@ cost_func<derived, n, d>::lag_mult(double const lam[2], double * mu, int * k)
 }
 
 #undef __invert2x2inplace
+
+template <class derived, int n, int d>
+void
+cost_func<derived, n, d>::lag_mult(double const lam[d], double * mu, int * k)
+{
+  static_assert(n == 3 && d == 2,
+                "Haven't implemented lag_mult for n != 3 or d != 2");
+  double df[2], d2f[3];
+  set_lambda(lam);
+  grad(df);
+  hess(d2f);
+  lag_mult_impl<d>(df, d2f, lam, mu, k);
+}
+
+template <class derived, char p0, char p1, char p2, int d>
+void
+cost_func_bv<derived, p0, p1, p2, d>::lag_mult(double const lam[d], double * mu,
+                                               int * k)
+{
+  static_assert(d == 2, "Haven't implemented lag_mult for d != 2");
+  double df[2], d2f[3];
+  set_lambda(lam);
+  grad(df);
+  hess(d2f);
+  lag_mult_impl<d>(df, d2f, lam, mu, k);
+}
 
 template <char pj, char p0>
 constexpr char dp(char i) {

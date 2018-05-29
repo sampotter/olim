@@ -279,6 +279,98 @@ update_rules::mp1_tri_updates::tri(
   constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   constexpr double c1 = 1e-4;
+  double const ds = s1 - s0, du = u1 - u0;
+
+  update_info<1> update;
+
+  // Check gradients at endpoints to see if we can skip this update
+  double dp_dot_plam = dp_dot_p0;
+  if (dF1__(0) > 0) {
+    update.value = F1__(0);
+    update.lambda[0] = 0;
+    return update;
+  }
+  dp_dot_plam += dp_dot_dp;
+  if (dF1__(1) < 0) {
+    update.value = F1__(1);
+    update.lambda[0] = 1;
+    return update;
+  }
+
+  // Try to minimize F1 by starting from the mp0 minimizer using
+  // Newton's method. This may fail if the function isn't
+  // well-behaved. To try to determine when this happens, keep track
+  // of the iteration count, and use a modified Newton's method if we
+  // exceed a limit of 10 iterations.
+  mp0_tri_updates mp0;
+  update = mp0.tri(u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol);
+  double lam = update.lambda[0], g, iter = 0;
+  do {
+    dp_dot_plam = dp_dot_p0 + lam*dp_dot_dp;
+    g = -dF1__(lam)/d2F1__(lam);
+    lam = std::max(0., std::min(1., lam + g));
+  } while (iter++ < 10 && fabs(g) > tol);
+
+  if (iter == 10) {
+    bool conv;
+    double lam[2], F1[2], dF1, d2F1, g, alpha;
+    lam[0] = update.lambda[0];
+    F1[0] = F1__(lam[0]);
+    do {
+      alpha = 1;
+      dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
+      dF1 = dF1__(lam[0]);
+      d2F1 = d2F1__(lam[0]);
+      g = -dF1/d2F1;
+
+      double lam_ = lam[0] + alpha*g;
+      double u_ = u__(lam_);
+      double s_ = s__(lam_);
+      double l_ = l__(lam_);
+      double tmp = u_ + h*s_*l_;
+      while (tmp > F1[0] + c1*alpha*dF1*g) {
+        alpha *= 0.9;
+        lam_ = lam[0] + alpha*g;
+        u_ = u__(lam_);
+        s_ = s__(lam_);
+        l_ = l__(lam_);
+        tmp = u_ + h*s_*l_;
+      }
+      lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
+      F1[1] = F1__(lam[1]);
+      conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
+      lam[0] = lam[1];
+      F1[0] = F1[1];
+    } while (!conv);
+    update.value = F1[1];
+    update.lambda[0] = lam[1];
+  } else {
+    update.value = F1__(lam);
+    update.lambda[0] = lam;
+  }
+
+#if PRINT_UPDATES
+  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
+         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
+         p0, p1, u0, u1, s, s0, s1, h, update.value);
+#endif
+
+  return update;
+}
+
+template <int d>
+update_info<1>
+update_rules::mp1_tri_updates::tri(
+  double const * p0, double const * p1, double u0, double u1,
+  double s, double s0, double s1, double h, double tol) const
+{
+  double const dp[3] = {p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]};
+
+  double const dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1] + dp[2]*dp[2];
+  double const dp_dot_p0 = dp[0]*p0[0] + dp[1]*p0[1] + dp[2]*p0[2];
+  double const p0_dot_p0 = p0[0]*p0[0] + p0[1]*p0[1] + p0[2]*p0[2];
+
+  constexpr double c1 = 1e-4;
 
   double const ds = s1 - s0, du = u1 - u0;
 
@@ -298,120 +390,64 @@ update_rules::mp1_tri_updates::tri(
     return update;
   }
 
-  bool conv;
-  double lam[2], F1[2], dF1, d2F1, g, alpha;
-  lam[0] = 0.5;
-  F1[0] = F1__(lam[0]);
+  // Try to minimize F1 by starting from the mp0 minimizer using
+  // Newton's method. This may fail if the function isn't
+  // well-behaved. To try to determine when this happens, keep track
+  // of the iteration count, and use a modified Newton's method if we
+  // exceed a limit of 10 iterations.
+  mp0_tri_updates mp0;
+  update = mp0.tri<d>(p0, p1, u0, u1, s, s0, s1, h, tol);
+  double lam = update.lambda[0], g, iter = 0;
   do {
-    alpha = 1;
-    dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
-    dF1 = dF1__(lam[0]);
-    d2F1 = d2F1__(lam[0]);
-    g = -dF1/d2F1;
+    dp_dot_plam = dp_dot_p0 + lam*dp_dot_dp;
+    g = -dF1__(lam)/d2F1__(lam);
+    lam = std::max(0., std::min(1., lam + g));
+  } while (iter++ < 10 && fabs(g) > tol);
 
-    double lam_ = lam[0] + alpha*g;
-    double u_ = u__(lam_);
-    double s_ = s__(lam_);
-    double l_ = l__(lam_);
-    double tmp = u_ + h*s_*l_;
-    while (tmp > F1[0] + c1*alpha*dF1*g) {
-      alpha *= 0.9;
-      lam_ = lam[0] + alpha*g;
-      u_ = u__(lam_);
-      s_ = s__(lam_);
-      l_ = l__(lam_);
-      tmp = u_ + h*s_*l_;
-    }
-    lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
-    F1[1] = F1__(lam[1]);
-    conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
-    lam[0] = lam[1];
-    F1[0] = F1[1];
-  } while (!conv);
+  if (iter == 10) {
+    bool conv;
+    double lam[2], F1[2], dF1, d2F1, g, alpha;
+    lam[0] = update.lambda[0];
+    F1[0] = F1__(lam[0]);
+    do {
+      alpha = 1;
+      dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
+      dF1 = dF1__(lam[0]);
+      d2F1 = d2F1__(lam[0]);
+      g = -dF1/d2F1;
+
+      double lam_ = lam[0] + alpha*g;
+      double u_ = u__(lam_);
+      double s_ = s__(lam_);
+      double l_ = l__(lam_);
+      double tmp = u_ + h*s_*l_;
+      while (tmp > F1[0] + c1*alpha*dF1*g) {
+        alpha *= 0.9;
+        lam_ = lam[0] + alpha*g;
+        u_ = u__(lam_);
+        s_ = s__(lam_);
+        l_ = l__(lam_);
+        tmp = u_ + h*s_*l_;
+      }
+      lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
+      F1[1] = F1__(lam[1]);
+      conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
+      lam[0] = lam[1];
+      F1[0] = F1[1];
+    } while (!conv);
+    update.value = F1[1];
+    update.lambda[0] = lam[1];
+  } else {
+    update.value = F1__(lam);
+    update.lambda[0] = lam;
+  }
+
 #if PRINT_UPDATES
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         p0, p1, u0, u1, s, s0, s1, h, F1[1]);
+         p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
-  update.value = F1[1];
-  update.lambda[0] = lam[1];
-  return update;
-}
 
-template <int d>
-update_info<1>
-update_rules::mp1_tri_updates::tri(
-  double const * p0, double const * p1, double u0, double u1,
-  double s, double s0, double s1, double h, double tol) const
-{
-  // constexpr char p0_dot_p0 = dot(p0, p0);
-  // constexpr char p0_dot_p1 = dot(p0, p1);
-  // constexpr char p1_dot_p1 = dot(p1, p1);
-  // constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
-  // constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
-
-  double const dp[3] = {p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]};
-
-  double const dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1] + dp[2]*dp[2];
-  double const dp_dot_p0 = dp[0]*p0[0] + dp[1]*p0[1] + dp[2]*p0[2];
-  double const p0_dot_p0 = p0[0]*p0[0] + p0[1]*p0[1] + p0[2]*p0[2];
-
-  constexpr double c1 = 1e-4;
-
-  double const ds = s1 - s0, du = u1 - u0;
-
-  update_info<1> update;
-
-  double dp_dot_plam = dp_dot_p0;
-  if (dF1__(0) > 0) {
-    update.value = F1__(0);
-    update.lambda[0] = 0;
-    return update;
-  }
-  dp_dot_plam += dp_dot_dp;
-  if (dF1__(1) < 0) {
-    update.value = F1__(1);
-    update.lambda[0] = 1;
-    return update;
-  }
-
-  bool conv;
-  double lam[2], F1[2], dF1, d2F1, g, alpha;
-  lam[0] = 0.5;
-  F1[0] = F1__(lam[0]);
-  do {
-    alpha = 1;
-    dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
-    dF1 = dF1__(lam[0]);
-    d2F1 = d2F1__(lam[0]);
-    g = -dF1/d2F1;
-
-    double lam_ = lam[0] + alpha*g;
-    double u_ = u__(lam_);
-    double s_ = s__(lam_);
-    double l_ = l__(lam_);
-    double tmp = u_ + h*s_*l_;
-    while (tmp > F1[0] + c1*alpha*dF1*g) {
-      alpha *= 0.9;
-      lam_ = lam[0] + alpha*g;
-      u_ = u__(lam_);
-      s_ = s__(lam_);
-      l_ = l__(lam_);
-      tmp = u_ + h*s_*l_;
-    }
-    lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
-    F1[1] = F1__(lam[1]);
-    conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
-    lam[0] = lam[1];
-    F1[0] = F1[1];
-  } while (!conv);
-#if PRINT_UPDATES
-  printf("tri<%d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         d, u0, u1, s, s0, s1, h, update.value);
-#endif
-  update.value = F1[1];
-  update.lambda[0] = lam[1];
   return update;
 }
 

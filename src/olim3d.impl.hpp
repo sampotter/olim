@@ -579,6 +579,7 @@ void olim3d_hu<
   // Create a cache for the minimizing lambdas to use for skipping
   // tetrahedron updates. Don't bother initializing it.
   double arglam[26];
+  std::fill(arglam, arglam + sizeof(arglam)/sizeof(double), -1);
 
   // Next, find the minimal triangle update containing l0.
 
@@ -675,15 +676,17 @@ void olim3d_hu<
 
         // We get the first two checks for free using arglam
 
-        lam[0] = arglam[l0];
+        assert(arglam[l1] != -1);
+        lam[0] = arglam[l1];
         lam[1] = 0;
         func.lag_mult(lam, mu, &k);
         if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
           continue;
         }
 
+        assert(arglam[l2] != -1);
         lam[0] = 0;
-        lam[1] = arglam[l1];
+        lam[1] = arglam[l2];
         func.lag_mult(lam, mu, &k);
         if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
           continue;

@@ -367,6 +367,7 @@ void olim3d<
           T = Tnew;
           argmin = l;
         }
+        UPDATE_LINE_STATS(1);
       }
     }
     if (groups::do_line2_updates) {
@@ -377,6 +378,7 @@ void olim3d<
             T = Tnew;
             argmin = l;
           }
+          UPDATE_LINE_STATS(2);
         }
       }
     }
@@ -388,6 +390,7 @@ void olim3d<
             T = Tnew;
             argmin = l;
           }
+          UPDATE_LINE_STATS(3);
         }
       }
     }

@@ -584,7 +584,7 @@ void olim3d_hu<
       p1[2] = __dk(l);
 
       // TODO: using d <= sqrt2 here---try sqrt3, too
-      if (dist2<3>(p0, p1) >= sqrt2 + 1e2*EPS(double)) {
+      if (dist2sq<3>(p0, p1) > 2 + 1e2*EPS(double)) {
         continue;
       }
 
@@ -642,8 +642,8 @@ void olim3d_hu<
         }
 
         // TODO: using d <= sqrt2 here---try sqrt3, too
-        if (dist2<3>(p0, p2) > sqrt2 + 1e2*EPS(double) ||
-            dist2<3>(p1, p2) > sqrt2 + 1e2*EPS(double)) {
+        if (dist2sq<3>(p0, p2) > 2 + 1e2*EPS(double) ||
+            dist2sq<3>(p1, p2) > 2 + 1e2*EPS(double)) {
           continue;
         }
 

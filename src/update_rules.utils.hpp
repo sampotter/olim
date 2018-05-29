@@ -5,6 +5,16 @@
 #include <utility>
 
 template <int dim>
+double dist2(double const * p, double const * q);
+
+template <>
+inline double dist2<3>(double const * p, double const * q) {
+  return std::sqrt(std::pow(q[0] - p[0], 2) +
+                   std::pow(q[1] - p[1], 2) +
+                   std::pow(q[2] - p[2], 2));
+}
+
+template <int dim>
 double norm2(double const * p);
 
 template <>

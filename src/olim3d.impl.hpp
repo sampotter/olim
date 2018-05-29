@@ -501,12 +501,6 @@ void olim3d<
 #endif
 }
 
-#define __dist(p, q)                            \
-  std::sqrt(                                    \
-    std::pow(q[0] - p[0], 2) +                  \
-    std::pow(q[1] - p[1], 2) +                  \
-    std::pow(q[2] - p[2], 2))
-
 template <class node, class line_updates, class tri_updates,
           class tetra_updates>
 void olim3d_hu<
@@ -590,7 +584,7 @@ void olim3d_hu<
       p1[2] = __dk(l);
 
       // TODO: using d <= sqrt2 here---try sqrt3, too
-      if (__dist(p0, p1) >= sqrt2 + 1e2*EPS(double)) {
+      if (dist2<3>(p0, p1) >= sqrt2 + 1e2*EPS(double)) {
         continue;
       }
 
@@ -648,8 +642,8 @@ void olim3d_hu<
         }
 
         // TODO: using d <= sqrt2 here---try sqrt3, too
-        if (__dist(p0, p2) > sqrt2 + 1e2*EPS(double) ||
-            __dist(p1, p2) > sqrt2 + 1e2*EPS(double)) {
+        if (dist2<3>(p0, p2) > sqrt2 + 1e2*EPS(double) ||
+            dist2<3>(p1, p2) > sqrt2 + 1e2*EPS(double)) {
           continue;
         }
 
@@ -719,8 +713,6 @@ coda:
   printf("olim3d_hu::update_impl: T <- %g\n", T);
 #endif
 }
-
-#undef __dist
 
 #undef LINE
 #undef TRI

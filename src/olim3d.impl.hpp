@@ -551,19 +551,19 @@ void olim3d_hu<
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
   T1 = this->template line<3>(p0, VAL(l0), SPEED_ARGS(l0), h);
-#if COLLECT_STATS
+#  if COLLECT_STATS
   node_stats.inc_line_updates(p0, 3);
-#endif
-#else
+#  endif
+#else // HU_USE_PARENT_NODE
   for (int l = 0; l < 26; ++l) {
     if (nb[l]) {
       p0[0] = __di(l);
       p0[1] = __dj(l);
       p0[2] = __dk(l);
       Tnew = this->template line<3>(p0, VAL(l), SPEED_ARGS(l), h);
-#if COLLECT_STATS
+#  if COLLECT_STATS
       node_stats.inc_line_updates(p0, 3);
-#endif
+#  endif
       if (Tnew < T1) {
         T1 = Tnew;
         l0 = l;
@@ -574,7 +574,7 @@ void olim3d_hu<
   p0[0] = __di(l0);
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
-#endif
+#endif // HU_USE_PARENT_NODE
 
   // Create a cache for the minimizing lambdas to use for skipping
   // tetrahedron updates. Don't bother initializing it.

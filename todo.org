@@ -1,9 +1,12 @@
 * <2018-05-26 Sat>
+  - [X] BV lag mults?
   - [ ] KKT skipping for my bitvec solver
+  - [ ] double check that we're skipping correctly for HU---it looks
+    like arglam is being used incorrectly
   - [ ] alloca
   - [ ] compile time QR
   - [X] runtime QR
-  - [ ] warm start tri mp1 (we already have the exact solver)
+  - [X] warm start tri mp1 (we already have the exact solver)
   - [ ] exact tetra solver
   - [ ] warm start tetra mp1
 * Optimization

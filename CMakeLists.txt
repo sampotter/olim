@@ -26,6 +26,7 @@ option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 option (BUILD_TIMINGS "Build the timings executable." OFF)
+option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
   "Compile all 256 3D marchers (this takes a while!)" OFF
@@ -37,6 +38,10 @@ CMAKE_DEPENDENT_OPTION (USE_ARMADILLO_FOR_NUMOPT
 if (INCLUDE_ARMADILLO)
   find_package (Armadillo REQUIRED)
   include_directories (${ARMADILLO_INCLUDE_DIR})
+endif ()
+
+if (LINK_PROFILE)
+  find_package (Gperftools REQUIRED)
 endif ()
 
 # If we have a macro like PRINT_UPDATES defined, because of the way
@@ -72,6 +77,9 @@ add_library (fmm STATIC ${FMM_SRC_FILES})
 target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 if (INCLUDE_ARMADILLO)
   target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
+endif ()
+if (LINK_PROFILE)
+  target_link_libraries (fmm ${GPERFTOOLS_PROFILER})
 endif ()
 
 # This executable is just for convenience. If you want to write a

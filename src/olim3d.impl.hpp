@@ -223,21 +223,20 @@ void abstract_olim3d<
   base_olim3d, node, line_updates, tri_updates, tetra_updates,
   nneib>::dump_stats() const
 {
+  printf("depth = %d, width = %d, height = %d\n", this->get_depth(),
+         this->get_width(), this->get_height());
   for (int k = 0; k < this->get_depth(); ++k) {
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
         auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: visits = %d, line = %d, tri = %d/%d (%d), "
-               "tetra = %d/%d (%d)\n",
+        printf("%d, %d, %d: visits = %d, line = %d, tri = %d/%d, tetra = %d/%d\n",
                i, j, k,
                stats.num_visits(),
                stats.num_line_updates(),
-               stats.num_degenerate_tri_updates(),
+               stats.num_tri_updates() - stats.num_degenerate_tri_updates(),
                stats.num_tri_updates(),
-               stats.num_hu_tri_updates(),
-               stats.num_degenerate_tetra_updates(),
-               stats.num_tetra_updates(),
-               stats.num_hu_tetra_updates());
+               stats.num_tetra_updates() - stats.num_degenerate_tetra_updates(),
+               stats.num_tetra_updates());
       }
     }
   }

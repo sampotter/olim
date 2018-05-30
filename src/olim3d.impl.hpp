@@ -157,7 +157,7 @@ constexpr int oct2inds[8][7] = {
 
 #if COLLECT_STATS
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
-    tmp.hierarchical = l0 == argmin || l1 == argmin;                    \
+    tmp.hierarchical = l0 == parent || l1 == parent;                    \
     node_stats.inc_tri_updates(weight(p0), weight(p1),                  \
                                tmp.is_degenerate(),                     \
                                tmp.hierarchical);                       \
@@ -169,7 +169,7 @@ constexpr int oct2inds[8][7] = {
 #define TRI(i, j, p0, p1) do {                                  \
     if (!__skip_tri(i, j)) {                                    \
       int l0 = inds[i], l1 = inds[j];                           \
-      if ((l0 == argmin || l1 == argmin) && nb[l0] && nb[l1]) { \
+      if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) { \
         auto tmp = this->tri(                                   \
           VAL(l0),                                              \
           VAL(l1),                                              \
@@ -185,7 +185,7 @@ constexpr int oct2inds[8][7] = {
 
 #if COLLECT_STATS
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
-    tmp.hierarchical = l0 == argmin || l1 == argmin || l2 == argmin;    \
+    tmp.hierarchical = l0 == parent || l1 == parent || l2 == parent;    \
     node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
                                  tmp.is_degenerate(),                   \
                                  tmp.hierarchical);                     \
@@ -196,7 +196,7 @@ constexpr int oct2inds[8][7] = {
 
 #define TETRA(i, j, k, p0, p1, p2) do {                                 \
     int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
-    if ((l0 == argmin || l1 == argmin || l2 == argmin) &&               \
+    if ((l0 == parent || l1 == parent || l2 == parent) &&               \
         nb[l0] && nb[l1] && nb[l2]) {                                   \
       auto tmp = this->tetra(                                           \
         VAL(l0),                                                        \
@@ -351,48 +351,16 @@ void olim3d<
   node_stats.inc_num_visits();
 #endif
 
-  /**
-   * Determine the index of the minimizing line update here. We only
-   * do tri or tetra updates if they have the vertex corresponding to
-   * the minimal line update as one of their own vertices.
-   */
-  int argmin = -1;
-  {
-    double Tnew;
-    for (int l = 0; l < 6; ++l) {
-      if (nb[l]) {
-        Tnew = this->template line<1>(VAL(l), SPEED_ARGS(l), h);
-        if (Tnew <= T) {
-          T = Tnew;
-          argmin = l;
-        }
-        UPDATE_LINE_STATS(1);
-      }
-    }
-    if (groups::do_line2_updates) {
-      for (int l = 6; l < 18; ++l) {
-        if (nb[l]) {
-          Tnew = this->template line<2>(VAL(l), SPEED_ARGS(l), h);
-          if (Tnew <= T) {
-            T = Tnew;
-            argmin = l;
-          }
-          UPDATE_LINE_STATS(2);
-        }
-      }
-    }
-    if (groups::do_line3_updates) {
-      for (int l = 18; l < 26; ++l) {
-        if (nb[l]) {
-          Tnew = this->template line<3>(VAL(l), SPEED_ARGS(l), h);
-          if (Tnew <= T) {
-            T = Tnew;
-            argmin = l;
-          }
-          UPDATE_LINE_STATS(3);
-        }
-      }
-    }
+  // Do line update corresponding to parent node.
+  if (parent < 6) {
+    T = min(T, this->template line<1>(VAL(parent), SPEED_ARGS(parent), h));
+    UPDATE_LINE_STATS(1);
+  } else if (parent < 18) {
+    T = min(T, this->template line<2>(VAL(parent), SPEED_ARGS(parent), h));
+    UPDATE_LINE_STATS(2);
+  } else {
+    T = min(T, this->template line<3>(VAL(parent), SPEED_ARGS(parent), h));
+    UPDATE_LINE_STATS(3);
   }
 
   int const * inds;

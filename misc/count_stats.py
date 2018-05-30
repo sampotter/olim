@@ -29,10 +29,8 @@ if __name__ == '__main__':
         tris[i, j, k] = rhs2ratio(tmp[2])[0]
         tetras[i, j, k] = rhs2ratio(tmp[3])[0]
 
-    avg_visits = visits.mean()
-
     print('<line> = %g, <tri> = %g, <tetra> = %g (<visits> = %g)' % (
-        lines.mean()/avg_visits,
-        tris.mean()/avg_visits,
-        tetras.mean()/avg_visits,
-        avg_visits))
+        lines.mean(),
+        tris.mean(),
+        tetras.mean(),
+        visits.mean()))

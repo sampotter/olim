@@ -480,11 +480,11 @@ void olim3d_hu<
 #endif
 
   // TODO: an idea for an optimization: count the number of valid
-  // neighbors, and create an array of indices of that size storing
-  // the indices of the valid neighbors. Make s[] the same size. Then,
-  // we only have to deal with the valid neighbors directly and don't
-  // need to check "if (nb[l]) { ... }" over and over again. We could
-  // also use alloca to implement this efficiently.
+  // neighbors, and create an array of indices of that size on the
+  // stack using `alloca' storing the indices of the valid
+  // neighbors. Make s[] the same size. Then, we only have to deal
+  // with the valid neighbors directly and don't need to check "if
+  // (nb[l]) { ... }" over and over again.
 
   abstract_node * nb[26];
   memset(nb, 0x0, 26*sizeof(abstract_node *));
@@ -502,16 +502,26 @@ void olim3d_hu<
   node_stats.inc_num_visits();
 #endif
 
-  double Tnew, T1 = INF(double), T2 = INF(double), T3 = INF(double);
+  /**
+   * Tnew: temporary variable used for updating T, the update value
+   * T0, T1, T2: separate minimum values for degree 0/1/2 updates
+   * l0, l1: indices of p0 and p1
+   * p0, p1, p2: update node vectors
+   */
+  double Tnew, T0 = INF(double), T1 = INF(double), T2 = INF(double);
   int l0 = -1, l1 = -1;
   double p0[3], p1[3], p2[3];
 
+  // Depending on the compilation flag HU_USE_PARENT_NODE, either let
+  // l0 be the index of the updating parent, or let l0 be the index of
+  // the neighboring valid node with the minimum degree 0 update
+  // value.
 #if HU_USE_PARENT_NODE
   l0 = parent;
   p0[0] = __di(l0);
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
-  T1 = this->template line<3>(p0, VAL(l0), SPEED_ARGS(l0), h);
+  T0 = this->template line<3>(p0, VAL(l0), SPEED_ARGS(l0), h);
 #  if COLLECT_STATS
   node_stats.inc_line_updates(p0, 3);
 #  endif
@@ -525,8 +535,8 @@ void olim3d_hu<
 #  if COLLECT_STATS
       node_stats.inc_line_updates(p0, 3);
 #  endif
-      if (Tnew < T1) {
-        T1 = Tnew;
+      if (Tnew < T0) {
+        T0 = Tnew;
         l0 = l;
       }
     }
@@ -538,12 +548,12 @@ void olim3d_hu<
 #endif // HU_USE_PARENT_NODE
 
   // Create a cache for the minimizing lambdas to use for skipping
-  // tetrahedron updates. Don't bother initializing it.
+  // tetrahedron updates. Initialize it to -1 so that we can tell
+  // which triangle updates have been computed.
   double arglam[26];
   std::fill(arglam, arglam + sizeof(arglam)/sizeof(double), -1);
 
-  // Next, find the minimal triangle update containing l0.
-
+  // Find the minimal triangle update containing l0.
   for (int l = 0; l < 26; ++l) {
     if (l != l0 && nb[l]) {
       p1[0] = __di(l);
@@ -555,24 +565,25 @@ void olim3d_hu<
         continue;
       }
 
+      // Do the triangle update.
       auto const tmp = this->template tri<3>(
         p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
 #if COLLECT_STATS
       node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
 #endif
       Tnew = tmp.value;
-      if (Tnew < T2) {
-        T2 = Tnew;
+      if (Tnew < T1) {
+        T1 = Tnew;
         l1 = l;
       }
       arglam[l] = tmp.lambda[0];
     }
   }
   // There may only be a single valid neighbor, in which case we
-  // should jump to the coda of this function and skip the tetrahedron
-  // updates.
+  // should jump to the end of this function and skip all of the
+  // tetrahedron updates.
   if (l1 == -1) {
-    assert(std::isinf(T2));
+    assert(std::isinf(T1));
     goto coda;
   }
   p1[0] = __di(l1);
@@ -580,11 +591,9 @@ void olim3d_hu<
   p1[2] = __dk(l1);
 
   {
-    // We'll use the scalar triple product (dot(p x q, r)) to check if
-    // three points are coplanar. We precompute the cross product of p0
-    // and p1 here so that we only have to compute a dot product up
-    // ahead.
-
+    // Use the scalar triple product (dot(p x q, r)) to check if three
+    // points are coplanar. We precompute the cross product of p0 and
+    // p1 here so that we only have to compute a dot product up ahead.
     double const p0_cross_p1[3] = {
       p0[1]*p1[2] - p0[2]*p1[1],
       p0[2]*p1[0] - p0[0]*p1[2],
@@ -593,7 +602,6 @@ void olim3d_hu<
 
     // Do the tetrahedron updates such that p2 is sufficiently near p0
     // and p1.
-
     for (int l2 = 0; l2 < 26; ++l2) {
       if (l2 != l1 && l2 != l0 && nb[l2]) {
         p2[0] = __di(l2);
@@ -653,28 +661,28 @@ void olim3d_hu<
           continue;
         }
 
-        // The triangle update corresponding to [p1, p2] hasn't been
-        // done yet, so do this to get lambda
-        // TODO: let's see how this works without this for now...
+        // TODO: We're not doing the third triangle update right
+        // now. This seems to work okay for now, but we can't do the
+        // "exact solve" using the QR decomposition if we don't do the
+        // third update. It's unclear how efficient this will be...
 
-        // Finally, do the tetrahedron update
+        // Finally, do the tetrahedron update.
         auto const tmp = this->template tetra(
           p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
 #if COLLECT_STATS
         node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
 #endif
         Tnew = tmp.value;
-        if (Tnew < T3) {
-          T3 = Tnew;
+        if (Tnew < T2) {
+          T2 = Tnew;
         }
       }
     }
   }
 
-  // Finally, set T to be the minimum of T1, T2, and T3.
-
+  // Set T to be the minimum of T0, T1, and T2.
 coda:
-  T = min(T1, min(T2, T3));
+  T = min(T0, min(T1, T2));
 
 #if PRINT_UPDATES
   printf("olim3d_hu::update_impl: T <- %g\n", T);

@@ -26,8 +26,8 @@ if __name__ == '__main__':
         tmp = rhs.split(',')
         visits[i, j, k] = rhs2int(tmp[0])
         lines[i, j, k] = rhs2int(tmp[1])
-        tris[i, j, k] = rhs2ratio(tmp[2])[0]
-        tetras[i, j, k] = rhs2ratio(tmp[3])[0]
+        tris[i, j, k] = rhs2ratio(tmp[2])[1]
+        tetras[i, j, k] = rhs2ratio(tmp[3])[1]
 
     print('<line> = %g, <tri> = %g, <tetra> = %g (<visits> = %g)' % (
         lines.mean(),

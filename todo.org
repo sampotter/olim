@@ -1,6 +1,9 @@
 * <2018-05-26 Sat>
   - [X] BV lag mults?
+  - [ ] streamline passing around p's
+  - [ ] remove cost_funcs from C++
   - [ ] KKT skipping for my bitvec solver
+    - seems like this may not actually be worthwhile
   - [ ] double check that we're skipping correctly for HU---it looks
     like arglam is being used incorrectly
   - [ ] alloca

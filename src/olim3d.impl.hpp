@@ -319,7 +319,7 @@ void abstract_olim3d<
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
-void olim3d<
+void olim3d_bv<
   node, line_updates, tri_updates, tetra_updates,
   groups>::update_crtp(int i, int j, int k, int parent, double & T)
 {

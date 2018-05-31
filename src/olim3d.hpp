@@ -96,14 +96,14 @@ EIKONAL_PRIVATE:
 template <
   class node, class line_updates, class tri_updates, class tetra_updates,
   class groups>
-struct olim3d:
+struct olim3d_bv:
   public abstract_olim3d<
-    olim3d<node, line_updates, tri_updates, tetra_updates, groups>,
+    olim3d_bv<node, line_updates, tri_updates, tetra_updates, groups>,
     node, line_updates, tri_updates, tetra_updates, groups::nneib>,
   public groups
 {
   using abstract_olim3d<
-    olim3d<node, line_updates, tri_updates, tetra_updates, groups>,
+    olim3d_bv<node, line_updates, tri_updates, tetra_updates, groups>,
     node, line_updates, tri_updates, tetra_updates,
     groups::nneib>::abstract_olim3d;
 
@@ -111,7 +111,7 @@ struct olim3d:
 };
 
 template <class groups>
-using olim3d_mp0 = olim3d<
+using olim3d_mp0 = olim3d_bv<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp0_tri_updates,
@@ -119,7 +119,7 @@ using olim3d_mp0 = olim3d<
   groups>;
 
 template <class groups>
-using olim3d_mp1 = olim3d<
+using olim3d_mp1 = olim3d_bv<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp1_tri_updates,
@@ -127,7 +127,7 @@ using olim3d_mp1 = olim3d<
   groups>;
 
 template <class groups>
-using olim3d_rhr = olim3d<
+using olim3d_rhr = olim3d_bv<
   node_3d,
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates,

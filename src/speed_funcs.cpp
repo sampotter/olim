@@ -35,7 +35,7 @@ double default_speed_func_soln(double x, double y) {
   return r(x, y);
 }
 
-double default_speed_func_soln_3d(double x, double y, double z) {
+double default_speed_func_soln(double x, double y, double z) {
   return r(x, y, z);
 }
 

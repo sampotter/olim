@@ -148,7 +148,7 @@ int main(int argc, char * argv[]) {
   // };
 
   // speed_func_3d s3d = default_speed_func, f3d = default_speed_func_soln;
-  // speed_func_3d s3d = s4, f3d = f4;
+  speed_func_3d s3d = s4, f3d = f4;
 
   // for (int i = 0; i < sizeof(s3ds)/sizeof(speed_func_3d); ++i) {
   //   speed_func_3d s3d = s3ds[i], f3d = f3ds[i];

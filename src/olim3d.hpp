@@ -149,15 +149,23 @@ using olim26_mp0 = olim3d_mp0<olim26_groups>;
 using olim26_mp1 = olim3d_mp1<olim26_groups>;
 using olim26_rhr = olim3d_rhr<olim26_groups>;
 
+enum LP_NORM {L1, L2, MAX};
+
 template <
-  class node, class line_updates, class tri_updates, class tetra_updates>
+  class node, class line_updates, class tri_updates, class tetra_updates,
+  int lp_norm, int d1, int d2>
 struct olim3d_hu:
   public abstract_olim3d<
-    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates, lp_norm, d1, d2>,
     node, line_updates, tri_updates, tetra_updates, 26>
 {
+  static_assert(lp_norm == L1 || lp_norm == L2 || lp_norm == MAX,
+                "Bad choice of lp norm: must be L1, L2, or MAX");
+  static_assert(1 <= d1 && d1 <= 3, "d1 must satisfy 1 <= d1 <= 3");
+  static_assert(1 <= d2 && d2 <= 3, "d2 must satisfy 1 <= d2 <= 3");
+
   using abstract_olim3d<
-    olim3d_hu<node, line_updates, tri_updates, tetra_updates>,
+    olim3d_hu<node, line_updates, tri_updates, tetra_updates, lp_norm, d1, d2>,
     node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
 
   void update_crtp(int i, int j, int k, int parent, double & T);
@@ -167,19 +175,22 @@ using olim3d_hu_rhr = olim3d_hu<
   node_3d,
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates,
-  update_rules::rhr_tetra_updates>;
+  update_rules::rhr_tetra_updates,
+  L1, 1, 2>;
 
 using olim3d_hu_mp0 = olim3d_hu<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp0_tri_updates,
-  update_rules::mp0_tetra_updates>;
+  update_rules::mp0_tetra_updates,
+  L1, 1, 2>;
 
 using olim3d_hu_mp1 = olim3d_hu<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp1_tri_updates,
-  update_rules::mp1_tetra_updates>;
+  update_rules::mp1_tetra_updates,
+  L1, 1, 2>;
 
 #include "olim3d.impl.hpp"
 

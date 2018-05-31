@@ -469,10 +469,10 @@ void olim3d<
 }
 
 template <class node, class line_updates, class tri_updates,
-          class tetra_updates>
+          class tetra_updates, int lp_norm, int d1, int d2>
 void olim3d_hu<
-  node, line_updates, tri_updates,
-  tetra_updates>::update_crtp(int i, int j, int k, int parent, double & T)
+  node, line_updates, tri_updates, tetra_updates,
+  lp_norm, d1, d2>::update_crtp(int i, int j, int k, int parent, double & T)
 {
   using std::min;
 #if PRINT_UPDATES
@@ -560,9 +560,14 @@ void olim3d_hu<
       p1[1] = __dj(l);
       p1[2] = __dk(l);
 
-      // TODO: using d <= sqrt2 here---try sqrt3, too
-      if (dist2sq<3>(p0, p1) > 2 + 1e2*EPS(double)) {
-        continue;
+      // Check to see how far apart p0 and p1, and continue to the
+      // next candidate for p1 if they're too far apart.
+      if (lp_norm == L1) {
+        if (dist1<3>(p0, p1) > d1) continue;
+      } else if (lp_norm == L2) {
+        if (dist2sq<3>(p0, p1) > d1) continue;
+      } else {
+        if (distmax<3>(p0, p1) > d1) continue;
       }
 
       // Do the triangle update.
@@ -616,10 +621,14 @@ void olim3d_hu<
           continue;
         }
 
-        // TODO: using d <= sqrt2 here---try sqrt3, too
-        if (dist2sq<3>(p0, p2) > 2 + 1e2*EPS(double) ||
-            dist2sq<3>(p1, p2) > 2 + 1e2*EPS(double)) {
-          continue;
+        // Check to see how far p2 is from p0 and p1---if it's too
+        // far, proceed to the next candidate for p2.
+        if (lp_norm == L1) {
+          if (dist1<3>(p0, p2) > d2 || dist1<3>(p1, p2) > d2) continue;
+        } else if (lp_norm == L2) {
+          if (dist2sq<3>(p0, p2) > d2 || dist2sq<3>(p1, p2) > d2) continue;
+        } else {
+          if (distmax<3>(p0, p2) > d2 || distmax<3>(p1, p2) > d2) continue;
         }
 
         // Compute Lagrange multipliers to see if we can skip the

@@ -5,12 +5,37 @@
 #include <utility>
 
 template <int dim>
+double dist1(double const * p, double const * q);
+
+template <>
+inline double dist1<3>(double const * p, double const * q) {
+  return
+    fabs(q[0] - p[0]) +
+    fabs(q[1] - p[1]) +
+    fabs(q[2] - p[2]);
+}
+
+template <int dim>
 double dist2sq(double const * p, double const * q);
 
 template <>
 inline double dist2sq<3>(double const * p, double const * q) {
-  return (q[0] - p[0])*(q[0] - p[0]) + (q[1] - p[1])*(q[1] - p[1]) +
+  return
+    (q[0] - p[0])*(q[0] - p[0]) +
+    (q[1] - p[1])*(q[1] - p[1]) +
     (q[2] - p[2])*(q[2] - p[2]);
+}
+
+template <int dim>
+double distmax(double const * p, double const * q);
+
+template <>
+inline double distmax<3>(double const * p, double const * q) {
+  return fmax(
+    fabs(q[0] - p[0]),
+    fmax(
+      fabs(q[1] - p[1]),
+      fabs(q[2] - p[2])));
 }
 
 template <int dim>

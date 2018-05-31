@@ -15,18 +15,6 @@
 #define __dj(l) dj<3>[l]
 #define __dk(l) dk<3>[l]
 
-/**
- * We only need to do triangle or line updates that lie in the xy-,
- * xz-, or yz-planes for every other octant using the preceding
- * enumeration of the octants (otherwise we double count these
- * updates). This function returns true if the passed octant requires
- * these updates.
- */
-inline bool should_do_xyz_planar_updates(int octant) {
-  static constexpr char parity[8] = {0, 1, 1, 0, 1, 0, 0, 1};
-  return static_cast<bool>(parity[octant]);
-}
-
 namespace ind {
   // degree 1
   constexpr int N = 0;
@@ -88,7 +76,7 @@ constexpr int oct2inds[8][7] = {
 #define __index04 2
 #define __index40 2
 
-// planar tri12 updates
+// tri12 updates
 #define __index01 3
 #define __index10 3
 #define __index05 4
@@ -101,8 +89,6 @@ constexpr int oct2inds[8][7] = {
 #define __index43 7
 #define __index45 8
 #define __index54 8
-
-// nonplanar tri12 updates
 #define __index03 9
 #define __index30 9
 #define __index14 10
@@ -134,18 +120,7 @@ constexpr int oct2inds[8][7] = {
 #define __index56 20
 #define __index65 20
 
-#define __is_planar_tri_update(i, j) ((__index##i##j) < 9)
-
-#define __get_tri_skip_list(i, j)               \
-  (__is_planar_tri_update(i, j) ? planar_tri_skip_list : tri_skip_list)
-
-#define __get_tri_index(i, j)                                           \
-  (__is_planar_tri_update(i, j) ? (__index##i##j) : (__index##i##j) - 9)
-
-#define __get_offset(i, j) (__is_planar_tri_update(i, j) ? 9 : 12)
-
-#define __skip_tri(i, j)                                    \
-  __get_tri_skip_list(i, j)[__get_offset(i, j)*octant + __get_tri_index(i, j)]
+#define __skip_tri(i, j) tri_skip_list[21*octant + __index##i##j]
 
 #if COLLECT_STATS
 #  define UPDATE_LINE_STATS(d) do {             \
@@ -180,6 +155,7 @@ constexpr int oct2inds[8][7] = {
         T = min(T, tmp.value);                                  \
         UPDATE_TRI_STATS(tmp, P##p0, P##p1);                    \
       }                                                         \
+      __skip_tri(i, j) = 0x1;                                   \
     }                                                           \
   } while (0)
 
@@ -366,13 +342,13 @@ void olim3d_bv<
   int const * inds;
 
   /**
-   * These arrays are used to keep track of which triangle and line
-   * updates should be skipped.
+   * This array is used to keep track of which triangle updates should
+   * be skipped.
+   *
+   * TODO: we could use a bitvector here instead.
    */
-  char planar_tri_skip_list[8*9]; // this is inefficient--only need [4][9]
-  char tri_skip_list[8*12];
-  memset((void *) planar_tri_skip_list, 0x0, sizeof(char)*8*9);
-  memset((void *) tri_skip_list, 0x0, sizeof(char)*8*12);
+  char tri_skip_list[8*21];
+  memset((void *) tri_skip_list, 0x0, sizeof(char)*8*21);
 
   /**
    * Tetrahedron updates:
@@ -431,20 +407,18 @@ void olim3d_bv<
    */
   for (int octant = 0; octant < 8; ++octant) {
     inds = oct2inds[octant];
-    if (should_do_xyz_planar_updates(octant)) {
-      if (groups::do_tri11_updates) {
-        TRI(0, 2, 001, 010);
-        TRI(2, 4, 010, 100);
-        TRI(4, 0, 100, 001);
-      }
-      if (groups::do_tri12_updates) {
-        TRI(0, 1, 001, 011);
-        TRI(2, 1, 010, 011);
-        TRI(2, 3, 010, 110);
-        TRI(4, 3, 100, 110);
-        TRI(4, 5, 100, 101);
-        TRI(0, 5, 001, 101);
-      }
+    if (groups::do_tri11_updates) {
+      TRI(0, 2, 001, 010);
+      TRI(2, 4, 010, 100);
+      TRI(4, 0, 100, 001);
+    }
+    if (groups::do_tri12_updates) {
+      TRI(0, 1, 001, 011);
+      TRI(2, 1, 010, 011);
+      TRI(2, 3, 010, 110);
+      TRI(4, 3, 100, 110);
+      TRI(4, 5, 100, 101);
+      TRI(0, 5, 001, 101);
     }
     if (groups::do_tri13_updates) {
       TRI(0, 6, 001, 111);
@@ -702,10 +676,6 @@ coda:
 #undef TRI
 #undef TETRA
 
-#undef __is_planar_tri_update
-#undef __get_tri_skip_list
-#undef __get_tri_index
-#undef __get_offset
 #undef __skip_tri
 
 #undef P001

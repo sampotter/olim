@@ -26,7 +26,8 @@ option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 option (BUILD_TIMINGS "Build the timings executable." OFF)
-option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executable." OFF)
+option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
+option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
@@ -103,10 +104,27 @@ if (BUILD_GEN_PLOT_DATA)
     message (WARNING "Building gen_plot_data while collecting "
       "statistics! This wiill give unreliable timings.")
   endif ()
-  add_executable (gen_plot_data misc/gen_plot_data.cpp)
-  target_include_directories (gen_plot_data
+
+  add_executable (gen_plot_data_2d misc/gen_plot_data_2d.cpp)
+  target_include_directories (gen_plot_data_2d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data fmm)
+  target_link_libraries (gen_plot_data_2d fmm)
+
+  add_executable (gen_plot_data_3d misc/gen_plot_data_3d.cpp)
+  target_include_directories (gen_plot_data_3d
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries (gen_plot_data_3d fmm)
+endif ()
+
+if (BUILD_GEN_STATS)
+  if (NOT COLLECT_STATS)
+    message (WARNING "Building gen_stats without COLLECT_STATS=ON!")
+  endif ()
+
+  add_executable (gen_stats misc/gen_stats.cpp)
+  target_include_directories (gen_stats
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries (gen_stats fmm)
 endif ()
 
 if (${BUILD_MEX_BINDINGS})

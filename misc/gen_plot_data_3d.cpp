@@ -3,36 +3,14 @@
 #include <olim3d.hpp>
 
 #include <algorithm>
-#include <chrono>
 #include <functional>
 #include <iostream>
-#include <limits>
 #include <map>
 #include <string>
 
-#define REPS 5
+#define REPS 3
 
-using namespace std::chrono;
-
-system_clock::time_point t0;
-
-void tic() {
-  t0 = system_clock::now();
-}
-
-double toc() {
-  return duration<double, std::milli>(system_clock::now() - t0).count()/1000;
-}
-
-double time(std::function<void()> thunk, int reps = REPS) {
-  double t = std::numeric_limits<double>::infinity();
-  for (int i = 0; i < reps; ++i) {
-    tic();
-    thunk();
-    t = std::min(t, toc());
-  }
-  return t;
-}
+#include "timer.hpp"
 
 template <class marcher_3d>
 std::map<int, double>
@@ -129,44 +107,40 @@ marcher_3d_errors(int npowmin, int npowmax, speed_func_3d s, speed_func_3d f,
     }                                                               \
   } while (0)
 
-int main(int argc, char * argv[]) {
-  (void) argc;
-  (void) argv;
+int main(int argc, char * argv[])
+{
+  speed_func_3d s3d = s4, f3d = f4;
+
+  if (argc >= 2) {
+    std::string s_name = argv[1];
+    if (s_name == "s0") {
+      s3d = default_speed_func;
+      f3d = default_speed_func_soln;
+    } else if (s_name == "s1") {
+      s3d = s1;
+      f3d = f1;
+    } else if (s_name == "s4") {
+      s3d = s4;
+      f3d = f4;
+    }
+  }
 
   int npowmin = 2, npowmax = 6;
 
-  // std::string speed_func_names[] = {
-  //   "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7"
-  // };
+  if (argc >= 3) npowmin = std::stoi(argv[2]);
+  if (argc >= 4) npowmax = std::stoi(argv[3]);
 
-  // speed_func_3d s3ds[] = {
-  //   default_speed_func, s1, s2, s3, s4, s5, s6, s7
-  // };
-
-  // speed_func_3d f3ds[] = {
-  //   default_speed_func_soln, f1, f2, f3, f4, f5, f6, f7
-  // };
-
-  // speed_func_3d s3d = default_speed_func, f3d = default_speed_func_soln;
-  speed_func_3d s3d = s4, f3d = f4;
-
-  // for (int i = 0; i < sizeof(s3ds)/sizeof(speed_func_3d); ++i) {
-  //   speed_func_3d s3d = s3ds[i], f3d = f3ds[i];
-
-  //   std::cout << speed_func_names[i] << std::endl;
-
-    GEN_CSV_DATA(basic_marcher_3d, s3d, f3d);
-    GEN_CSV_DATA(olim6_mp0, s3d, f3d);
-    GEN_CSV_DATA(olim6_mp1, s3d, f3d);
-    GEN_CSV_DATA(olim6_rhr, s3d, f3d);
-    GEN_CSV_DATA(olim18_mp0, s3d, f3d);
-    GEN_CSV_DATA(olim18_mp1, s3d, f3d);
-    GEN_CSV_DATA(olim18_rhr, s3d, f3d);
-    GEN_CSV_DATA(olim26_mp0, s3d, f3d);
-    GEN_CSV_DATA(olim26_mp1, s3d, f3d);
-    GEN_CSV_DATA(olim26_rhr, s3d, f3d);
-    GEN_CSV_DATA(olim3d_hu_mp0, s3d, f3d);
-    GEN_CSV_DATA(olim3d_hu_mp1, s3d, f3d);
-    GEN_CSV_DATA(olim3d_hu_rhr, s3d, f3d);
-// }
+  GEN_CSV_DATA(basic_marcher_3d, s3d, f3d);
+  GEN_CSV_DATA(olim6_mp0, s3d, f3d);
+  GEN_CSV_DATA(olim6_mp1, s3d, f3d);
+  GEN_CSV_DATA(olim6_rhr, s3d, f3d);
+  GEN_CSV_DATA(olim18_mp0, s3d, f3d);
+  GEN_CSV_DATA(olim18_mp1, s3d, f3d);
+  GEN_CSV_DATA(olim18_rhr, s3d, f3d);
+  GEN_CSV_DATA(olim26_mp0, s3d, f3d);
+  GEN_CSV_DATA(olim26_mp1, s3d, f3d);
+  GEN_CSV_DATA(olim26_rhr, s3d, f3d);
+  GEN_CSV_DATA(olim3d_hu_mp0, s3d, f3d);
+  GEN_CSV_DATA(olim3d_hu_mp1, s3d, f3d);
+  GEN_CSV_DATA(olim3d_hu_rhr, s3d, f3d);
 }

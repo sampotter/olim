@@ -83,14 +83,13 @@ if __name__ == '__main__':
     # ax[0, 1].set_ylabel(r'Error')
     # ax[0, 0].set_xlabel(r'Time')
 
-    # fig.subplots_adjust(
-    #     top=0.95,
-    #     left=0.05,
-    #     bottom=0.2)
+    fig.subplots_adjust(
+        top=0.95,
+        left=0.11,
+        right=0.97,
+        bottom=0.09)
 
-    # fig.legend(loc='lower center', fancybox=False, shadow=False, ncol=5)
-
-    fig.tight_layout()
+    fig.legend(loc='lower center', fancybox=False, shadow=False, ncol=5)
 
     fig.savefig('tmp.pdf')
         

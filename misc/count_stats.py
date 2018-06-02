@@ -14,6 +14,8 @@ if __name__ == '__main__':
 
     first_line = file_in.readline()
     depth, width, height = map(rhs2int, first_line.split(','))
+    n = depth
+    assert(n == width and n == height)
 
     visits = np.empty((depth, width, height), dtype=np.int32)
     lines = np.empty_like(visits)
@@ -29,8 +31,11 @@ if __name__ == '__main__':
         tris[i, j, k] = rhs2ratio(tmp[2])[1]
         tetras[i, j, k] = rhs2ratio(tmp[3])[1]
 
-    print('<line> = %g, <tri> = %g, <tetra> = %g (<visits> = %g)' % (
-        lines.mean(),
-        tris.mean(),
-        tetras.mean(),
-        visits.mean()))
+    # print('<line> = %g, <tri> = %g, <tetra> = %g (<visits> = %g)' % (
+    #     lines.mean(),
+    #     tris.mean(),
+    #     tetras.mean(),
+    #     visits.mean()))
+
+    print('%d, %g, %g, %g, %g' % (n, lines.mean(), tris.mean(),
+                                  tetras.mean(), visits.mean()))

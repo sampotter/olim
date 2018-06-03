@@ -21,7 +21,6 @@ option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
 option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 
-option (BUILD_MEX_BINDINGS "Build MATLAB MEX bindings to libeikonal." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
 option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
@@ -60,27 +59,25 @@ endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)
 
-set (FMM_SRC_FILES
+set (EIKONAL_SRC_FILES
   src/abstract_marcher.cpp
-  src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
-  src/fmm.cpp
   src/numopt.cpp
   src/qroots.cpp
   src/speed_funcs.cpp)
 
 if (${COLLECT_STATS})
-  list (APPEND FMM_SRC_FILES src/stats.cpp)
-  list (SORT FMM_SRC_FILES)
+  list (APPEND EIKONAL_SRC_FILES src/stats.cpp)
+  list (SORT EIKONAL_SRC_FILES)
 endif ()
 
-add_library (fmm STATIC ${FMM_SRC_FILES})
-target_include_directories (fmm PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+add_library (eikonal STATIC ${EIKONAL_SRC_FILES})
+target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 if (INCLUDE_ARMADILLO)
-  target_link_libraries (fmm ${ARMADILLO_LIBRARIES})
+  target_link_libraries (eikonal ${ARMADILLO_LIBRARIES})
 endif ()
 if (LINK_PROFILE)
-  target_link_libraries (fmm ${GPERFTOOLS_PROFILER})
+  target_link_libraries (eikonal ${GPERFTOOLS_PROFILER})
 endif ()
 
 # This executable is just for convenience. If you want to write a
@@ -89,13 +86,13 @@ endif ()
 if (BUILD_SCRATCH)
   add_executable (scratch misc/scratch.cpp)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (scratch fmm)
+  target_link_libraries (scratch eikonal)
 endif ()
 
 if (BUILD_TIMINGS)
   add_executable (timings misc/timings.cpp)
   target_include_directories (timings PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (timings fmm)
+  target_link_libraries (timings eikonal)
 endif ()
 
 if (BUILD_GEN_PLOT_DATA)
@@ -107,12 +104,12 @@ if (BUILD_GEN_PLOT_DATA)
   add_executable (gen_plot_data_2d misc/gen_plot_data_2d.cpp)
   target_include_directories (gen_plot_data_2d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_2d fmm)
+  target_link_libraries (gen_plot_data_2d eikonal)
 
   add_executable (gen_plot_data_3d misc/gen_plot_data_3d.cpp)
   target_include_directories (gen_plot_data_3d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_3d fmm)
+  target_link_libraries (gen_plot_data_3d eikonal)
 endif ()
 
 if (BUILD_GEN_STATS)
@@ -123,25 +120,7 @@ if (BUILD_GEN_STATS)
   add_executable (gen_stats misc/gen_stats.cpp)
   target_include_directories (gen_stats
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_stats fmm)
-endif ()
-
-if (${BUILD_MEX_BINDINGS})
-  set (MEX_LINKER_FLAGS "-lfmm")
-  if (INCLUDE_ARMADILLO)
-    set (MEX_LINKER_FLAGS "${MEX_LINKER_FLAGS} -larmadillo")
-  endif ()
-  add_custom_command (
-	OUTPUT fmm.mexmaci64 # TODO: need to build this on multiple
-						 # platforms and get the correct output target
-						 # name on each.
-	COMMAND
-	  mex -output fmm -outdir ${CMAKE_CURRENT_BINARY_DIR}
-	  -L${CMAKE_CURRENT_BINARY_DIR} ${MEX_LINKER_FLAGS} src/mex.fmm.cpp
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	MAIN_DEPENDENCY src/mex.fmm.cpp
-	DEPENDS ${FMM_SRC_FILES})
-  add_custom_target (mex ALL DEPENDS fmm.mexmaci64)
+  target_link_libraries (gen_stats eikonal)
 endif ()
 
 if (${BUILD_PYTHON_BINDINGS})
@@ -168,7 +147,7 @@ if (${BUILD_PYTHON_BINDINGS})
       ${CMAKE_CURRENT_SOURCE_DIR}/py_eikonal.extra_defs.cpp
       py_eikonal.extra_defs.cpp
 	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
-	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${FMM_SRC_FILES})
+	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${EIKONAL_SRC_FILES})
 
   # Again, use a Python script to generate a wrapper function which
   # lets us call any 3D OLIM, specified by its tetrahedra groups
@@ -192,12 +171,12 @@ if (${BUILD_PYTHON_BINDINGS})
         ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_OLIM3D_CPP_SCRIPT}
         ${GENERATE_PY_OLIM3D_CPP_SCRIPT}
       COMMAND ${GENERATE_PY_OLIM3D_COMMAND}
-      DEPENDS ${GENERATE_PY_OLIM3D_CPP_SCRIPT} ${FMM_SRC_FILES})
+      DEPENDS ${GENERATE_PY_OLIM3D_CPP_SCRIPT} ${EIKONAL_SRC_FILES})
   endif ()
 
   # We probably aren't doing this the best way---as it is, we end up
-  # recompiling all of FMM_SRC_FILES to do this. Ideally, we want to
-  # statically link the fmm target into this module.
+  # recompiling all of EIKONAL_SRC_FILES to do this. Ideally, we want to
+  # statically link the eikonal target into this module.
   find_package (pybind11 QUIET)
   if (NOT ${pybind11_FOUND})
 	message (STATUS "Couldn't find system pybind11 install")
@@ -213,11 +192,11 @@ if (${BUILD_PYTHON_BINDINGS})
       ${GENERATED_PY_EIKONAL_CPP_PATH}
       ${GENERATED_PY_OLIM3D_CPP_PATH})
   else ()
-    pybind11_add_module (eikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
+    pybind11_add_module (pyeikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
   endif ()
 
-  target_link_libraries (eikonal PRIVATE fmm)
-  target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries (pyeikonal PRIVATE eikonal)
+  target_include_directories (pyeikonal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endif ()
 
 # We don't use any of these test targets when we're building our
@@ -254,7 +233,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	update_rules.tri_updates)
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
-	target_link_libraries (${test}.test fmm gtest ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries (${test}.test eikonal gtest ${CMAKE_THREAD_LIBS_INIT})
 	target_include_directories (
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     gtest_discover_tests (${test}.test)

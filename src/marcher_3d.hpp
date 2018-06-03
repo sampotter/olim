@@ -41,7 +41,6 @@ struct marcher_3d: public abstract_marcher {
   node const & operator()(int i, int j, int k) const;
 
 EIKONAL_PROTECTED:
-  void stage(int i, int j, int k);
   bool in_bounds(int i, int j, int k) const;
   bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }

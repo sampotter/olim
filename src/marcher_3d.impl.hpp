@@ -172,14 +172,6 @@ node const & marcher_3d<base, node>::operator()(int i, int j, int k) const {
 }
 
 template <class base, class node>
-void marcher_3d<base, node>::stage(int i, int j, int k) {
-  if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
-    operator()(i, j, k).set_trial();
-    insert_into_heap(&operator()(i, j, k));
-  }
-}
-
-template <class base, class node>
 bool marcher_3d<base, node>::in_bounds(int i, int j, int k) const {
   return (unsigned) i < (unsigned) _height &&
     (unsigned) j < (unsigned) _width && (unsigned) k < (unsigned) _depth;
@@ -220,8 +212,14 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
          i, j, k);
 #endif
 
+  int a, b, c;
+
   for (int l = 0; l < base::nneib; ++l) {
-    this->stage(i + __di(l), j + __dj(l), k + __dk(l));
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+    if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
+      operator()(i, j, k).set_trial();
+      insert_into_heap(&operator()(i, j, k));
+    }
   }
 
   auto const update = [&] (int i, int j, int k, int parent) {
@@ -235,7 +233,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     }
   };
 
-  int a, b, c, l;
+  int l;
   for (l = 0; l < 6; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {

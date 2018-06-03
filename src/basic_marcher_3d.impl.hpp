@@ -1,3 +1,6 @@
+#ifndef __BASIC_MARCHER_3D_IMPL_HPP__
+#define __BASIC_MARCHER_3D_IMPL_HPP__
+
 #include "basic_marcher_3d.hpp"
 
 #include <algorithm>
@@ -15,7 +18,9 @@
 
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
-void basic_marcher_3d::update_impl(int i, int j, int k, int parent, double & T) {
+template <class base>
+void basic_marcher_3d<base>::update_impl(int i, int j, int k, int parent,
+                                         double & T) {
   // TODO: not currently using this, but could do so easily.
   (void) parent;
 
@@ -59,3 +64,5 @@ void basic_marcher_3d::update_impl(int i, int j, int k, int parent, double & T) 
     if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
   }
 }
+
+#endif // __BASIC_MARCHER_3D_IMPL_HPP__

@@ -39,13 +39,28 @@ struct groups_t {
 };
 
 template <class base_olim3d, class node, class line_updates, class tri_updates,
-          class tetra_updates, int nneib>
-struct abstract_olim3d: public marcher_3d<node>, public line_updates,
-                        public tri_updates, public tetra_updates
+          class tetra_updates, int num_neighbors>
+struct abstract_olim3d:
+  public marcher_3d<
+    abstract_olim3d<
+      base_olim3d, node, line_updates, tri_updates, tetra_updates,
+      num_neighbors>,
+    node>,
+  public line_updates,
+  public tri_updates,
+  public tetra_updates
 {
+  using marcher_3d_t = marcher_3d<
+    abstract_olim3d<
+      base_olim3d, node, line_updates, tri_updates, tetra_updates,
+      num_neighbors>,
+    node>;
+
+  static constexpr int nneib = nneib;
+
   abstract_olim3d(int height, int width, int depth, double h,
                   no_speed_func_t const &):
-      marcher_3d<node> {height, width, depth, h, no_speed_func_t {}}
+      marcher_3d_t {height, width, depth, h, no_speed_func_t {}}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
 #else
@@ -56,7 +71,7 @@ struct abstract_olim3d: public marcher_3d<node>, public line_updates,
                   std::function<double(double, double, double)> speed =
                     static_cast<speed_func_3d>(default_speed_func),
                   double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
-      marcher_3d<node> {height, width, depth, h, speed, x0, y0, z0}
+      marcher_3d_t {height, width, depth, h, speed, x0, y0, z0}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
 #else
@@ -65,7 +80,7 @@ struct abstract_olim3d: public marcher_3d<node>, public line_updates,
 
   abstract_olim3d(int height, int width, int depth, double h,
                   double const * s_cache):
-      marcher_3d<node> {height, width, depth, h, s_cache}
+      marcher_3d_t {height, width, depth, h, s_cache}
 #if COLLECT_STATS
     , _node_stats {new olim3d_node_stats[height*width*depth]} {}
 #else
@@ -75,11 +90,6 @@ struct abstract_olim3d: public marcher_3d<node>, public line_updates,
 #if COLLECT_STATS
   virtual ~abstract_olim3d() { delete[] _node_stats; }
   void dump_stats() const;
-#endif
-
-EIKONAL_PROTECTED:
-  virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb);
-#if COLLECT_STATS
   olim3d_node_stats & get_node_stats(int i, int j, int k);
   olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
 #endif

@@ -1,14 +1,16 @@
 #ifndef __BASIC_MARCHER_3D_HPP__
 #define __BASIC_MARCHER_3D_HPP__
 
-#include "neumann_marcher_3d.hpp"
+#include "marcher_3d.hpp"
 #include "node_3d.hpp"
 
-struct basic_marcher_3d: public neumann_marcher_3d<node_3d>
+template <class base>
+struct basic_marcher_3d: public base
 {
-  using neumann_marcher_3d::neumann_marcher_3d;
 EIKONAL_PRIVATE:
   virtual void update_impl(int i, int j, int k, int parent, double & T);
 };
+
+#include "basic_marcher_3d.impl.hpp"
 
 #endif // __BASIC_MARCHER_3D_HPP__

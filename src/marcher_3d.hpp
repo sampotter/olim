@@ -7,10 +7,12 @@
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-template <class Node>
+template <class base, class node>
 struct marcher_3d: public abstract_marcher {
+  // These are for use with our pybind11 bindings. They aren't used
+  // internally.
   using float_type = double;
-  using node_type = Node;
+  using node_type = node;
 
   static constexpr int ndim = 3;
 
@@ -26,8 +28,8 @@ struct marcher_3d: public abstract_marcher {
 
   void add_boundary_node(int i, int j, int k, double value = 0.0);
   void add_boundary_node(double x, double y, double z, double value = 0.0);
-  void add_boundary_nodes(Node const * nodes, int num_nodes);
-  Node * get_node_pointer() const { return _nodes; }
+  void add_boundary_nodes(node const * nodes, int num_nodes);
+  node * get_node_pointer() const { return _nodes; }
   double get_speed(int i, int j, int k) const;
   double get_value(int i, int j, int k) const;
   int get_height() const { return _height; }
@@ -35,8 +37,8 @@ struct marcher_3d: public abstract_marcher {
   int get_depth() const { return _depth; }
   void * get_s_cache_data() { return (void *) _s_cache; }
 
-  Node & operator()(int i, int j, int k);
-  Node const & operator()(int i, int j, int k) const;
+  node & operator()(int i, int j, int k);
+  node const & operator()(int i, int j, int k) const;
 
 EIKONAL_PROTECTED:
   void update(int i, int j, int k, int parent);
@@ -45,13 +47,14 @@ EIKONAL_PROTECTED:
   bool is_valid(int i, int j, int k) const;
   double get_h() const { return _h; }
 
-  virtual void get_valid_neighbors(int i, int j, int k, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, int k, int parent, double & T) = 0;
   
 EIKONAL_PRIVATE:
   void init();
 
-  Node * _nodes;
+  virtual void visit_neighbors_impl(abstract_node * n);
+
+  node * _nodes;
   double const * _s_cache {nullptr};
   double _h {1};
   int _height, _width, _depth;

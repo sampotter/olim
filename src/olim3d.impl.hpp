@@ -6,6 +6,7 @@
 #endif
 
 #include <src/config.hpp>
+
 #include "offsets.hpp"
 #if COLLECT_STATS
 #  include "update_rules.utils.hpp"
@@ -219,70 +220,6 @@ void abstract_olim3d<
 }
 
 #endif // COLLECT_STATS
-
-template <class base_olim3d, class node, class line_updates, class tri_updates,
-          class tetra_updates, int nneib>
-void abstract_olim3d<
-  base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::get_valid_neighbors(int i, int j, int k, abstract_node ** nb)
-{
-  /**
-   * TODO: conditionally only stage the neighbors that are necessary
-   * based on which groups are being used
-   */
-  int a, b, c;
-  for (int l = 0; l < nneib; ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->in_bounds(a, b, c) && this->is_valid(a, b, c)) {
-      nb[l] = &this->operator()(a, b, c);
-    }
-  }
-}
-
-template <
-  class base_olim3d, class node, class line_updates, class tri_updates,
-  class tetra_updates, int nneib>
-void abstract_olim3d<
-  base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::visit_neighbors_impl(abstract_node * n)
-{
-  /**
-   * TODO: conditionally only stage the neighbors that are necessary
-   * based on which groups are being used
-   */
-
-  int i = static_cast<node *>(n)->get_i();
-  int j = static_cast<node *>(n)->get_j();
-  int k = static_cast<node *>(n)->get_k();
-#if PRINT_UPDATES
-  printf("olim3d::visit_neighbors_impl(i = %d, j = %d, k = %d)\n",
-         i, j, k);
-#endif
-
-  for (int l = 0; l < nneib; ++l) {
-    this->stage(i + __di(l), j + __dj(l), k + __dk(l));
-  }
-
-  int a, b, c, l;
-  for (l = 0; l < std::min(6, nneib); ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update(a, b, c, (l + 3) % 6);
-    }
-  }
-  for (l = 6; l < std::min(18, nneib); ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update(a, b, c, 22 - 2*(l/2) + (l % 2));
-    }
-  }
-  for (l = 18; l < std::min(26, nneib); ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update(a, b, c, 42 - 2*(l/2) + (l % 2));
-    }
-  }
-}
 
 template <
   class base_olim3d, class node, class line_updates, class tri_updates,

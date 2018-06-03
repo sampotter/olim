@@ -229,7 +229,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     update_impl(i, j, k, parent, T);
     auto * n = &operator()(i, j, k);
     assert(n->is_trial());
-    if (T <= n->get_value()) {
+    if (T < n->get_value()) {
       n->set_value(T);
       adjust_heap_entry(n);
     }

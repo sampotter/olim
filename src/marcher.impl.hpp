@@ -220,7 +220,7 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
     double T = INF(double);
     update_impl(i, j, T);
     auto n = &operator()(i, j);
-    if (T <= n->get_value()) {
+    if (T < n->get_value()) {
       n->set_value(T);
       adjust_heap_entry(n);
     }

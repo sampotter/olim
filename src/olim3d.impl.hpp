@@ -391,13 +391,6 @@ void olim3d_hu<
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
-  // TODO: an idea for an optimization: count the number of valid
-  // neighbors, and create an array of indices of that size on the
-  // stack using `alloca' storing the indices of the valid
-  // neighbors. Make s[] the same size. Then, we only have to deal
-  // with the valid neighbors directly and don't need to check "if
-  // (nb[l]) { ... }" over and over again.
-
   abstract_node * nb[26];
   memset(nb, 0x0, 26*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, k, nb);

@@ -1,6 +1,3 @@
-#ifndef __BASIC_MARCHER_3D_IMPL_HPP__
-#define __BASIC_MARCHER_3D_IMPL_HPP__
-
 #include "basic_marcher_3d.hpp"
 
 #include <algorithm>
@@ -18,16 +15,14 @@
 
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
-template <class base>
-void basic_marcher_3d<base>::update_impl(int i, int j, int k, int parent,
-                                         double & T) {
+void basic_marcher_3d::update_impl(int i, int j, int k, int parent,
+                                   abstract_node ** nb, double & T)
+{
   // TODO: not currently using this, but could do so easily.
   (void) parent;
 
   using std::min;
 
-  abstract_node * nb[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
-  get_valid_neighbors(i, j, k, nb);
   double sh = get_h()*get_speed(i, j, k), sh_sq = sh*sh;
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;
 
@@ -64,5 +59,3 @@ void basic_marcher_3d<base>::update_impl(int i, int j, int k, int parent,
     if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
   }
 }
-
-#endif // __BASIC_MARCHER_3D_IMPL_HPP__

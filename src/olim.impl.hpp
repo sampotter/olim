@@ -44,17 +44,14 @@
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
 void olim<node, line_updates, tri_updates, adj_updates,
-          diag_updates>::update_impl(int i, int j, double & T)
+          diag_updates>::update_impl(int i, int j, abstract_node ** nb,
+                                     double & T)
 {
   using std::min;
 
 #if PRINT_UPDATES
   printf("olim::update_impl(i = %d, j = %d)\n", i, j);
 #endif
-
-  abstract_node * nb[nneib];
-  memset(nb, 0x0, nneib*sizeof(abstract_node *));
-  this->get_valid_neighbors(i, j, nb);
 
   double h = this->get_h(), s = this->get_speed(i, j), s_[nneib];
   for (int k = 0; k < nneib; ++k) {

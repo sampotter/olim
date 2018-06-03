@@ -4,14 +4,11 @@
 #include "marcher.hpp"
 #include "node.hpp"
 
-template <class base>
-struct basic_marcher: public base {
+struct basic_marcher: marcher<basic_marcher, node> {
   static constexpr int nneib = 4;
-
+  using marcher::marcher;
 EIKONAL_PRIVATE:
-  virtual void update_impl(int i, int j, double & T);
+  virtual void update_impl(int i, int j, abstract_node ** nb, double & T);
 };
-
-#include "basic_marcher.impl.hpp"
 
 #endif // __BASIC_MARCHER_HPP__

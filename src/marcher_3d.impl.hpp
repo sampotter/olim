@@ -201,6 +201,8 @@ void marcher_3d<base, node>::init() {
   }
 }
 
+#define __max3(x, y, z) std::max(x, std::max(y, z))
+
 template <class base, class node>
 void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   int i = static_cast<node *>(n)->get_i();
@@ -212,19 +214,45 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
          i, j, k);
 #endif
 
-  int a, b, c;
+  // See comments in marcher.impl.hpp; the visit_neighbors_impl there
+  // is done analogously to this one.
 
+  abstract_node * nb[26], * child_nb[26];
+  memset(nb, 0x0, 26*sizeof(abstract_node *));
+
+  int a, b, c;
   for (int l = 0; l < base::nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
+    if (!in_bounds(a, b, c)) {
+      continue;
+    }
+    if (l < base::nneib && operator()(a, b, c).is_far()) {
       operator()(i, j, k).set_trial();
       insert_into_heap(&operator()(i, j, k));
+    } else if (operator()(a, b, c).is_valid()) {
+      nb[l] = &this->operator()(a, b, c);
     }
   }
 
+  auto const set_child_nb = [&] (int l, int parent) {
+    int l_di = __di(l), l_dj = __dj(l), l_dk = __dk(l);
+    child_nb[parent] = &this->operator()(i, j, k);
+    for (int m = 0; m < base::nneib; ++m) {
+      int _di = l_di + __di(m);
+      int _dj = l_dj + __dj(m);
+      int _dk = l_dk + __dk(m);
+      if (_di == 0 && _dj == 0 && _dk == 0) {
+        continue;
+      }
+      if (__max3(_di, _dj, _dk) <= 1) {
+        child_nb[d2l(_di, _dj, _dk)] = nb[m];
+      }
+    }
+  };
+
   auto const update = [&] (int i, int j, int k, int parent) {
     double T = std::numeric_limits<double>::infinity();
-    update_impl(i, j, k, parent, T);
+    update_impl(i, j, k, parent, child_nb, T);
     auto * n = &operator()(i, j, k);
     assert(n->is_trial());
     if (T < n->get_value()) {
@@ -233,30 +261,47 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     }
   };
 
-  int l;
-  for (l = 0; l < 6; ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      update(a, b, c, (l + 3) % 6);
+  int parent;
+  for (int l = 0; l < 6; ++l) {
+    if (!nb[k]) {
+      a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+      if (!in_bounds(a, b, c)) {
+        continue;
+      }
+      parent = (l + 3) % 6;
+      set_child_nb(l, parent);
+      update(a, b, c, parent);
     }
   }
   if (base::nneib >= 18) {
-    for (l = 6; l < 18; ++l) {
-      a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-      if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-        update(a, b, c, 22 - 2*(l/2) + (l % 2));
+    for (int l = 6; l < 18; ++l) {
+      if (!nb[k]) {
+        a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+        if (!in_bounds(a, b, c)) {
+          continue;
+        }
+        parent = 22 - 2*(l/2) + (l % 2);
+        set_child_nb(l, parent);
+        update(a, b, c, parent);
       }
     }
   }
   if (base::nneib >= 26) {
-    for (l = 18; l < 26; ++l) {
-      a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-      if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-        update(a, b, c, 42 - 2*(l/2) + (l % 2));
+    for (int l = 18; l < 26; ++l) {
+      if (!nb[k]) {
+        a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+        if (!in_bounds(a, b, c)) {
+          continue;
+        }
+        parent = 42 - 2*(l/2) + (l % 2);
+        set_child_nb(l, parent);
+        update(a, b, c, parent);
       }
     }
   }
 }
+
+#undef __max3
 
 #undef __di
 #undef __dj

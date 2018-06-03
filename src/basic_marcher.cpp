@@ -1,6 +1,3 @@
-#ifndef __BASIC_MARCHER_IMPL_HPP__
-#define __BASIC_MARCHER_IMPL_HPP__
-
 #include "basic_marcher.hpp"
 
 #include <src/config.hpp>
@@ -14,17 +11,14 @@
 
 #include "common.macros.hpp"
 
-template <class base>
-void basic_marcher<base>::update_impl(int i, int j, double & T) {
+void basic_marcher::update_impl(int i, int j, abstract_node ** nb, double & T) {
   using std::min;
 
 #if PRINT_UPDATES
   printf("basic_marcher::update_impl(i = %d, j = %d)\n", i, j);
 #endif
 
-  abstract_node * nb[4] = {nullptr, nullptr, nullptr, nullptr};
-  get_valid_neighbors(i, j, nb);
-  double sh = get_h()*get_speed(i, j);
+  double sh = this->get_h()*this->get_speed(i, j);
 
   double T1 = min(nb[0] ? VAL(0) : INF(double), nb[2] ? VAL(2) : INF(double));
   double T2 = min(nb[1] ? VAL(1) : INF(double), nb[3] ? VAL(3) : INF(double));
@@ -46,5 +40,3 @@ void basic_marcher<base>::update_impl(int i, int j, double & T) {
   printf("basic_marcher::update_impl: T <- %g\n", T);
 #endif
 }
-
-#endif // __BASIC_MARCHER_IMPL_HPP__

@@ -61,6 +61,8 @@ configure_file (src/config.hpp.in src/config.hpp)
 
 set (EIKONAL_SRC_FILES
   src/abstract_marcher.cpp
+  src/basic_marcher.cpp
+  src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
   src/numopt.cpp
   src/qroots.cpp

@@ -206,19 +206,115 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
          i, j);
 #endif
 
-  int a, b;
+  // Create an array to keep a pointer to all neighboring nodes that
+  // are valid.
+  abstract_node * nb[8], * child_nb[8];
+  memset(nb, 0x0, 8*sizeof(abstract_node *));
 
-  for (int k = 0; k < base::nneib; ++k) {
+  // Traverse each neighboring node that's in bounds (on the grid):
+  // stage the neighbor if its state is `far', or add it to `nb' if
+  // it's valid. Note that after this step, all neighboring nodes will
+  // either be trial or far, so `nb' does double duty as a registry of
+  // node states (if nb[k] == nullptr, then the node has state
+  // `trial'; otherwise, `valid').
+  int a, b;
+  for (int k = 0; k < 8; ++k) {
     a = i + __di(k), b = j + __dj(k);
-    if (in_bounds(a, b) && operator()(a, b).is_far()) {
+    if (!in_bounds(a, b)) {
+      continue;
+    }
+    if (k < base::nneib && operator()(a, b).is_far()) {
       operator()(a, b).set_trial();
       insert_into_heap(&operator()(a, b));
+    } else if (operator()(a, b).is_valid()) {
+      nb[k] = &this->operator()(a, b);
     }
   }
 
+  // TODO: this is a temporary hack. Our goal is to fix update_impl so
+  // that it doesn't need to operate on a full neighborhood (an array
+  // like `nb' above). However, as a temporary means of getting part
+  // of our changes working, we'll just fill out a "fake" array
+  // here. That is, even though we will only need to incorporate the
+  // neighbors in one quadrant, if we pass this array down to
+  // update_impl, we won't need to modify its operation.
+  auto const set_child_nb = [&] (int k) {
+    memset(child_nb, 0x0, 8*sizeof(abstract_node *));
+    switch (k) {
+    case 0:
+      child_nb[1] = nb[4];
+      child_nb[2] = &this->operator()(i, j);
+      child_nb[3] = nb[7];
+      break;
+    case 1:
+      break;
+      child_nb[0] = nb[4];
+      child_nb[2] = nb[5];
+      child_nb[3] = &this->operator()(i, j);
+    case 2:
+      child_nb[0] = &this->operator()(i, j);
+      child_nb[1] = nb[5];
+      child_nb[3] = nb[6];
+      break;
+    case 3:
+      child_nb[0] = nb[7];
+      child_nb[1] = &this->operator()(i, j);
+      child_nb[2] = nb[6];
+      break;
+    case 4:
+      child_nb[2] = nb[1];
+      child_nb[3] = nb[0];
+      break;
+    case 5:
+      child_nb[0] = nb[1];
+      child_nb[3] = nb[2];
+      break;
+    case 6:
+      child_nb[0] = nb[3];
+      child_nb[1] = nb[2];
+      break;
+    case 7:
+      child_nb[1] = nb[0];
+      child_nb[2] = nb[3];
+      break;
+    }
+    if (base::nneib >= 8) {
+      switch (k) {
+      case 0:
+        child_nb[5] = nb[1];
+        child_nb[6] = nb[3];
+        break;
+      case 1:
+        child_nb[6] = nb[2];
+        child_nb[7] = nb[0];
+        break;
+      case 2:
+        child_nb[4] = nb[1];
+        child_nb[7] = nb[3];
+        break;
+      case 3:
+        child_nb[4] = nb[0];
+        child_nb[5] = nb[2];
+        break;
+      case 4:
+        child_nb[6] = &this->operator()(i, j);
+        break;
+      case 5:
+        child_nb[7] = &this->operator()(i, j);
+        break;
+      case 6:
+        child_nb[4] = &this->operator()(i, j);
+        break;
+      case 7:
+        child_nb[5] = &this->operator()(i, j);
+        break;
+      }
+    }
+  };
+
   auto const update = [&] (int i, int j) {
     double T = INF(double);
-    update_impl(i, j, T);
+    update_impl(i, j, child_nb, T);
     auto n = &operator()(i, j);
     if (T < n->get_value()) {
       n->set_value(T);
@@ -227,8 +323,12 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   };
 
   for (int k = 0; k < base::nneib; ++k) {
-    a = i + __di(k), b = j + __dj(k);
-    if (this->in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
+    if (!nb[k]) {
+      a = i + __di(k), b = j + __dj(k);
+      if (!in_bounds(a, b)) {
+        continue;
+      }
+      set_child_nb(k);
       update(a, b);
     }
   }

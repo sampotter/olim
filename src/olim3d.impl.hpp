@@ -226,16 +226,18 @@ template <
   class tetra_updates, int nneib>
 void abstract_olim3d<
   base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::update_impl(int i, int j, int k, int parent, double & T)
+  nneib>::update_impl(int i, int j, int k, int parent,
+                      abstract_node ** nb, double & T)
 {
-  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, parent, T);
+  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, parent, nb, T);
 }
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
 void olim3d_bv<
   node, line_updates, tri_updates, tetra_updates,
-  groups>::update_crtp(int i, int j, int k, int parent, double & T)
+  groups>::update_crtp(int i, int j, int k, int parent,
+                       abstract_node ** nb, double & T)
 {
   // TODO: not currently using this. An easy way to use it would be to
   // map each parent index to a list of octants to iterate over.
@@ -245,10 +247,6 @@ void olim3d_bv<
 #if PRINT_UPDATES
   printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
-
-  abstract_node * nb[groups::nneib];
-  memset(nb, 0x0, groups::nneib*sizeof(abstract_node *));
-  this->get_valid_neighbors(i, j, k, nb);
 
   // TODO: once we know the number of neighbors that are actually
   // valid, we can alloca and reduce the size of the arrays that
@@ -384,16 +382,13 @@ template <class node, class line_updates, class tri_updates,
           class tetra_updates, int lp_norm, int d1, int d2>
 void olim3d_hu<
   node, line_updates, tri_updates, tetra_updates,
-  lp_norm, d1, d2>::update_crtp(int i, int j, int k, int parent, double & T)
+  lp_norm, d1, d2>::update_crtp(int i, int j, int k, int parent,
+                                abstract_node ** nb, double & T)
 {
   using std::min;
 #if PRINT_UPDATES
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
-
-  abstract_node * nb[26];
-  memset(nb, 0x0, 26*sizeof(abstract_node *));
-  this->get_valid_neighbors(i, j, k, nb);
 
   double h = this->get_h(), s = this->get_speed(i, j, k), s_[26];
   for (int l = 0; l < 26; ++l) {

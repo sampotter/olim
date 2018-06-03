@@ -172,19 +172,6 @@ node const & marcher_3d<base, node>::operator()(int i, int j, int k) const {
 }
 
 template <class base, class node>
-void marcher_3d<base, node>::update(int i, int j, int k, int parent) {
-  assert(in_bounds(i, j, k));
-  double T = std::numeric_limits<double>::infinity();
-  update_impl(i, j, k, parent, T);
-  auto * n = &operator()(i, j, k);
-  assert(n->is_trial());
-  if (T <= n->get_value()) {
-    n->set_value(T);
-    adjust_heap_entry(n);
-  }
-}
-
-template <class base, class node>
 void marcher_3d<base, node>::stage(int i, int j, int k) {
   if (in_bounds(i, j, k) && operator()(i, j, k).is_far()) {
     operator()(i, j, k).set_trial();
@@ -237,19 +224,29 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     this->stage(i + __di(l), j + __dj(l), k + __dk(l));
   }
 
-  int a, b, c, l;
+  auto const update = [&] (int i, int j, int k, int parent) {
+    double T = std::numeric_limits<double>::infinity();
+    update_impl(i, j, k, parent, T);
+    auto * n = &operator()(i, j, k);
+    assert(n->is_trial());
+    if (T <= n->get_value()) {
+      n->set_value(T);
+      adjust_heap_entry(n);
+    }
+  };
 
+  int a, b, c, l;
   for (l = 0; l < 6; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-      this->update(a, b, c, (l + 3) % 6);
+      update(a, b, c, (l + 3) % 6);
     }
   }
   if (base::nneib >= 18) {
     for (l = 6; l < 18; ++l) {
       a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
       if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-        this->update(a, b, c, 22 - 2*(l/2) + (l % 2));
+        update(a, b, c, 22 - 2*(l/2) + (l % 2));
       }
     }
   }
@@ -257,7 +254,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     for (l = 18; l < 26; ++l) {
       a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
       if (this->in_bounds(a, b, c) && !this->operator()(a, b, c).is_valid()) {
-        this->update(a, b, c, 42 - 2*(l/2) + (l % 2));
+        update(a, b, c, 42 - 2*(l/2) + (l % 2));
       }
     }
   }

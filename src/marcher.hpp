@@ -40,7 +40,6 @@ struct marcher: public abstract_marcher {
   node const & operator()(int i, int j) const;
 
 EIKONAL_PROTECTED:
-  void update(int i, int j);
   bool in_bounds(int i, int j) const;
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }

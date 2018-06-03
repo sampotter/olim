@@ -168,18 +168,6 @@ node const & marcher<base, node>::operator()(int i, int j) const {
 }
 
 template <class base, class node>
-void marcher<base, node>::update(int i, int j) {
-  assert(in_bounds(i, j));
-  double T = INF(double);
-  update_impl(i, j, T);
-  auto n = &operator()(i, j);
-  if (T <= n->get_value()) {
-    n->set_value(T);
-    adjust_heap_entry(n);
-  }
-}
-
-template <class base, class node>
 bool marcher<base, node>::in_bounds(int i, int j) const {
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
@@ -228,10 +216,20 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
     }
   }
 
+  auto const update = [&] (int i, int j) {
+    double T = INF(double);
+    update_impl(i, j, T);
+    auto n = &operator()(i, j);
+    if (T <= n->get_value()) {
+      n->set_value(T);
+      adjust_heap_entry(n);
+    }
+  };
+
   for (int k = 0; k < base::nneib; ++k) {
     a = i + __di(k), b = j + __dj(k);
     if (this->in_bounds(a, b) && !this->operator()(a, b).is_valid()) {
-      this->update(a, b);
+      update(a, b);
     }
   }
 }

@@ -52,12 +52,12 @@ void olim<node, line_updates, tri_updates, adj_updates,
   printf("olim::update_impl(i = %d, j = %d)\n", i, j);
 #endif
 
-  abstract_node * nb[num_neighbors];
-  memset(nb, 0x0, num_neighbors*sizeof(abstract_node *));
+  abstract_node * nb[nneib];
+  memset(nb, 0x0, nneib*sizeof(abstract_node *));
   this->get_valid_neighbors(i, j, nb);
 
-  double h = this->get_h(), s = this->get_speed(i, j), s_[num_neighbors];
-  for (int k = 0; k < num_neighbors; ++k) {
+  double h = this->get_h(), s = this->get_speed(i, j), s_[nneib];
+  for (int k = 0; k < nneib; ++k) {
     if (nb[k]) {
       s_[k] = this->get_speed(i + __di(k), j + __dj(k));
     }

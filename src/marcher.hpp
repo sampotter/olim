@@ -11,10 +11,10 @@
 
 template <class base, class node>
 struct marcher: public abstract_marcher {
+  // These are for use with our pybind11 bindings. They aren't used
+  // internally.
   using float_type = double;
   using node_type = node;
-
-  static_assert(base::nneib == 4 || base::nneib == 8);
 
   static constexpr int ndim = 2;
 

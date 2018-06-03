@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "marcher.hpp"
 #include "node.hpp"
 #include "update_rules.line_updates.hpp"
 #include "update_rules.tri_updates.hpp"
@@ -10,21 +11,19 @@
 template <class node, class line_updates, class tri_updates, bool adj_updates,
           bool diag_updates>
 struct olim: public marcher<
-               olim<node, line_updates, tri_updates, adj_updates>>,
+               olim<
+                 node, line_updates, tri_updates, adj_updates,
+                 diag_updates>,
+               node>,
              public line_updates,
              public tri_updates {
-  using marcher::marcher;
-
+  using marcher<
+    olim<
+      node, line_updates, tri_updates, adj_updates,
+      diag_updates>,
+    node>::marcher;
   static_assert(adj_updates || diag_updates, "error");
-
   static constexpr int nneib = diag_updates ? 8 : 4;
-
-  using neighborhood_t = std::conditional_t<
-    diag_updates, moore_marcher<node>, neumann_marcher<node>>;
-
-  static constexpr int num_neighbors = diag_updates ? 8 : 4;
-
-  using neighborhood_t::neighborhood_t;
 EIKONAL_PRIVATE:
   virtual void update_impl(int i, int j, double & T);
 };

@@ -9,10 +9,12 @@
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-template <class Node>
+template <class base, class node>
 struct marcher: public abstract_marcher {
   using float_type = double;
-  using node_type = Node;
+  using node_type = node;
+
+  static_assert(base::nneib == 4 || base::nneib == 8);
 
   static constexpr int ndim = 2;
 
@@ -26,31 +28,31 @@ struct marcher: public abstract_marcher {
 
   void add_boundary_node(int i, int j, double value = 0.0);
   void add_boundary_node(double i, double j, double value = 0.0);
-  void add_boundary_nodes(Node const * nodes, int num_nodes);
-  Node * get_node_pointer() const { return _nodes; }
+  void add_boundary_nodes(node const * nodes, int num_nodes);
+  node * get_node_pointer() const { return _nodes; }
   double get_speed(int i, int j) const;
   double get_value(int i, int j) const;
   int get_height() const { return _height; }
   int get_width() const { return _width; }
   void * get_s_cache_data() { return (void *) _s_cache; }
 
-  Node & operator()(int i, int j);
-  Node const & operator()(int i, int j) const;
+  node & operator()(int i, int j);
+  node const & operator()(int i, int j) const;
 
 EIKONAL_PROTECTED:
-  void pre_stage(int i, int j);
   void update(int i, int j);
   bool in_bounds(int i, int j) const;
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   
-  virtual void get_valid_neighbors(int i, int j, abstract_node ** nb) = 0;
   virtual void update_impl(int i, int j, double & T) = 0;
 
 EIKONAL_PRIVATE:
   void init();
 
-  Node * _nodes;
+  virtual void visit_neighbors_impl(abstract_node * n);
+
+  node * _nodes;
   double const * _s_cache {nullptr};
   double _h {1};
   int _height;

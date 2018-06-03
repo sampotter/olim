@@ -17,6 +17,7 @@ EIKONAL_PROTECTED:
 
   heap<abstract_node> _heap;
 EIKONAL_PRIVATE:
+  // TODO: we could easily remove this virtual call with CRTP.
   virtual void visit_neighbors_impl(abstract_node * n) = 0;
 };
 

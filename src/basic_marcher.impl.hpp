@@ -1,3 +1,6 @@
+#ifndef __BASIC_MARCHER_IMPL_HPP__
+#define __BASIC_MARCHER_IMPL_HPP__
+
 #include "basic_marcher.hpp"
 
 #include <src/config.hpp>
@@ -11,7 +14,8 @@
 
 #include "common.macros.hpp"
 
-void basic_marcher::update_impl(int i, int j, double & T) {
+template <class base>
+void basic_marcher<base>::update_impl(int i, int j, double & T) {
   using std::min;
 
 #if PRINT_UPDATES
@@ -42,3 +46,5 @@ void basic_marcher::update_impl(int i, int j, double & T) {
   printf("basic_marcher::update_impl: T <- %g\n", T);
 #endif
 }
+
+#endif // __BASIC_MARCHER_IMPL_HPP__

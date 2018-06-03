@@ -12,7 +12,7 @@ EIKONAL_PROTECTED:
   static int dj[6];
   static int dk[6];
 EIKONAL_PRIVATE:
-  virtual void stage_neighbors_impl(abstract_node * n);
+  virtual void visit_neighbors_impl(abstract_node * n);
 };
 
 #include "neumann_marcher_3d.impl.hpp"

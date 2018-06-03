@@ -85,7 +85,7 @@ EIKONAL_PROTECTED:
 #endif
 
 EIKONAL_PRIVATE:
-  virtual void stage_neighbors_impl(abstract_node * n);
+  virtual void visit_neighbors_impl(abstract_node * n);
   virtual void update_impl(int i, int j, int k, int parent, double & T);
   void init();
 #if COLLECT_STATS

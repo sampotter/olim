@@ -82,7 +82,7 @@ void marcher<Node>::add_boundary_node(int i, int j, double value) {
 #endif // PRINT_UPDATES
   assert(in_bounds(i, j));
   assert(operator()(i, j).is_far());
-  stage_neighbors(&(operator()(i, j) = {i, j, value}));
+  visit_neighbors(&(operator()(i, j) = {i, j, value}));
 }
 
 template <class Node>
@@ -139,7 +139,7 @@ void marcher<Node>::add_boundary_nodes(Node const * nodes, int n) {
     printf("add_boundary_node(i = %d, j = %d, value = %g)\n",
            i, j, node->get_value());
 #endif // PRINT_UPDATES
-    stage_neighbors(&operator()(i, j));
+    visit_neighbors(&operator()(i, j));
   }
 }
 

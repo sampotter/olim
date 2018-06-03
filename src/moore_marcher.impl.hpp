@@ -9,14 +9,15 @@
 #define __dj(k) dj<2>[k]
 
 template <class Node>
-void moore_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
+void moore_marcher<Node>::visit_neighbors_impl(abstract_node * n) {
   int i = static_cast<Node *>(n)->get_i();
   int j = static_cast<Node *>(n)->get_j();
 #if PRINT_UPDATES
-  printf("moore_marcher::stage_neighbors_impl(i = %d, j = %d)\n", i, j);
+  printf("moore_marcher::visit_neighbors_impl(i = %d, j = %d)\n",
+         i, j);
 #endif
 
-  // TODO: see comment in neumann_marcher::stage_neighbors_impl
+  // TODO: see comment in neumann_marcher::visit_neighbors_impl
 
   for (int k = 0; k < 8; ++k) this->pre_stage(i + __di(k), j + __dj(k));
 

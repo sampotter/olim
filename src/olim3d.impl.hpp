@@ -244,7 +244,7 @@ template <
   class tetra_updates, int nneib>
 void abstract_olim3d<
   base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::stage_neighbors_impl(abstract_node * n)
+  nneib>::visit_neighbors_impl(abstract_node * n)
 {
   /**
    * TODO: conditionally only stage the neighbors that are necessary
@@ -255,7 +255,8 @@ void abstract_olim3d<
   int j = static_cast<node *>(n)->get_j();
   int k = static_cast<node *>(n)->get_k();
 #if PRINT_UPDATES
-  printf("olim3d::stage_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
+  printf("olim3d::visit_neighbors_impl(i = %d, j = %d, k = %d)\n",
+         i, j, k);
 #endif
 
   for (int l = 0; l < nneib; ++l) {

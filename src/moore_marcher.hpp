@@ -9,7 +9,7 @@ struct moore_marcher: public marcher<Node> {
 EIKONAL_PROTECTED:
   virtual void get_valid_neighbors(int i, int j, abstract_node ** nb);
 EIKONAL_PRIVATE:
-  virtual void stage_neighbors_impl(abstract_node * n);
+  virtual void visit_neighbors_impl(abstract_node * n);
 };
 
 #include "moore_marcher.impl.hpp"

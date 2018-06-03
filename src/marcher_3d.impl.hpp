@@ -89,7 +89,7 @@ template <class Node>
 void marcher_3d<Node>::add_boundary_node(int i, int j, int k, double value) {
   assert(in_bounds(i, j, k));
   assert(operator()(i, j, k).is_far()); // TODO: for now---worried about heap
-  stage_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
+  visit_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
 }
 
 template <class Node>
@@ -143,7 +143,7 @@ void marcher_3d<Node>::add_boundary_nodes(Node const * nodes, int n) {
     i = node->get_i();
     j = node->get_j();
     k = node->get_k();
-    stage_neighbors(&operator()(i, j, k));
+    visit_neighbors(&operator()(i, j, k));
   }
 }
 

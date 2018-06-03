@@ -21,7 +21,7 @@ void abstract_marcher::run() {
 #endif
     n = get_next_node();
     n->set_valid();
-    stage_neighbors(n);
+    visit_neighbors(n);
   }
 }
 
@@ -31,15 +31,15 @@ void abstract_marcher::step() {
 #endif
   auto * n = get_next_node();
   n->set_valid();
-  stage_neighbors(n);
+  visit_neighbors(n);
 }
 
 abstract_marcher::abstract_marcher(size_t initial_heap_size):
   _heap {initial_heap_size}
 {}
 
-void abstract_marcher::stage_neighbors(abstract_node * n) {
-  stage_neighbors_impl(n);
+void abstract_marcher::visit_neighbors(abstract_node * n) {
+  visit_neighbors_impl(n);
 }
 
 abstract_node * abstract_marcher::get_next_node() {

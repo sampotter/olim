@@ -7,19 +7,20 @@
 #define __dj(k) dj<2>[k]
 
 template <class Node>
-void neumann_marcher<Node>::stage_neighbors_impl(abstract_node * n) {
+void neumann_marcher<Node>::visit_neighbors_impl(abstract_node * n) {
   int i = static_cast<Node *>(n)->get_i();
   int j = static_cast<Node *>(n)->get_j();
 #if PRINT_UPDATES
-  printf("neumann_marcher::stage_neighbors_impl(i = %d, j = %d)\n", i, j);
+  printf("neumann_marcher::visit_neighbors_impl(i = %d, j = %d)\n",
+         i, j);
 #endif
 
   // TODO: this is messy and can probably be combined with stuff in
   // marcher: maybe we can add some template parameters to marcher and
   // move this in there?
   //
-  // abstract_marcher is where stage_neighbors live (IIRC)---we might
-  // need a couple levels of stage_neighbors_impl:
+  // abstract_marcher is where visit_neighbors live (IIRC)---we might
+  // need a couple levels of visit_neighbors_impl:
   //
   // - abstract_marcher does the most generic stuff
   // - marcher does stuff that involves indexing

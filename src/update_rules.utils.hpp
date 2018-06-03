@@ -2,6 +2,7 @@
 #define __UPDATE_RULES_UTILS_HPP__
 
 #include <cassert>
+#include <cmath>
 #include <utility>
 
 template <int dim>

@@ -3,6 +3,8 @@
 
 #include <limits>
 
+#include "common.macros.hpp"
+
 enum class state {valid, trial, far};
 
 struct abstract_node {

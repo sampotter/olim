@@ -60,7 +60,7 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
       double tmp[2], lhs, rhs;
 recompute:
 
-      // TODO: the falling two lines should be lifted out of this loop
+      // TODO: the following two lines should be lifted out of this loop
       func.grad(tmp);
       rhs = f1 + c1*(tmp[0]*g[0] + tmp[1]*g[1]);
 

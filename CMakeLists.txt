@@ -103,12 +103,12 @@ if (BUILD_GEN_PLOT_DATA)
       "statistics! This wiill give unreliable timings.")
   endif ()
 
-  add_executable (gen_plot_data_2d misc/gen_plot_data_2d.cpp)
+  add_executable (gen_plot_data_2d misc/cpp/gen_plot_data_2d.cpp)
   target_include_directories (gen_plot_data_2d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (gen_plot_data_2d eikonal)
 
-  add_executable (gen_plot_data_3d misc/gen_plot_data_3d.cpp)
+  add_executable (gen_plot_data_3d misc/cpp/gen_plot_data_3d.cpp)
   target_include_directories (gen_plot_data_3d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (gen_plot_data_3d eikonal)
@@ -119,7 +119,7 @@ if (BUILD_GEN_STATS)
     message (WARNING "Building gen_stats without COLLECT_STATS=ON!")
   endif ()
 
-  add_executable (gen_stats misc/gen_stats.cpp)
+  add_executable (gen_stats misc/cpp/gen_stats.cpp)
   target_include_directories (gen_stats
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (gen_stats eikonal)

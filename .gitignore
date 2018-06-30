@@ -10,3 +10,4 @@ compile_commands.json
 auto
 .juliahistory
 misc/*
+.DS_Store

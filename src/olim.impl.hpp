@@ -49,7 +49,7 @@ template <
   bool diag_updates>
 void
 olim<node, line_updates, tri_updates, adj_updates, diag_updates>::
-update_impl(int i, int j, abstract_node ** nb, double & T)
+update_impl(int i, int j, node ** nb, double & T)
 {
   using std::min;
 

@@ -221,7 +221,7 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  abstract_node * valid_nb[8], * child_nb[base::nneib];
+  node * valid_nb[8], * child_nb[base::nneib];
   memset(valid_nb, 0x0, 8*sizeof(abstract_node *));
   for (int k = 0; k < 8; ++k) {
     a = i + __di(k), b = j + __dj(k);
@@ -237,7 +237,7 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   int di_k, dj_k;
   auto const set_child_nb = [&] (int parent) {
     memset(child_nb, 0x0, base::nneib*sizeof(abstract_node *));
-    child_nb[parent] = n;
+    child_nb[parent] = static_cast<node *>(n);
     for (int l = 0; l < base::nneib; ++l) {
       if (l == parent) {
         continue;

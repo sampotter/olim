@@ -44,7 +44,7 @@ EIKONAL_PROTECTED:
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   
-  virtual void update_impl(int i, int j, abstract_node ** nb, double & T) = 0;
+  virtual void update_impl(int i, int j, node ** nb, double & T) = 0;
 
 EIKONAL_PRIVATE:
   void init();

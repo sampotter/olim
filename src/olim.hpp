@@ -25,7 +25,7 @@ struct olim: public marcher<
   static_assert(adj_updates || diag_updates, "error");
   static constexpr int nneib = diag_updates ? 8 : 4;
 EIKONAL_PRIVATE:
-  virtual void update_impl(int i, int j, abstract_node ** nb, double & T);
+  virtual void update_impl(int i, int j, node ** nb, double & T);
 };
 
 using olim4_mp0 = olim<

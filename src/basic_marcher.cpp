@@ -11,7 +11,7 @@
 
 #include "common.macros.hpp"
 
-void basic_marcher::update_impl(int i, int j, abstract_node ** nb, double & T) {
+void basic_marcher::update_impl(int i, int j, node ** nb, double & T) {
   using std::min;
 
 #if PRINT_UPDATES

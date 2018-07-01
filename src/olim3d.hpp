@@ -50,13 +50,14 @@ struct abstract_olim3d:
   public tri_updates,
   public tetra_updates
 {
+  static constexpr int nneib = num_neighbors;
+  static_assert(nneib == 6 || nneib == 18 || nneib == 26,
+                "Number of neighbors must be 6, 18, or 26");
+
   using marcher_3d_t = marcher_3d<
     abstract_olim3d<
-      base_olim3d, node, line_updates, tri_updates, tetra_updates,
-      num_neighbors>,
+      base_olim3d, node, line_updates, tri_updates, tetra_updates, nneib>,
     node>;
-
-  static constexpr int nneib = nneib;
 
   abstract_olim3d(int height, int width, int depth, double h,
                   no_speed_func_t const &):

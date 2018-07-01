@@ -200,118 +200,63 @@ template <class base, class node>
 void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
-
 #if PRINT_UPDATES
   printf("marcher::visit_neighbors_impl(i = %d, j = %d)\n",
          i, j);
 #endif
 
-  // Create an array to keep a pointer to all neighboring nodes that
-  // are valid.
-  abstract_node * nb[8], * child_nb[8];
-  memset(nb, 0x0, 8*sizeof(abstract_node *));
-
-  // Traverse each neighboring node that's in bounds (on the grid):
-  // stage the neighbor if its state is `far', or add it to `nb' if
-  // it's valid. Note that after this step, all neighboring nodes will
-  // either be trial or far, so `nb' does double duty as a registry of
-  // node states (if nb[k] == nullptr, then the node has state
-  // `trial'; otherwise, `valid').
+  // These are temporary indices used below, analogous to i and j,
+  // respectively.
   int a, b;
-  for (int k = 0; k < 8; ++k) {
+
+  // Traverse the update neighborhood of n and set all far nodes to
+  // trial and insert them into the heap.
+  for (int k = 0; k < base::nneib; ++k) {
     a = i + __di(k), b = j + __dj(k);
-    if (!in_bounds(a, b)) {
-      continue;
-    }
-    if (k < base::nneib && operator()(a, b).is_far()) {
+    if (in_bounds(a, b) && operator()(a, b).is_far()) {
       operator()(a, b).set_trial();
       insert_into_heap(&operator()(a, b));
-    } else if (operator()(a, b).is_valid()) {
-      nb[k] = &this->operator()(a, b);
     }
   }
 
-  // TODO: this is a temporary hack. Our goal is to fix update_impl so
-  // that it doesn't need to operate on a full neighborhood (an array
-  // like `nb' above). However, as a temporary means of getting part
-  // of our changes working, we'll just fill out a "fake" array
-  // here. That is, even though we will only need to incorporate the
-  // neighbors in one quadrant, if we pass this array down to
-  // update_impl, we won't need to modify its operation.
-  auto const set_child_nb = [&] (int k) {
-    memset(child_nb, 0x0, 8*sizeof(abstract_node *));
-    switch (k) {
-    case 0:
-      child_nb[1] = nb[4];
-      child_nb[2] = &this->operator()(i, j);
-      child_nb[3] = nb[7];
-      break;
-    case 1:
-      break;
-      child_nb[0] = nb[4];
-      child_nb[2] = nb[5];
-      child_nb[3] = &this->operator()(i, j);
-    case 2:
-      child_nb[0] = &this->operator()(i, j);
-      child_nb[1] = nb[5];
-      child_nb[3] = nb[6];
-      break;
-    case 3:
-      child_nb[0] = nb[7];
-      child_nb[1] = &this->operator()(i, j);
-      child_nb[2] = nb[6];
-      break;
-    case 4:
-      child_nb[2] = nb[1];
-      child_nb[3] = nb[0];
-      break;
-    case 5:
-      child_nb[0] = nb[1];
-      child_nb[3] = nb[2];
-      break;
-    case 6:
-      child_nb[0] = nb[3];
-      child_nb[1] = nb[2];
-      break;
-    case 7:
-      child_nb[1] = nb[0];
-      child_nb[2] = nb[3];
-      break;
+  // Find the valid neighbors in the "full" neighborhood of n
+  // (i.e. the unit max norm ball).
+  abstract_node * valid_nb[8], * child_nb[base::nneib];
+  memset(valid_nb, 0x0, 8*sizeof(abstract_node *));
+  for (int k = 0; k < 8; ++k) {
+    a = i + __di(k), b = j + __dj(k);
+    if (in_bounds(a, b) && operator()(a, b).is_valid()) {
+      valid_nb[k] = &this->operator()(a, b);
     }
-    if (base::nneib >= 8) {
-      switch (k) {
-      case 0:
-        child_nb[5] = nb[1];
-        child_nb[6] = nb[3];
-        break;
-      case 1:
-        child_nb[6] = nb[2];
-        child_nb[7] = nb[0];
-        break;
-      case 2:
-        child_nb[4] = nb[1];
-        child_nb[7] = nb[3];
-        break;
-      case 3:
-        child_nb[4] = nb[0];
-        child_nb[5] = nb[2];
-        break;
-      case 4:
-        child_nb[6] = &this->operator()(i, j);
-        break;
-      case 5:
-        child_nb[7] = &this->operator()(i, j);
-        break;
-      case 6:
-        child_nb[4] = &this->operator()(i, j);
-        break;
-      case 7:
-        child_nb[5] = &this->operator()(i, j);
-        break;
+  }
+
+  // Some explanation of the indices used below:
+  // - l is a radial index circling (a, b)
+  // - parent is the radial index of (i, j) expressed in the same
+  //   index space as l
+  int di_k, dj_k;
+  auto const set_child_nb = [&] (int parent) {
+    memset(child_nb, 0x0, base::nneib*sizeof(abstract_node *));
+    child_nb[parent] = n;
+    for (int l = 0; l < base::nneib; ++l) {
+      if (l == parent) {
+        continue;
+      }
+      int di_kl, dj_kl;
+      if (std::abs(di_kl = di_k + __di(l)) > 1 ||
+          std::abs(dj_kl = dj_k + __dj(l)) > 1) {
+        continue;
+      }
+      if (in_bounds(i + di_kl, j + dj_kl)) {
+        int m = d2l(di_kl, dj_kl);
+        child_nb[l] = valid_nb[m];
       }
     }
   };
 
+  // Update the node at (i, j). Before calling, child_nb needs to be
+  // filled appropriately. Upon updating, this sets the value of n and
+  // adjusts its position in the heap.
   auto const update = [&] (int i, int j) {
     double T = INF(double);
     update_impl(i, j, child_nb, T);
@@ -322,13 +267,27 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
     }
   };
 
+  // Get the parent index of a radial index `k'.
+  auto const get_parent = [] (int k) {
+    if (base::nneib == 4) {
+      return (k + 2) % 4;
+    } else {
+      if (k < 4) return (k + 2) % 4;
+      else return ((k - 2) % 4) + 4;
+    }
+  };
+
+  // This the main update loop. Each neighbor of n which isn't valid
+  // is now trial. For each neighboring trial node, use `set_child_nb'
+  // to grab its valid neighbors and use `update' to actually update
+  // the node's value and update its position in the heap.
   for (int k = 0; k < base::nneib; ++k) {
-    if (!nb[k]) {
-      a = i + __di(k), b = j + __dj(k);
-      if (!in_bounds(a, b)) {
-        continue;
-      }
-      set_child_nb(k);
+    if (!valid_nb[k]) {
+      di_k = __di(k), dj_k = __dj(k);
+      a = i + di_k, b = j + dj_k;
+      if (!in_bounds(a, b)) continue;
+      int parent = get_parent(k);
+      set_child_nb(parent);
       update(a, b);
     }
   }

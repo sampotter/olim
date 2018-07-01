@@ -201,7 +201,8 @@ void marcher_3d<base, node>::init() {
   }
 }
 
-#define __max3(x, y, z) std::max(x, std::max(y, z))
+#define __maxabs3(x, y, z) \
+  std::max(std::abs(x), std::max(std::abs(y), std::abs(z)))
 
 template <class base, class node>
 void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
@@ -217,35 +218,44 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   // See comments in marcher.impl.hpp; the visit_neighbors_impl there
   // is done analogously to this one.
 
-  abstract_node * nb[26], * child_nb[26];
-  memset(nb, 0x0, 26*sizeof(abstract_node *));
-
   int a, b, c;
+
+  // Stage neighbors.
   for (int l = 0; l < base::nneib; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (!in_bounds(a, b, c)) {
-      continue;
-    }
-    if (l < base::nneib && operator()(a, b, c).is_far()) {
-      operator()(i, j, k).set_trial();
-      insert_into_heap(&operator()(i, j, k));
-    } else if (operator()(a, b, c).is_valid()) {
-      nb[l] = &this->operator()(a, b, c);
+    if (in_bounds(a, b, c) && operator()(a, b, c).is_far()) {
+      operator()(a, b, c).set_trial();
+      insert_into_heap(&operator()(a, b, c));
     }
   }
 
-  auto const set_child_nb = [&] (int l, int parent) {
-    int l_di = __di(l), l_dj = __dj(l), l_dk = __dk(l);
-    child_nb[parent] = &this->operator()(i, j, k);
+  // Get valid neighbors.
+  abstract_node * valid_nb[26], * child_nb[base::nneib];
+  memset(valid_nb, 0x0, 26*sizeof(abstract_node *));
+  for (int l = 0; l < 26; ++l) {
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+    if (in_bounds(a, b, c) && operator()(a, b, c).is_valid()) {
+      valid_nb[l] = &this->operator()(a, b, c);
+    }
+  }
+
+  int di_l, dj_l, dk_l;
+  auto const set_child_nb = [&] (int parent) {
+    memset(child_nb, 0x0, base::nneib*sizeof(abstract_node *));
+    child_nb[parent] = n;
     for (int m = 0; m < base::nneib; ++m) {
-      int _di = l_di + __di(m);
-      int _dj = l_dj + __dj(m);
-      int _dk = l_dk + __dk(m);
-      if (_di == 0 && _dj == 0 && _dk == 0) {
+      if (m == parent) {
         continue;
       }
-      if (__max3(_di, _dj, _dk) <= 1) {
-        child_nb[d2l(_di, _dj, _dk)] = nb[m];
+      int di_lm, dj_lm, dk_lm;
+      if (std::abs(di_lm = di_l + __di(m)) > 1 ||
+          std::abs(dj_lm = dj_l + __dj(m)) > 1 ||
+          std::abs(dk_lm = dk_l + __dk(m)) > 1) {
+        continue;
+      }
+      if (in_bounds(i + di_lm, j + dj_lm, k + dk_lm)) {
+        int p = d2l(di_lm, dj_lm, dk_lm);
+        child_nb[m] = valid_nb[p];
       }
     }
   };
@@ -253,55 +263,33 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   auto const update = [&] (int i, int j, int k, int parent) {
     double T = std::numeric_limits<double>::infinity();
     update_impl(i, j, k, parent, child_nb, T);
-    auto * n = &operator()(i, j, k);
-    assert(n->is_trial());
+    auto n = &operator()(i, j, k);
     if (T < n->get_value()) {
       n->set_value(T);
       adjust_heap_entry(n);
     }
   };
 
-  int parent;
-  for (int l = 0; l < 6; ++l) {
-    if (!nb[k]) {
-      a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-      if (!in_bounds(a, b, c)) {
-        continue;
-      }
-      parent = (l + 3) % 6;
-      set_child_nb(l, parent);
+  auto const get_parent = [] (int l) {
+    // TODO: check base::nneib to reduce amount of branching here
+    if (l < 6) return (l + 3) % 6;
+    else if (l < 18) return 22 - 2*(l/2) + (l % 2);
+    else return 42 - 2*(l/2) + (l % 2);
+  };
+
+  for (int l = 0; l < base::nneib; ++l) {
+    if (!valid_nb[l]) {
+      di_l = __di(l), dj_l = __dj(l), dk_l = __dk(l);
+      a = i + di_l, b = j + dj_l, c = k + dk_l;
+      if (!in_bounds(a, b, c)) continue;
+      int parent = get_parent(l);
+      set_child_nb(parent);
       update(a, b, c, parent);
-    }
-  }
-  if (base::nneib >= 18) {
-    for (int l = 6; l < 18; ++l) {
-      if (!nb[k]) {
-        a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-        if (!in_bounds(a, b, c)) {
-          continue;
-        }
-        parent = 22 - 2*(l/2) + (l % 2);
-        set_child_nb(l, parent);
-        update(a, b, c, parent);
-      }
-    }
-  }
-  if (base::nneib >= 26) {
-    for (int l = 18; l < 26; ++l) {
-      if (!nb[k]) {
-        a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-        if (!in_bounds(a, b, c)) {
-          continue;
-        }
-        parent = 42 - 2*(l/2) + (l % 2);
-        set_child_nb(l, parent);
-        update(a, b, c, parent);
-      }
     }
   }
 }
 
-#undef __max3
+#undef __maxabs3
 
 #undef __di
 #undef __dj

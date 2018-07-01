@@ -41,11 +41,15 @@
     }                                           \
   } while (0)
 
-template <class node, class line_updates, class tri_updates, bool adj_updates,
-          bool diag_updates>
-void olim<node, line_updates, tri_updates, adj_updates,
-          diag_updates>::update_impl(int i, int j, abstract_node ** nb,
-                                     double & T)
+template <
+  class node,
+  class line_updates,
+  class tri_updates,
+  bool adj_updates,
+  bool diag_updates>
+void
+olim<node, line_updates, tri_updates, adj_updates, diag_updates>::
+update_impl(int i, int j, abstract_node ** nb, double & T)
 {
   using std::min;
 

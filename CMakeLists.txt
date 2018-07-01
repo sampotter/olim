@@ -86,13 +86,13 @@ endif ()
 # quick test and have it build with the rest of the library, you can
 # do this here.
 if (BUILD_SCRATCH)
-  add_executable (scratch misc/scratch.cpp)
+  add_executable (scratch misc/cpp/scratch.cpp)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (scratch eikonal)
 endif ()
 
 if (BUILD_TIMINGS)
-  add_executable (timings misc/timings.cpp)
+  add_executable (timings misc/cpp/timings.cpp)
   target_include_directories (timings PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (timings eikonal)
 endif ()

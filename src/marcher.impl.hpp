@@ -150,6 +150,27 @@ void marcher<base, node>::add_boundary_nodes(node const * nodes, int num) {
 }
 
 template <class base, class node>
+void
+marcher<base, node>::add_factored_boundary_node(int i, int j, double value) {
+#if PRINT_UPDATES
+  printf("add_factored_boundary_node(i = %d, j = %d, value = %g)\n",
+         i, j, value);
+#endif // PRINT_UPDATES
+  assert(in_bounds(i, j));
+  assert(operator()(i, j).is_far());
+  node n {i, j, value};
+  n.set_sh_fac(get_h()*get_speed(i, j));
+  visit_neighbors(&(operator()(i, j) = n));
+}
+
+template <class base, class node>
+void marcher<base, node>::set_node_parent(int i, int j, int i_par, int j_par) {
+  assert(in_bounds(i, j));
+  assert(in_bounds(i_par, j_par));
+  operator()(i, j).set_parent(&operator()(i_par, j_par));
+}
+
+template <class base, class node>
 double marcher<base, node>::get_value(int i, int j) const {
   assert(in_bounds(i, j));
   return operator()(i, j).get_value();
@@ -259,11 +280,11 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   // adjusts its position in the heap.
   auto const update = [&] (int i, int j) {
     double T = INF(double);
-    update_impl(i, j, child_nb, T);
-    auto n = &operator()(i, j);
-    if (T < n->get_value()) {
-      n->set_value(T);
-      adjust_heap_entry(n);
+    node * update_node = &operator()(i, j);
+    update_impl(update_node, child_nb, T);
+    if (T < update_node->get_value()) {
+      update_node->set_value(T);
+      adjust_heap_entry(update_node);
     }
   };
 

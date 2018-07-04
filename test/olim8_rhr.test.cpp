@@ -23,3 +23,7 @@ TEST (olim8_rhr, result_is_symmetric) {
   result_is_symmetric<olim_t>((speed_func) default_speed_func);
   result_is_symmetric<olim_t>((speed_func) s1);
 }
+
+TEST (olim8_rhr, factoring_sanity_check) {
+  factoring_sanity_check<olim_t>((speed_func) s1, (speed_func) f1, 33);
+}

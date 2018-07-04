@@ -6,6 +6,7 @@
 #include "common.macros.hpp"
 #include "update_rules.tri_updates.hpp"
 
+update_rules::mp0_tri_updates mp0;
 update_rules::mp1_tri_updates mp1;
 update_rules::rhr_tri_updates rhr;
 
@@ -217,15 +218,15 @@ TEST (tri_updates, mp1_tri11_works) {
 
   u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.7309362364283436;
   ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 1e-14);
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 1e-14);
+  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 1e-14);
 
   u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.97877243;
   ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 3.42e-9);
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 3.42e-9);
+  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 3.42e-9);
 
   u0 = 1.0, u1 = 0.853553, s = 1.0, s0 = 1.0, s1 = 1.0, h = 0.5, T = 1.27266;
   ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 4.23e-6);
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 4.23e-6);
+  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 4.23e-6);
 }
 
 TEST (tri_updates, mp1_tri12_works) {
@@ -258,4 +259,78 @@ TEST (tri_updates, mp1_tri22_works) {
   h = 0.5;
   T = 0.6014793961365351;
   ASSERT_DOUBLE_EQ(get_T(TRI22(mp1, u0, u1, s, s0, s1, h)), T);
+}
+
+TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
+  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+
+  u0 = u1 = s = s0 = s1 = h = s_fac = 1;
+
+  p0[0] = p_fac[0] = 0;
+  p0[1] = p_fac[1] = 1;
+
+  p1[0] = 1;
+  p1[1] = 1;
+
+  auto update = TRI12(mp0, u0, u1, s, s0, s1, h);
+  auto update_fac = mp0.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
+
+  ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+}
+
+TEST (tri_updates, factored_mp1_with_constant_slowness_works) {
+  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+
+  u0 = u1 = s = s0 = s1 = h = s_fac = 1;
+
+  p0[0] = p_fac[0] = 0;
+  p0[1] = p_fac[1] = 1;
+
+  p1[0] = 1;
+  p1[1] = 1;
+
+  auto update = TRI12(mp1, u0, u1, s, s0, s1, h);
+  auto update_fac = mp1.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
+
+  ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+}
+
+TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
+  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+
+  {
+    u0 = u1 = s = s0 = s1 = h = s_fac = 1;
+
+    p0[0] = p_fac[0] = 0;
+    p0[1] = p_fac[1] = 1;
+
+    p1[0] = 1;
+    p1[1] = 1;
+
+    auto update = TRI12(rhr, u0, u1, s, s0, s1, h);
+    auto update_fac = rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
+
+    ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+  }
+
+  {
+    u0 = 0.44169958130222325;
+    u1 = 0.44726430952545132;
+    s = 0.34651473755893192;
+    s0 = 0.39000936008666987;
+    s1 = 0.37029340913370545;
+    h = 0.040000000000000001;
+    s_fac = 1;
+
+    p0[0] = 1;
+    p0[1] = 1;
+    
+    p1[0] = 0;
+    p1[1] = 1;
+
+    p_fac[0] = 11;
+    p_fac[1] = 14;
+
+    rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
+  }
 }

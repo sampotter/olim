@@ -11,9 +11,10 @@
 
 #include "common.macros.hpp"
 
-void basic_marcher::update_impl(int i, int j, node ** nb, double & T) {
+void basic_marcher::update_impl(node * n, node ** nb, double & T) {
   using std::min;
 
+  int i = n->get_i(), j = n->get_j();
 #if PRINT_UPDATES
   printf("basic_marcher::update_impl(i = %d, j = %d)\n", i, j);
 #endif

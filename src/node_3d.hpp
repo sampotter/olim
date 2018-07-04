@@ -14,6 +14,14 @@ struct node_3d: public abstract_node {
   inline void set_j(int j) { _j = j; }
   inline int get_k() const { return _k; }
   inline void set_k(int k) { _k = k; }
+  inline virtual double get_T() const {
+    assert(_parent);
+    auto * n = static_cast<node_3d *>(_parent);
+    return n->_sh_fac*std::sqrt(
+      std::pow(_i - n->get_i(), 2) +
+      std::pow(_j - n->get_j(), 2) +
+      std::pow(_k - n->get_k(), 2));
+  }
 EIKONAL_PRIVATE:
   int _i {-1}, _j {-1}, _k {-1};
 };

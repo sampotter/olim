@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
+#include <cmath>
 #include <type_traits>
 #include <vector>
 
@@ -296,6 +297,46 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
       for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
         ASSERT_DOUBLE_EQ(m.get_value(i, j, k), m.get_value(i_, j, k));
       }
+    }
+  }
+}
+
+template <class olim>
+void factoring_sanity_check(speed_func s, speed_func f, int n = 11,
+                            double rfac = 0.2) {
+  double h = 2.0/(n - 1);
+  int i0 = n/2, j0 = i0;
+
+  olim m {n, n, h, s, 1, 1};
+  olim m_fac {n, n, h, s, 1, 1};
+
+  for (int i = 0; i < n; ++i) {
+    double y = h*i - 1.0;
+    for (int j = 0; j < n; ++j) {
+      double x = h*j - 1.0;
+      double r = std::sqrt(x*x + y*y);
+      if (r <= rfac) {
+        m_fac.set_node_parent(i, j, i0, j0);
+      }
+    }
+  }
+
+  m.add_boundary_node(i0, j0);
+  m.run();
+  
+  m_fac.add_boundary_node(i0, j0);
+  m_fac.run();
+
+  for (int i = 0; i < n; ++i) {
+    double y = h*i - 1.0;
+    for (int j = 0; j < n; ++j) {
+      double x = h*j - 1.0;
+
+      double u = f(x, y);
+      double U = m.get_value(i, j);
+      double U_fac = m_fac.get_value(i, j);
+      
+      ASSERT_TRUE(fabs(u - U_fac) <= fabs(u - U));
     }
   }
 }

@@ -146,8 +146,8 @@ if (${BUILD_PYTHON_BINDINGS})
 	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
       ${GENERATE_PY_EIKONAL_CPP_SCRIPT}
     COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_SOURCE_DIR}/py_eikonal.extra_defs.cpp
-      py_eikonal.extra_defs.cpp
+      ${CMAKE_CURRENT_SOURCE_DIR}/pyeikonal.extra_defs.cpp
+      pyeikonal.extra_defs.cpp
 	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
 	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${EIKONAL_SRC_FILES})
 

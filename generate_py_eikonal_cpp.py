@@ -18,21 +18,6 @@ marchers = {
 # side. This would make things a little simpler and cleaner here.
 marcher_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
-    .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
-      auto const format =
-        py::format_descriptor<${cpp_class_name}::float_type>::format();
-      return {
-        m_.get_node_pointer(),
-        sizeof(${cpp_class_name}::float_type),
-        format,
-        ${cpp_class_name}::ndim,
-        {m_.get_height(), m_.get_width()},
-        {
-          sizeof(${cpp_class_name}::node_type)*m_.get_width(),
-          sizeof(${cpp_class_name}::node_type)
-        }
-      };
-    })
     .def(
       py::init([] (py::array_t<double, py::array::f_style | py::array::forcecast> arr, double h) {
         py::buffer_info info = arr.request();
@@ -69,11 +54,17 @@ marcher_template = Template('''
     })
     .def(
       "addBoundaryNode",
-      py::overload_cast<int, int, double>(
-        &${cpp_class_name}::add_boundary_node),
+      py::overload_cast<int, int, double>(&${cpp_class_name}::add_boundary_node),
       "i"_a,
       "j"_a,
       "value"_a = 0.0)
+    .def(
+      "set_node_parent",
+      &${cpp_class_name}::set_node_parent,
+      "i"_a,
+      "j"_a,
+      "i_parent"_a,
+      "j_parent"_a)
     .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a)
     .def("get_height", &${cpp_class_name}::get_height)
@@ -196,7 +187,7 @@ using namespace py::literals;
 using speed_function = std::function<double(double, double)>;
 using speed_function_3d = std::function<double(double, double, double)>;
 
-PYBIND11_MODULE(eikonal, m) {
+PYBIND11_MODULE(pyeikonal, m) {
   m.doc() = "Testing testing";
 '''
 
@@ -214,7 +205,7 @@ PYBIND11_MODULE(eikonal, m) {
         src_txt += '''  m.def("olim3d", &olim3d_group_spec, "TODO", "s_cache"_a, "h"_a, "marcher"_a, 
     "cost_func"_a, "bd_points"_a);'''
 
-    with open('py_eikonal.extra_defs.cpp') as f:
+    with open('pyeikonal.extra_defs.cpp') as f:
         src_txt += f.read()
 
     return src_txt + '}'

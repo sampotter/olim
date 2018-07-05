@@ -41,17 +41,6 @@
     }                                           \
   } while (0)
 
-#define LINE_FAC(k)                                                     \
-  this->template line<2>(VAL(k), SPEED_ARGS(k), h, p0, p_fac, s_fac)
-
-#define DO_LINE_FAC(k) do {                     \
-    if (nb[k]) {                                \
-      p0[0] = __di(k);                          \
-      p0[1] = __dj(k);                          \
-      T = min(T, LINE_FAC(k));                  \
-    }                                           \
-  } while (0)
-
 #define TRI_FAC(k, l)                           \
   this->template tri<2>(                        \
     VAL(k),                                     \
@@ -99,6 +88,9 @@ update_impl(node * n, node ** nb, double & T)
   }
 
   if (n->has_parent()) {
+    // TODO: this is a rough draft quality implementation of additive
+    // local factoring... this can definitely be optimized
+
     auto n_fac = static_cast<node *>(n->get_parent());
     int i_fac = n_fac->get_i(), j_fac = n_fac->get_j();
     double s_fac = this->get_speed(i_fac, j_fac);
@@ -146,5 +138,7 @@ update_impl(node * n, node ** nb, double & T)
 #undef DO_LINE
 #undef TRI
 #undef DO_TRI
+#undef TRI_FAC
+#undef DO_TRI_FAC
 
 #endif // __OLIM_IMPL_HPP__

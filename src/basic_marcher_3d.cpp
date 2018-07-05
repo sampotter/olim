@@ -15,13 +15,15 @@
 
 #define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
 
-void basic_marcher_3d::update_impl(int i, int j, int k, int parent,
-                                   abstract_node ** nb, double & T)
+void basic_marcher_3d::update_impl(
+  node_3d * n, node_3d ** nb, int parent, double & T)
 {
   // TODO: not currently using this, but could do so easily.
   (void) parent;
 
   using std::min;
+
+  int i = n->get_i(), j = n->get_j(), k = n->get_k();
 
   double sh = get_h()*get_speed(i, j, k), sh_sq = sh*sh;
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;

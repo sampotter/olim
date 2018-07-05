@@ -160,6 +160,32 @@ constexpr int oct2inds[8][7] = {
     }                                                           \
   } while (0)
 
+#define TRI_FAC(i, j) do {                                      \
+    if (!__skip_tri(i, j)) {                                    \
+      int l0 = inds[i], l1 = inds[j];                           \
+      if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) { \
+        p0[0] = __di(l0);                                       \
+        p0[1] = __dj(l0);                                       \
+        p0[2] = __dk(l0);                                       \
+        p1[0] = __di(l1);                                       \
+        p1[1] = __dj(l1);                                       \
+        p1[2] = __dk(l1);                                       \
+        auto tmp = this->template tri<3>(                       \
+          VAL(l0),                                              \
+          VAL(l1),                                              \
+          SPEED_ARGS(l0, l1),                                   \
+          h,                                                    \
+          p0,                                                   \
+          p1,                                                   \
+          p_fac,                                                \
+          s_fac);                                               \
+        T = min(T, tmp.value);                                  \
+        /* TODO: collect stats */                               \
+      }                                                         \
+      __skip_tri(i, j) = 0x1;                                   \
+    }                                                           \
+  } while (0)
+
 #if COLLECT_STATS
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
     tmp.hierarchical = l0 == parent || l1 == parent || l2 == parent;    \
@@ -186,6 +212,38 @@ constexpr int oct2inds[8][7] = {
         ffvec<P ## p2> {});                                             \
       T = min(T, tmp.value);                                            \
       UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
+      __skip_tri(i, j) = 0x1;                                           \
+      __skip_tri(j, k) = 0x1;                                           \
+      __skip_tri(i, k) = 0x1;                                           \
+    }                                                                   \
+  } while (0)
+
+#define TETRA_FAC(i, j, k) do {                                         \
+    int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
+    if ((l0 == parent || l1 == parent || l2 == parent) &&               \
+        nb[l0] && nb[l1] && nb[l2]) {                                   \
+      p0[0] = __di(l0);                                                 \
+      p0[1] = __dj(l0);                                                 \
+      p0[2] = __dk(l0);                                                 \
+      p1[0] = __di(l1);                                                 \
+      p1[1] = __dj(l1);                                                 \
+      p1[2] = __dk(l1);                                                 \
+      p2[0] = __di(l2);                                                 \
+      p2[1] = __dj(l2);                                                 \
+      p2[2] = __dk(l2);                                                 \
+      auto tmp = this->tetra(                                           \
+        VAL(l0),                                                        \
+        VAL(l1),                                                        \
+        VAL(l2),                                                        \
+        SPEED_ARGS(l0, l1, l2),                                         \
+        h,                                                              \
+        p0,                                                             \
+        p1,                                                             \
+        p2,                                                             \
+        p_fac,                                                          \
+        s_fac);                                                         \
+      T = min(T, tmp.value);                                            \
+      /* TODO: collect stats */                                         \
       __skip_tri(i, j) = 0x1;                                           \
       __skip_tri(j, k) = 0x1;                                           \
       __skip_tri(i, k) = 0x1;                                           \
@@ -226,24 +284,24 @@ template <
   class tetra_updates, int nneib>
 void abstract_olim3d<
   base_olim3d, node, line_updates, tri_updates, tetra_updates,
-  nneib>::update_impl(int i, int j, int k, int parent,
-                      abstract_node ** nb, double & T)
+  nneib>::update_impl(node * n, node ** nb, int parent, double & T)
 {
-  static_cast<base_olim3d *>(this)->update_crtp(i, j, k, parent, nb, T);
+  static_cast<base_olim3d *>(this)->update_crtp(n, nb, parent, T);
 }
 
 template <class node, class line_updates, class tri_updates,
           class tetra_updates, class groups>
 void olim3d_bv<
   node, line_updates, tri_updates, tetra_updates,
-  groups>::update_crtp(int i, int j, int k, int parent,
-                       abstract_node ** nb, double & T)
+  groups>::update_crtp(node * n, node ** nb, int parent, double & T)
 {
+  using std::min;
+
   // TODO: not currently using this. An easy way to use it would be to
   // map each parent index to a list of octants to iterate over.
   (void) parent;
 
-  using std::min;
+  int i = n->get_i(), j = n->get_j(), k = n->get_k();
 #if PRINT_UPDATES
   printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
@@ -286,90 +344,190 @@ void olim3d_bv<
   char tri_skip_list[8*21];
   memset((void *) tri_skip_list, 0x0, sizeof(char)*8*21);
 
-  /**
-   * Tetrahedron updates:
-   */
-  for (int octant = 0; octant < 8; ++octant) {
-    inds = oct2inds[octant];
-    if (groups::group_I) {
-      TETRA(1, 2, 3, 011, 010, 110);
-      TETRA(3, 4, 5, 110, 100, 101);
-      TETRA(5, 0, 1, 101, 001, 011);
+  if (n->has_parent()) {
+    auto n_fac = static_cast<node *>(n->get_parent());
+    int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
+    double s_fac = this->get_speed(i_fac, j_fac, k_fac);
+    double p0[3], p1[3], p2[3]; // TODO: these should be template parameters!
+    double p_fac[3] = {
+      (double) (i_fac - i),
+      (double) (j_fac - j),
+      (double) (k_fac - k)
+    };
+
+    /**
+     * Tetrahedron updates:
+     */
+    for (int octant = 0; octant < 8; ++octant) {
+      inds = oct2inds[octant];
+      if (groups::group_I) {
+        TETRA_FAC(1, 2, 3);
+        TETRA_FAC(3, 4, 5);
+        TETRA_FAC(5, 0, 1);
+      }
+      if (groups::group_II) {
+        TETRA_FAC(0, 1, 3);
+        TETRA_FAC(1, 2, 4);
+        TETRA_FAC(2, 3, 5);
+        TETRA_FAC(3, 4, 0);
+        TETRA_FAC(4, 5, 1);
+        TETRA_FAC(5, 0, 2);
+      }
+      if (groups::group_III) {
+        TETRA_FAC(0, 1, 4);
+        TETRA_FAC(1, 2, 5);
+        TETRA_FAC(2, 3, 0);
+        TETRA_FAC(3, 4, 1);
+        TETRA_FAC(4, 5, 2);
+        TETRA_FAC(5, 0, 3);
+      }
+      if (groups::group_IV_a) {
+        TETRA_FAC(0, 2, 4);
+      }
+      if (groups::group_IV_b) {
+        TETRA_FAC(1, 3, 5);
+      }
+      if (groups::group_V) {
+        TETRA_FAC(0, 1, 6);
+        TETRA_FAC(1, 2, 6);
+        TETRA_FAC(2, 3, 6);
+        TETRA_FAC(3, 4, 6);
+        TETRA_FAC(4, 5, 6);
+        TETRA_FAC(5, 0, 6);
+      }
+      if (groups::group_VI_a) {
+        TETRA_FAC(0, 2, 6);
+        TETRA_FAC(2, 4, 6);
+        TETRA_FAC(4, 0, 6);
+      }
+      if (groups::group_VI_b) {
+        TETRA_FAC(1, 3, 6);
+        TETRA_FAC(3, 5, 6);
+        TETRA_FAC(5, 1, 6);
+      }
     }
-    if (groups::group_II) {
-      TETRA(0, 1, 3, 001, 011, 110);
-      TETRA(1, 2, 4, 011, 010, 100);
-      TETRA(2, 3, 5, 010, 110, 101);
-      TETRA(3, 4, 0, 110, 100, 001);
-      TETRA(4, 5, 1, 100, 101, 011);
-      TETRA(5, 0, 2, 101, 001, 010);
-    }
-    if (groups::group_III) {
-      TETRA(0, 1, 4, 001, 011, 100);
-      TETRA(1, 2, 5, 011, 010, 101);
-      TETRA(2, 3, 0, 010, 110, 001);
-      TETRA(3, 4, 1, 110, 100, 011);
-      TETRA(4, 5, 2, 100, 101, 010);
-      TETRA(5, 0, 3, 101, 001, 110);
-    }
-    if (groups::group_IV_a) {
-      TETRA(0, 2, 4, 001, 010, 100);
-    }
-    if (groups::group_IV_b) {
-      TETRA(1, 3, 5, 011, 110, 101);
-    }
-    if (groups::group_V) {
-      TETRA(0, 1, 6, 001, 011, 111);
-      TETRA(1, 2, 6, 011, 010, 111);
-      TETRA(2, 3, 6, 010, 110, 111);
-      TETRA(3, 4, 6, 110, 100, 111);
-      TETRA(4, 5, 6, 100, 101, 111);
-      TETRA(5, 0, 6, 101, 001, 111);
-    }
-    if (groups::group_VI_a) {
-      TETRA(0, 2, 6, 001, 010, 111);
-      TETRA(2, 4, 6, 010, 100, 111);
-      TETRA(4, 0, 6, 100, 001, 111);
-    }
-    if (groups::group_VI_b) {
-      TETRA(1, 3, 6, 011, 110, 111);
-      TETRA(3, 5, 6, 110, 101, 111);
-      TETRA(5, 1, 6, 101, 011, 111);
+
+    /**
+     * Triangle updates:
+     */
+    for (int octant = 0; octant < 8; ++octant) {
+      inds = oct2inds[octant];
+      if (groups::do_tri11_updates) {
+        TRI_FAC(0, 2);
+        TRI_FAC(2, 4);
+        TRI_FAC(4, 0);
+      }
+      if (groups::do_tri12_updates) {
+        TRI_FAC(0, 1);
+        TRI_FAC(2, 1);
+        TRI_FAC(2, 3);
+        TRI_FAC(4, 3);
+        TRI_FAC(4, 5);
+        TRI_FAC(0, 5);
+      }
+      if (groups::do_tri13_updates) {
+        TRI_FAC(0, 6);
+        TRI_FAC(2, 6);
+        TRI_FAC(4, 6);
+      }
+      if (groups::do_tri22_updates) {
+        TRI_FAC(1, 3);
+        TRI_FAC(3, 5);
+        TRI_FAC(5, 1);
+      }
+      if (groups::do_tri23_updates) {
+        TRI_FAC(1, 6);
+        TRI_FAC(3, 6);
+        TRI_FAC(5, 6);
+      }
     }
   }
+  else {
+    /**
+     * Tetrahedron updates:
+     */
+    for (int octant = 0; octant < 8; ++octant) {
+      inds = oct2inds[octant];
+      if (groups::group_I) {
+        TETRA(1, 2, 3, 011, 010, 110);
+        TETRA(3, 4, 5, 110, 100, 101);
+        TETRA(5, 0, 1, 101, 001, 011);
+      }
+      if (groups::group_II) {
+        TETRA(0, 1, 3, 001, 011, 110);
+        TETRA(1, 2, 4, 011, 010, 100);
+        TETRA(2, 3, 5, 010, 110, 101);
+        TETRA(3, 4, 0, 110, 100, 001);
+        TETRA(4, 5, 1, 100, 101, 011);
+        TETRA(5, 0, 2, 101, 001, 010);
+      }
+      if (groups::group_III) {
+        TETRA(0, 1, 4, 001, 011, 100);
+        TETRA(1, 2, 5, 011, 010, 101);
+        TETRA(2, 3, 0, 010, 110, 001);
+        TETRA(3, 4, 1, 110, 100, 011);
+        TETRA(4, 5, 2, 100, 101, 010);
+        TETRA(5, 0, 3, 101, 001, 110);
+      }
+      if (groups::group_IV_a) {
+        TETRA(0, 2, 4, 001, 010, 100);
+      }
+      if (groups::group_IV_b) {
+        TETRA(1, 3, 5, 011, 110, 101);
+      }
+      if (groups::group_V) {
+        TETRA(0, 1, 6, 001, 011, 111);
+        TETRA(1, 2, 6, 011, 010, 111);
+        TETRA(2, 3, 6, 010, 110, 111);
+        TETRA(3, 4, 6, 110, 100, 111);
+        TETRA(4, 5, 6, 100, 101, 111);
+        TETRA(5, 0, 6, 101, 001, 111);
+      }
+      if (groups::group_VI_a) {
+        TETRA(0, 2, 6, 001, 010, 111);
+        TETRA(2, 4, 6, 010, 100, 111);
+        TETRA(4, 0, 6, 100, 001, 111);
+      }
+      if (groups::group_VI_b) {
+        TETRA(1, 3, 6, 011, 110, 111);
+        TETRA(3, 5, 6, 110, 101, 111);
+        TETRA(5, 1, 6, 101, 011, 111);
+      }
+    }
 
-  /**
-   * Triangle updates:
-   */
-  for (int octant = 0; octant < 8; ++octant) {
-    inds = oct2inds[octant];
-    if (groups::do_tri11_updates) {
-      TRI(0, 2, 001, 010);
-      TRI(2, 4, 010, 100);
-      TRI(4, 0, 100, 001);
-    }
-    if (groups::do_tri12_updates) {
-      TRI(0, 1, 001, 011);
-      TRI(2, 1, 010, 011);
-      TRI(2, 3, 010, 110);
-      TRI(4, 3, 100, 110);
-      TRI(4, 5, 100, 101);
-      TRI(0, 5, 001, 101);
-    }
-    if (groups::do_tri13_updates) {
-      TRI(0, 6, 001, 111);
-      TRI(2, 6, 010, 111);
-      TRI(4, 6, 100, 111);
-    }
-    if (groups::do_tri22_updates) {
-      TRI(1, 3, 011, 110);
-      TRI(3, 5, 110, 101);
-      TRI(5, 1, 101, 011);
-    }
-    if (groups::do_tri23_updates) {
-      TRI(1, 6, 011, 111);
-      TRI(3, 6, 110, 111);
-      TRI(5, 6, 101, 111);
+    /**
+     * Triangle updates:
+     */
+    for (int octant = 0; octant < 8; ++octant) {
+      inds = oct2inds[octant];
+      if (groups::do_tri11_updates) {
+        TRI(0, 2, 001, 010);
+        TRI(2, 4, 010, 100);
+        TRI(4, 0, 100, 001);
+      }
+      if (groups::do_tri12_updates) {
+        TRI(0, 1, 001, 011);
+        TRI(2, 1, 010, 011);
+        TRI(2, 3, 010, 110);
+        TRI(4, 3, 100, 110);
+        TRI(4, 5, 100, 101);
+        TRI(0, 5, 001, 101);
+      }
+      if (groups::do_tri13_updates) {
+        TRI(0, 6, 001, 111);
+        TRI(2, 6, 010, 111);
+        TRI(4, 6, 100, 111);
+      }
+      if (groups::do_tri22_updates) {
+        TRI(1, 3, 011, 110);
+        TRI(3, 5, 110, 101);
+        TRI(5, 1, 101, 011);
+      }
+      if (groups::do_tri23_updates) {
+        TRI(1, 6, 011, 111);
+        TRI(3, 6, 110, 111);
+        TRI(5, 6, 101, 111);
+      }
     }
   }
 
@@ -382,10 +540,11 @@ template <class node, class line_updates, class tri_updates,
           class tetra_updates, int lp_norm, int d1, int d2>
 void olim3d_hu<
   node, line_updates, tri_updates, tetra_updates,
-  lp_norm, d1, d2>::update_crtp(int i, int j, int k, int parent,
-                                abstract_node ** nb, double & T)
+  lp_norm, d1, d2>::update_crtp(node * n, node ** nb, int parent, double & T)
 {
   using std::min;
+
+  int i = n->get_i(), j = n->get_j(), k = n->get_k();
 #if PRINT_UPDATES
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif

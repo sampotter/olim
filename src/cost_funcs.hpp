@@ -5,6 +5,8 @@
 
 #include "common.macros.hpp"
 
+#define __sym_mat_size(d) ((d*(d + 1))/2)
+
 /**
  * TODO: this was a vaguely interesting way to go about implementing
  * the cost functions, but this isn't a particularly flexible
@@ -34,7 +36,7 @@ struct cost_func {
     static_cast<derived const *>(this)->grad_impl(df);
   }
 
-  inline void hess(double d2f[d*(d + 1)/2]) const {
+  inline void hess(double d2f[__sym_mat_size(d)]) const {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
@@ -76,7 +78,7 @@ struct F0: public cost_func<F0<n, d>, n, d> {
   F0(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d*(d + 1)/2]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
@@ -99,7 +101,7 @@ struct F1: public cost_func<F1<n, d>, n, d> {
   F1(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d*(d + 1)/2]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
@@ -120,6 +122,48 @@ EIKONAL_PRIVATE:
   double _theta;
 };
 
+template <int n, int d>
+struct F0_fac: public F0<n, d>
+{
+  F0_fac(double h, double theta): F0<n, d> {h, theta} {}
+  void grad_impl(double df[d]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
+  void set_lambda_impl(double const lambda[d]);
+  void set_args(double const u[d + 1], double s_hat,
+                double const s[d + 1], double const p[d + 1][n],
+                double const p_fac[n], double s_fac);
+EIKONAL_PRIVATE:
+  double _p_fac[n];
+  double _s_fac;
+  double _tau0;
+  double _dtau[d];
+  double _dPt_dot_p_fac[d];
+  double _p_lam_minus_p_fac[n];
+  double _l_fac_lam;
+  double _l_fac_lam_sq;
+};  
+
+template <int n, int d>
+struct F1_fac: public F1<n, d>
+{
+  F1_fac(double h, double theta): F1<n, d> {h, theta} {}
+  void grad_impl(double df[d]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
+  void set_lambda_impl(double const lambda[d]);
+  void set_args(double const u[d + 1], double s_hat,
+                double const s[d + 1], double const p[d + 1][n],
+                double const p_fac[n], double s_fac);
+EIKONAL_PRIVATE:
+  double _p_fac[n];
+  double _s_fac;
+  double _tau0;
+  double _dtau[d];
+  double _dPt_dot_p_fac[d];
+  double _p_lam_minus_p_fac[n];
+  double _l_fac_lam;
+  double _l_fac_lam_sq;
+};
+
 template <class derived, char p0, char p1, char p2, int d>
 struct cost_func_bv {
   inline void eval(double & f) const {
@@ -130,7 +174,7 @@ struct cost_func_bv {
     static_cast<derived const *>(this)->grad_impl(df);
   }
 
-  inline void hess(double d2f[d*(d + 1)/2]) const {
+  inline void hess(double d2f[__sym_mat_size(d)]) const {
     static_cast<derived const *>(this)->hess_impl(d2f);
   }
 
@@ -173,7 +217,7 @@ struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F0_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d*(d + 1)/2]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);
@@ -218,7 +262,7 @@ struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F1_bv(double h, double theta): _h {h}, _theta {theta} {}
   void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[d*(d + 1)/2]) const;
+  void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);

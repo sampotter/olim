@@ -179,3 +179,212 @@ F1<3, 2>::set_lambda_impl(double const lam[2])
   _q = _p_lam[0]*_p_lam[0] + _p_lam[1]*_p_lam[1] + _p_lam[2]*_p_lam[2];
   _l = sqrt(_q);
 }
+
+template <>
+void
+F0_fac<3, 2>::grad_impl(double df[2]) const
+{
+  double const dPt_dot_p[2] = {
+    _dP[0][0]*_p_lam[0] + _dP[0][1]*_p_lam[1] + _dP[0][2]*_p_lam[2],
+    _dP[1][0]*_p_lam[0] + _dP[1][1]*_p_lam[1] + _dP[1][2]*_p_lam[2]
+  };
+  double const dPt_dot_p_minus_p_fac[2] = {
+    dPt_dot_p[0] - _dPt_dot_p_fac[0],
+    dPt_dot_p[1] - _dPt_dot_p_fac[1]
+  };
+  df[0] = _dtau[0] + _sh*dPt_dot_p[0]/_l +
+    _s_fac*_h*dPt_dot_p_minus_p_fac[0]/_l_fac_lam;
+  df[1] = _dtau[1] + _sh*dPt_dot_p[1]/_l +
+    _s_fac*_h*dPt_dot_p_minus_p_fac[1]/_l_fac_lam;
+}
+
+template <>
+void
+F0_fac<3, 2>::hess_impl(double d2f[3]) const
+{
+  F0<3, 2>::hess_impl(d2f);
+
+  auto & z = _p_lam_minus_p_fac;
+  auto & z_sq = _l_fac_lam_sq;
+
+  double tmp[6]; // workspace
+  tmp[0] = 1 - z[0]*z[0]/z_sq; // (0, 0)
+  tmp[1] = -z[0]*z[1]/z_sq;    // (0, 1) & (1, 0)
+  tmp[2] = -z[0]*z[2]/z_sq;    // (0, 2) & (2, 0)
+  tmp[3] = 1 - z[1]*z[1]/z_sq; // (1, 1)
+  tmp[4] = -z[1]*z[2]/z_sq;    // (1, 2) & (2, 1)
+  tmp[5] = 1 - z[2]*z[2]/z_sq; // (2, 2)
+
+  // TODO: the next two sections together are a good candidate for
+  // being factored out as a function: they're just conjugating the
+  // projector stored in tmp by dP (i.e. they compute dP'*P*dP in
+  // place)
+
+  double tmp2[2][3];
+  tmp2[0][0] = tmp[0]*_dP[0][0] + tmp[1]*_dP[0][1] + tmp[2]*_dP[0][2];
+  tmp2[0][1] = tmp[1]*_dP[0][0] + tmp[3]*_dP[0][1] + tmp[4]*_dP[0][2];
+  tmp2[0][2] = tmp[2]*_dP[0][0] + tmp[4]*_dP[0][1] + tmp[5]*_dP[0][2];
+  tmp2[1][0] = tmp[0]*_dP[1][0] + tmp[1]*_dP[1][1] + tmp[2]*_dP[1][2];
+  tmp2[1][1] = tmp[1]*_dP[1][0] + tmp[3]*_dP[1][1] + tmp[4]*_dP[1][2];
+  tmp2[1][2] = tmp[2]*_dP[1][0] + tmp[4]*_dP[1][1] + tmp[5]*_dP[1][2];
+
+  tmp[0] = _dP[0][0]*tmp2[0][0] + _dP[0][1]*tmp2[0][1] + _dP[0][2]*tmp2[0][2];
+  tmp[1] = _dP[0][0]*tmp2[1][0] + _dP[0][1]*tmp2[1][1] + _dP[0][2]*tmp2[1][2];
+  tmp[2] = _dP[1][0]*tmp2[1][0] + _dP[1][1]*tmp2[1][1] + _dP[1][2]*tmp2[1][2];
+
+  d2f[0] += _s_fac*_h*tmp[0]/_l_fac_lam;
+  d2f[1] += _s_fac*_h*tmp[1]/_l_fac_lam;
+  d2f[2] += _s_fac*_h*tmp[2]/_l_fac_lam;
+}
+
+template <>
+void
+F0_fac<3, 2>::set_lambda_impl(double const lambda[2])
+{
+  F0<3, 2>::set_lambda_impl(lambda);
+
+  _p_lam_minus_p_fac[0] = _p_fac[0] - _p_lam[0];
+  _p_lam_minus_p_fac[1] = _p_fac[1] - _p_lam[1];
+  _p_lam_minus_p_fac[2] = _p_fac[2] - _p_lam[2];
+
+  auto const & z = _p_lam_minus_p_fac;
+
+  _l_fac_lam_sq = z[0]*z[0] + z[1]*z[1] + z[2]*z[2];
+  _l_fac_lam = std::sqrt(_l_fac_lam_sq);
+}
+
+
+template <>
+void
+F0_fac<3, 2>::set_args(double const u[3], double s_hat,
+                       double const s[3], double const p[3][3],
+                       double const p_fac[3], double s_fac)
+{
+  F0<3, 2>::set_args_impl(u, s_hat, s, p);
+
+  memcpy(_p_fac, p_fac, 3*sizeof(double));
+
+  _s_fac = s_fac;
+
+  // These temporaries are for computing tau using T
+  double l_fac[3], tmp[3];
+  for (int i = 0; i < 3; ++i) {
+    tmp[0] = p[i][0] - _p_fac[0];
+    tmp[1] = p[i][1] - _p_fac[1];
+    tmp[2] = p[i][2] - _p_fac[2];
+    l_fac[i] = norm2<3>(tmp);
+  }
+
+  _tau0 = u[0] - _s_fac*_h*l_fac[0];
+  _dtau[0] = u[1] - _s_fac*_h*l_fac[1];
+  _dtau[1] = u[2] - _s_fac*_h*l_fac[2];
+
+  _dPt_dot_p_fac[0] = _dP[0][0]*_p_fac[0] + _dP[0][1]*_p_fac[1] +
+    _dP[0][2]*_p_fac[2];
+  _dPt_dot_p_fac[1] = _dP[1][0]*_p_fac[0] + _dP[1][1]*_p_fac[1] +
+    _dP[1][2]*_p_fac[2];
+}
+
+template <>
+void
+F1_fac<3, 2>::grad_impl(double df[2]) const
+{
+  double const dPt_dot_p[2] = {
+    _dP[0][0]*_p_lam[0] + _dP[0][1]*_p_lam[1] + _dP[0][2]*_p_lam[2],
+    _dP[1][0]*_p_lam[0] + _dP[1][1]*_p_lam[1] + _dP[1][2]*_p_lam[2]
+  };
+  double const dPt_dot_p_minus_p_fac[2] = {
+    dPt_dot_p[0] - _dPt_dot_p_fac[0],
+    dPt_dot_p[1] - _dPt_dot_p_fac[1]
+  };
+  df[0] = _dtau[0] + _h*(_theta*_q*_ds[0] + _stheta*dPt_dot_p[0])/_l +
+    _s_fac*_h*dPt_dot_p_minus_p_fac[0]/_l_fac_lam;
+  df[1] = _dtau[1] + _h*(_theta*_q*_ds[1] + _stheta*dPt_dot_p[1])/_l +
+    _s_fac*_h*dPt_dot_p_minus_p_fac[1]/_l_fac_lam;
+}
+
+template <>
+void
+F1_fac<3, 2>::hess_impl(double d2f[3]) const
+{
+  F1<3, 2>::hess_impl(d2f);
+
+  auto & z = _p_lam_minus_p_fac;
+  auto & z_sq = _l_fac_lam_sq;
+
+  double tmp[6]; // workspace
+  tmp[0] = 1 - z[0]*z[0]/z_sq; // (0, 0)
+  tmp[1] = -z[0]*z[1]/z_sq;    // (0, 1) & (1, 0)
+  tmp[2] = -z[0]*z[2]/z_sq;    // (0, 2) & (2, 0)
+  tmp[3] = 1 - z[1]*z[1]/z_sq; // (1, 1)
+  tmp[4] = -z[1]*z[2]/z_sq;    // (1, 2) & (2, 1)
+  tmp[5] = 1 - z[2]*z[2]/z_sq; // (2, 2)
+
+  // TODO: the next two sections together are a good candidate for
+  // being factored out as a function: they're just conjugating the
+  // projector stored in tmp by dP (i.e. they compute dP'*P*dP in
+  // place)
+
+  double tmp2[2][3];
+  tmp2[0][0] = tmp[0]*_dP[0][0] + tmp[1]*_dP[0][1] + tmp[2]*_dP[0][2];
+  tmp2[0][1] = tmp[1]*_dP[0][0] + tmp[3]*_dP[0][1] + tmp[4]*_dP[0][2];
+  tmp2[0][2] = tmp[2]*_dP[0][0] + tmp[4]*_dP[0][1] + tmp[5]*_dP[0][2];
+  tmp2[1][0] = tmp[0]*_dP[1][0] + tmp[1]*_dP[1][1] + tmp[2]*_dP[1][2];
+  tmp2[1][1] = tmp[1]*_dP[1][0] + tmp[3]*_dP[1][1] + tmp[4]*_dP[1][2];
+  tmp2[1][2] = tmp[2]*_dP[1][0] + tmp[4]*_dP[1][1] + tmp[5]*_dP[1][2];
+
+  tmp[0] = _dP[0][0]*tmp2[0][0] + _dP[0][1]*tmp2[0][1] + _dP[0][2]*tmp2[0][2];
+  tmp[1] = _dP[0][0]*tmp2[1][0] + _dP[0][1]*tmp2[1][1] + _dP[0][2]*tmp2[1][2];
+  tmp[2] = _dP[1][0]*tmp2[1][0] + _dP[1][1]*tmp2[1][1] + _dP[1][2]*tmp2[1][2];
+
+  d2f[0] += _s_fac*_h*tmp[0]/_l_fac_lam;
+  d2f[1] += _s_fac*_h*tmp[1]/_l_fac_lam;
+  d2f[2] += _s_fac*_h*tmp[2]/_l_fac_lam;
+}
+
+template <>
+void
+F1_fac<3, 2>::set_lambda_impl(double const lambda[2])
+{
+  F1<3, 2>::set_lambda_impl(lambda);
+
+  _p_lam_minus_p_fac[0] = _p_fac[0] - _p_lam[0];
+  _p_lam_minus_p_fac[1] = _p_fac[1] - _p_lam[1];
+  _p_lam_minus_p_fac[2] = _p_fac[2] - _p_lam[2];
+
+  auto const & z = _p_lam_minus_p_fac;
+
+  _l_fac_lam_sq = z[0]*z[0] + z[1]*z[1] + z[2]*z[2];
+  _l_fac_lam = std::sqrt(_l_fac_lam_sq);
+}
+
+template <>
+void
+F1_fac<3, 2>::set_args(double const u[3], double s_hat,
+                       double const s[3], double const p[3][3],
+                       double const p_fac[3], double s_fac)
+{
+  F1<3, 2>::set_args_impl(u, s_hat, s, p);
+
+  memcpy(_p_fac, p_fac, 3*sizeof(double));
+
+  _s_fac = s_fac;
+
+  // These temporaries are for computing tau using T
+  double l_fac[3], tmp[3];
+  for (int i = 0; i < 3; ++i) {
+    tmp[0] = p[i][0] - _p_fac[0];
+    tmp[1] = p[i][1] - _p_fac[1];
+    tmp[2] = p[i][2] - _p_fac[2];
+    l_fac[i] = norm2<3>(tmp);
+  }
+
+  _tau0 = u[0] - _s_fac*_h*l_fac[0];
+  _dtau[0] = u[1] - _s_fac*_h*l_fac[1];
+  _dtau[1] = u[2] - _s_fac*_h*l_fac[2];
+
+  _dPt_dot_p_fac[0] = _dP[0][0]*_p_fac[0] + _dP[0][1]*_p_fac[1] +
+    _dP[0][2]*_p_fac[2];
+  _dPt_dot_p_fac[1] = _dP[1][0]*_p_fac[0] + _dP[1][1]*_p_fac[1] +
+    _dP[1][2]*_p_fac[2];
+}

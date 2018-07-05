@@ -96,8 +96,7 @@ struct abstract_olim3d:
 #endif
 
 EIKONAL_PRIVATE:
-  virtual void update_impl(int i, int j, int k, int parent,
-                           abstract_node ** nb, double & T);
+  virtual void update_impl(node * n, node ** nb, int parent, double & T);
   void init();
 #if COLLECT_STATS
   olim3d_node_stats * _node_stats {nullptr};
@@ -118,8 +117,7 @@ struct olim3d_bv:
     node, line_updates, tri_updates, tetra_updates,
     groups::nneib>::abstract_olim3d;
 
-  void update_crtp(int i, int j, int k, int parent, abstract_node ** nb,
-                   double & T);
+  void update_crtp(node * n, node ** nb, int parent, double & T);
 };
 
 template <class groups>
@@ -127,7 +125,7 @@ using olim3d_mp0 = olim3d_bv<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp0_tri_updates,
-  update_rules::mp0_tetra_updates_bv,
+  update_rules::mp0_tetra_updates,
   groups>;
 
 template <class groups>
@@ -135,7 +133,7 @@ using olim3d_mp1 = olim3d_bv<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp1_tri_updates,
-  update_rules::mp1_tetra_updates_bv,
+  update_rules::mp1_tetra_updates,
   groups>;
 
 template <class groups>
@@ -143,7 +141,7 @@ using olim3d_rhr = olim3d_bv<
   node_3d,
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates,
-  update_rules::rhr_tetra_updates_bv,
+  update_rules::rhr_tetra_updates,
   groups>;
 
 using olim6_groups = groups_t<0, 0, 0, 1, 0, 0, 0, 0>;
@@ -180,8 +178,7 @@ struct olim3d_hu:
     olim3d_hu<node, line_updates, tri_updates, tetra_updates, lp_norm, d1, d2>,
     node, line_updates, tri_updates, tetra_updates, 26>::abstract_olim3d;
 
-  void update_crtp(int i, int j, int k, int parent, abstract_node ** nb,
-                   double & T);
+  void update_crtp(node * n, node ** nb, int parent, double & T);
 };
 
 using olim3d_hu_rhr = olim3d_hu<

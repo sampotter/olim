@@ -230,7 +230,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   }
 
   // Get valid neighbors.
-  abstract_node * valid_nb[26], * child_nb[base::nneib];
+  node * valid_nb[26], * child_nb[base::nneib];
   memset(valid_nb, 0x0, 26*sizeof(abstract_node *));
   for (int l = 0; l < 26; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
@@ -242,7 +242,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   int di_l, dj_l, dk_l;
   auto const set_child_nb = [&] (int parent) {
     memset(child_nb, 0x0, base::nneib*sizeof(abstract_node *));
-    child_nb[parent] = n;
+    child_nb[parent] = static_cast<node *>(n);
     for (int m = 0; m < base::nneib; ++m) {
       if (m == parent) {
         continue;
@@ -261,12 +261,12 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   };
 
   auto const update = [&] (int i, int j, int k, int parent) {
-    double T = std::numeric_limits<double>::infinity();
-    update_impl(i, j, k, parent, child_nb, T);
-    auto n = &operator()(i, j, k);
+    double T = INF(double);
+    node * update_node = &operator()(i, j, k);
+    update_impl(update_node, child_nb, parent, T);
     if (T < n->get_value()) {
-      n->set_value(T);
-      adjust_heap_entry(n);
+      update_node->set_value(T);
+      adjust_heap_entry(update_node);
     }
   };
 

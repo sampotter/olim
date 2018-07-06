@@ -264,7 +264,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     double T = INF(double);
     node * update_node = &operator()(i, j, k);
     update_impl(update_node, child_nb, parent, T);
-    if (T < n->get_value()) {
+    if (T < update_node->get_value()) {
       update_node->set_value(T);
       adjust_heap_entry(update_node);
     }

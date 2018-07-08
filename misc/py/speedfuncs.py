@@ -43,6 +43,9 @@ s9 = lambda x, y: 2*a*np.sqrt(
     (np.power(x, 2) + np.power(y, 2)))
 f9 = lambda x, y: 1 - np.divide(1, np.exp(a*(np.power(x, 2) + np.power(y, 2))))
 
+s_qv = lambda x, y: 1/(0.5 + 0.5*x)
+f_qv = lambda x, y: 2*np.arccosh(1 + 0.25*np.sqrt(x*x + y*y)*s_qv(x, y))
+
 # TODO: star_s
 
 _speed_funcs = [s0, s1, s2, s3, s4xy, s4xz, s4yz, s5, s6, s8, s9]

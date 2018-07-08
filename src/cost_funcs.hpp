@@ -68,7 +68,7 @@ struct cost_func {
   }
 
 #if COLLECT_STATS
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _lam[d];
 #endif
 };
@@ -82,7 +82,7 @@ struct F0: public cost_func<F0<n, d>, n, d> {
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _sh;
   double _u0;
   double _du[d];
@@ -105,7 +105,7 @@ struct F1: public cost_func<F1<n, d>, n, d> {
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1], double const p[d + 1][n]);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _s_hat;
   double _stheta;
   double _s[d + 1];
@@ -132,7 +132,7 @@ struct F0_fac: public F0<n, d>
   void set_args(double const u[d + 1], double s_hat,
                 double const s[d + 1], double const p[d + 1][n],
                 double const p_fac[n], double s_fac);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _p_fac[n];
   double _s_fac;
   double _tau0;
@@ -153,7 +153,7 @@ struct F1_fac: public F1<n, d>
   void set_args(double const u[d + 1], double s_hat,
                 double const s[d + 1], double const p[d + 1][n],
                 double const p_fac[n], double s_fac);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _p_fac[n];
   double _s_fac;
   double _tau0;
@@ -204,7 +204,7 @@ struct cost_func_bv {
   }
 
 #if COLLECT_STATS
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _lam[d];
 #endif
 };
@@ -222,7 +222,7 @@ struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);
   // TODO: can probably delete this
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _sh;
   double _u0;
   double _du[d];
@@ -245,7 +245,7 @@ struct F0_bv<p0, p1, p2, 2>:
   void set_lambda_impl(double const lambda[2]);
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _sh;
   double _u0;
   double _du[2];
@@ -266,7 +266,7 @@ struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   void set_lambda_impl(double const lambda[d]);
   void set_args_impl(double const u[d + 1], double s_hat,
                      double const s[d + 1]);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _s_hat;
   double _sh;
   double _s0;
@@ -292,7 +292,7 @@ struct F1_bv<p0, p1, p2, 2>:
   void set_lambda_impl(double const lambda[2]);
   void set_args_impl(double const u[3], double s_hat,
                      double const s[3]);
-EIKONAL_PRIVATE:
+EIKONAL_PROTECTED:
   double _s_hat;
   double _sh;
   double _s0;

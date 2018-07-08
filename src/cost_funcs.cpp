@@ -188,14 +188,24 @@ F0_fac<3, 2>::grad_impl(double df[2]) const
     _dP[0][0]*_p_lam[0] + _dP[0][1]*_p_lam[1] + _dP[0][2]*_p_lam[2],
     _dP[1][0]*_p_lam[0] + _dP[1][1]*_p_lam[1] + _dP[1][2]*_p_lam[2]
   };
+
   double const dPt_dot_p_minus_p_fac[2] = {
     dPt_dot_p[0] - _dPt_dot_p_fac[0],
     dPt_dot_p[1] - _dPt_dot_p_fac[1]
   };
-  df[0] = _dtau[0] + _sh*dPt_dot_p[0]/_l +
-    _s_fac*_h*dPt_dot_p_minus_p_fac[0]/_l_fac_lam;
-  df[1] = _dtau[1] + _sh*dPt_dot_p[1]/_l +
-    _s_fac*_h*dPt_dot_p_minus_p_fac[1]/_l_fac_lam;
+
+  df[0] = _dtau[0] + _sh*dPt_dot_p[0]/_l;
+  df[1] = _dtau[1] + _sh*dPt_dot_p[1]/_l;
+
+  if (_l_fac_lam > 1e1*EPS(double)) {
+    df[0] += _s_fac*_h*dPt_dot_p_minus_p_fac[0]/_l_fac_lam;
+    df[1] += _s_fac*_h*dPt_dot_p_minus_p_fac[1]/_l_fac_lam;
+  }
+
+  assert(!std::isnan(df[0]));
+  assert(!std::isnan(df[1]));
+  assert(!std::isinf(df[0]));
+  assert(!std::isinf(df[1]));
 }
 
 template <>

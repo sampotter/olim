@@ -19,7 +19,7 @@ marchers = {
 marcher_template = Template('''
   py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
     .def(
-      py::init([] (py::array_t<double, py::array::f_style | py::array::forcecast> arr, double h) {
+      py::init([] (py::array_t<double, py::array::c_style> arr, double h) {
         py::buffer_info info = arr.request();
         if (info.format != py::format_descriptor<double>::format()) {
           throw std::runtime_error("Bad format: expected double array");

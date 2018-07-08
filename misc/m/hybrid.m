@@ -1,8 +1,10 @@
-function [x, iters] = hybrid(f, a, b, tol)
+function [x, iters, deg] = hybrid(f, a, b, tol)
     if nargin < 4
         tol = eps;
     end
     
+    deg = false;
+
     c = a;
 
     fa = f(a);
@@ -10,7 +12,12 @@ function [x, iters] = hybrid(f, a, b, tol)
     fc = f(c);
     
     assert(~(fa == 0 || fb == 0 || fc == 0));
-    assert(sign(fb) ~= sign(fc));
+    if sign(fb) == sign(fc)
+        x = NaN;
+        iters = [];
+        deg = true;
+        return;
+    end
 
     iters = 0;
     while true

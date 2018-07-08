@@ -6,14 +6,16 @@ s = h*rand;
 s0 = h*rand;
 s1 = h*rand;
 s2 = h*rand;
+sfac = h*rand;
 theta = rand;
+rfac = 0.1;
 
-p0 = randn(3, 1);
-p1 = randn(3, 1);
-p2 = randn(3, 1);
-% p0 = [1; 1; 0];
-% p1 = [0; 1; 1];
-% p2 = [1; 0; 1];
+p0 = rand(3, 1);
+p1 = rand(3, 1);
+p2 = rand(3, 1);
+pfac = (1/rfac)*randn(3, 1);
+
+
 
 du1 = u1 - u0;
 du2 = u2 - u0;
@@ -33,7 +35,24 @@ p = @(x) (1 - sum(x))*p0 + x(1)*p1 + x(2)*p2;
 q = @(x) p(x)'*p(x);
 l = @(x) sqrt(q(x));
 cprojp = @(x) eye(3) - p(x)*p(x)'/q(x);
+n = @(x) p(x)/l(x);
+
+pfac = @(x) p(x) - pfac;
+lfac = @(x) norm(pfac(x));
+T = @(x) sfac*h*lfac(x);
+nfac = @(x) pfac(x)/lfac(x);
+
+T0 = T([0; 0]);
+T1 = T([1; 0]);
+T2 = T([0; 1]);
+
+tau0 = u0 - T0;
+tau1 = u1 - T1;
+tau2 = u2 - T2;
+dtau = [tau1 - tau0; tau2 - tau0];
+tau = @(x) tau0 + dot(dtau, x);
 
 N = length(p0);
+I = eye(N);
 A = [-eye(N - 1); ones(1, N - 1)]; % constraint matrix
 b = [zeros(N - 1, 1); 1];

@@ -211,6 +211,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	basic_marcher_3d
     cost_funcs
 	heap
+    hybrid
     numopt
     olim4_mp0
     olim4_mp1

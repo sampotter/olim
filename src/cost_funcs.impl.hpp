@@ -95,6 +95,9 @@ cost_func<derived, n, d>::lag_mult(double const lam[d], double * mu, int * k)
   grad(df);
   hess(d2f);
   lag_mult_impl<d>(df, d2f, lam, mu, k);
+  for (int i = 0; i < *k; ++i) {
+    __check(mu[i]);
+  }
 }
 
 template <class derived, char p0, char p1, char p2, int d>
@@ -108,6 +111,9 @@ cost_func_bv<derived, p0, p1, p2, d>::lag_mult(double const lam[d], double * mu,
   grad(df);
   hess(d2f);
   lag_mult_impl<d>(df, d2f, lam, mu, k);
+  for (int i = 0; i < *k; ++i) {
+    __check(mu[i]);
+  }
 }
 
 template <char pj, char p0>

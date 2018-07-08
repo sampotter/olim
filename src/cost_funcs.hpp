@@ -5,6 +5,14 @@
 
 #include "common.macros.hpp"
 
+#include <cassert>
+#include <cmath>
+
+#define __check(x) do {                         \
+    assert(!std::isinf(x));                     \
+    assert(!std::isnan(x));                     \
+  } while (0)
+
 #define __sym_mat_size(d) ((d*(d + 1))/2)
 
 /**
@@ -30,14 +38,21 @@ template <class derived, int n, int d>
 struct cost_func {
   inline void eval(double & f) const {
     static_cast<derived const *>(this)->eval_impl(f);
+    __check(f);
   }
 
   inline void grad(double df[d]) const {
     static_cast<derived const *>(this)->grad_impl(df);
+    for (int i = 0; i < d; ++i) {
+      __check(df[i]);
+    }
   }
 
   inline void hess(double d2f[__sym_mat_size(d)]) const {
     static_cast<derived const *>(this)->hess_impl(d2f);
+    for (int i = 0; i < __sym_mat_size(d); ++i) {
+      __check(d2f[i]);
+    }
   }
 
   void lag_mult(double const lambda[d], double * mu, int * k);
@@ -307,5 +322,8 @@ EIKONAL_PROTECTED:
 };
 
 #include "cost_funcs.impl.hpp"
+
+#undef __sym_mat_size
+#undef __check
 
 #endif // __COST_FUNCS_HPP__

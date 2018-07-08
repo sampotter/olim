@@ -549,6 +549,7 @@ update_rules::mp1_tri_updates::tri(
     d2f = h*(s_lam*(dp_dot_dp - pow(dp_dot_p_lam/l_lam, 2))/l_lam +
              dp_dot_p_lam*ds/l_lam);
 
+    // TODO: l_fac_lam > 0: don't need fabs here
     if (fabs(l_fac_lam) > 1e1*tol) {
       df += s_fac*h*(dp_dot_p_lam - dp_dot_p_fac)/l_fac_lam;
       d2f += s_fac*h*(

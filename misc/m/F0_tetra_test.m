@@ -35,23 +35,23 @@ lam0facgt = out0fac.xs(:, out0fac.iters + 1);
 lam0_in_bounds = abs(max(A*lam0gt - b)) > 10*eps;
 lam1_in_bounds = abs(max(A*lam1gt - b)) > 10*eps;
 
-if lam0_in_bounds && lam1_in_bounds
-    fprintf('Trying unconstrained approach...\n')
+% if lam0_in_bounds && lam1_in_bounds
+%     fprintf('Trying unconstrained approach...\n')
 
-    [Q R] = qr(dP, 0);
-    sh_ = sh([1; 1]/3);
-    alpha = sqrt((p0'*(eye(3) - Q*Q')*p0)/(1 - norm(R'\(du/sh_))^2));
-    lam0 = -inv(R)*(alpha*inv(R')*(du/sh_) + Q'*p0);
+%     [Q R] = qr(dP, 0);
+%     sh_ = sh([1; 1]/3);
+%     alpha = sqrt((p0'*(eye(3) - Q*Q')*p0)/(1 - norm(R'\(du/sh_))^2));
+%     lam0 = -inv(R)*(alpha*inv(R')*(du/sh_) + Q'*p0);
 
-    k = 0;
-    lam(:, 1) = lam0;
-    g = @(x) -d2F1(x)\dF1(x);
-    while norm(g(lam(:, k + 1)), 'inf') > eps
-        k = k + 1;
-        lam(:, k + 1) = lam(:, k) + g(lam(:, k));
-    end
-    k = k + 1;
-end
+%     k = 0;
+%     lam(:, 1) = lam0;
+%     g = @(x) -d2F1(x)\dF1(x);
+%     while norm(g(lam(:, k + 1)), 'inf') > eps
+%         k = k + 1;
+%         lam(:, k + 1) = lam(:, k) + g(lam(:, k));
+%     end
+%     k = k + 1;
+% end
 
 % ---
 

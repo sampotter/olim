@@ -12,6 +12,7 @@
 #include "common.hpp"
 #include "common.defs.hpp"
 #include "common.macros.hpp"
+#include "hybrid.hpp"
 #include "update_rules.utils.hpp"
 
 #define l__(x) std::sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
@@ -93,67 +94,44 @@ update_rules::mp0_tri_updates::tri(
   double const * p0, double const * p1, double const * p_fac, double s_fac,
   double tol) const
 {
-  using std::min;
-  using std::max;
+  double sh = ((s + (s0 + s1)/2)/2)*h, shfac = s_fac*h;
+  double lfac0 = dist2<dim>(p0, p_fac);
+  double lfac1 = dist2<dim>(p1, p_fac);
+  double T0 = shfac*lfac0, T1 = shfac*lfac1;
+  double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double stheta = (s + (s0 + s1)/2)/2,
-    dp[2] = {p1[0] - p0[0], p1[1] - p0[1]},
-    dp_dot_p_fac = dp[0]*p_fac[0] + dp[1]*p_fac[1],
-    p0_dot_p_fac = p0[0]*p_fac[0] + p0[1]*p_fac[1],
-    p1_dot_p_fac = p1[0]*p_fac[0] + p1[1]*p_fac[1],
-    p_fac_dot_p_fac = p_fac[0]*p_fac[0] + p_fac[1]*p_fac[1],
-    p0_dot_p0 = p0[0]*p0[0] + p0[1]*p0[1],
-    p1_dot_p1 = p1[0]*p1[0] + p1[1]*p1[1],
-    dp_dot_p0 = dp[0]*p0[0] + dp[1]*p0[1],
-    dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1],
-    dp_dot_p_lam, l_lam, l_fac_hat = norm2<dim>(p_fac), l_fac_lam,
-    l_fac_0 = sqrt(p0_dot_p0 - 2*p0_dot_p_fac + p_fac_dot_p_fac),
-    l_fac_1 = sqrt(p1_dot_p1 - 2*p1_dot_p_fac + p_fac_dot_p_fac),
-    tau0 = u0 - s_fac*h*l_fac_0, tau1 = u1 - s_fac*h*l_fac_1,
-    dtau = tau1 - tau0;
+  double dp[dim];
+  sub<dim>(p1, p0, dp);
 
-  double lam = 0.5, lam_prev, df, d2f, step, t, tau, tau_prev;
-  do {
+  double nu[dim], nufac[dim];
 
-    dp_dot_p_lam = dp_dot_p0 + lam*dp_dot_dp;
-    l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-    l_fac_lam = sqrt(
-      pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
-    
-    df = dtau + s*h*dp_dot_p_lam/l_lam;
-    d2f = s*h*(dp_dot_dp - pow(dp_dot_p_lam/l_lam, 2))/l_lam;
+  auto const grad = [&] (double lam) {
+    axpy<dim>(lam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    scal_inplace<dim>(norm2<dim>(nu), nu);
+    scal_inplace<dim>(norm2<dim>(nufac), nufac);
+    return dtau + shfac*dot<3>(dp, nufac) + sh*dot<3>(dp, nu);
+  };
 
-    if (fabs(l_fac_lam) > 1e1*tol) {
-      df += s_fac*h*(dp_dot_p_lam - dp_dot_p_fac)/l_fac_lam;
-      d2f += s_fac*h*(
-        dp_dot_dp -
-        (pow(dp_dot_p_lam, 2) - 2*dp_dot_p_fac + pow(dp_dot_p_fac, 2))/
-         pow(l_fac_lam, 2)
-      )/l_fac_lam;
-    }
-    
-    step = -df/d2f;
-
-    tau_prev = tau0 + dtau*lam + h*(s*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-    lam_prev = lam;
-    
-    t = 1;
-    do {
-      lam = max(0., min(1., lam_prev + t*step));
-      l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-      l_fac_lam = sqrt(
-        pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
-      tau = tau0 + dtau*lam + h*(s*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-      t /= 2;
-    } while (tau > tau_prev);
-
-  } while (fabs(lam - lam_prev) > tol && fabs(tau - tau_prev) > tol);
+  double arglam;
+  hybrid_status status;
+  std::tie(arglam, status) = hybrid(grad, 0., 1., tol);
 
   update_info<1> update;
-  update.lambda[0] = lam;
-  update.value = u0 + (u1 - u0)*lam + stheta*h*l_lam;
+  if (status == hybrid_status::DEGENERATE) {
+    double F0 = tau0 + T0 + sh*norm2<dim>(p0);
+    double F1 = tau1 + T1 + sh*norm2<dim>(p1);
+    update.lambda[0] = F0 < F1 ? 0 : 1;
+    update.value = std::min(F0, F1);
+  }
+  else {
+    update.lambda[0] = arglam;
+    axpy<dim>(arglam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
+      sh*norm2<dim>(nu);
+  }
 
-  // Check that the solution is causal
   assert(update.value >= std::max(u0, u1));
 
   return update;
@@ -294,65 +272,43 @@ update_rules::rhr_tri_updates::tri(
   (void) s0;
   (void) s1;
 
-  using std::min;
-  using std::max;
+  double sh = s*h, shfac = s_fac*h;
+  double lfac0 = dist2<dim>(p0, p_fac);
+  double lfac1 = dist2<dim>(p1, p_fac);
+  double T0 = shfac*lfac0, T1 = shfac*lfac1;
+  double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double stheta = (s + (s0 + s1)/2)/2,
-    dp[2] = {p1[0] - p0[0], p1[1] - p0[1]},
-    dp_dot_p_fac = dp[0]*p_fac[0] + dp[1]*p_fac[1],
-    p0_dot_p_fac = p0[0]*p_fac[0] + p0[1]*p_fac[1],
-    p1_dot_p_fac = p1[0]*p_fac[0] + p1[1]*p_fac[1],
-    p_fac_dot_p_fac = p_fac[0]*p_fac[0] + p_fac[1]*p_fac[1],
-    p0_dot_p0 = p0[0]*p0[0] + p0[1]*p0[1],
-    p1_dot_p1 = p1[0]*p1[0] + p1[1]*p1[1],
-    dp_dot_p0 = dp[0]*p0[0] + dp[1]*p0[1],
-    dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1],
-    dp_dot_p_lam, l_lam, l_fac_hat = norm2<dim>(p_fac), l_fac_lam,
-    l_fac_0 = sqrt(p0_dot_p0 - 2*p0_dot_p_fac + p_fac_dot_p_fac),
-    l_fac_1 = sqrt(p1_dot_p1 - 2*p1_dot_p_fac + p_fac_dot_p_fac),
-    tau0 = u0 - s_fac*h*l_fac_0, tau1 = u1 - s_fac*h*l_fac_1,
-    dtau = tau1 - tau0;
+  double dp[dim];
+  sub<dim>(p1, p0, dp);
 
-  double lam = 0.5, lam_prev, df, d2f, step, t, tau, tau_prev;
-  do {
+  double nu[dim], nufac[dim];
 
-    dp_dot_p_lam = dp_dot_p0 + lam*dp_dot_dp;
-    l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-    l_fac_lam = sqrt(
-      pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
-    
-    df = dtau + s*h*dp_dot_p_lam/l_lam;
-    d2f = s*h*(dp_dot_dp - pow(dp_dot_p_lam/l_lam, 2))/l_lam;
+  auto const grad = [&] (double lam) {
+    axpy<dim>(lam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    scal_inplace<dim>(norm2<dim>(nu), nu);
+    scal_inplace<dim>(norm2<dim>(nufac), nufac);
+    return dtau + shfac*dot<3>(dp, nufac) + sh*dot<3>(dp, nu);
+  };
 
-    if (fabs(l_fac_lam) > 1e1*tol) {
-      df += s_fac*h*(dp_dot_p_lam - dp_dot_p_fac)/l_fac_lam;
-      d2f += s_fac*h*(
-        dp_dot_dp -
-        (pow(dp_dot_p_lam, 2) - 2*dp_dot_p_fac + pow(dp_dot_p_fac, 2))/
-         pow(l_fac_lam, 2)
-      )/l_fac_lam;
-    }
-    
-    step = -df/d2f;
-
-    tau_prev = tau0 + dtau*lam + h*(s*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-    lam_prev = lam;
-    
-    t = 1;
-    do {
-      lam = max(0., min(1., lam_prev + t*step));
-      l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-      l_fac_lam = sqrt(
-        pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
-      tau = tau0 + dtau*lam + h*(s*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-      t /= 2;
-    } while (tau > tau_prev);
-
-  } while (fabs(lam - lam_prev) > tol && fabs(tau - tau_prev) > tol);
+  double arglam;
+  hybrid_status status;
+  std::tie(arglam, status) = hybrid(grad, 0., 1., tol);
 
   update_info<1> update;
-  update.lambda[0] = lam;
-  update.value = u0 + (u1 - u0)*lam + stheta*h*l_lam;
+  if (status == hybrid_status::DEGENERATE) {
+    double F0 = tau0 + T0 + sh*norm2<dim>(p0);
+    double F1 = tau1 + T1 + sh*norm2<dim>(p1);
+    update.lambda[0] = F0 < F1 ? 0 : 1;
+    update.value = std::min(F0, F1);
+  }
+  else {
+    update.lambda[0] = arglam;
+    axpy<dim>(arglam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
+      sh*norm2<dim>(nu);
+  }
 
   assert(update.value >= std::max(u0, u1));
 
@@ -533,73 +489,48 @@ update_rules::mp1_tri_updates::tri(
   double const * p0, double const * p1, double const * p_fac, double s_fac,
   double tol) const
 {
-  using std::min;
-  using std::max;
-  
-  double s_lam, ds = s1 - s0,
-    dp[2] = {p1[0] - p0[0], p1[1] - p0[1]},
-    dp_dot_p_fac = dp[0]*p_fac[0] + dp[1]*p_fac[1],
-    p0_dot_p_fac = p0[0]*p_fac[0] + p0[1]*p_fac[1],
-    p1_dot_p_fac = p1[0]*p_fac[0] + p1[1]*p_fac[1],
-    p_fac_dot_p_fac = p_fac[0]*p_fac[0] + p_fac[1]*p_fac[1],
-    p0_dot_p0 = p0[0]*p0[0] + p0[1]*p0[1],
-    p1_dot_p1 = p1[0]*p1[0] + p1[1]*p1[1],
-    dp_dot_p0 = dp[0]*p0[0] + dp[1]*p0[1],
-    dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1],
-    dp_dot_p_lam, l_lam, l_fac_hat = norm2<dim>(p_fac), l_fac_lam,
-    l_fac_0 = sqrt(p0_dot_p0 - 2*p0_dot_p_fac + p_fac_dot_p_fac),
-    l_fac_1 = sqrt(p1_dot_p1 - 2*p1_dot_p_fac + p_fac_dot_p_fac),
-    tau0 = u0 - s_fac*h*l_fac_0, tau1 = u1 - s_fac*h*l_fac_1,
-    dtau = tau1 - tau0;
+  double shfac = s_fac*h;
+  double ds = s1 - s0;
+  double T0 = shfac*dist2<dim>(p0, p_fac);
+  double T1 = shfac*dist2<dim>(p1, p_fac);
+  double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double lam = 0.5, lam_prev, df, d2f, step, t, tau, tau_prev;
-  do {
+  double dp[dim], nu[dim], nufac[dim];
+  sub<dim>(p1, p0, dp);
 
-    dp_dot_p_lam = dp_dot_p0 + lam*dp_dot_dp;
-    l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-    l_fac_lam = sqrt(
-      pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
+  double s_lam, l_lam;
+
+  auto const grad = [&] (double lam) {
+    axpy<dim>(lam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    l_lam = norm2<dim>(nu);
+    scal_inplace<dim>(l_lam, nu);
+    scal_inplace<dim>(norm2<dim>(nufac), nufac);
     s_lam = (s + s0 + ds*lam)/2;
-    
-    df = dtau + h*(s_lam*dp_dot_p_lam/l_lam + l_lam*ds/2);
-    d2f = h*(s_lam*(dp_dot_dp - pow(dp_dot_p_lam/l_lam, 2))/l_lam +
-             dp_dot_p_lam*ds/l_lam);
+    return dtau + shfac*dot<3>(dp, nufac) +
+      h*(s_lam*dot<3>(dp, nu) + l_lam*ds/2);
+  };
 
-    // TODO: l_fac_lam > 0: don't need fabs here
-    if (fabs(l_fac_lam) > 1e1*tol) {
-      df += s_fac*h*(dp_dot_p_lam - dp_dot_p_fac)/l_fac_lam;
-      d2f += s_fac*h*(
-        dp_dot_dp -
-        (pow(dp_dot_p_lam, 2) - 2*dp_dot_p_fac + pow(dp_dot_p_fac, 2))/
-         pow(l_fac_lam, 2)
-      )/l_fac_lam;
-    }
-
-    step = -df/d2f;
-
-    tau_prev = tau0 + dtau*lam + h*(s_lam*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-    lam_prev = lam;
-    
-    t = 1;
-    do {
-      lam = max(0., min(1., lam_prev + t*step));
-      l_lam = sqrt(p0_dot_p0 + 2*dp_dot_p0*lam + dp_dot_dp*lam*lam);
-      l_fac_lam = sqrt(
-        pow(l_lam, 2) + pow(l_fac_hat, 2) - 2*(p0_dot_p_fac + lam*dp_dot_p_fac));
-      s_lam = (s + s0 + ds*lam)/2;
-      tau = tau0 + dtau*lam + h*(s_lam*l_lam + s_fac*(l_fac_lam - l_fac_hat));
-      t /= 2;
-    } while (tau > tau_prev);
-
-  } while (fabs(lam - lam_prev) > tol && fabs(tau - tau_prev) > tol);
-
-  s_lam = (s + s0 + ds*lam)/2;
+  double arglam;
+  hybrid_status status;
+  std::tie(arglam, status) = hybrid(grad, 0., 1., tol);
 
   update_info<1> update;
-  update.lambda[0] = lam;
-  update.value = u0 + (u1 - u0)*lam + s_lam*h*l_lam;
+  if (status == hybrid_status::DEGENERATE) {
+    double F0 = tau0 + T0 + (s + s0)*h*norm2<dim>(p0)/2;
+    double F1 = tau1 + T1 + (s + s1)*h*norm2<dim>(p1)/2;
+    update.lambda[0] = F0 < F1 ? 0 : 1;
+    update.value = std::min(F0, F1);
+  }
+  else {
+    update.lambda[0] = arglam;
+    axpy<dim>(arglam, dp, p0, nu);
+    sub<dim>(nu, p_fac, nufac);
+    s_lam = (s + s0 + ds*arglam)/2;
+    update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
+      s_lam*h*norm2<dim>(nu);
+  }
 
-  // Check that the solution is causal
   assert(update.value >= std::max(u0, u1));
 
   return update;

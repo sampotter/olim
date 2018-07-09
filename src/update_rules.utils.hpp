@@ -6,6 +6,71 @@
 #include <utility>
 
 template <int dim>
+void sub(double const * p, double const * q, double * r);
+
+template <>
+inline void sub<2>(double const * p, double const * q, double * r) {
+  r[0] = p[0] - q[0];
+  r[1] = p[1] - q[1];
+}
+
+template <>
+inline void sub<3>(double const * p, double const * q, double * r) {
+  r[0] = p[0] - q[0];
+  r[1] = p[1] - q[1];
+  r[2] = p[2] - q[2];
+}
+
+template <int dim>
+void axpy(double alpha, double const * x, double const * y, double * z);
+
+template <>
+inline void
+axpy<2>(double alpha, double const * x, double const * y, double * z) {
+  z[0] = alpha*x[0] + y[0];
+  z[1] = alpha*x[1] + y[1];
+}
+
+template <>
+inline void
+axpy<3>(double alpha, double const * x, double const * y, double * z) {
+  z[0] = alpha*x[0] + y[0];
+  z[1] = alpha*x[1] + y[1];
+  z[2] = alpha*x[2] + y[2];
+}
+
+template <int dim>
+double dot(double const * x, double const * y);
+
+template <>
+inline double dot<2>(double const * x, double const * y) {
+  return x[0]*y[0] + x[1]*y[1];
+}
+
+template <>
+inline double dot<3>(double const * x, double const * y) {
+  return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
+}
+
+template <int dim>
+void scal_inplace(double alpha, double * x);
+
+template <>
+inline void
+scal_inplace<2>(double alpha, double * x) {
+  x[0] *= alpha;
+  x[1] *= alpha;
+}
+
+template <>
+inline void
+scal_inplace<3>(double alpha, double * x) {
+  x[0] *= alpha;
+  x[1] *= alpha;
+  x[2] *= alpha;
+}
+
+template <int dim>
 double dist1(double const * p, double const * q);
 
 template <>
@@ -14,6 +79,24 @@ inline double dist1<3>(double const * p, double const * q) {
     fabs(q[0] - p[0]) +
     fabs(q[1] - p[1]) +
     fabs(q[2] - p[2]);
+}
+
+template <int dim>
+double dist2(double const * p, double const * q);
+
+template <>
+inline double dist2<2>(double const * p, double const * q) {
+  return std::sqrt(
+    (q[0] - p[0])*(q[0] - p[0]) +
+    (q[1] - p[1])*(q[1] - p[1]));
+}
+
+template <>
+inline double dist2<3>(double const * p, double const * q) {
+  return std::sqrt(
+    (q[0] - p[0])*(q[0] - p[0]) +
+    (q[1] - p[1])*(q[1] - p[1]) +
+    (q[2] - p[2])*(q[2] - p[2]));
 }
 
 template <int dim>

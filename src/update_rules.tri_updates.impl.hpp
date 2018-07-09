@@ -72,11 +72,15 @@ update_rules::mp0_tri_updates::tri(
       min(F0_line__(0), F0_line__(1)) :
       u0 + update.lambda[0]*du + h*s__(update.lambda[0])*l__(update.lambda[0]);
   }
+
 #if PRINT_UPDATES
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
+
   return update;
 }
 
@@ -200,11 +204,15 @@ update_rules::mp0_tri_updates::tri(
       min(F0, F1) :
       u0 + update.lambda[0]*du + h*s__(update.lambda[0])*l__(update.lambda[0]);
   }
+
 #if PRINT_UPDATES
   printf("tri<%d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          d, u0, u1, s, s0, s1, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
+
   return update;
 }
 
@@ -267,6 +275,9 @@ update_rules::rhr_tri_updates::tri(
   printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
          "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
+
   return update;
 }
 
@@ -343,7 +354,6 @@ update_rules::rhr_tri_updates::tri(
   update.lambda[0] = lam;
   update.value = u0 + (u1 - u0)*lam + stheta*h*l_lam;
 
-  // Check that the solution is causal
   assert(update.value >= std::max(u0, u1));
 
   return update;
@@ -396,10 +406,14 @@ update_rules::rhr_tri_updates::tri(
       min(F0, F1) :
       u0 + update.lambda[0]*du + sh*l__(update.lambda[0]);
   }
+
 #if PRINT_UPDATES
   printf("tri<%d>::update_impl(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n",
          d, u0, u1, s, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
+
   return update;
 }
 
@@ -506,6 +520,8 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -678,6 +694,8 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
+
+  assert(update.value >= std::max(u0, u1));
 
   return update;
 }

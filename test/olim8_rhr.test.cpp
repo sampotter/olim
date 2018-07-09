@@ -25,5 +25,5 @@ TEST (olim8_rhr, result_is_symmetric) {
 }
 
 TEST (olim8_rhr, factoring_sanity_check) {
-  factoring_sanity_check<olim_t>((speed_func) s1, (speed_func) f1, 33);
+  factoring_sanity_check<olim_t>((speed_func) s1, (speed_func) f1, 101);
 }

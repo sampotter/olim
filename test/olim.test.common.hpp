@@ -303,7 +303,7 @@ void result_is_symmetric(speed_func_3d s = default_speed_func, int n = 5) {
 
 template <class olim>
 void factoring_sanity_check(speed_func s, speed_func f, int n = 11,
-                            double rfac = 0.2) {
+                            double rfac = 0.1) {
   double h = 2.0/(n - 1);
   int i0 = n/2, j0 = i0;
 
@@ -327,18 +327,22 @@ void factoring_sanity_check(speed_func s, speed_func f, int n = 11,
   m_fac.add_boundary_node(i0, j0);
   m_fac.run();
 
+  double U_ssq = 0, U_fac_ssq = 0, u_ssq = 0;
   for (int i = 0; i < n; ++i) {
-    double y = h*i - 1.0;
+    double y = h*i - 1;
     for (int j = 0; j < n; ++j) {
-      double x = h*j - 1.0;
-
-      double u = f(x, y);
-      double U = m.get_value(i, j);
-      double U_fac = m_fac.get_value(i, j);
-      
-      ASSERT_TRUE(fabs(u - U_fac) <= fabs(u - U));
+      double x = h*j - 1;
+      double u = f(x, y), U = m.get_value(i, j), Uf = m_fac.get_value(i, j);
+      u_ssq += u*u;
+      U_ssq += (U - u)*(U - u);
+      U_fac_ssq += (Uf - u)*(Uf - u);
     }
   }
+
+  double U_rel_l2 = std::sqrt(U_ssq/u_ssq);
+  double U_fac_rel_l2 = std::sqrt(U_fac_ssq/u_ssq);
+
+  ASSERT_TRUE(U_fac_rel_l2 <= U_rel_l2);
 }
 
 template <class olim3d_t>

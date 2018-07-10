@@ -7,6 +7,7 @@ from string import Template
 marchers = {
     'basic_marcher': 'BasicMarcher',
     'olim4_mp0': 'Olim4Mid0',
+    'olim4_mp1': 'Olim4Mid1',
     'olim4_rhr': 'Olim4Rect',
     'olim8_mp0': 'Olim8Mid0',
     'olim8_mp1': 'Olim8Mid1',

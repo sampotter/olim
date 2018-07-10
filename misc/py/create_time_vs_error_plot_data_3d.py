@@ -1,11 +1,28 @@
 #!/usr/bin/env python3
 
-import sys
-
-sys.path.insert(0, '../build/Release')
-
 import argparse
-import eikonal as eik
+
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument('path', type=str)
+    p.add_argument('-m', '--minpow', type=int, default=3)
+    p.add_argument('-M', '--maxpow', type=int, default=7)
+    p.add_argument('-s', '--step', type=int, default=2)
+    p.add_argument('-t', '--trials', type=int, default=10)
+    p.add_argument('--speed_funcs', type=str)
+    return p.parse_args()
+
+# We do this ahead of time so that if we end up only printing the
+# usage message we don't bother with the other (e.g. MPI-related)
+# setup below here
+if __name__ == '__main__':
+    args = parse_args()
+
+import sys
+if '../../build/Release' not in sys.path:
+    sys.path.insert(0, '../../build/Release')
+
+import pyeikonal as eik
 import h5py
 import mpi4py.MPI
 import numpy as np
@@ -41,16 +58,6 @@ def get_dataset_name(Marcher, s):
     mname = get_marcher_name(Marcher)
     sname = get_speed_func_name(s)
     return '%s/%s' % (mname.replace(' ', '_'), sname)
-
-def parse_args():
-    p = argparse.ArgumentParser()
-    p.add_argument('path', type=str)
-    p.add_argument('-m', '--minpow', type=int, default=3)
-    p.add_argument('-M', '--maxpow', type=int, default=7)
-    p.add_argument('-s', '--step', type=int, default=2)
-    p.add_argument('-t', '--trials', type=int, default=10)
-    p.add_argument('--speed_funcs', type=str)
-    return p.parse_args()
 
 def create_datasets(f, M_by_s, ns):
     for Marcher, s in M_by_s:
@@ -88,7 +95,6 @@ def populate_datasets(Marcher, s, ns, t):
     f[name + '/t'][:] = [time_marcher(Marcher, s, n, ntrials=t) for n in ns]
 
 if __name__ == '__main__':
-    args = parse_args()
 
     with h5py.File(args.path, 'w', driver='mpio', comm=comm) as f:
 

@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 
+import glob
 import matplotlib.pyplot as plt
-import sys
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+from itertools import product
 
 def is_csv_line(line):
     return ', ' in line
@@ -52,35 +57,59 @@ def make_loglog_plots(ax, rms_or_inf):
                   color=name_to_color(name), marker='.')
 
 if __name__ == '__main__':
-    lines = sys.stdin.readlines()
-    name_line_indices = [i for i in range(len(lines)) if name_line(lines[i])]
-    num_lines = name_line_indices[1] - name_line_indices[0]
 
     data = dict()
-    for i in name_line_indices:
-        marcher_name, ns, ts, infs, rmss = \
-            parse_csv_section(lines[i:(i + num_lines)])
-        data[marcher_name] = {'n': ns, 't': ts, 'inf': infs, 'rms': rmss}
 
-    fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, dpi=300,
-                           figsize=(6.5, 6.5))
+    paths = glob.glob('../data/plot_data_2d.*.txt')
 
-    make_loglog_plots(ax[0], 'inf')
-    make_loglog_plots(ax[1], 'rms')
+    def get_sname(path):
+        return path.split('/')[-1].split('.')[1]
 
-    ax[0].set_title(r'Relative $\ell_\infty$ Error')
-    ax[1].set_title(r'RMS Error')
+    for path in paths:
+        sname = get_sname(path)
 
-    # ax[0, 1].set_ylabel(r'Error')
-    # ax[0, 0].set_xlabel(r'Time')
+        with open(path) as f:
+            lines = f.readlines()
 
-    fig.subplots_adjust(
-        top=0.95,
-        left=0.08,
-        right=0.98,
-        bottom=0.16)
+            name_line_indices = \
+                [i for i in range(len(lines)) if name_line(lines[i])]
+            num_lines = name_line_indices[1] - name_line_indices[0]
 
-    fig.legend(loc='lower center', fancybox=False, shadow=False, ncol=3)
+        data[sname] = dict()
+        for i in name_line_indices:
+            marcher_name, ns, ts, infs, rmss = \
+                parse_csv_section(lines[i:(i + num_lines)])
+            data[sname][marcher_name] = \
+                {'n': ns, 't': ts, 'inf': infs, 'rms': rmss}
 
-    fig.savefig('tmp.pdf')
+    snames = [get_sname(p) for p in paths]
+    if 's2' in snames: snames.remove('s2')
+
+    olims = list(data[snames[0]].keys())
+
+    nrows, ncols = 4, 4
+
+    fig, axes = plt.subplots(nrows, ncols, sharex=True, sharey=True, dpi=300,
+                           figsize=(6.5, 8))
+
+    for i, j in product(range(int(nrows/2)), range(ncols)):
+
+        sname = snames[ncols*i + j]
+
+        ax1 = axes[i, j]
+        ax2 = axes[int(nrows/2) + i, j]
+
+        for olim in olims:
+            d = data[sname][olim]
+            ax1.loglog(d['t'], d['inf'], label=olim.replace('_', ' '),
+                       linewidth=1, marker='|', markersize=3.5)
+            ax2.loglog(d['t'], d['rms'], label=olim.replace('_', ' '),
+                       linewidth=1, marker='|', markersize=3.5)
+
+        ax1.text(0.05, 0.05, r'\texttt{%s}' % sname, transform=ax1.transAxes)
+        ax2.text(0.05, 0.05, r'\texttt{%s}' % sname, transform=ax2.transAxes)
+
+    fig.tight_layout()
+    # fig.show()
+    fig.savefig('../data/plots_2d.eps')
         

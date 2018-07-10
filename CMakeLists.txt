@@ -112,6 +112,11 @@ if (BUILD_GEN_PLOT_DATA)
   target_include_directories (gen_plot_data_3d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (gen_plot_data_3d eikonal)
+
+  add_executable (gen_qv_plot_data misc/cpp/gen_qv_plot_data.cpp)
+  target_include_directories (gen_qv_plot_data
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries (gen_qv_plot_data eikonal)
 endif ()
 
 if (BUILD_GEN_STATS)

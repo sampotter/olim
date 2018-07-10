@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
+plt.style.use('ggplot')
+
 from itertools import product
 
 def is_csv_line(line):
@@ -62,6 +64,8 @@ if __name__ == '__main__':
 
     def get_sname(path):
         return path.split('/')[-1].split('.')[1]
+
+    data = dict()
 
     for path in paths:
         sname = get_sname(path)

@@ -26,17 +26,11 @@ struct abstract_node {
   inline bool has_parent() const { return _parent != nullptr; }
   inline abstract_node * get_parent() const { return _parent; }
   inline void set_parent(abstract_node * parent) { _parent = parent; }
-  inline double get_sh_fac() const { return _sh_fac; }
-  inline void set_sh_fac(double sh_fac) { _sh_fac = sh_fac; }
-  inline virtual double get_T() const = 0;
 EIKONAL_PROTECTED:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};
   int _heap_pos {-1};
-  union {
-    abstract_node * _parent;
-    double _sh_fac;
-  };
+  abstract_node * _parent;
 };
 
 #endif // __ABSTRACT_NODE_HPP__

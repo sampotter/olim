@@ -158,6 +158,15 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "j"_a,
       "k"_a,
       "value"_a = 0.0)
+    .def(
+      "set_node_parent",
+      &${cpp_class_name}::set_node_parent,
+      "i"_a,
+      "j"_a,
+      "k"_a,
+      "i_parent"_a,
+      "j_parent"_a,
+      "k_parent"_a)
     .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
     .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
     .def("get_height", &${cpp_class_name}::get_height)

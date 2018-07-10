@@ -150,20 +150,6 @@ void marcher<base, node>::add_boundary_nodes(node const * nodes, int num) {
 }
 
 template <class base, class node>
-void
-marcher<base, node>::add_factored_boundary_node(int i, int j, double value) {
-#if PRINT_UPDATES
-  printf("add_factored_boundary_node(i = %d, j = %d, value = %g)\n",
-         i, j, value);
-#endif // PRINT_UPDATES
-  assert(in_bounds(i, j));
-  assert(operator()(i, j).is_far());
-  node n {i, j, value};
-  n.set_sh_fac(get_h()*get_speed(i, j));
-  visit_neighbors(&(operator()(i, j) = n));
-}
-
-template <class base, class node>
 void marcher<base, node>::set_node_parent(int i, int j, int i_par, int j_par) {
   assert(in_bounds(i, j));
   assert(in_bounds(i_par, j_par));

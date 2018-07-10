@@ -5,13 +5,9 @@ import pyeikonal as eik
 
 from matplotlib.colors import LogNorm
 
-def make_s(vx, vy):
-    return lambda x, y: 1/(2 + vx*x + vy*y)
+vx, vy = 5, 20
 
-def make_s_i(x_fac, y_fac, vx, vy, s_fac):
-    return lambda x, y: 1/(
-        1/s_fac + \
-        vx*(x - x_fac) + vy*(y - y_fac))
+s = lambda x, y: 1/(2 + vx*x + vy*y)
 
 def make_u(x_fac, y_fac, vx, vy, s_fac, s):
     return lambda x, y: \
@@ -23,15 +19,8 @@ def make_u(x_fac, y_fac, vx, vy, s_fac, s):
 x_fac_1, y_fac_1 = 0, 0
 x_fac_2, y_fac_2 = 0.8, 0
 
-vx, vy = 5, 20
-
-s = make_s(vx, vy)
-
 s_fac_1 = s(x_fac_1, y_fac_1)
 s_fac_2 = s(x_fac_2, y_fac_2)
-
-s_1 = make_s_i(x_fac_1, y_fac_1, vx, vy, s_fac_1)
-s_2 = make_s_i(x_fac_2, y_fac_2, vx, vy, s_fac_2)
 
 u_1 = make_u(x_fac_1, y_fac_1, vx, vy, s_fac_1, s)
 u_2 = make_u(x_fac_2, y_fac_2, vx, vy, s_fac_2, s)

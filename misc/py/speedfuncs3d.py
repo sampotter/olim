@@ -40,6 +40,9 @@ _speed_func_names = {
     s5: 's5'
 }
 
+def speed_func_names():
+    return list(speed_func_names.values())
+
 def get_speed_func_name(s):
     return _speed_func_names[s]
 

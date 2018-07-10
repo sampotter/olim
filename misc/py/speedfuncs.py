@@ -50,6 +50,9 @@ f_qv = lambda x, y: 2*np.arccosh(1 + 0.25*np.sqrt(x*x + y*y)*s_qv(x, y))
 
 _speed_funcs = [s0, s1, s2, s3, s4xy, s4xz, s4yz, s5, s6, s8, s9]
 
+def speed_funcs():
+    return _speed_funcs
+
 _soln_funcs = [f0, f1, f2, f3, f4xy, s4xz, s4yz, f5, f6, f8, f9]
 
 for func in _speed_funcs + _soln_funcs:
@@ -71,6 +74,10 @@ _speed_func_names = {
     s8: 's8',
     s9: 's9'
 }
+
+def speed_func_names():
+    return list(_speed_func_names.values())
+
 def get_speed_func_name(s):
     return _speed_func_names[s]
 

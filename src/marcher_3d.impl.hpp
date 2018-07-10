@@ -66,7 +66,7 @@ marcher_3d<base, node>::marcher_3d(
 
 template <class base, class node>
 marcher_3d<base, node>::marcher_3d(int height, int width, int depth, double h,
-                             double const * s_cache):
+                                   double const * s_cache):
   abstract_marcher {get_initial_heap_size(width, height, depth)},
   _nodes {new node[width*height*depth]},
   _s_cache {new double[width*height*depth]},

@@ -217,16 +217,6 @@ void tetra222_works_with_constant_slowness() {
   }
 }
 
-mp1_tetra_updates mp1;
-
-void mp1_tetra123_works() {
-  double u0, u1, u2, s, s0, s1, s2, h, U;
-
-  u0 = 0.889163, u1 = 0.817579, u2 = 0.75, s = 1, s0 = 1, s1 = 1, s2 = 1,
-    h = 0.25, U = 1.1189646747175703;
-  ASSERT_DOUBLE_EQ(get_T(TETRA123(mp1, u0, u1, u2, s, s0, s1, s2, h)), U);
-}
-
 TEST (tetra_updates, tetra111_is_symmetric_with_constant_slowness) {
   tetra111_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
   tetra111_is_symmetric_with_constant_slowness<mp1_tetra_updates>();

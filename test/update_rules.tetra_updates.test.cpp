@@ -83,6 +83,12 @@ void tetra111_is_symmetric_with_constant_slowness() {
   ASSERT_DOUBLE_EQ(val102, val021);
 }
 
+TEST (tetra_updates, tetra111_is_symmetric_with_constant_slowness) {
+  tetra111_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
+  tetra111_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
+  tetra111_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
+}
+
 template <class rules>
 void tetra122_is_symmetric_with_constant_slowness() {
   rules r;
@@ -94,6 +100,12 @@ void tetra122_is_symmetric_with_constant_slowness() {
   double val012 = get_T(TETRA122(r, u0, u1, u2, s, s0, s1, s2, h));
   double val021 = get_T(TETRA122(r, u0, u2, u1, s, s0, s1, s2, h));
   ASSERT_DOUBLE_EQ(val012, val021);
+}
+
+TEST (tetra_updates, tetra122_is_symmetric_with_constant_slowness) {
+  tetra122_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
+  tetra122_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
+  tetra122_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
 }
 
 template <class rules>
@@ -132,6 +144,12 @@ void tetra222_is_symmetric_with_constant_slowness() {
   ASSERT_DOUBLE_EQ(val102, val021);
 }
 
+TEST (tetra_updates, tetra222_is_symmetric_with_constant_slowness) {
+  tetra222_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
+  tetra222_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
+  tetra222_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
+}
+
 template <class rules>
 void tetra223_is_symmetric_with_constant_slowness() {
   rules r;
@@ -143,6 +161,12 @@ void tetra223_is_symmetric_with_constant_slowness() {
   double val012 = get_T(TETRA223(r, u0, u1, u2, s, s0, s1, s2, h));
   double val102 = get_T(TETRA223(r, u1, u0, u2, s, s0, s1, s2, h));
   ASSERT_DOUBLE_EQ(val012, val102);
+}
+
+TEST (tetra_updates, tetra223_is_symmetric_with_constant_slowness) {
+  tetra223_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
+  tetra223_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
+  tetra223_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
 }
 
 template <class rules>
@@ -177,6 +201,12 @@ void tetra111_works_with_constant_slowness() {
   }
 }
 
+TEST (tetra_updates, tetra111_works_with_constant_slowness) {
+  tetra111_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra111_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra111_works_with_constant_slowness<rhr_tetra_updates>();
+}
+
 template <class rules>
 void tetra122_works_with_constant_slowness() {
   rules r;
@@ -197,10 +227,22 @@ void tetra122_works_with_constant_slowness() {
   }
 }
 
+TEST (tetra_updates, tetra122_works_with_constant_slowness) {
+  tetra122_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra122_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra122_works_with_constant_slowness<rhr_tetra_updates>();
+}
+
 template <class rules>
 void tetra123_works_with_constant_slowness() {
   rules r;
   ASSERT_DOUBLE_EQ(get_T(TETRA123(r, 0, 0, 0, 1, 1, 1, 1, 1)), 1.0);
+}
+
+TEST (tetra_updates, tetra123_works_with_constant_slowness) {
+  tetra123_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra123_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra123_works_with_constant_slowness<rhr_tetra_updates>();
 }
 
 template <class rules>
@@ -217,44 +259,28 @@ void tetra222_works_with_constant_slowness() {
   }
 }
 
-TEST (tetra_updates, tetra111_is_symmetric_with_constant_slowness) {
-  tetra111_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
-  tetra111_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
-  tetra111_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, tetra122_is_symmetric_with_constant_slowness) {
-  tetra122_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
-  tetra122_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
-  tetra122_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, tetra222_is_symmetric_with_constant_slowness) {
-  tetra222_is_symmetric_with_constant_slowness<mp0_tetra_updates>();
-  tetra222_is_symmetric_with_constant_slowness<mp1_tetra_updates>();
-  tetra222_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, tetra111_works_with_constant_slowness) {
-  tetra111_works_with_constant_slowness<mp0_tetra_updates>();
-  tetra111_works_with_constant_slowness<mp1_tetra_updates>();
-  tetra111_works_with_constant_slowness<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, tetra122_works_with_constant_slowness) {
-  tetra122_works_with_constant_slowness<mp0_tetra_updates>();
-  tetra122_works_with_constant_slowness<mp1_tetra_updates>();
-  tetra122_works_with_constant_slowness<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, tetra123_works_with_constant_slowness) {
-  tetra123_works_with_constant_slowness<mp0_tetra_updates>();
-  tetra123_works_with_constant_slowness<mp1_tetra_updates>();
-  tetra123_works_with_constant_slowness<rhr_tetra_updates>();
-}
-
 TEST (tetra_updates, tetra222_works_with_constant_slowness) {
   tetra222_works_with_constant_slowness<mp0_tetra_updates>();
   tetra222_works_with_constant_slowness<mp1_tetra_updates>();
   tetra222_works_with_constant_slowness<rhr_tetra_updates>();
 }
+
+template <class rules>
+void tetra223_works_with_constant_slowness() {
+  rules r;
+  {
+    double u0 = 0.18181818181818182;
+    double u1 = 0.33244129540839806;
+    double u2 = 0.33244129540839812;
+    double h = 0.18181818181818182;
+    double U = 0.4389479204314718;
+    ASSERT_DOUBLE_EQ(get_T(TETRA223(r, u0, u1, u2, 1, 1, 1, 1, h)), U);
+  }
+}
+
+TEST (tetra_updates, tetra223_works_with_constant_slowness) {
+  tetra223_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra223_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra223_works_with_constant_slowness<rhr_tetra_updates>();
+}
+

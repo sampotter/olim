@@ -15,6 +15,9 @@ static update_rules::rhr_tetra_updates updates;
 #define P110 6
 #define P111 7
 
+// TODO: these aren't completely general... The order of the bit
+// vectors may make a difference...
+
 #define TETRA111(tetra_updates, u0, u1, u2, s, s0, s1, s2, h) \
   tetra_updates.tetra(                                        \
     u0, u1, u2, s, s0, s1, s2, h,                             \
@@ -25,21 +28,26 @@ static update_rules::rhr_tetra_updates updates;
     u0, u1, u2, s, s0, s1, s2, h,                             \
     ffvec<P001> {}, ffvec<P011> {}, ffvec<P101> {})
 
-#define TETRA222(tetra_updates, u0, u1, u2, s, s0, s1, s2, h) \
-  tetra_updates.tetra(                                        \
-    u0, u1, u2, s, s0, s1, s2, h,                             \
-    ffvec<P011> {}, ffvec<P101> {}, ffvec<P110> {})
-
 #define TETRA123(tetra_updates, u0, u1, u2, s, s0, s1, s2, h) \
   tetra_updates.tetra(                                        \
     u0, u1, u2, s, s0, s1, s2, h,                             \
     ffvec<P001> {}, ffvec<P011> {}, ffvec<P111> {})
 
+#define TETRA222(tetra_updates, u0, u1, u2, s, s0, s1, s2, h) \
+  tetra_updates.tetra(                                        \
+    u0, u1, u2, s, s0, s1, s2, h,                             \
+    ffvec<P011> {}, ffvec<P101> {}, ffvec<P110> {})
+
+#define TETRA223(tetra_updates, u0, u1, u2, s, s0, s1, s2, h) \
+  tetra_updates.tetra(                                        \
+    u0, u1, u2, s, s0, s1, s2, h,                             \
+    ffvec<P011> {}, ffvec<P101> {}, ffvec<P111> {})
+
 template <int d>
 double get_T(update_info<d> const & tmp) { return tmp.value; }
 
 template <class rules>
-void tetra111_is_symmetric() {
+void tetra111_is_symmetric_with_constant_slowness() {
   rules r;
 
   double u0 = 2.5453289254261224;
@@ -75,7 +83,7 @@ void tetra111_is_symmetric() {
   ASSERT_DOUBLE_EQ(val102, val021);
 }
 
-void tetra122_is_symmetric() {
+void tetra122_is_symmetric_with_constant_slowness() {
   double u0 = 2.4;
   double u1 = 2.2;
   double u2 = 2.0;
@@ -85,7 +93,7 @@ void tetra122_is_symmetric() {
   ASSERT_DOUBLE_EQ(val012, val021);
 }
 
-void tetra222_is_symmetric() {
+void tetra222_is_symmetric_with_constant_slowness() {
   double u0 = 2.5453289254261224;
   double u1 = 2.5453289254261224;
   double u2 = 2.2844570503761732;
@@ -116,6 +124,16 @@ void tetra222_is_symmetric() {
   ASSERT_DOUBLE_EQ(val201, val210);
   ASSERT_DOUBLE_EQ(val210, val102);
   ASSERT_DOUBLE_EQ(val102, val021);
+}
+
+void tetra223_is_symmetric_with_constant_slowness() {
+  double u0 = 2.4;
+  double u1 = 2.2;
+  double u2 = 2.0;
+  double s = 1, s0 = 1.0, s1 = 1.0, s2 = 1.0, h = 1;
+  double val012 = get_T(TETRA223(updates, u0, u1, u2, s, s0, s1, s2, h));
+  double val102 = get_T(TETRA223(updates, u1, u0, u2, s, s0, s1, s2, h));
+  ASSERT_DOUBLE_EQ(val012, val102);
 }
 
 void tetra111_works() {
@@ -195,18 +213,18 @@ void mp1_tetra123_works() {
   ASSERT_DOUBLE_EQ(get_T(TETRA123(mp1, u0, u1, u2, s, s0, s1, s2, h)), U);
 }
 
-TEST (tetra_updates, tetra111_is_symmetric) {
-  tetra111_is_symmetric<update_rules::mp0_tetra_updates>();
-  tetra111_is_symmetric<update_rules::mp1_tetra_updates>();
-  tetra111_is_symmetric<update_rules::rhr_tetra_updates>();
+TEST (tetra_updates, tetra111_is_symmetric_with_constant_slowness) {
+  tetra111_is_symmetric_with_constant_slowness<update_rules::mp0_tetra_updates>();
+  tetra111_is_symmetric_with_constant_slowness<update_rules::mp1_tetra_updates>();
+  tetra111_is_symmetric_with_constant_slowness<update_rules::rhr_tetra_updates>();
 }
 
-TEST (tetra_updates, tetra122_is_symmetric) {
-  tetra122_is_symmetric();
+TEST (tetra_updates, tetra122_is_symmetric_with_constant_slowness) {
+  tetra122_is_symmetric_with_constant_slowness();
 }
 
-TEST (tetra_updates, tetra222_is_symmetric) {
-  tetra222_is_symmetric();
+TEST (tetra_updates, tetra222_is_symmetric_with_constant_slowness) {
+  tetra222_is_symmetric_with_constant_slowness();
 }
 
 TEST (tetra_updates, tetra111_works) {

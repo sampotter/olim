@@ -146,7 +146,7 @@ void tetra223_is_symmetric_with_constant_slowness() {
 }
 
 template <class rules>
-void tetra111_works() {
+void tetra111_works_with_constant_slowness() {
   rules r;
   {
     double u0 = 1.867422661146497;
@@ -178,7 +178,7 @@ void tetra111_works() {
 }
 
 template <class rules>
-void tetra122_works() {
+void tetra122_works_with_constant_slowness() {
   rules r;
   {
     double u0 = 1.9915638315627207;
@@ -198,13 +198,13 @@ void tetra122_works() {
 }
 
 template <class rules>
-void tetra123_works() {
+void tetra123_works_with_constant_slowness() {
   rules r;
   ASSERT_DOUBLE_EQ(get_T(TETRA123(r, 0, 0, 0, 1, 1, 1, 1, 1)), 1.0);
 }
 
 template <class rules>
-void tetra222_works() {
+void tetra222_works_with_constant_slowness() {
   rules r;
   ASSERT_DOUBLE_EQ(get_T(TETRA222(r, 0, 0, 0, 1, 1, 1, 1, 1)), 2.0/sqrt(3));
   {
@@ -245,30 +245,26 @@ TEST (tetra_updates, tetra222_is_symmetric_with_constant_slowness) {
   tetra222_is_symmetric_with_constant_slowness<rhr_tetra_updates>();
 }
 
-TEST (tetra_updates, tetra111_works) {
-  tetra111_works<mp0_tetra_updates>();
-  tetra111_works<mp1_tetra_updates>();
-  tetra111_works<rhr_tetra_updates>();
+TEST (tetra_updates, tetra111_works_with_constant_slowness) {
+  tetra111_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra111_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra111_works_with_constant_slowness<rhr_tetra_updates>();
 }
 
-TEST (tetra_updates, tetra122_works) {
-  tetra122_works<mp0_tetra_updates>();
-  tetra122_works<mp1_tetra_updates>();
-  tetra122_works<rhr_tetra_updates>();
+TEST (tetra_updates, tetra122_works_with_constant_slowness) {
+  tetra122_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra122_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra122_works_with_constant_slowness<rhr_tetra_updates>();
 }
 
-TEST (tetra_updates, tetra123_works) {
-  tetra123_works<mp0_tetra_updates>();
-  tetra123_works<mp1_tetra_updates>();
-  tetra123_works<rhr_tetra_updates>();
+TEST (tetra_updates, tetra123_works_with_constant_slowness) {
+  tetra123_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra123_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra123_works_with_constant_slowness<rhr_tetra_updates>();
 }
 
-TEST (tetra_updates, tetra222_works) {
-  tetra222_works<mp0_tetra_updates>();
-  tetra222_works<mp1_tetra_updates>();
-  tetra222_works<rhr_tetra_updates>();
-}
-
-TEST (tetra_updates, mp1_tetra123_works) {
-  mp1_tetra123_works();
+TEST (tetra_updates, tetra222_works_with_constant_slowness) {
+  tetra222_works_with_constant_slowness<mp0_tetra_updates>();
+  tetra222_works_with_constant_slowness<mp1_tetra_updates>();
+  tetra222_works_with_constant_slowness<rhr_tetra_updates>();
 }

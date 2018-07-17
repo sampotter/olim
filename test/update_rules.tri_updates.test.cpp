@@ -6,9 +6,11 @@
 #include "common.macros.hpp"
 #include "update_rules.tri_updates.hpp"
 
-update_rules::mp0_tri_updates mp0;
-update_rules::mp1_tri_updates mp1;
-update_rules::rhr_tri_updates rhr;
+using namespace update_rules;
+
+mp0_tri_updates mp0;
+mp1_tri_updates mp1;
+rhr_tri_updates rhr;
 
 #define P01 1
 #define P10 2
@@ -22,211 +24,173 @@ update_rules::rhr_tri_updates rhr;
 #define P110 6
 #define P111 7
 
-template <char p0, char p1>
-update_info<1> tri(update_rules::rhr_tri_updates const & tri_updates,
-           double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<p0> {}, ffvec<p1> {});
-}
-
-update_info<1> tri11(update_rules::rhr_tri_updates const & tri_updates,
-             double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P01> {}, ffvec<P10> {});
-}
-
-update_info<1> tri12(update_rules::rhr_tri_updates const & tri_updates,
-             double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P01> {}, ffvec<P11> {});
-}
-
-update_info<1> tri13(update_rules::rhr_tri_updates const & tri_updates,
-             double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P001> {}, ffvec<P111> {});
-}
-
-update_info<1> tri22(update_rules::rhr_tri_updates const & tri_updates,
-             double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P011> {}, ffvec<P101> {});
-}
-
-update_info<1> tri23(update_rules::rhr_tri_updates const & tri_updates,
-             double u0, double u1, double s, double h) {
-  return tri_updates.tri(u0, u1, s, 1, 1, h, ffvec<P011> {}, ffvec<P111> {});
-}
-
 #define TRI(tri_updates, p0, p1, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}).value
 
 #define TRI11(tri_updates, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P01> {}, ffvec<P10> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P01> {}, ffvec<P10> {}).value
 
 #define TRI12(tri_updates, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P01> {}, ffvec<P11> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P01> {}, ffvec<P11> {}).value
 
 #define TRI13(tri_updates, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P001> {}, ffvec<P111> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P001> {}, ffvec<P111> {}).value
 
 #define TRI22(tri_updates, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P011> {}, ffvec<P101> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P011> {}, ffvec<P101> {}).value
 
 #define TRI23(tri_updates, u0, u1, s, s0, s1, h) \
-  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P011> {}, ffvec<P111> {})
+  tri_updates.tri(u0, u1, s, s0, s1, h, ffvec<P011> {}, ffvec<P111> {}).value
 
 /**
  * rhr tri11 tests
  */
 
-double get_T(update_info<1> const & tmp) { return tmp.value; }
-
-TEST (tri_updates, rhr_tri11_works) {
-  double t = get_T(tri<P01, P10>(rhr, 0.0, 0.0, 1.0, 1.0));
+TEST (tri_updates, rhr_tri11_basic_test) {
+  double t = TRI11(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   ASSERT_DOUBLE_EQ(t, sqrt2/2);
-  t = get_T(tri<P01, P10>(rhr, 0.0, 1.0, 1.0, 1.0));
+  t = TRI11(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0);
   ASSERT_DOUBLE_EQ(t, 1.0);
-  t = get_T(tri<P01, P10>(rhr, 1.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-
-  t = get_T(tri<P10, P01>(rhr, 0.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, sqrt2/2);
-  t = get_T(tri<P10, P01>(rhr, 0.0, 1.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-  t = get_T(tri<P10, P01>(rhr, 1.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-
-  t = get_T(tri<P001, P010>(rhr, 0.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, sqrt2/2);
-  t = get_T(tri<P001, P010>(rhr, 0.0, 1.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-  t = get_T(tri<P001, P010>(rhr, 1.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-
-  t = get_T(tri<P010, P100>(rhr, 0.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, sqrt2/2);
-  t = get_T(tri<P010, P100>(rhr, 0.0, 1.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-  t = get_T(tri<P010, P100>(rhr, 1.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-
-  t = get_T(tri<P100, P001>(rhr, 0.0, 0.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, sqrt2/2);
-  t = get_T(tri<P100, P001>(rhr, 0.0, 1.0, 1.0, 1.0));
-  ASSERT_DOUBLE_EQ(t, 1.0);
-  t = get_T(tri<P100, P001>(rhr, 1.0, 0.0, 1.0, 1.0));
+  t = TRI11(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   ASSERT_DOUBLE_EQ(t, 1.0);
 }
 
-TEST (tri_updates, rhr_tri11_is_symmetric) {
-  double u0 = 0.0, u1 = 0.1, s = 1, h = 1, t, t1, t2;
+template <class rules>
+void tri11_is_symmetric_with_constant_slowness() {
+  rules r;
+  double U0 = 0.0, U1 = 0.1, s = 1, s0 = 1, s1 = 1, h = 1, u, u1, u2;
 
-  t1 = get_T(tri<P01, P10>(rhr, u0, u1, s, h));
-  t2 = get_T(tri<P01, P10>(rhr, u1, u0, s, h));
-  ASSERT_DOUBLE_EQ(t1, t2);
+  u = 0.7553367989832942;
+  u1 = TRI11(r, U0, U1, s, s0, s1, h);
+  u2 = TRI11(r, U1, U0, s, s1, s0, h);
+  ASSERT_DOUBLE_EQ(u1, u);
+  ASSERT_DOUBLE_EQ(u2, u);
+  ASSERT_DOUBLE_EQ(u1, u2);
+}
 
-  t = t1;
+TEST (tri_updates, tri11_is_symmetric_with_constant_slowness) {
+  tri11_is_symmetric_with_constant_slowness<mp0_tri_updates>();
+  tri11_is_symmetric_with_constant_slowness<mp1_tri_updates>();
+  tri11_is_symmetric_with_constant_slowness<rhr_tri_updates>();
+}
 
-  t1 = get_T(tri<P10, P01>(rhr, u0, u1, s, h));
-  t2 = get_T(tri<P10, P01>(rhr, u1, u0, s, h));
-  ASSERT_DOUBLE_EQ(t1, t2);
-  ASSERT_DOUBLE_EQ(t, t1);
-  ASSERT_DOUBLE_EQ(t, t2);
+TEST (tri_updates, tri11_rhr_is_symmetric_with_nonconstant_slowness) {
+  rhr_tri_updates r;
+  double U0 = 0.0, U1 = 0.1, s = 1, s0 = 1.2, s1 = 1.1, h = 1, u, u1, u2;
+  u = 0.7553367989832942;
+  u1 = TRI11(r, U0, U1, s, s0, s1, h);
+  u2 = TRI11(r, U1, U0, s, s1, s0, h);
+  ASSERT_DOUBLE_EQ(u1, u);
+  ASSERT_DOUBLE_EQ(u2, u);
+  ASSERT_DOUBLE_EQ(u1, u2);
+}
 
-  t1 = get_T(tri<P001, P010>(rhr, u0, u1, s, h));
-  t2 = get_T(tri<P001, P010>(rhr, u1, u0, s, h));
-  ASSERT_DOUBLE_EQ(t1, t2);
-  ASSERT_DOUBLE_EQ(t, t1);
-  ASSERT_DOUBLE_EQ(t, t2);
+TEST (tri_updates, tri11_mp0_is_symmetric_with_nonconstant_slowness) {
+  mp0_tri_updates r;
+  double U0 = 0.0, U1 = 0.1, s = 1, s0 = 1.2, s1 = 1.1, h = 1, u, u1, u2;
+  u = 0.809661416377184;
+  u1 = TRI11(r, U0, U1, s, s0, s1, h);
+  u2 = TRI11(r, U1, U0, s, s1, s0, h);
+  ASSERT_DOUBLE_EQ(u1, u);
+  ASSERT_DOUBLE_EQ(u2, u);
+  ASSERT_DOUBLE_EQ(u1, u2);
+}
 
-  t1 = get_T(tri<P010, P100>(rhr, u0, u1, s, h));
-  t2 = get_T(tri<P010, P100>(rhr, u1, u0, s, h));
-  ASSERT_DOUBLE_EQ(t1, t2);
-  ASSERT_DOUBLE_EQ(t, t1);
-  ASSERT_DOUBLE_EQ(t, t2);
-
-  t1 = get_T(tri<P100, P001>(rhr, u0, u1, s, h));
-  t2 = get_T(tri<P100, P001>(rhr, u1, u0, s, h));
-  ASSERT_DOUBLE_EQ(t1, t2);
-  ASSERT_DOUBLE_EQ(t, t1);
-  ASSERT_DOUBLE_EQ(t, t2);
+TEST (tri_updates, tri11_mp1_is_symmetric_with_nonconstant_slowness) {
+  mp1_tri_updates r;
+  double U0 = 0.0, U1 = 0.1, s = 1, s0 = 1.2, s1 = 1.1, h = 1, u, u1, u2;
+  u = 0.809452960468600;
+  u1 = TRI11(r, U0, U1, s, s0, s1, h);
+  u2 = TRI11(r, U1, U0, s, s1, s0, h);
+  ASSERT_DOUBLE_EQ(u1, u);
+  ASSERT_DOUBLE_EQ(u2, u);
+  ASSERT_DOUBLE_EQ(u1, u2);
 }
 
 TEST (tri_updates, rhr_tri12_works) {
-  double t;
+  double t, u0, u1, s = 1, s0 = 1, s1 = 1, h = 0.25;
 
-  // TODO: add interior point test
-  t = get_T(tri12(rhr, 1.0, 0.0, 1.0, 1.0));
+  t = TRI12(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0);
   ASSERT_DOUBLE_EQ(t, sqrt2);
 
-  ASSERT_DOUBLE_EQ(get_T(tri12(rhr, 0.0, 1.0, 1.0, 1.0)), 1.0);
+  ASSERT_DOUBLE_EQ(TRI12(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
 
-  double u0, u1, s, h;
+  u0 = 0.923028, u1 = 0.707107;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.060660390593274, 1e-14);
 
-  u0 = 0.923028, u1 = 0.707107, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.060660390593274, 1e-14);
+  u0 = 0.852848, u1 = 0.707107;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.05597249, 6.2e-9);
 
-  u0 = 0.852848, u1 = 0.707107, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.05597249, 6.2e-9);
+  u0 = 0.923028, u1 = 0.817579;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.14970069, 1.6e-11);
 
-  u0 = 0.923028, u1 = 0.817579, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.14970069, 1.6e-11);
+  u0 = 0.883639, u1 = 0.817579;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.12475323, 9.32e-9);
 
-  u0 = 0.883639, u1 = 0.817579, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.12475323, 9.32e-9);
+  u0 = 0.852848, u1 = 0.65974;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.013293390593274, 1e-14);
 
-  u0 = 0.852848, u1 = 0.65974, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.013293390593274, 1e-14);
-
-  u0 = 0.883639, u1 = 0.65974, s = 1, h = 0.25;
-  ASSERT_NEAR(get_T(tri12(rhr, u0, u1, s, h)), 1.013293390593274, 1e-14);
+  u0 = 0.883639, u1 = 0.65974;
+  ASSERT_NEAR(TRI12(rhr, u0, u1, s, s0, s1, h), 1.013293390593274, 1e-14);
 }
 
 TEST (tri_updates, rhr_tri13_works) {
-  // TODO: add interior point test
-  ASSERT_DOUBLE_EQ(get_T(tri13(rhr, 1.0, 0.0, 1.0, 1.0)), 1.707106781186547);
-  ASSERT_DOUBLE_EQ(get_T(tri13(rhr, 0.0, 1.0, 1.0, 1.0)), 1.0);
+  ASSERT_DOUBLE_EQ(TRI13(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.707106781186547);
+  ASSERT_DOUBLE_EQ(TRI13(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.0);
 }
 
 TEST (tri_updates, rhr_tri22_works) {
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, 0.0, 0.0, 1.0, 1.0)), 1.224744871391589);
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, 0.0, 1.0, 1.0, 1.0)), 1.414213562373095);
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, 1.0, 0.0, 1.0, 1.0)), 1.414213562373095);
+  ASSERT_DOUBLE_EQ(TRI22(rhr, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.224744871391589);
+  ASSERT_DOUBLE_EQ(TRI22(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
+  ASSERT_DOUBLE_EQ(TRI22(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
 
-  double u0, u1, s, h;
+  double u0, u1, s = 1, s0 = 1, s1 = 1, h = 0.25;
 
-  u0 = 0.65974, u1 = 0.817579, s = 1, h = 0.25;
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, u0, u1, s, h)), 1.012639677310786);
+  u0 = 0.65974, u1 = 0.817579;
+  ASSERT_DOUBLE_EQ(TRI22(rhr, u0, u1, s, s0, s1, h), 1.012639677310786);
 
-  u0 = 0.65974, u1 = 0.707107, s = 1, h = 0.25;
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, u0, u1, s, h)), 0.986849397845339);
+  u0 = 0.65974, u1 = 0.707107;
+  ASSERT_DOUBLE_EQ(TRI22(rhr, u0, u1, s, s0, s1, h), 0.986849397845339);
 
-  u0 = 0.707107, u1 = 0.817579, s = 1, h = 0.25;
-  ASSERT_DOUBLE_EQ(get_T(tri22(rhr, u0, u1, s, h)), 1.053198553345643);
+  u0 = 0.707107, u1 = 0.817579;
+  ASSERT_DOUBLE_EQ(TRI22(rhr, u0, u1, s, s0, s1, h), 1.053198553345643);
 }
 
-TEST (tri_updates, rhr_tri22_is_symmetric) {
+template <class rules>
+void tri22_is_symmetric() {
+  rules r;
   double u0 = 0.0, u1 = 0.1, s = 1, s0 = 1.0, s1 = 1.0, h = 1;
-  double val01 = get_T(TRI22(rhr, u0, u1, s, s0, s1, h));
-  double val10 = get_T(TRI22(rhr, u1, u0, s, s1, s0, h));
+  double val01 = TRI22(r, u0, u1, s, s0, s1, h);
+  double val10 = TRI22(r, u1, u0, s, s1, s0, h);
   ASSERT_DOUBLE_EQ(val01, val10);
 }
 
+TEST (tri_updates, tri22_is_symmetric_with_constant_slowness) {
+  tri22_is_symmetric<mp0_tri_updates>();
+  tri22_is_symmetric<mp1_tri_updates>();
+  tri22_is_symmetric<rhr_tri_updates>();
+}
+
 TEST (tri_updates, rhr_tri23_works) {
-  ASSERT_DOUBLE_EQ(get_T(TRI23(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0)), 1.732050807568877);
-  ASSERT_DOUBLE_EQ(get_T(TRI23(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0)), 1.414213562373095);
+  ASSERT_DOUBLE_EQ(TRI23(rhr, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0), 1.732050807568877);
+  ASSERT_DOUBLE_EQ(TRI23(rhr, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0), 1.414213562373095);
 }
 
 TEST (tri_updates, mp1_tri11_works) {
   double u0, u1, s, s0, s1, h, T;
 
-  u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.7309362364283436;
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 1e-14);
-  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 1e-14);
+  u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.7309362364283433;
+  ASSERT_NEAR(TRI11(mp1, u0, u1, s, s0, s1, h), T, 1e-13);
+  ASSERT_NEAR(TRI11(mp1, u1, u0, s, s1, s0, h), T, 1e-13);
 
-  u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.97877243;
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 3.42e-9);
-  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 3.42e-9);
+  u0 = 0, u1 = 0.1, s = 1, s0 = 1.1, s1 = 1.3, h = 1.2, T = 0.978772426584215;
+  ASSERT_NEAR(TRI11(mp1, u0, u1, s, s0, s1, h), T, 1e-13);
+  ASSERT_NEAR(TRI11(mp1, u1, u0, s, s1, s0, h), T, 1e-13);
 
-  u0 = 1.0, u1 = 0.853553, s = 1.0, s0 = 1.0, s1 = 1.0, h = 0.5, T = 1.27266;
-  ASSERT_NEAR(get_T(TRI11(mp1, u0, u1, s, s0, s1, h)), T, 4.23e-6);
-  ASSERT_NEAR(get_T(TRI11(mp1, u1, u0, s, s1, s0, h)), T, 4.23e-6);
+  u0 = 1.0, u1 = 0.853553, s = 1.0, s0 = 1.0, s1 = 1.0, h = 0.5,
+    T = 1.27266422607271;
+  ASSERT_NEAR(TRI11(mp1, u0, u1, s, s0, s1, h), T, 1e-13);
+  ASSERT_NEAR(TRI11(mp1, u1, u0, s, s1, s0, h), T, 1e-13);
 }
 
 TEST (tri_updates, mp1_tri12_works) {
@@ -234,14 +198,14 @@ TEST (tri_updates, mp1_tri12_works) {
 
   u0 = 0.46487865669951, u1 = 0.4, s = 1, s0 = 1, s1 = 1, h = 0.2;
   T = 0.6540631166978595;
-  ASSERT_DOUBLE_EQ(get_T(TRI12(mp1, u0, u1, s, s0, s1, h)), T);
+  ASSERT_DOUBLE_EQ(TRI12(mp1, u0, u1, s, s0, s1, h), T);
 }
 
 TEST (tri_updates, mp1_tri13_works) {
   double u0, u1, s, s0, s1, h;
 
-  u0 = 0, u1 = 1.41421, s = 1, s0 = 1, s1 = 1, h = 1;
-  ASSERT_DOUBLE_EQ(get_T(TRI13(mp1, u0, u1, s, s0, s1, h)), 1.0);
+  u0 = 2, u1 = 1, s = 1, s0 = 1, s1 = 1, h = 1;
+  ASSERT_DOUBLE_EQ(TRI13(mp1, u0, u1, s, s0, s1, h), 2 + 1./std::sqrt(2));
 }
 
 TEST (tri_updates, mp1_tri22_works) {
@@ -249,7 +213,7 @@ TEST (tri_updates, mp1_tri22_works) {
 
   u0 = 0.65974, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
   T = 0.986849397845339;
-  ASSERT_DOUBLE_EQ(get_T(TRI22(mp1, u0, u1, s, s0, s1, h)), T);
+  ASSERT_DOUBLE_EQ(TRI22(mp1, u0, u1, s, s0, s1, h), T);
 
   u0 = 0.59457611725233628;
   u1 = 0.56102682919361013;
@@ -257,8 +221,8 @@ TEST (tri_updates, mp1_tri22_works) {
   s0 = 0.0025050133959455545;
   s1 = 0.2382400185837108;
   h = 0.5;
-  T = 0.6014793961365351;
-  ASSERT_DOUBLE_EQ(get_T(TRI22(mp1, u0, u1, s, s0, s1, h)), T);
+  T = 0.5963474292115725;
+  ASSERT_DOUBLE_EQ(TRI22(mp1, u0, u1, s, s0, s1, h), T);
 }
 
 TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
@@ -272,10 +236,9 @@ TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
   p1[0] = 1;
   p1[1] = 1;
 
-  auto update = TRI12(mp0, u0, u1, s, s0, s1, h);
-  auto update_fac = mp0.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
-
-  ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+  ASSERT_DOUBLE_EQ(
+    TRI12(mp0, u0, u1, s, s0, s1, h),
+    mp0.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac).value);
 }
 
 TEST (tri_updates, factored_mp1_with_constant_slowness_works) {
@@ -289,10 +252,9 @@ TEST (tri_updates, factored_mp1_with_constant_slowness_works) {
   p1[0] = 1;
   p1[1] = 1;
 
-  auto update = TRI12(mp1, u0, u1, s, s0, s1, h);
-  auto update_fac = mp1.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
-
-  ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+  ASSERT_DOUBLE_EQ(
+    TRI12(mp1, u0, u1, s, s0, s1, h),
+    mp1.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac).value);
 }
 
 TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
@@ -307,10 +269,9 @@ TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
     p1[0] = 1;
     p1[1] = 1;
 
-    auto update = TRI12(rhr, u0, u1, s, s0, s1, h);
-    auto update_fac = rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
-
-    ASSERT_DOUBLE_EQ(update.value, update_fac.value);
+    ASSERT_DOUBLE_EQ(
+      TRI12(rhr, u0, u1, s, s0, s1, h),
+      rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac).value);
   }
 
   {

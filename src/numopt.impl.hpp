@@ -68,7 +68,12 @@ recompute:
       tmp[1] = x1[1] + alpha*g[1];
       func.set_lambda(tmp);
       func.eval(lhs);
-      if (lhs > rhs) {
+
+      // For line search, check if lhs > rhs. This can be sensitive to
+      // roundoff for small step sizes, so instead of checking this
+      // directly, we check this in a relative sense for greater
+      // robustness.
+      if ((lhs - rhs)/fmax(lhs, rhs) > tol) {
         alpha /= 2;
 
         // TODO: it looks like we're flip-flopping back and forth
@@ -92,8 +97,10 @@ recompute:
     func.eval(f1);
 
     // Check for convergence
-    if (max(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1])) <= tol ||
-        fabs(f1 - f0) <= tol) {
+    if (max(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1]))/fmax(
+          fmax(x0[0], x0[1]),
+          fmax(x1[0], x1[1])) < tol ||
+        fabs(f1 - f0)/fmax(f0, f1) < tol) {
       break;
     }
 

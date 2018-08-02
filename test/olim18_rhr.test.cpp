@@ -7,38 +7,30 @@ using olim_t = olim8_rhr;
 using olim3d_t = olim18_rhr;
 
 TEST (olim18_rhr, quadrants_are_correct) {
-  quadrants_are_correct<olim3d_t>(sqrt2);
+  ASSERT_TRUE(quadrants_are_correct<olim3d_t>(sqrt2));
 }
 
 TEST (olim18_rhr, octants_are_correct) {
-  octants_are_correct<olim3d_t>(sqrt2, sqrt2 + 1.0/sqrt3);
+  ASSERT_TRUE(octants_are_correct<olim3d_t>(sqrt2, sqrt2 + 1.0/sqrt3));
 }
 
 TEST (olim18_rhr, planes_are_correct) {
-  planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  auto res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  ASSERT_TRUE(res);
 
-  // TODO: again---some kind of CFL condition might be being violated
-  // for n < 9... would depend on method and speed function
-  planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1], 9);
+  res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1], 9);
+  ASSERT_TRUE(res);
 }
 
 TEST (olim18_rhr, result_is_symmetric) {
-  result_is_symmetric<olim3d_t>(speed_funcs_3d[0]);
-  result_is_symmetric<olim3d_t>(speed_funcs_3d[1]);
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(speed_funcs_3d[0]));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(speed_funcs_3d[1]));
 }
 
 TEST (olim18_rhr, two_by_two_by_three_cells_are_correct) {
-  two_by_two_by_three_cells_are_correct<olim3d_t>();
+  ASSERT_TRUE(two_by_two_by_three_cells_are_correct<olim3d_t>());
 }
 
 TEST (olim18_rhr, plane_boundaries_are_correct) {
-  plane_boundaries_are_correct<olim3d_t>();
-}
-
-TEST (olim18_rhr, planes_are_correct_nonsymmetric) {
-  planes_are_correct_nonsymmetric<olim_t, olim3d_t>(s4, f4xy, f4yz, f4xz);
-}
-
-TEST (olim18_rhr, planes_agree_nonsymmetric) {
-  planes_agree_nonsymmetric<olim_t, olim3d_t>(s4, s4xy, s4yz, s4xz);
+  ASSERT_TRUE(plane_boundaries_are_correct<olim3d_t>());
 }

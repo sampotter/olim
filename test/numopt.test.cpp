@@ -277,6 +277,11 @@ TEST (numopt, test_qpi_baryplex) {
       ASSERT_NEAR(x[0], 1.000000000000002, 1e-14);
       ASSERT_NEAR(x[1], 6.661338147750939e-16, 1e-14);
     }
+    {
+      G[0] = 1.8107622845933866;
+      G[1] = 0.85973167304062859;
+      G[2] = 1.7194633460812576;
+    }
   }
 }
 
@@ -928,7 +933,7 @@ TEST (numopt, test_sqp_baryplex) {
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex<decltype(func), 3, 2>()(func, x, &error);
     ASSERT_FALSE(error);
-    ASSERT_NEAR(x[0], xgt[0], 1.32e-13);
+    ASSERT_NEAR(x[0], xgt[0], 1e-14);
     ASSERT_NEAR(x[1], xgt[1], 1e-14);
   }
   {

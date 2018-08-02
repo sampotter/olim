@@ -109,7 +109,7 @@ marcher_3d_errors(int npowmin, int npowmax, speed_func_3d s, speed_func_3d f,
 
 int main(int argc, char * argv[])
 {
-  speed_func_3d s3d = s4, f3d = f4;
+  speed_func_3d s3d = s1, f3d = f1;
 
   if (argc >= 2) {
     std::string s_name = argv[1];
@@ -119,9 +119,6 @@ int main(int argc, char * argv[])
     } else if (s_name == "s1") {
       s3d = s1;
       f3d = f1;
-    } else if (s_name == "s4") {
-      s3d = s4;
-      f3d = f4;
     }
   }
 

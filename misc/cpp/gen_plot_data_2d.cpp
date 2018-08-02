@@ -110,33 +110,17 @@ int main(int argc, char * argv[])
     } else if (s_name == "s1") {
       s = s1;
       f = f1;
-    } else if (s_name == "s2") {
-      s = s2;
-      f = f2;
     } else if (s_name == "s3") {
       s = s3;
       f = f3;
-    } else if (s_name == "s4xy") {
-      // Doesn't work
-      s = s4xy;
-      f = f4xy;
-    } else if (s_name == "s4xz") {
-      // Doesn't work
-      s = s4xz;
-      f = f4xz;
-    } else if (s_name == "s4yz") {
-      // Doesn't work
-      s = s4yz;
-      f = f4yz;
     } else if (s_name == "s5") {
       s = s5;
       f = f5;
-    } else if (s_name == "s6") {
-      s = s6;
-      f = f6;
     } else if (s_name == "s7") {
       s = s7;
       f = f7;
+    } else {
+      std::cout << "Invalid speed function" << std::endl;
     }
   }
 

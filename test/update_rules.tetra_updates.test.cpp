@@ -284,3 +284,89 @@ TEST (tetra_updates, tetra223_works_with_constant_slowness) {
   tetra223_works_with_constant_slowness<rhr_tetra_updates>();
 }
 
+void tetra111_mp0_is_symmetric_with_nonconstant_slowness() {
+  mp0_tetra_updates r;
+  {
+    double U0 = 0.1, U1 = 0.2, U2 = 0.3;
+    double s = 1, s0 = 1.3, s1 = 1.2, s2 = 1.1;
+    double h = 0.5;
+    double u = 0.5101107150834783;
+    double Uhat012 = get_T(TETRA111(r, U0, U1, U2, s, s0, s1, s2, h));
+    double Uhat120 = get_T(TETRA111(r, U1, U2, U0, s, s1, s2, s0, h));
+    double Uhat201 = get_T(TETRA111(r, U2, U0, U1, s, s2, s0, s1, h));
+    double Uhat021 = get_T(TETRA111(r, U0, U2, U1, s, s0, s2, s1, h));
+    double Uhat210 = get_T(TETRA111(r, U2, U1, U0, s, s2, s1, s0, h));
+    double Uhat102 = get_T(TETRA111(r, U1, U0, U2, s, s1, s0, s2, h));
+    ASSERT_DOUBLE_EQ(Uhat012, u);
+    ASSERT_DOUBLE_EQ(Uhat120, u);
+    ASSERT_DOUBLE_EQ(Uhat201, u);
+    ASSERT_DOUBLE_EQ(Uhat021, u);
+    ASSERT_DOUBLE_EQ(Uhat210, u);
+    ASSERT_DOUBLE_EQ(Uhat102, u);
+    ASSERT_DOUBLE_EQ(Uhat012, Uhat120);
+    ASSERT_DOUBLE_EQ(Uhat120, Uhat201);
+    ASSERT_DOUBLE_EQ(Uhat201, Uhat021);
+    ASSERT_DOUBLE_EQ(Uhat021, Uhat210);
+    ASSERT_DOUBLE_EQ(Uhat210, Uhat102);
+  }
+  {
+    double U0 = 0.5514651482575854;
+    double U1 = 0.5419072788623589;
+    double U2 = 0.5415495962762169;
+    double s = 0.2382400185837108;
+    double s0 = 0.2420057484596495;
+    double s1 = 0.2740574756206167;
+    double s2 = 0.2914785686731952;
+    double h = 0.1;
+    double u = 0.5590785434269516;
+    double Uhat012 = get_T(TETRA111(r, U0, U1, U2, s, s0, s1, s2, h));
+    double Uhat120 = get_T(TETRA111(r, U1, U2, U0, s, s1, s2, s0, h));
+    double Uhat201 = get_T(TETRA111(r, U2, U0, U1, s, s2, s0, s1, h));
+    double Uhat021 = get_T(TETRA111(r, U0, U2, U1, s, s0, s2, s1, h));
+    double Uhat210 = get_T(TETRA111(r, U2, U1, U0, s, s2, s1, s0, h));
+    double Uhat102 = get_T(TETRA111(r, U1, U0, U2, s, s1, s0, s2, h));
+    ASSERT_DOUBLE_EQ(Uhat012, u);
+    ASSERT_DOUBLE_EQ(Uhat120, u);
+    ASSERT_DOUBLE_EQ(Uhat201, u);
+    ASSERT_DOUBLE_EQ(Uhat021, u);
+    ASSERT_DOUBLE_EQ(Uhat210, u);
+    ASSERT_DOUBLE_EQ(Uhat102, u);
+    ASSERT_DOUBLE_EQ(Uhat012, Uhat120);
+    ASSERT_DOUBLE_EQ(Uhat120, Uhat201);
+    ASSERT_DOUBLE_EQ(Uhat201, Uhat021);
+    ASSERT_DOUBLE_EQ(Uhat021, Uhat210);
+    ASSERT_DOUBLE_EQ(Uhat210, Uhat102);
+  }
+  {
+    double U0 = 0.5514651482575853;
+    double U1 = 0.5419072788623587;
+    double U2 = 0.5415495962762168;
+    double s = 0.2382400185837107;
+    double s0 = 0.2420057484596494;
+    double s1 = 0.2740574756206167;
+    double s2 = 0.2914785686731952;
+    double h = 0.1;
+    double u = 0.5590785434269516;
+    double Uhat012 = get_T(TETRA111(r, U0, U1, U2, s, s0, s1, s2, h));
+    double Uhat120 = get_T(TETRA111(r, U1, U2, U0, s, s1, s2, s0, h));
+    double Uhat201 = get_T(TETRA111(r, U2, U0, U1, s, s2, s0, s1, h));
+    double Uhat021 = get_T(TETRA111(r, U0, U2, U1, s, s0, s2, s1, h));
+    double Uhat210 = get_T(TETRA111(r, U2, U1, U0, s, s2, s1, s0, h));
+    double Uhat102 = get_T(TETRA111(r, U1, U0, U2, s, s1, s0, s2, h));
+    ASSERT_DOUBLE_EQ(Uhat012, u);
+    ASSERT_DOUBLE_EQ(Uhat120, u);
+    ASSERT_DOUBLE_EQ(Uhat201, u);
+    ASSERT_DOUBLE_EQ(Uhat021, u);
+    ASSERT_DOUBLE_EQ(Uhat210, u);
+    ASSERT_DOUBLE_EQ(Uhat102, u);
+    ASSERT_DOUBLE_EQ(Uhat012, Uhat120);
+    ASSERT_DOUBLE_EQ(Uhat120, Uhat201);
+    ASSERT_DOUBLE_EQ(Uhat201, Uhat021);
+    ASSERT_DOUBLE_EQ(Uhat021, Uhat210);
+    ASSERT_DOUBLE_EQ(Uhat210, Uhat102);
+  }
+}
+
+TEST (tetra_updates, tetra111_is_symmetric_with_nonconstant_slowness) {
+  tetra111_mp0_is_symmetric_with_nonconstant_slowness();
+}

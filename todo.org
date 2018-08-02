@@ -1,3 +1,10 @@
+* Testing
+** TODO Fix failing olim3d_hu tests
+** TODO HU testing
+** TODO Add non BV update tests (only bv right now for tetra)
+** TODO Test olim, olim3d, olim3d_hu...
+   Using the crtp stuff, we should be able to directly instantiate
+   olim3d_hu, olim3d_mp0, etc. and just call update_crtp directly
 * <2018-05-26 Sat>
   - [X] BV lag mults?
   - [ ] streamline passing around p's

@@ -1,6 +1,8 @@
 #ifndef __HEAP_HPP__
 #define __HEAP_HPP__
 
+#include <src/config.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -85,7 +87,9 @@ void heap<Node>::pop_front() {
   swap(0, _size - 1);
   --_size;
   sink(0);
+#if CHECK_HEAP_PROP_IN_DEBUG && EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
+#endif
 }
 
 template <class Node>
@@ -95,7 +99,9 @@ void heap<Node>::insert(Node * n) {
   assert(_size < _capacity);
   _data[_size++] = n;
   swim(n);
+#if CHECK_HEAP_PROP_IN_DEBUG && EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
+#endif
 }
 
 template <class Node>
@@ -113,7 +119,9 @@ void heap<Node>::swim(int pos) {
     pos = parent;
     parent = PARENT(pos);
   }
+#if CHECK_HEAP_PROP_IN_DEBUG && EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
+#endif
 }
 
 template <class Node>
@@ -130,7 +138,9 @@ void heap<Node>::sink(int pos) {
     ch = LEFT(pos);
     next = ch + 1;
   }
+#if CHECK_HEAP_PROP_IN_DEBUG && EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
+#endif
 }
 
 template <class Node>
@@ -157,7 +167,9 @@ void heap<Node>::grow() {
   memcpy(tmp, _data, _size*sizeof(Node *));
   delete[] _data;
   _data = tmp;
+#if CHECK_HEAP_PROP_IN_DEBUG && EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
+#endif
 }
 
 template <class Node>

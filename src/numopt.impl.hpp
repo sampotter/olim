@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "hybrid.hpp"
+
 #define __compute_lambda_min() do {                                 \
     double half_tr = (G[0] + G[2])/2, det = G[0]*G[2] - G[1]*G[1];  \
     lambda_min = half_tr - sqrt(half_tr*half_tr - det);             \
@@ -22,6 +24,9 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     lambda_min, qpi_tol, c1 = 1e-4, alpha;
   bool qpi_error, found_opt;
   int k = 0, qpi_niters = 10;
+  hybrid_status status;
+
+  (void) c1;
 
   func.set_lambda(x1);
   func.eval(f1);
@@ -52,40 +57,17 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     g[0] -= x1[0];
     g[1] -= x1[1];
 
-    // Compute step size... This is a bit of a convoluted dance, but
-    // is efficient
-    alpha = 1;
-    if (max(fabs(g[0]), fabs(g[1])) > tol) {
-      // TODO: use x0 instead of tmp to save space
-      double tmp[2], lhs, rhs;
-recompute:
-
-      // TODO: the following two lines should be lifted out of this loop
-      func.grad(tmp);
-      rhs = f1 + c1*(tmp[0]*g[0] + tmp[1]*g[1]);
-
-      tmp[0] = x1[0] + alpha*g[0];
-      tmp[1] = x1[1] + alpha*g[1];
+    auto const step_sel = [&] (double alpha) {
+      double tmp[2] = {x1[0] + alpha*g[0], x1[1] + alpha*g[1]};
       func.set_lambda(tmp);
-      func.eval(lhs);
-
-      // For line search, check if lhs > rhs. This can be sensitive to
-      // roundoff for small step sizes, so instead of checking this
-      // directly, we check this in a relative sense for greater
-      // robustness.
-      if ((lhs - rhs)/fmax(lhs, rhs) > tol) {
-        alpha /= 2;
-
-        // TODO: it looks like we're flip-flopping back and forth
-        // between evaluating at x1 and evaluating at our trial
-        // point---the only reason we reset to x1 is so that we can
-        // grab the gradient there... we could also just cache the
-        // gradient so that we don't have to constantly be
-        // reevaluating
-        func.set_lambda(x1);
-        goto recompute;
-      }
+      func.grad(tmp);
+      return g[0]*tmp[0] + g[1]*tmp[1];
+    };
+    std::tie(alpha, status) = hybrid(step_sel, 0., 1., tol);
+    if (status == hybrid_status::DEGENERATE && fabs(alpha) < tol) {
+      alpha = 1;
     }
+    // if (alpha < 1) { printf("alpha = %g\n", alpha); }
 
     // Save current values for next iteration
     x0[0] = x1[0];

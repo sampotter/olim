@@ -29,6 +29,10 @@ update_rules::mp0_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   using std::min;
 
   (void) tol;
@@ -94,6 +98,10 @@ update_rules::mp0_tri_updates::tri(
   double const * p0, double const * p1, double const * p_fac, double s_fac,
   double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   double sh = ((s + (s0 + s1)/2)/2)*h, shfac = s_fac*h;
   double lfac0 = dist2<dim>(p0, p_fac);
   double lfac1 = dist2<dim>(p1, p_fac);
@@ -143,6 +151,10 @@ update_rules::mp0_tri_updates::tri(
   double const * p0, double const * p1, double u0, double u1,
   double s, double s0, double s1, double h, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   (void) tol;
 
   using std::min;
@@ -202,6 +214,10 @@ update_rules::rhr_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   using std::min;
 
   (void) s0;
@@ -269,6 +285,10 @@ update_rules::rhr_tri_updates::tri(
   double const * p0, double const * p1, double const * p_fac, double s_fac,
   double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   (void) s0;
   (void) s1;
 
@@ -323,6 +343,12 @@ update_rules::rhr_tri_updates::tri(
   double const * p0, double const * p1, double u0, double u1,
   double s, double s0, double s1, double h, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
+  (void) s0;
+  (void) s1;
   (void) tol;
 
   using std::min;
@@ -342,8 +368,8 @@ update_rules::rhr_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  double const F0 = u0 + h*(s + s0)*norm2<d>(p0)/2;
-  double const F1 = u1 + h*(s + s1)*norm2<d>(p1)/2;
+  double const F0 = u0 + sh*norm2<d>(p0)/2;
+  double const F1 = u1 + sh*norm2<d>(p1)/2;
 
   update_info<1> update;
   if (disc < 0 || a == 0) {
@@ -394,81 +420,43 @@ update_rules::mp1_tri_updates::tri(
   double u0, double u1, double s, double s0, double s1, double h,
   ffvec<p0>, ffvec<p1>, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   constexpr char p0_dot_p0 = dot(p0, p0);
   constexpr char p0_dot_p1 = dot(p0, p1);
   constexpr char p1_dot_p1 = dot(p1, p1);
   constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
   constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
-  constexpr double c1 = 1e-4;
   double const ds = s1 - s0, du = u1 - u0;
+  double dp_dot_p_lam, l_lam, s_lam;
 
+  auto const grad = [&] (double lam) {
+    dp_dot_p_lam = dp_dot_p0 + lam*dp_dot_dp;
+    l_lam = std::sqrt(p0_dot_p0 + lam*(dp_dot_p0 + dp_dot_p_lam));
+    s_lam = (s + s0 + ds*lam)/2;
+    return du + h*(l_lam*ds/2 + s_lam*dp_dot_p_lam/l_lam);
+  };
+
+  double arglam;
+  hybrid_status status;
+  std::tie(arglam, status) = hybrid(grad, 0., 1., tol);
+  
   update_info<1> update;
-
-  // Check gradients at endpoints to see if we can skip this update
-  double dp_dot_plam = dp_dot_p0;
-  if (dF1__(0) > 0) {
-    update.value = F1__(0);
-    update.lambda[0] = 0;
-    return update;
+  if (status == hybrid_status::DEGENERATE) {
+    double F0 = u0 + (s + s0)*h*std::sqrt(p0_dot_p0)/2;
+    double F1 = u1 + (s + s1)*h*std::sqrt(p1_dot_p1)/2;
+    update.lambda[0] = F0 < F1 ? 0 : 1;
+    update.value = std::min(F0, F1);
   }
-  dp_dot_plam += dp_dot_dp;
-  if (dF1__(1) < 0) {
-    update.value = F1__(1);
-    update.lambda[0] = 1;
-    return update;
-  }
-
-  // Try to minimize F1 by starting from the mp0 minimizer using
-  // Newton's method. This may fail if the function isn't
-  // well-behaved. To try to determine when this happens, keep track
-  // of the iteration count, and use a modified Newton's method if we
-  // exceed a limit of 10 iterations.
-  mp0_tri_updates mp0;
-  update = mp0.tri(u0, u1, s, s0, s1, h, ffvec<p0> {}, ffvec<p1> {}, tol);
-  double lam = update.lambda[0], g, iter = 0;
-  do {
-    dp_dot_plam = dp_dot_p0 + lam*dp_dot_dp;
-    g = -dF1__(lam)/d2F1__(lam);
-    lam = std::max(0., std::min(1., lam + g));
-  } while (iter++ < 10 && fabs(g) > tol);
-
-  if (iter == 10) {
-    bool conv;
-    double lam[2], F1[2], dF1, d2F1, g, alpha;
-    lam[0] = update.lambda[0];
-    F1[0] = F1__(lam[0]);
-    do {
-      alpha = 1;
-      dp_dot_plam = dp_dot_p0 + lam[0]*dp_dot_dp;
-      dF1 = dF1__(lam[0]);
-      d2F1 = d2F1__(lam[0]);
-      g = -dF1/d2F1;
-
-      double lam_ = lam[0] + alpha*g;
-      double u_ = u__(lam_);
-      double s_ = s__(lam_);
-      double l_ = l__(lam_);
-      double tmp = u_ + h*s_*l_;
-      while (tmp > F1[0] + c1*alpha*dF1*g) {
-        alpha *= 0.9;
-        lam_ = lam[0] + alpha*g;
-        u_ = u__(lam_);
-        s_ = s__(lam_);
-        l_ = l__(lam_);
-        tmp = u_ + h*s_*l_;
-      }
-      lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
-      F1[1] = F1__(lam[1]);
-      conv = fabs(lam[1] - lam[0]) <= tol || fabs(F1[1] - F1[0]) <= tol;
-      lam[0] = lam[1];
-      F1[0] = F1[1];
-    } while (!conv);
-    update.value = F1[1];
-    update.lambda[0] = lam[1];
-  } else {
-    update.value = F1__(lam);
-    update.lambda[0] = lam;
+  else {
+    update.lambda[0] = arglam;
+    dp_dot_p_lam = dp_dot_p0 + arglam*dp_dot_dp;
+    l_lam = std::sqrt(p0_dot_p0 + arglam*(dp_dot_p0 + dp_dot_p_lam));
+    s_lam = (s + s0 + ds*arglam)/2;
+    update.value = u0 + du*arglam + s_lam*h*l_lam;
   }
 
 #if PRINT_UPDATES
@@ -489,6 +477,10 @@ update_rules::mp1_tri_updates::tri(
   double const * p0, double const * p1, double const * p_fac, double s_fac,
   double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   double shfac = s_fac*h;
   double ds = s1 - s0;
   double T0 = shfac*dist2<dim>(p0, p_fac);
@@ -542,6 +534,10 @@ update_rules::mp1_tri_updates::tri(
   double const * p0, double const * p1, double u0, double u1,
   double s, double s0, double s1, double h, double tol) const
 {
+  assert(s > 0);
+  assert(s0 > 0);
+  assert(s1 > 0);
+
   double const dp[3] = {p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]};
 
   double const dp_dot_dp = dp[0]*dp[0] + dp[1]*dp[1] + dp[2]*dp[2];

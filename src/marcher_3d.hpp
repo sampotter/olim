@@ -16,6 +16,7 @@ struct marcher_3d: public abstract_marcher {
 
   static constexpr int ndim = 3;
 
+  marcher_3d();
   marcher_3d(int height, int width, int depth, double h,
              no_speed_func_t const &);
   marcher_3d(int height, int width, int depth, double h = 1,
@@ -54,10 +55,13 @@ EIKONAL_PRIVATE:
 
   virtual void visit_neighbors_impl(abstract_node * n);
 
-  node * _nodes;
+  // We initialize all of these variables to an invalid state so that
+  // we can assert that we're using them correctly later if we've
+  // compiled in debug mode.
+  node * _nodes {nullptr};
   double const * _s_cache {nullptr};
-  double _h {1};
-  int _height, _width, _depth;
+  double _h {-1};
+  int _height {-1}, _width {-1}, _depth {-1};
 };
 
 #include "marcher_3d.impl.hpp"

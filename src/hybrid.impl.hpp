@@ -4,16 +4,24 @@
 #include <cassert>
 
 template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
+  return (T(0) < val) - (val < T(0));
 }
 
 template <class F, class T>
 std::pair<T, hybrid_status>
-hybrid(F const & f, T a, T b, T tol) {
-  T c = a, fa = f(a), fb = f(b), fc = f(c), fd;
-  T d, dm, df, ds, dd;
+hybrid(F const & f, T a, T b, T tol)
+{
+  T fa = f(a);
+  if (fabs(fa)/fabs(a) <= tol) {
+    return {a, hybrid_status::OK};
+  }
 
-  assert(!(fa == 0 || fb == 0 || fc == 0));
+  T fb = f(b);
+  if (fabs(fb)/fabs(b) <= tol) {
+    return {b, hybrid_status::OK};
+  }
+
+  T c = a, fc = f(c), fd, d, dm, df, ds, dd;
 
   if (sgn(fb) == sgn(fc)) {
     return {0, hybrid_status::DEGENERATE};
@@ -45,8 +53,10 @@ hybrid(F const & f, T a, T b, T tol) {
       fb = fc;
       break;
     }
-    a = b = d;
-    fa = fb = fd;
+    a = b;
+    b = d;
+    fa = fb;
+    fb = fd;
     if (sgn(fb) == sgn(fc)) {
       c = a;
       fc = fa;

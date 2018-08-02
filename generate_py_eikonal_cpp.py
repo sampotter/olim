@@ -183,6 +183,8 @@ def build_src_txt(args):
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 
+#include <src/config.hpp>
+
 #include <basic_marcher.hpp>
 #include <basic_marcher_3d.hpp>
 #include <olim.hpp>

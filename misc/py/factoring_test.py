@@ -7,15 +7,17 @@ import speedfuncs
 
 from matplotlib.colors import LogNorm
 
-N = 2**np.arange(6, 10) + 1
+print('solving largest problem')
+
+N = 2**np.arange(6, 13) + 1
 
 n = N[-1]
 h = 2./(n-1)
 i0, j0 = int(n/2), int(n/2)
 rfac = 0.1
 Olim = eik.Olim8Rect
-s = speedfuncs.s5
-f = speedfuncs.f5
+s = speedfuncs.s1
+f = speedfuncs.f1
 
 L = np.linspace(-1, 1, n)
 x, y = np.meshgrid(L, L)

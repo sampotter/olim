@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, '../build/Release')
 
 import common3d
-import eikonal as eik
+import pyeikonal as eik
 import itertools
 import matplotlib
 import matplotlib.pyplot as plt

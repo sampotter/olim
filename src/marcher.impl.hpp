@@ -68,7 +68,10 @@ marcher<base, node>::marcher(int height, int width, double h,
 template <class base, class node>
 marcher<base, node>::~marcher()
 {
+  assert(_nodes != nullptr);
   delete[] _nodes;
+
+  assert(_s_cache != nullptr);
   delete[] _s_cache;
 }
 
@@ -165,12 +168,14 @@ double marcher<base, node>::get_value(int i, int j) const {
 template <class base, class node>
 node & marcher<base, node>::operator()(int i, int j) {
   assert(in_bounds(i, j));
+  assert(_nodes != nullptr);
   return _nodes[_width*i + j];
 }
 
 template <class base, class node>
 node const & marcher<base, node>::operator()(int i, int j) const {
   assert(in_bounds(i, j));
+  assert(_nodes != nullptr);
   return _nodes[_width*i + j];
 }
 
@@ -182,6 +187,7 @@ bool marcher<base, node>::in_bounds(int i, int j) const {
 template <class base, class node>
 double marcher<base, node>::get_speed(int i, int j) const {
   assert(in_bounds(i, j));
+  assert(_s_cache != nullptr);
   return _s_cache[_width*i + j];
 }
 

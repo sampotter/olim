@@ -2,6 +2,20 @@ project (fastmarching)
 
 cmake_minimum_required (VERSION 3.9 FATAL_ERROR)
 
+option (PRINT_UPDATES "Output individual updates for debugging." OFF)
+option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
+option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
+option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
+option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." ON)
+option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
+option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
+option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
+option (BUILD_TIMINGS "Build the timings executable." OFF)
+option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
+option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
+option (LINK_PROFILE "Link Google's CPU profiler." OFF)
+option (TRACK_PARENTS "Track parent update information for debugging." OFF)
+
 include (CMakeDependentOption)
 include (GoogleTest)
 include (gtest.cmake)
@@ -14,20 +28,13 @@ set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG -DRELWITHDEBINFO")
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-option (OLIM8_ADJ_UPDATES
-  "Have the OLIM8 fast marcher do adjacent triangle updates." OFF)
-option (PRINT_UPDATES "Output individual updates for debugging." OFF)
-option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
-option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
-option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
-
-option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
-option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
-option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
-option (BUILD_TIMINGS "Build the timings executable." OFF)
-option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
-option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
-option (LINK_PROFILE "Link Google's CPU profiler." OFF)
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
+  string (REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+else ()
+  string (REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+endif ()
 
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
   "Compile all 256 3D marchers (this takes a while!)" OFF
@@ -218,6 +225,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	heap
     hybrid
     numopt
+    olim3d
     olim4_mp0
     olim4_mp1
     olim4_rhr

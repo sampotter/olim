@@ -26,6 +26,8 @@ out1 = sqp(F1, dF1, d2F1, -A, -b, lam0, eps, 100);
 lam0gt = out0.xs(:, out0.iters + 1);
 lam1gt = out1.xs(:, out1.iters + 1);
 
+fprintf('F1(lam0gt) = %0.16g\n', F1(lam0gt));
+
 out0fac = sqp(F0fac, dF0fac, d2F0fac, -A, -b, lam0, eps, 100);
 
 lam0facgt = out0fac.xs(:, out0fac.iters + 1);

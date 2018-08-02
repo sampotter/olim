@@ -12,23 +12,25 @@ clear;
 % theta = rand;
 % p0 = rand(3, 1);
 % p1 = rand(3, 1);
-% dp = p1 - p0;
-% rfac = 0.1;
-% pfac = (rfac/h)*randn(3, 1);
-% sfac = rand;
-
-u0 = 0.058596292634851235;
-u1 = 0.058596292634851235;
+u0 = 0.0;
+u1 = 0.1;
 du = u1 - u0;
-h = 0.0625;
-s = 0.9117266963977384;
-s0 = 0.93754068215761976;
-s1 = 0.93754068215761976;
+s = 1;
+s0 = 1.2;
+s1 = 1.1;
+h = 1;
+theta = 0.5;
 p0 = [1; 0];
-p1 = [0; -1];
+p1 = [0; 1];
+
+sh = ((1 - theta)*s + theta*(s0 + s1)/2)*h;
+ds = s1 - s0;
 dp = p1 - p0;
-pfac = [1; -1];
-sfac = 1;
+rfac = 0.1;
+% pfac = (rfac/h)*randn(3, 1);
+pfac = (rfac/h)*randn(2, 1);
+sfac = rand;
+
 
 % fprintf(['u0 = %g, u1 = %g, h = %g, s = %g, s0 = %g, s1 = %g, theta ' ...
 %          '= %g\n'], u0, u1, h, s, s0, s1, theta);
@@ -40,6 +42,7 @@ p = @(lam) p0 + lam*(p1 - p0);
 q = @(lam) p(lam)'*p(lam);
 l = @(lam) sqrt(q(lam));
 n = @(lam) p(lam)/l(lam);
+slam = @(lam) (1 - theta)*s + theta*((1 - lam)*s0 + lam*s1);
 
 lfac = @(lam) norm(p(lam) - pfac);
 nfac = @(lam) (p(lam) - pfac)/lfac(lam);
@@ -51,8 +54,10 @@ dtau = tau1 - tau0;
 
 tau = @(lam) tau0 + dtau*lam;
 
-F0 = @(lam) u(lam) + s*h*l(lam);
-dF0 = @(lam) du + s*h*dot(dp, n(lam));
+F0 = @(lam) u(lam) + sh*l(lam);
+dF0 = @(lam) du + sh*dot(dp, n(lam));
+F1 = @(lam) u(lam) + h*slam(lam)*l(lam);
+dF1 = @(lam) du + h*(ds*theta*p(lam)'*p(lam) + slam(lam)*dp'*p(lam))/l(lam);
 
 F0f = @(lam) tau(lam) + T(lam) + s*h*l(lam);
 dF0f = @(lam) dtau + sfac*h*dot(dp, nfac(lam)) + s*h*dot(dp, n(lam));

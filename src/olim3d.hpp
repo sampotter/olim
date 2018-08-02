@@ -59,6 +59,8 @@ struct abstract_olim3d:
       base_olim3d, node, line_updates, tri_updates, tetra_updates, nneib>,
     node>;
 
+  abstract_olim3d() {}
+
   abstract_olim3d(int height, int width, int depth, double h,
                   no_speed_func_t const &):
       marcher_3d_t {height, width, depth, h, no_speed_func_t {}}

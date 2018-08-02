@@ -142,6 +142,32 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_TRI_STATS(tmp, p0, p1) do {} while (0)
 #endif
 
+#if TRACK_PARENTS
+#  define __tri_update_value() do {             \
+    if (tmp.value < T) {                        \
+      T = tmp.value;                            \
+      index3_t ind0 = {                         \
+        n->get_i() + __di(l0),                  \
+        n->get_j() + __dj(l0),                  \
+        n->get_k() + __dk(l0)                   \
+      };                                        \
+      n->set_parent_index(0, ind0);              \
+      index3_t ind1 = {                         \
+        n->get_i() + __di(l1),                  \
+        n->get_j() + __dj(l1),                  \
+        n->get_k() + __dk(l1)                   \
+      };                                        \
+      n->set_parent_index(1, ind1);              \
+      index3_t ind2 = {-1, -1, -1};             \
+      n->set_parent_index(2, ind2);              \
+    }                                           \
+  } while (0)
+#else
+#  define __tetra_update_value() do {           \
+    T = min(T, tmp.value);                      \
+  } while (0)
+#endif
+
 #define TRI(i, j, p0, p1) do {                                  \
     if (!__skip_tri(i, j)) {                                    \
       int l0 = inds[i], l1 = inds[j];                           \
@@ -197,6 +223,36 @@ constexpr int oct2inds[8][7] = {
 #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {} while (0)
 #endif
 
+#if TRACK_PARENTS
+#  define __tetra_update_value() do {                                   \
+    if (tmp.value < T) {                                                \
+      T = tmp.value;                                                    \
+      index3_t ind0 = {                                                 \
+        n->get_i() + __di(l0),                                          \
+        n->get_j() + __dj(l0),                                          \
+        n->get_k() + __dk(l0)                                           \
+      };                                                                \
+      n->set_parent_index(0, ind0);                                      \
+      index3_t ind1 = {                                                 \
+        n->get_i() + __di(l1),                                          \
+        n->get_j() + __dj(l1),                                          \
+        n->get_k() + __dk(l1)                                           \
+      };                                                                \
+      n->set_parent_index(1, ind1);                                      \
+      index3_t ind2 = {                                                 \
+        n->get_i() + __di(l2),                                          \
+        n->get_j() + __dj(l2),                                          \
+        n->get_k() + __dk(l2)                                           \
+      };                                                                \
+      n->set_parent_index(2, ind2);                                      \
+    }                                                                   \
+  } while (0)
+#else
+#  define __tetra_update_value() do {           \
+    T = min(T, tmp.value);                      \
+  } while (0)
+#endif
+
 #define TETRA(i, j, k, p0, p1, p2) do {                                 \
     int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
     if ((l0 == parent || l1 == parent || l2 == parent) &&               \
@@ -210,7 +266,7 @@ constexpr int oct2inds[8][7] = {
         ffvec<P ## p0> {},                                              \
         ffvec<P ## p1> {},                                              \
         ffvec<P ## p2> {});                                             \
-      T = min(T, tmp.value);                                            \
+      __tetra_update_value();                                           \
       UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
       __skip_tri(i, j) = 0x1;                                           \
       __skip_tri(j, k) = 0x1;                                           \
@@ -242,7 +298,7 @@ constexpr int oct2inds[8][7] = {
         p2,                                                             \
         p_fac,                                                          \
         s_fac);                                                         \
-      T = min(T, tmp.value);                                            \
+      __tetra_update_value();                                           \
       /* TODO: collect stats */                                         \
       __skip_tri(i, j) = 0x1;                                           \
       __skip_tri(j, k) = 0x1;                                           \
@@ -322,15 +378,32 @@ void olim3d_bv<
 #endif
 
   // Do line update corresponding to parent node.
-  if (parent < 6) {
-    T = min(T, this->template line<1>(VAL(parent), SPEED_ARGS(parent), h));
-    UPDATE_LINE_STATS(1);
-  } else if (parent < 18) {
-    T = min(T, this->template line<2>(VAL(parent), SPEED_ARGS(parent), h));
-    UPDATE_LINE_STATS(2);
-  } else {
-    T = min(T, this->template line<3>(VAL(parent), SPEED_ARGS(parent), h));
-    UPDATE_LINE_STATS(3);
+  {
+    double Tnew;
+    if (parent < 6) {
+      Tnew = this->template line<1>(VAL(parent), SPEED_ARGS(parent), h);
+      UPDATE_LINE_STATS(1);
+    } else if (parent < 18) {
+      Tnew = this->template line<2>(VAL(parent), SPEED_ARGS(parent), h);
+      UPDATE_LINE_STATS(2);
+    } else {
+      Tnew = this->template line<3>(VAL(parent), SPEED_ARGS(parent), h);
+      UPDATE_LINE_STATS(3);
+    }
+#if TRACK_PARENTS
+    if (Tnew < T) {
+      T = Tnew;
+      index3_t ind0, ind1, ind2;
+      ind0 = {i + __di(parent), j + __dj(parent), k + __dk(parent)};
+      ind1 = {-1, -1, -1};
+      ind2 = {-1, -1, -1};
+      n->set_parent_index(0, ind0);
+      n->set_parent_index(1, ind1);
+      n->set_parent_index(2, ind2);
+    }
+#else
+    T = min(T, Tnew);
+#endif
   }
 
   int const * inds;
@@ -721,12 +794,16 @@ void olim3d_hu<
           continue;
         }
 
-        assert(arglam[l2] != -1);
-        lam[0] = 0;
-        lam[1] = arglam[l2];
-        func.lag_mult(lam, mu, &k);
-        if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
-          continue;
+        // TODO: not totally sure if this should be -1 or if it might
+        // be -1 in some cases... Originally, this was also an assert,
+        // like the l1 check above.
+        if (arglam[l2] != -1) {
+          lam[0] = 0;
+          lam[1] = arglam[l2];
+          func.lag_mult(lam, mu, &k);
+          if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
+            continue;
+          }
         }
 
         // TODO: We're not doing the third triangle update right

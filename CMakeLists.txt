@@ -225,7 +225,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	heap
     hybrid
     numopt
-    olim3d
     olim4_mp0
     olim4_mp1
     olim4_rhr

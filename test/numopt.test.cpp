@@ -793,9 +793,11 @@ TEST (numopt, test_sqp) {
 }
 #endif // USE_ARMADILLO
 
+// TODO: we should convert these to only check if the minima are the
+// same, not if the minimizing arguments are the same
 TEST (numopt, test_sqp_baryplex) {
   bool error;
-  double u[3], h, s_hat, s[3], theta, x[2], xgt[2], p[3][3];
+  double u[3], h, s_hat, s[3], theta, x[2], xgt[2], p[3][3], U, U_gt;
   {
     u[0] = 0.1233189348351655;
     u[1] = 0.1839077882824167;
@@ -912,14 +914,13 @@ TEST (numopt, test_sqp_baryplex) {
     u[0] = 0.6596052529083072;
     u[1] = 0.5185949425105382;
     u[2] = 0.9729745547638625;
+    U_gt = 0.961440337567651;
     h = 0.6489914927123561;
     s_hat = 0.8003305753524015;
     s[0] = 0.4537977087269195;
     s[1] = 0.4323915037834617;
     s[2] = 0.8253137954020456;
     theta = 0.08346981485891403;
-    xgt[0] = 0.5240816876508512;
-    xgt[1] = -5.551115123125783e-17;
     p[0][0] = -0.5045864055140099;
     p[0][1] = -1.27059444980866;
     p[0][2] = -0.3825848027076484;
@@ -932,22 +933,22 @@ TEST (numopt, test_sqp_baryplex) {
     F0<3, 2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex<decltype(func), 3, 2>()(func, x, &error);
+    func.set_lambda(x);
+    func.eval(U);
     ASSERT_FALSE(error);
-    ASSERT_NEAR(x[0], xgt[0], 1e-14);
-    ASSERT_NEAR(x[1], xgt[1], 1e-14);
+    ASSERT_NEAR(U, U_gt, 1e-14);
   }
   {
     u[0] = 0.683363243294653;
     u[1] = 0.5465931145903228;
     u[2] = 0.4257288418711879;
+    U_gt = 0.652033401191350;
     h = 0.6444427814313365;
     s_hat = 0.6476176301726844;
     s[0] = 0.6790167540932019;
     s[1] = 0.6357867105140836;
     s[2] = 0.9451741131094014;
     theta = 0.2089349224260229;
-    xgt[0] = 0.7922088401490383;
-    xgt[1] = 0.2077911598509724;
     p[0][0] = 0.7595683259147834;
     p[0][1] = -0.6572012990983503;
     p[0][2] = -0.6039184813761692;
@@ -960,9 +961,10 @@ TEST (numopt, test_sqp_baryplex) {
     F0<3, 2> func {h, theta};
     func.set_args(u, s_hat, s, p);
     numopt::sqp_baryplex<decltype(func), 3, 2>()(func, x, &error);
+    func.set_lambda(x);
+    func.eval(U);
     ASSERT_FALSE(error);
-    ASSERT_NEAR(x[0], xgt[0], 1.23e-13);
-    ASSERT_NEAR(x[1], xgt[1], 1.2e-13);
+    ASSERT_NEAR(U, U_gt, 1e-14);
   }
   {
     u[0] = 0.6877960851201071;

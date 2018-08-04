@@ -255,14 +255,16 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   endforeach ()
 
   # Now, add our Python tests.
-  set (python_tests
-    py_eikonal)
-  foreach (test ${python_tests})
-    configure_file (
-      ${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.test
-      ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
-    add_test (${test}.test ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
-  endforeach ()
+  if (BUILD_PYTHON_BINDINGS)
+    set (python_tests
+      py_eikonal)
+    foreach (test ${python_tests})
+      configure_file (
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.test
+        ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
+      add_test (${test}.test ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
+    endforeach ()
+  endif ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 enable_testing ()

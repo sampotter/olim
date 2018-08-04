@@ -9,7 +9,7 @@ from matplotlib.colors import LogNorm
 
 print('solving largest problem')
 
-N = 2**np.arange(6, 13) + 1
+N = 2**np.arange(4, 8) + 1
 
 n = N[-1]
 h = 2./(n-1)
@@ -68,10 +68,15 @@ fig.add_subplot(3, 2, 6).plot(L, U_fac[i0, :])
 fig.show()
 
 fig = plt.figure()
-ax = fig.add_subplot(1, 2, 1)
+ax = fig.add_subplot(2, 2, 1)
 ax.imshow(F)
-ax = fig.add_subplot(1, 2, 2)
+ax = fig.add_subplot(2, 2, 2)
 ax.imshow(U)
+ax = fig.add_subplot(2, 2, 3)
+ax.imshow(U_fac)
+ax = fig.add_subplot(2, 2, 4)
+ax.imshow(U - U_fac)
+fig.colorbar(ax=ax)
 fig.show()
 
 E2 = np.zeros(len(N))

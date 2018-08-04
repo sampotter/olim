@@ -18,8 +18,8 @@ plt.style.use('ggplot')
 # parameters
 
 R_fac = 0.25
-N = 2**np.arange(4, 11) + 1
-N3D = 2**np.arange(3, 8) + 1
+N = 2**np.arange(4, 9) + 1
+N3D = 2**np.arange(3, 7) + 1
 vx, vy, vz = 5, 20, 13
 
 ################################################################################

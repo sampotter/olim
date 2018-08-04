@@ -79,10 +79,19 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     func.eval(f1);
 
     // Check for convergence
-    if (max(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1]))/fmax(
-          fmax(x0[0], x0[1]),
-          fmax(x1[0], x1[1])) < tol ||
-        fabs(f1 - f0)/fmax(f0, f1) < tol) {
+    // if (max(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1]))/fmax(
+    //       fmax(x0[0], x0[1]),
+    //       fmax(x1[0], x1[1])) < tol ||
+    //     fabs(f1 - f0)/fmax(f0, f1) < tol) {
+    //   break;
+    // }
+
+    if (fabs(f1 - f0) <= tol*fmax(f0, f1) + tol) {
+      break;
+    }
+
+    if (fmax(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1])) <=
+        tol*fmax(fmax(x0[0], x0[1]), fmax(x1[0], x1[1])) + tol) {
       break;
     }
 

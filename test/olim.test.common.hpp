@@ -480,53 +480,6 @@ result_is_symmetric(speed_func_3d s = default_speed_func, int n = 21,
   return testing::AssertionSuccess();
 }
 
-template <class olim>
-testing::AssertionResult
-factoring_sanity_check(speed_func s, speed_func f, int n = 51,
-                       double rfac = 0.1) {
-  double h = 2.0/(n - 1);
-  int i0 = n/2, j0 = i0;
-
-  olim m {n, n, h, s, 1, 1};
-  olim m_fac {n, n, h, s, 1, 1};
-
-  for (int i = 0; i < n; ++i) {
-    double y = h*i - 1.0;
-    for (int j = 0; j < n; ++j) {
-      double x = h*j - 1.0;
-      double r = std::sqrt(x*x + y*y);
-      if (r <= rfac) {
-        m_fac.set_node_parent(i, j, i0, j0);
-      }
-    }
-  }
-
-  m.add_boundary_node(i0, j0);
-  m.run();
-  
-  m_fac.add_boundary_node(i0, j0);
-  m_fac.run();
-
-  double U_ssq = 0, U_fac_ssq = 0, u_ssq = 0;
-  for (int i = 0; i < n; ++i) {
-    double y = h*i - 1;
-    for (int j = 0; j < n; ++j) {
-      double x = h*j - 1;
-      double u = f(x, y), U = m.get_value(i, j), Uf = m_fac.get_value(i, j);
-      u_ssq += u*u;
-      U_ssq += (U - u)*(U - u);
-      U_fac_ssq += (Uf - u)*(Uf - u);
-    }
-  }
-
-  double U_rel_l2 = std::sqrt(U_ssq/u_ssq);
-  double U_fac_rel_l2 = std::sqrt(U_fac_ssq/u_ssq);
-
-  return U_fac_rel_l2 <= U_rel_l2 ?
-    testing::AssertionSuccess() :
-    testing::AssertionFailure() << U_fac_rel_l2 << " > " << U_rel_l2;
-}
-
 template <class olim3d_t>
 testing::AssertionResult
 two_by_two_by_three_cells_are_correct() {

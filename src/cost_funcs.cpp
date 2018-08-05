@@ -1,6 +1,7 @@
 #include "cost_funcs.hpp"
 
 #include <cmath>
+#include <cstring>
 
 template <>
 void

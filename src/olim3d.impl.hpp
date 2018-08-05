@@ -353,6 +353,8 @@ void olim3d_bv<
 {
   using std::min;
 
+  assert(parent <= groups::nneib);
+
   // TODO: not currently using this. An easy way to use it would be to
   // map each parent index to a list of octants to iterate over.
   (void) parent;
@@ -383,10 +385,10 @@ void olim3d_bv<
     if (parent < 6) {
       Tnew = this->template line<1>(VAL(parent), SPEED_ARGS(parent), h);
       UPDATE_LINE_STATS(1);
-    } else if (parent < 18) {
+    } else if (groups::nneib > 6 && parent < 18) {
       Tnew = this->template line<2>(VAL(parent), SPEED_ARGS(parent), h);
       UPDATE_LINE_STATS(2);
-    } else {
+    } else if (groups::nneib > 18) {
       Tnew = this->template line<3>(VAL(parent), SPEED_ARGS(parent), h);
       UPDATE_LINE_STATS(3);
     }

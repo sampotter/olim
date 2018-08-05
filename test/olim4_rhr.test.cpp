@@ -31,3 +31,24 @@ TEST (olim4_rhr, agrees_with_basic_marcher) {
     ASSERT_TRUE(res);
   }
 }
+
+TEST (olim4_rhr, solution_is_exact_in_factored_region) {
+  olim_t o {3, 3, 1, (speed_func) default_speed_func, 1., 1.};
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      if (i == 1 && j == 1) continue;
+      o.set_node_parent(i, j, 1, 1);
+    }
+  }
+  o.add_boundary_node(1, 1);
+  o.run();
+
+  for (int i = 0; i < 3; ++i) {
+    double y = i - 1;
+    for (int j = 0; j < 3; ++j) {
+      double x = j - 1;
+      double U = o.get_value(i, j);
+      ASSERT_EQ(U, std::hypot(x, y));
+    }
+  }
+}

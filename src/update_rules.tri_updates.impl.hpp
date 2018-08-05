@@ -306,9 +306,9 @@ update_rules::rhr_tri_updates::tri(
   auto const grad = [&] (double lam) {
     axpy<dim>(lam, dp, p0, nu);
     sub<dim>(nu, p_fac, nufac);
-    scal_inplace<dim>(norm2<dim>(nu), nu);
-    scal_inplace<dim>(norm2<dim>(nufac), nufac);
-    return dtau + shfac*dot<3>(dp, nufac) + sh*dot<3>(dp, nu);
+    scal_inplace<dim>(1./norm2<dim>(nu), nu);
+    scal_inplace<dim>(1./norm2<dim>(nufac), nufac);
+    return dtau + shfac*dot<dim>(dp, nufac) + sh*dot<dim>(dp, nu);
   };
 
   double arglam;

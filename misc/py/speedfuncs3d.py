@@ -9,53 +9,68 @@ f0 = r
 s1 = lambda x, y, z: 1 - np.sin(r(x, y, z))
 f1 = lambda x, y, z: np.cos(r(x, y, z)) + r(x, y, z) - 1;
 
-s2 = lambda x, y, z: np.abs(x + y + z)
-f2 = lambda x, y, z: np.power(x + y + z, 2)/(2*np.sqrt(3))
+s2 = r;
+f2 = lambda x, y, z: (x**2 + y**2 + z**2)/2
 
-s3 = r;
-f3 = lambda x, y, z: (x**2 + y**2 + z**2)/2
+A = np.array([
+    [1,   1/4, 1/8],
+    [1/4, 1,   1/4],
+    [1/8, 1/4, 1]])
+alpha = np.pi/5
+C = lambda x, y, z: np.array([np.cos(alpha*x), np.cos(alpha*y), np.cos(alpha*z)])
+S = lambda x, y, z: np.array([np.sin(alpha*x), np.sin(alpha*y), np.sin(alpha*z)])
+# s3 = lambda x, y, z: np.linalg.norm(
+#     alpha*(np.diag(C(x, y, z))@(A + A.T)@S(x, y, z) - np.diag(S(x, y, z))@b))
+# f3 = lambda x, y, z: S(x, y, z)@A@S(x, y, z) + b@C(x, y, z) - b@C(0,0,0)
+s3 = lambda x, y, z: np.linalg.norm(alpha*np.diag(C(x, y, z))@(A + A.T)@S(x, y, z))
+f3 = lambda x, y, z: S(x, y, z)@A@S(x, y, z)
 
-s4 = lambda x, y, z: np.sqrt(
-    10*x*x + 37*y*y + 54*y*z + 37*z*z + 6*np.sqrt(2)*x*(z - y))/4
+Bsqrt = A
+s4 = lambda x, y, z: np.linalg.norm(Bsqrt@[x, y, z])
+f4 = lambda x, y, z: [x, y, z]@Bsqrt@[x, y, z]/2
 
-f4 = lambda x, y, z: (
-    6*x*x + 11*y*y + 10*y*z + 11*z*z + 2*np.sqrt(2)*x*(z - y))/16
+_slowness_funcs = [s0, s1, s2, s3, s4]
 
-s5 = lambda x, y, z: np.sqrt(x**18 + y**18 + z**18)
-f5 = lambda x, y, z: (x**10 + y**10 + z**10)/10
+_soln_funcs = [f0, f1, f2, s3, s4]
 
-_speed_funcs = [s0, s1, s2, s3, s4, s5]
+def get_field(g, X, Y, Z):
+    assert(X.shape == Y.shape)
+    assert(X.shape == Z.shape)
+    m, n, p = X.shape
+    return np.array([[[g(X[i, j, k], Y[i, j, k], Z[i, j, k]) for j in range(n)]
+                      for i in range(m)]
+                     for k in range(p)])
 
-_soln_funcs = [f0, f1, f2, f3, f4, f5]
+def get_fields(u, s, X, Y, Z):
+    return get_field(u, X, Y, Z), get_field(s, X, Y, Z)
 
-def speed_funcs():
-    return _speed_funcs
+def slowness_funcs():
+    return _slowness_funcs
 
-_speed_func_names = {
+_slowness_func_names = {
     s0: 's0',
     s1: 's1',
     s2: 's2',
     s3: 's3',
-    s4: 's4',
-    s5: 's5'
+    s4: 's4'
 }
 
-def speed_func_names():
-    return list(speed_func_names.values())
+def slowness_func_names():
+    return list(slowness_func_names.values())
 
-def get_speed_func_name(s):
-    return _speed_func_names[s]
+def get_slowness_func_name(s):
+    return _slowness_func_names[s]
 
-_speed_funcs_by_name = {
-    _speed_func_names[k]: k for k in _speed_func_names.keys()}
-def get_speed_func_by_name(name):
-    return _speed_funcs_by_name[name]
+_slowness_funcs_by_name = {
+    _slowness_func_names[k]: k for k in _slowness_func_names.keys()}
+def get_slowness_func_by_name(name):
+    return _slowness_funcs_by_name[name]
 
-for func in _speed_funcs + _soln_funcs:
+for func in _slowness_funcs + _soln_funcs:
     func.dim = 3
 
 _soln_func_map = {
-    _speed_funcs[i]: _soln_funcs[i] for i in range(len(_speed_funcs))}
+    _slowness_funcs[i]: _soln_funcs[i] for i in range(len(_slowness_funcs))}
 
 def get_soln_func(s):
     return _soln_func_map[s]

@@ -225,6 +225,26 @@ TEST (tri_updates, mp1_tri22_works) {
   ASSERT_DOUBLE_EQ(TRI22(mp1, u0, u1, s, s0, s1, h), T);
 }
 
+TEST (tri_updates, rhr_basic_factoring_test) {
+  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+
+  u0 = u1 = s = s0 = s1 = h = s_fac = 1;
+
+  p0[0] = 1;
+  p0[1] = 0;
+
+  p1[0] = 0;
+  p1[1] = 1;
+
+  p_fac[0] = 1;
+  p_fac[1] = 1;
+
+  auto update = rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
+
+  ASSERT_NEAR(update.lambda[0], 0.5, EPS(double));
+  ASSERT_NEAR(update.value, sqrt2, EPS(double));
+}
+
 TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 

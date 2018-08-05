@@ -52,6 +52,7 @@ inline void lag_mult_impl(double df[2], double d2f[3], double const lam[2],
       mu[0] = (p[0] + p[1])/(d2f[0] + 2*d2f[1] + d2f[2]);
     } else {
       assert(false);
+      mu[0] = mu[1] = INF(double);
     }
   } else if (num_active == 2) {
     // TODO: we can do this in place without defining A and b
@@ -74,11 +75,13 @@ inline void lag_mult_impl(double df[2], double d2f[3], double const lam[2],
       b[1] = p[0] + p[1];
     } else {
       assert(false);
+      A[0] = A[1] = A[2] = b[0] = b[1] = INF(double);
     }
     mu[0] = A[0]*b[0] + A[1]*b[1];
     mu[1] = A[1]*b[0] + A[2]*b[1];
   } else {
     assert(false);
+    mu[0] = mu[1] = INF(double);
   }
 }
 

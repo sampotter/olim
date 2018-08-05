@@ -37,7 +37,7 @@ locator = matplotlib.ticker.LogLocator()
 
 Es = [[None for i in range(4)] for j in range(4)]
 
-for a, (s, f) in enumerate([(s1, f1), (s3, f3), (s5, f5), (s6, f6)]):
+for a, (s, f) in enumerate([(s1, f1), (s2, f2), (s3, f3), (s4, f4)]):
 
     u = f(X, Y)
     S = s(X, Y)

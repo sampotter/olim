@@ -10,7 +10,7 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pyeikonal as eik
-import speedfuncs
+import speedfuncs3d
 
 from matplotlib import rc
 
@@ -22,9 +22,9 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Olim = eik.Olim8Rect
+Olim = eik.Olim26Rect
 
-N = 2**np.arange(5, 15) + 1
+N = 2**np.arange(3, 9) + 1
 
 r_fac = 0.1
 radinf = range(1, 4)
@@ -35,59 +35,68 @@ E2facinf = {scale: np.empty(len(N)) for scale in radinf}
 EI, EIfac = np.empty(len(N)), np.empty(len(N))
 EIfacinf = {scale: np.empty(len(N)) for scale in radinf}
 
-for k, n in enumerate(N):
+for l, n in enumerate(N):
     print('n = %d' % n)
 
     h = 2/(n - 1)
-    i0, j0 = n//2, n//2
-    l = np.linspace(-1, 1, n)
-    x, y = np.meshgrid(l, l)
+    i0, j0, k0 = n//2, n//2, n//2
+    L = np.linspace(-1, 1, n)
+    x, y, z = np.meshgrid(L, L, L)
 
-    u, s = speedfuncs.get_fields(speedfuncs.f0, speedfuncs.s0, x, y)
+    u, s = speedfuncs3d.get_fields(speedfuncs3d.f0, speedfuncs3d.s0, x, y, z)
 
     # unfactored
     
     o = Olim(s, h)
-    o.addBoundaryNode(i0, j0)
+    o.addBoundaryNode(i0, j0, k0)
     o.run()
-    U = np.array([[o.getValue(i, j) for i in range(n)] for j in range(n)])
-    E2[k] = norm(u - U, 'fro')/norm(u, 'fro')
-    EI[k] = norm(u - U, np.inf)/norm(u, np.inf)
+    U = np.array([[[o.getValue(i, j, k) for i in range(n)]
+                   for j in range(n)]
+                  for k in range(n)])
+    E2[l] = norm((u - U).flatten())/norm(u.flatten())
+    EI[l] = norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
     # factored using constant radius disk
     
-    R = np.sqrt(x**2 + y**2)
-    I, J = np.where(R < r_fac)
+    R = np.sqrt(x**2 + y**2 + z**2)
+    I, J, K = np.where(R < r_fac)
 
     ofac = Olim(s, h)
-    for i, j in zip(I, J):
-        ofac.set_node_parent(i, j, i0, j0)
-    ofac.addBoundaryNode(i0, j0)
+    for i, j, k in zip(I, J, K):
+        ofac.set_node_parent(i, j, k, i0, j0, k0)
+    ofac.addBoundaryNode(i0, j0, k0)
     ofac.run()
-    Ufac = np.array([[ofac.getValue(i, j) for i in range(n)] for j in range(n)])
-    E2fac[k] = norm(u - Ufac, 'fro')/norm(u, 'fro')
-    EIfac[k] = norm(u - Ufac, np.inf)/norm(u, np.inf)
+    Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
+                      for j in range(n)]
+                     for k in range(n)])
+    E2fac[l] = norm((u - Ufac).flatten())/norm(u.flatten())
+    EIfac[l] = norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
     # factored using square with logarithmic side length
 
     for scale in radinf:
         rad = min(n//2, scale*int(np.ceil(np.log2(n))))
-        dI, dJ = np.meshgrid(range(-rad, rad + 1), range(-rad, rad + 1))
+        dI, dJ, dK = np.meshgrid(
+            range(-rad, rad + 1), range(-rad, rad + 1), range(-rad, rad + 1))
         dI = dI.flatten()
         dJ = dJ.flatten()
+        dK = dK.flatten()
 
         dI = np.delete(dI, (len(dI)//2,), axis=0)
         dJ = np.delete(dJ, (len(dJ)//2,), axis=0)
+        dK = np.delete(dK, (len(dK)//2,), axis=0)
 
         ofac = Olim(s, h)
-        for di, dj in zip(dI, dJ):
-            ofac.set_node_parent(i0 + di, j0 + dj, i0, j0)
-        ofac.addBoundaryNode(i0, j0)
+        for di, dj, dk in zip(dI, dJ, dK):
+            ofac.set_node_parent(i0 + di, j0 + dj, k0 + dk, i0, j0, k0)
+        ofac.addBoundaryNode(i0, j0, k0)
         ofac.run()
-        Ufac = np.array(
-            [[ofac.getValue(i, j) for i in range(n)] for j in range(n)])
-        E2facinf[scale][k] = norm(u - Ufac, 'fro')/norm(u, 'fro')
-        EIfacinf[scale][k] = norm(u - Ufac, np.inf)/norm(u, np.inf)
+        Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
+                          for j in range(n)]
+                         for k in range(n)])
+        E2facinf[scale][l] = norm((u - Ufac).flatten())/norm(u.flatten())
+        EIfacinf[scale][l] = \
+            norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
 fig, ax = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8, 4))
 
@@ -144,5 +153,4 @@ handles, labels = ax[1].get_legend_handles_labels()
 fig.legend(handles, labels, prop={'size': 8}, loc='upper center', ncol=3)
 fig.tight_layout()
 fig.subplots_adjust(0.075, 0.1, 0.995, 0.875)
-# fig.show()
-fig.savefig('factoring-error-example.eps')
+fig.show()

@@ -381,7 +381,7 @@ void olim3d_bv<
 
   // Do line update corresponding to parent node.
   {
-    double Tnew;
+    double Tnew = INF(double);
     if (parent < 6) {
       Tnew = this->template line<1>(VAL(parent), SPEED_ARGS(parent), h);
       UPDATE_LINE_STATS(1);
@@ -392,6 +392,7 @@ void olim3d_bv<
       Tnew = this->template line<3>(VAL(parent), SPEED_ARGS(parent), h);
       UPDATE_LINE_STATS(3);
     }
+    assert(!std::isinf(Tnew));
 #if TRACK_PARENTS
     if (Tnew < T) {
       T = Tnew;

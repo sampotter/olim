@@ -25,7 +25,9 @@ plt.ion()
 plt.style.use('bmh')
 
 N = 2**np.arange(3, 9) + 1
-r_fac = 0.1
+
+use_local_factoring = True
+r_fac = 0.01
 
 Slows = [speedfuncs.s1, speedfuncs.s2, speedfuncs.s3, speedfuncs.s4]
 Solns = {
@@ -64,8 +66,9 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     for _ in range(ntrials):
 
         o = Olim(S, h)
-        # for i, j in zip(I, J):
-        #     o.set_node_parent(i, j, i0, j0)
+        if use_local_factoring:
+            for i, j in zip(I, J):
+                o.set_node_parent(i, j, i0, j0)
         o.addBoundaryNode(i0, j0)
 
         t0 = time.perf_counter()
@@ -76,7 +79,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
     # get errors
 
-    U = np.array([[o.getValue(i, j) for i in range(n)] for j in range(n)])
+    U = np.array([[o.getValue(i, j) for j in range(n)] for i in range(n)])
     E2[slow, Olim][ind] = norm(u - U, 'fro')/norm(u, 'fro')
     EI[slow, Olim][ind] = norm(u - U, np.inf)/norm(u, np.inf)
 

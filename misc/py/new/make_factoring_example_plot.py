@@ -22,9 +22,9 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Olim = eik.Olim8Rect
+Olim = eik.Olim4Mid1
 
-N = 2**np.arange(5, 15) + 1
+N = 2**np.arange(5, 10) + 1
 
 r_fac = 0.1
 radinf = range(1, 4)

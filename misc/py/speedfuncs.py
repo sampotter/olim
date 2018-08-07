@@ -32,7 +32,7 @@ f_qv = lambda x, y: 2*np.arccosh(1 + 0.25*np.sqrt(x*x + y*y)*s_qv(x, y))
 def get_field(g, X, Y):
     assert(X.shape == Y.shape)
     m, n = X.shape
-    return np.array([[g(X[i, j], Y[i, j]) for i in range(m)] for j in range(n)])
+    return np.array([[g(X[i, j], Y[i, j]) for j in range(n)] for i in range(m)])
 
 def get_fields(u, s, X, Y):
     return get_field(u, X, Y), get_field(s, X, Y)

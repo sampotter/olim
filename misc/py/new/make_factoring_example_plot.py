@@ -23,9 +23,9 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Olim = eik.Olim4Mid1
+Olim = eik.Olim8Mid1
 
-N = 2**np.arange(5, 10) + 1
+N = 2**np.arange(5, 11) + 1
 
 r_fac = 0.1
 radinf = range(1, 4)

@@ -2,9 +2,10 @@
 
 BUILD_TYPE='Release'
 
+import os
 import sys
 if '../../build/%s' % BUILD_TYPE not in sys.path:
-    sys.path.insert(0, '../../build/%s' % BUILD_TYPE)
+    sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
 
 import common
 import itertools
@@ -24,7 +25,8 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-N = 2**np.arange(3, 13) + 1
+Npows =np.arange(3, 11) 
+N = 2**Npows + 1
 
 use_local_factoring = True
 r_fac = 0.1
@@ -93,22 +95,30 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
 # make plots
  
-fig, axes = plt.subplots(4, 2, sharex=True, sharey=True, figsize=(8, 7))
+marker = '*'
+linestyles = ['solid', 'dashed', 'dotted']
+colors = ['#1f77b4', '#d62728']
+
+# time vs error
+
+fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(8, 7))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows):
-    for Olim in Olims:
+    for ind, Olim in enumerate(Olims):
         name = common.get_marcher_name(Olim)
         axes[row, 0].loglog(
-            T[slow, Olim], E2[slow, Olim], '*-', linewidth=1, label=name)
+            T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
+            linestyle=linestyles[ind % 3], linewidth=1, label=name)
         axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
                           transform=axes[row, 0].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
         axes[row, 1].loglog(
-            T[slow, Olim], EI[slow, Olim], '*-', linewidth=1, label=name)
+            T[slow, Olim], EI[slow, Olim], marker=marker, color=colors[ind//3],
+            linestyle=linestyles[ind % 3], linewidth=1, label=name)
         axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
                           transform=axes[row, 1].transAxes,
                           horizontalalignment='center',
@@ -122,4 +132,47 @@ handles, labels = axes[-1, -1].get_legend_handles_labels()
 fig.legend(handles, labels, loc='upper center', ncol=3)
 fig.tight_layout()
 fig.subplots_adjust(0.05, 0.075, 0.995, 0.8625)
+fig.savefig('time_vs_error_2d.eps')
+fig.show()
+
+# size vs error
+
+fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(8, 7))
+
+axes[0, 0].set_title('Relative $\ell_2$ Error')
+axes[0, 1].set_title('Relative $\ell_\infty$ Error')
+
+for row, slow in enumerate(Slows):
+    for ind, Olim in enumerate(Olims):
+        name = common.get_marcher_name(Olim)
+        axes[row, 0].loglog(
+            N, E2[slow, Olim], marker=marker, color=colors[ind//3],
+            linestyle=linestyles[ind % 3], linewidth=1, label=name)
+        axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
+                          transform=axes[row, 0].transAxes,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+        axes[row, 0].minorticks_off()
+        axes[row, 1].loglog(
+            N, EI[slow, Olim], marker=marker, color=colors[ind//3],
+            linestyle=linestyles[ind % 3], linewidth=1, label=name)
+        axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
+                          transform=axes[row, 1].transAxes,
+                          horizontalalignment='center',
+                          verticalalignment='center')
+        axes[row, 1].minorticks_off()
+
+axes[-1, 0].set_xlabel('$N$')
+
+xticklabels = ['$2^%d + 1$' % p for p in Npows]
+axes[-1, 1].set_xlabel('$N$')    
+axes[-1, 1].set_xticks(N[::2])
+axes[-1, 1].set_xticklabels(xticklabels[::2])
+
+handles, labels = axes[-1, -1].get_legend_handles_labels()
+    
+fig.legend(handles, labels, loc='upper center', ncol=3)
+fig.tight_layout()
+fig.subplots_adjust(0.05, 0.075, 0.995, 0.8625)
+fig.savefig('size_vs_error_2d.eps')
 fig.show()

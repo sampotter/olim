@@ -47,7 +47,7 @@ def compute_soln(marcher, s, M):
     m = marcher(s(*np.meshgrid(l, l)), 2/(M - 1))
     m.addBoundaryNode(int(M/2), int(M/2))
     m.run()
-    U = np.array([[m.getValue(i, j) for i in range(M)] for j in range(M)])
+    U = np.array([[m.getValue(i, j) for j in range(M)] for i in range(M)])
     return U
 
 def tic():

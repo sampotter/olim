@@ -2,9 +2,10 @@
 
 BUILD_TYPE='Release'
 
+import os
 import sys
 if '../../build/%s' % BUILD_TYPE not in sys.path:
-    sys.path.insert(0, '../../build/%s' % BUILD_TYPE)
+    sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
 
 import itertools
 import matplotlib.pyplot as plt

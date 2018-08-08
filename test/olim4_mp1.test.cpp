@@ -24,3 +24,7 @@ TEST (olim4_mp1, result_is_symmetric) {
   ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) default_speed_func));
   ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) s1));
 }
+
+TEST (olim4_mp1, solution_is_exact_in_factored_region) {
+  ASSERT_TRUE(solution_is_exact_in_factored_square<olim_t>(3));
+}

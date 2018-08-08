@@ -29,3 +29,7 @@ TEST (olim4_rhr, agrees_with_basic_marcher) {
   auto res = olims_agree<olim_t, basic_marcher>((speed_func) default_speed_func);
   ASSERT_TRUE(res);
 }
+
+TEST (olim4_mp0, solution_is_exact_in_factored_region) {
+  ASSERT_TRUE(solution_is_exact_in_factored_square<olim_t>(3));
+}

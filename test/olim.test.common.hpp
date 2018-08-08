@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "common.defs.hpp"
+#include "common.macros.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
@@ -703,6 +704,73 @@ planes_agree_nonsymmetric(
     }
   }
 
+  return testing::AssertionSuccess();
+}
+
+template <class olim>
+testing::AssertionResult
+solution_is_exact_in_factored_square(
+  int n, double tol = EPS(double), std::enable_if_t<olim::ndim == 2> * = 0)
+{
+  double h = 2./(n - 1);
+  int i0 = n/2, j0 = n/2;
+  olim o {n, n, h, (speed_func) default_speed_func, 1., 1.};
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      o.set_node_parent(i, j, i0, j0);
+    }
+  }
+  o.add_boundary_node(i0, j0);
+  o.run();
+  for (int i = 0; i < n; ++i) {
+    double y = h*i - 1;
+    for (int j = 0; j < n; ++j) {
+      double x = h*j - 1;
+      double u = std::hypot(x, y);
+      double U = o.get_value(i, j);
+      if (fabs(u - U) > tol*fabs(u) + tol) {
+        return testing::AssertionFailure()
+          << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)
+          << " + " << tol;
+      }
+    }
+  }
+  return testing::AssertionSuccess();
+}
+
+template <class olim>
+testing::AssertionResult
+solution_is_exact_in_factored_square(
+  int n, double tol = EPS(double), std::enable_if_t<olim::ndim == 3> * = 0)
+{
+  double h = 2./(n - 1);
+  int i0 = n/2, j0 = n/2, k0 = n/2;
+  olim o {n, n, n, h, (speed_func) default_speed_func, 1., 1., 1.};
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      for (int k = 0; k < n; ++k) {
+        o.set_node_parent(i, j, k, i0, j0, k0);
+      }
+    }
+  }
+  o.add_boundary_node(i0, j0, k0);
+  o.run();
+  for (int i = 0; i < n; ++i) {
+    double y = h*i - 1;
+    for (int j = 0; j < n; ++j) {
+      double x = h*j - 1;
+      for (int k = 0; k < n; ++k) {
+        double z = h*k - 1;
+        double u = std::sqrt(x*x + y*y + z*z);
+        double U = o.get_value(i, j, k);
+        if (fabs(u - U) > tol*fabs(u) + tol) {
+          return testing::AssertionFailure()
+            << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)
+            << " + " << tol;
+        }
+      }
+    }
+  }
   return testing::AssertionSuccess();
 }
 

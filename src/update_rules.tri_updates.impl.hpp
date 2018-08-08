@@ -116,9 +116,9 @@ update_rules::mp0_tri_updates::tri(
   auto const grad = [&] (double lam) {
     axpy<dim>(lam, dp, p0, nu);
     sub<dim>(nu, p_fac, nufac);
-    scal_inplace<dim>(norm2<dim>(nu), nu);
-    scal_inplace<dim>(norm2<dim>(nufac), nufac);
-    return dtau + shfac*dot<3>(dp, nufac) + sh*dot<3>(dp, nu);
+    scal_inplace<dim>(1./norm2<dim>(nu), nu);
+    scal_inplace<dim>(1./norm2<dim>(nufac), nufac);
+    return dtau + shfac*dot<dim>(dp, nufac) + sh*dot<dim>(dp, nu);
   };
 
   double arglam;
@@ -496,11 +496,11 @@ update_rules::mp1_tri_updates::tri(
     axpy<dim>(lam, dp, p0, nu);
     sub<dim>(nu, p_fac, nufac);
     l_lam = norm2<dim>(nu);
-    scal_inplace<dim>(l_lam, nu);
-    scal_inplace<dim>(norm2<dim>(nufac), nufac);
+    scal_inplace<dim>(1./l_lam, nu);
+    scal_inplace<dim>(1./norm2<dim>(nufac), nufac);
     s_lam = (s + s0 + ds*lam)/2;
-    return dtau + shfac*dot<3>(dp, nufac) +
-      h*(s_lam*dot<3>(dp, nu) + l_lam*ds/2);
+    return dtau + shfac*dot<dim>(dp, nufac) +
+      h*(s_lam*dot<dim>(dp, nu) + l_lam*ds/2);
   };
 
   double arglam;

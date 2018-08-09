@@ -30,7 +30,7 @@ Npows = np.arange(3, 7)
 N = 2**Npows + 1
 
 use_local_factoring = True
-r_fac = 0.1
+r_fac = 0.3
 
 Slows = [speedfuncs3d.s1, speedfuncs3d.s2, speedfuncs3d.s3, speedfuncs3d.s4]
 Solns = {
@@ -42,7 +42,8 @@ Solns = {
 Olims = [eik.Olim6Mid0, eik.Olim6Mid1, eik.Olim6Rect,
          eik.Olim18Mid0, eik.Olim18Mid1, eik.Olim18Rect,
          eik.Olim26Mid0, eik.Olim26Mid1, eik.Olim26Rect,
-         eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect]
+         eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect,
+         eik.BasicMarcher3D]
 
 Slows_by_Olims = list(itertools.product(Slows, Olims))
 
@@ -115,7 +116,7 @@ axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows[:2]):
-    for ind, Olim in enumerate(Olims):
+    for ind, Olim in enumerate(Olims[:-1]):
         name = common3d.get_marcher_name(Olim)
         axes[row, 0].loglog(
             T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
@@ -131,6 +132,9 @@ for row, slow in enumerate(Slows[:2]):
                           transform=axes[row, 1].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
+    Olim = Olims[-1]
+    axes[row, 0].loglog(T[slow, Olim], E2[slow, Olim], 'k-^', linewidth=1)
+    axes[row, 1].loglog(T[slow, Olim], EI[slow, Olim], 'k-^', linewidth=1)
 
 axes[-1, 0].set_xlabel('Time (s.)')    
 axes[-1, 1].set_xlabel('Time (s.)')    
@@ -151,7 +155,7 @@ axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows[2:]):
-    for ind, Olim in enumerate(Olims):
+    for ind, Olim in enumerate(Olims[:-1]):
         name = common3d.get_marcher_name(Olim)
         axes[row, 0].loglog(
             T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
@@ -167,6 +171,9 @@ for row, slow in enumerate(Slows[2:]):
                           transform=axes[row, 1].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
+    Olim = Olims[-1]
+    axes[row, 0].loglog(T[slow, Olim], E2[slow, Olim], 'k-^', linewidth=1)
+    axes[row, 1].loglog(T[slow, Olim], EI[slow, Olim], 'k-^', linewidth=1)
 
 axes[-1, 0].set_xlabel('Time (s.)')    
 axes[-1, 1].set_xlabel('Time (s.)')    
@@ -189,7 +196,7 @@ axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows[:2]):
-    for ind, Olim in enumerate(Olims):
+    for ind, Olim in enumerate(Olims[:-1]):
         name = common3d.get_marcher_name(Olim)
         axes[row, 0].loglog(
             N, E2[slow, Olim], marker=marker, color=colors[ind//3],
@@ -207,6 +214,9 @@ for row, slow in enumerate(Slows[:2]):
                           horizontalalignment='center',
                           verticalalignment='center')
         axes[row, 1].minorticks_off()
+    Olim = Olims[-1]
+    axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
+    axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
 
 axes[-1, 0].set_xlabel('$N$')
 
@@ -231,7 +241,7 @@ axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows[2:]):
-    for ind, Olim in enumerate(Olims):
+    for ind, Olim in enumerate(Olims[:-1]):
         name = common3d.get_marcher_name(Olim)
         axes[row, 0].loglog(
             N, E2[slow, Olim], marker=marker, color=colors[ind//3],
@@ -249,6 +259,9 @@ for row, slow in enumerate(Slows[2:]):
                           horizontalalignment='center',
                           verticalalignment='center')
         axes[row, 1].minorticks_off()
+    Olim = Olims[-1]
+    axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
+    axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
 
 axes[-1, 0].set_xlabel('$N$')
 
@@ -264,4 +277,3 @@ fig.tight_layout()
 fig.subplots_adjust(0.05, 0.075, 0.995, 0.85)
 fig.savefig('size_vs_error_3d_part2.eps')
 fig.show()
-

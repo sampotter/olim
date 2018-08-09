@@ -183,26 +183,32 @@ struct olim3d_hu:
   void update_crtp(node * n, node ** nb, int parent, double & T);
 };
 
+#define D1 1
+#define D2 2
+
 using olim3d_hu_rhr = olim3d_hu<
   node_3d,
   update_rules::rhr_line_updates,
   update_rules::rhr_tri_updates,
   update_rules::rhr_tetra_updates,
-  L1, 1, 2>;
+  L1, D1, D2>;
 
 using olim3d_hu_mp0 = olim3d_hu<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp0_tri_updates,
   update_rules::mp0_tetra_updates,
-  L1, 1, 2>;
+  L1, D1, D2>;
 
 using olim3d_hu_mp1 = olim3d_hu<
   node_3d,
   update_rules::mp_line_updates,
   update_rules::mp1_tri_updates,
   update_rules::mp1_tetra_updates,
-  L1, 1, 2>;
+  L1, D1, D2>;
+
+#undef D1
+#undef D2
 
 #include "olim3d.impl.hpp"
 

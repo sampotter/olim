@@ -97,6 +97,7 @@ void tetra122_is_symmetric_with_constant_slowness() {
   double u1 = 2.2;
   double u2 = 2.0;
   double s = 1, s0 = 1.0, s1 = 1.0, s2 = 1.0, h = 1;
+
   double val012 = get_T(TETRA122(r, u0, u1, u2, s, s0, s1, s2, h));
   double val021 = get_T(TETRA122(r, u0, u2, u1, s, s0, s1, s2, h));
   ASSERT_DOUBLE_EQ(val012, val021);
@@ -369,4 +370,56 @@ void tetra111_mp0_is_symmetric_with_nonconstant_slowness() {
 
 TEST (tetra_updates, tetra111_is_symmetric_with_nonconstant_slowness) {
   tetra111_mp0_is_symmetric_with_nonconstant_slowness();
+}
+
+template <class rules>
+testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
+  double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;
+  u0 = u1 = u2 = sqrt2;
+  h = 1;
+  s = s0 = s1 = s2 = s_fac = 1;
+
+  // p_hat = (1, 1, 1), p0 = (1, 1, 0), p1 = (1, 0, 1),
+  // p1 = (0, 1, 1), p_fac = (0, 0, 0)
+  p0[0] = p1[1] = p2[2] = -1;
+  p0[1] = p1[2] = p2[0] = 0;
+  p0[2] = p1[0] = p2[1] = 0;
+  p_fac[0] = p_fac[1] = p_fac[2] = -1;
+
+  rules r;
+  auto update = r.tetra(u0, u1, u2, s, s0, s1, s2, h, p0, p1, p2, p_fac, s_fac);
+  {
+    double gt = 1./3;
+    if (fabs(update.lambda[0] - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << update.lambda[0] << " - 1/3| > " << tol*gt + tol;
+    }
+  }
+  {
+    double gt = 1./3;
+    if (fabs(update.lambda[1] - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << update.lambda[1] << " - 1/3| > " << tol*gt + tol;
+    }
+  }
+  {
+    double gt = sqrt3;
+    if (fabs(update.value - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << update.value << " - sqrt(3)| > " << tol*gt + tol;
+    }
+  }
+  return testing::AssertionSuccess();
+}
+
+TEST (tetra_updates, mp0_basic_factoring_test) {
+  ASSERT_TRUE(basic_factoring_works<mp0_tetra_updates>());
+}
+
+TEST (tetra_updates, mp1_basic_factoring_test) {
+  ASSERT_TRUE(basic_factoring_works<mp1_tetra_updates>());
+}
+
+TEST (tetra_updates, rhr_basic_factoring_test) {
+  ASSERT_TRUE(basic_factoring_works<rhr_tetra_updates>());
 }

@@ -55,5 +55,5 @@ TEST (MARCHER, s1_symmetry_test) {
 }
 
 TEST (MARCHER, solution_is_exact_in_factored_region) {
-  ASSERT_TRUE(solution_is_exact_in_factored_square<olim_t>(3));
+  ASSERT_TRUE(solution_is_exact_in_factored_square<olim3d_t>(5));
 }

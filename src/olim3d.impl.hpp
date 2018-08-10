@@ -625,7 +625,7 @@ void olim3d_hu<
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
-  double h = this->get_h(), s = this->get_speed(i, j, k), s_[26];
+  double h = this->get_h(), s = this->get_speed(i, j, k), s_[26], s_fac;
   for (int l = 0; l < 26; ++l) {
     if (nb[l]) {
       s_[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));
@@ -645,7 +645,7 @@ void olim3d_hu<
    */
   double Tnew, T0 = INF(double), T1 = INF(double), T2 = INF(double);
   int l0 = -1, l1 = -1;
-  double p0[3], p1[3], p2[3];
+  double p0[3], p1[3], p2[3], p_fac[3];
 
   // Depending on the compilation flag HU_USE_PARENT_NODE, either let
   // l0 be the index of the updating parent, or let l0 be the index of
@@ -682,6 +682,15 @@ void olim3d_hu<
   p0[2] = __dk(l0);
 #endif // HU_USE_PARENT_NODE
 
+  if (n->has_parent()) {
+    auto n_fac = static_cast<node *>(n->get_parent());
+    int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
+    s_fac = this->get_speed(i_fac, j_fac, k_fac);
+    p_fac[0] = i_fac - i;
+    p_fac[1] = j_fac - j;
+    p_fac[2] = k_fac - k;
+  }
+
   // Create a cache for the minimizing lambdas to use for skipping
   // tetrahedron updates. Initialize it to -1 so that we can tell
   // which triangle updates have been computed.
@@ -689,6 +698,8 @@ void olim3d_hu<
   std::fill(arglam, arglam + sizeof(arglam)/sizeof(double), -1);
 
   // Find the minimal triangle update containing l0.
+  //
+  // TODO: skip triangle updates
   for (int l = 0; l < 26; ++l) {
     if (l != l0 && nb[l]) {
       p1[0] = __di(l);
@@ -706,8 +717,11 @@ void olim3d_hu<
       }
 
       // Do the triangle update.
-      auto const tmp = this->template tri<3>(
-        p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
+      auto const tmp = n->has_parent() ?
+        this->template tri<3>(
+          VAL(l0), VAL(l), SPEED_ARGS(l0, l), h, p0, p1, p_fac, s_fac) :
+        this->template tri<3>(
+          p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
 #if COLLECT_STATS
       node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
 #endif
@@ -815,8 +829,12 @@ void olim3d_hu<
         // third update. It's unclear how efficient this will be...
 
         // Finally, do the tetrahedron update.
-        auto const tmp = this->template tetra(
-          p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
+        auto const tmp = n->has_parent() ?
+          this->tetra(
+            VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h, p0, p1, p2,
+            p_fac, s_fac) :
+          this->tetra(
+            p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
 #if COLLECT_STATS
         node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
 #endif

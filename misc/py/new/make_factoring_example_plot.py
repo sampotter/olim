@@ -29,10 +29,12 @@ Olim3d = eik.Olim26Rect
 
 # Npow = np.array([3, 6, 9, 12])
 Npow = np.arange(3, 13)
+# Npow = np.arange(3, 10)
 N = 2**Npow + 1
 
 # Npow_3d = np.array([2, 4, 6, 8])
 Npow_3d = np.arange(2, 9)
+# Npow_3d = np.arange(2, 7)
 N_3d = 2**Npow_3d + 1
 
 r_fac = 0.1
@@ -180,24 +182,21 @@ ax.loglog(N[mask], E2[mask], '*--', label='Unfactored', linewidth=1)
 for scale in radinf:
     mask = E2facinf[scale] > tol
     ax.loglog(N[mask], E2facinf[scale][mask],
-              '*--', label='Factored (square, $k_{fac} = %d$)' % scale,
+              '*--', label='Square ($k_{fac} = %d$)' % scale,
               linewidth=1)
 mask = E2fac > tol
 ax.loglog(N[mask], E2fac[mask], '*--',
-          label='Factored (disk, $r_{fac} = %g$)' % r_fac,
+          label='Disk ($r_{fac} = %g$)' % r_fac,
           linewidth=1)
 ones = np.ones_like(N[2:])
 H = 1/N[2:]
-A0 = np.column_stack([H, H*np.log(1/H)])
-A1 = np.column_stack([H])
-A2 = np.column_stack([H*np.log(1/H)])
-C0 = np.linalg.lstsq(A0, E2fac[2:], rcond=None)[0]
-C1 = np.linalg.lstsq(A1, E2fac[2:], rcond=None)[0]
-C2 = np.linalg.lstsq(A2, E2fac[2:], rcond=None)[0]
-ax.loglog(N[2:], A1@C1, '^-k', label='$Ch^{-1}$', linewidth=1)
+A = np.column_stack([H])
+C = np.linalg.lstsq(A, E2fac[2:])[0]
+ax.loglog(N[2:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_title('Relative $\ell_2$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
+ax.set_ylabel('\texttt{olim8rhr}')
 
 ax = axes[0, 1]
 tol = 1e-15
@@ -206,21 +205,17 @@ ax.loglog(N[mask], EI[mask], '*--', label='Unfactored', linewidth=1)
 for scale in radinf:
     mask = EIfacinf[scale] > tol
     ax.loglog(N[mask], EIfacinf[scale][mask],
-              '*--', label='Factored (square, $k_{fac} = %d$)' % scale,
+              '*--', label='Square ($k_{fac} = %d$)' % scale,
               linewidth=1)
 mask = EIfac > tol
 ax.loglog(N[mask], EIfac[mask], '*--',
-          label='Factored (disk, $r_{fac} = %g$)' % r_fac,
+          label='Disk ($r_{fac} = %g$)' % r_fac,
           linewidth=1)
 ones = np.ones_like(N[2:])
 H = 1/N[2:]
-A0 = np.column_stack([H, H*np.log(1/H)])
-A1 = np.column_stack([H])
-A2 = np.column_stack([H*np.log(1/H)])
-C0 = np.linalg.lstsq(A0, EIfac[2:], rcond=None)[0]
-C1 = np.linalg.lstsq(A1, EIfac[2:], rcond=None)[0]
-C2 = np.linalg.lstsq(A2, EIfac[2:], rcond=None)[0]
-ax.loglog(N[2:], A1@C1, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
+A = np.column_stack([H])
+C = np.linalg.lstsq(A, EIfac[2:])[0]
+ax.loglog(N[2:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
 ax.set_title('Relative $\ell_\infty$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
@@ -235,20 +230,21 @@ ax.loglog(N_3d[mask], E2_3d[mask], '*--', label='Unfactored', linewidth=1)
 for scale in radinf:
     mask = E2facinf_3d[scale] > tol
     ax.loglog(N_3d[mask], E2facinf_3d[scale][mask],
-              '*--', label='Factored (square, $k_{fac} = %d$)' % scale,
+              '*--', label='Square ($k_{fac} = %d$)' % scale,
               linewidth=1)
 mask = E2fac_3d > tol
 ax.loglog(N_3d[mask], E2fac_3d[mask], '*--',
-          label='Factored (disk, $r_{fac} = %g$)' % r_fac,
+          label='Disk ($r_{fac} = %g$)' % r_fac,
           linewidth=1)
 ones = np.ones_like(N_3d[3:])
 H = 1/N_3d[3:]
 A = np.column_stack([H])
-C = np.linalg.lstsq(A, E2fac_3d[3:], rcond=None)[0]
+C = np.linalg.lstsq(A, E2fac_3d[3:])[0]
 ax.loglog(N_3d[3:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
+ax.set_ylabel('\texttt{olim26rhr}')
 
 ax = axes[1, 1]
 tol = 1e-15
@@ -257,16 +253,16 @@ ax.loglog(N_3d[mask], EI_3d[mask], '*--', label='Unfactored', linewidth=1)
 for scale in radinf:
     mask = EIfacinf_3d[scale] > tol
     ax.loglog(N_3d[mask], EIfacinf_3d[scale][mask],
-              '*--', label='Factored (square, $k_{fac} = %d$)' % scale,
+              '*--', label='Square ($k_{fac} = %d$)' % scale,
               linewidth=1)
 mask = EIfac_3d > tol
 ax.loglog(N_3d[mask], EIfac_3d[mask], '*--',
-          label='Factored (disk, $r_{fac} = %g$)' % r_fac,
+          label='Disk ($r_{fac} = %g$)' % r_fac,
           linewidth=1)
 ones = np.ones_like(N_3d[3:])
 H = 1/N_3d[3:]
 A = np.column_stack([H])
-C = np.linalg.lstsq(A, EIfac_3d[3:], rcond=None)[0]
+C = np.linalg.lstsq(A, EIfac_3d[3:])[0]
 ax.loglog(N_3d[3:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])

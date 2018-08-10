@@ -61,8 +61,6 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
          p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, value);
 #endif
 
-  assert(update.value + EPS(double) >= __max3(u0, u1, u2));
-
   return update;
 }
 
@@ -114,8 +112,6 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
 #  error Not implemented yet
 #endif
 
-  assert(update.value >= __max3(u0, u1, u2));
-
   return update;
 }
 
@@ -165,8 +161,6 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
          "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
          u0, u1, u2, s, s0, s1, s2, h, value);
 #endif
-
-  assert(update.value >= __max3(u0, u1, u2));
 
   return update;
 }

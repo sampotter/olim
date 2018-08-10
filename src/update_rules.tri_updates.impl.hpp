@@ -84,8 +84,6 @@ update_rules::mp0_tri_updates::tri(
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
 
-  assert(update.value >= std::max(u0, u1));
-
   return update;
 }
 
@@ -139,8 +137,6 @@ update_rules::mp0_tri_updates::tri(
     update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
       sh*norm2<dim>(nu);
   }
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -200,8 +196,6 @@ update_rules::mp0_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          d, u0, u1, s, s0, s1, h, update.value);
 #endif
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -270,8 +264,6 @@ update_rules::rhr_tri_updates::tri(
          "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, update.value);
 #endif
 
-  assert(update.value >= std::max(u0, u1));
-
   return update;
 }
 
@@ -329,8 +321,6 @@ update_rules::rhr_tri_updates::tri(
     update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
       sh*norm2<dim>(nu);
   }
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -393,8 +383,6 @@ update_rules::rhr_tri_updates::tri(
   printf("tri<%d>::update_impl(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n",
          d, u0, u1, s, h, update.value);
 #endif
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -465,8 +453,6 @@ update_rules::mp1_tri_updates::tri(
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
 
-  assert(update.value >= std::max(u0, u1));
-
   return update;
 }
 
@@ -522,8 +508,6 @@ update_rules::mp1_tri_updates::tri(
     update.value = tau0 + dtau*arglam + shfac*norm2<dim>(nufac) +
       s_lam*h*norm2<dim>(nu);
   }
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }
@@ -621,8 +605,6 @@ update_rules::mp1_tri_updates::tri(
          "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
          p0, p1, u0, u1, s, s0, s1, h, update.value);
 #endif
-
-  assert(update.value >= std::max(u0, u1));
 
   return update;
 }

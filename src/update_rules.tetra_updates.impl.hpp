@@ -71,16 +71,14 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
   double const * p0, double const * p1, double const * p2,
   double const * p_fac, double s_fac) const  
 {
-  using cost_func_t = typename derived::template cost_func<3, 2>;
+  using factored_cost_func_t =
+    typename derived::template factored_cost_func<3, 2>;
 
   using eval_func_t = typename std::conditional<
     std::is_same<derived, mp0_tetra_updates>::value,
-    F1<3, 2>,
-    cost_func_t
+    F1_fac<3, 2>,
+    factored_cost_func_t
   >::type;
-
-  using factored_cost_func_t =
-    typename derived::template factored_cost_func<3, 2>;
 
   // TODO: we want to avoid having to pack everything into these
   // arrays, this is a waste
@@ -104,7 +102,7 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
   assert(!error);
 
   eval_func_t eval_func {h, __theta()};
-  eval_func.set_args(u, s_hat, s_, p);
+  eval_func.set_args(u, s_hat, s_, p, p_fac, s_fac);
   eval_func.set_lambda(update.lambda);
   eval_func.eval(update.value);
 

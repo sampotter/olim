@@ -745,7 +745,7 @@ solution_is_exact_in_factored_square(
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2, k0 = n/2;
-  olim o {n, n, n, h, (speed_func) default_speed_func, 1., 1., 1.};
+  olim o {n, n, n, h, (speed_func_3d) default_speed_func, 1., 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {

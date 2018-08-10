@@ -138,9 +138,10 @@ EIKONAL_PROTECTED:
 };
 
 template <int n, int d>
-struct F0_fac: public F0<n, d>
+struct F0_fac: public cost_func<F0_fac<n, d>, n, d>
 {
-  F0_fac(double h, double theta): F0<n, d> {h, theta} {}
+  F0_fac(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
   void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
@@ -148,10 +149,22 @@ struct F0_fac: public F0<n, d>
                 double const s[d + 1], double const p[d + 1][n],
                 double const p_fac[n], double s_fac);
 EIKONAL_PROTECTED:
+  double _sh;
+  double _u0;
+  double _du[d];
+  double _u_lam;
+  double _l;
+  double _q;
+  double _p_lam[n];
+  double _p0[n];
+  double _dP[d][n];
+  double _h;
+  double _theta;
   double _p_fac[n];
   double _s_fac;
   double _tau0;
   double _dtau[d];
+  double _tau_lam;
   double _dPt_dot_p_fac[d];
   double _p_lam_minus_p_fac[n];
   double _l_fac_lam;
@@ -159,9 +172,10 @@ EIKONAL_PROTECTED:
 };  
 
 template <int n, int d>
-struct F1_fac: public F1<n, d>
+struct F1_fac: public cost_func<F1_fac<n, d>, n, d>
 {
-  F1_fac(double h, double theta): F1<n, d> {h, theta} {}
+  F1_fac(double h, double theta): _h {h}, _theta {theta} {}
+  void eval_impl(double & f) const;
   void grad_impl(double df[d]) const;
   void hess_impl(double d2f[__sym_mat_size(d)]) const;
   void set_lambda_impl(double const lambda[d]);
@@ -169,10 +183,25 @@ struct F1_fac: public F1<n, d>
                 double const s[d + 1], double const p[d + 1][n],
                 double const p_fac[n], double s_fac);
 EIKONAL_PROTECTED:
+  double _s_hat;
+  double _stheta;
+  double _s[d + 1];
+  double _ds[d];
+  double _q;
+  double _l;
+  double _u_lam;
+  double _u0;
+  double _du[d];
+  double _p_lam[n];
+  double _p0[n];
+  double _dP[d][n];
+  double _h;
+  double _theta;
   double _p_fac[n];
   double _s_fac;
   double _tau0;
   double _dtau[d];
+  double _tau_lam;
   double _dPt_dot_p_fac[d];
   double _p_lam_minus_p_fac[n];
   double _l_fac_lam;

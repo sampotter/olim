@@ -196,7 +196,7 @@ ax.loglog(N[2:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_title('Relative $\ell_2$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
-ax.set_ylabel('\texttt{olim8rhr}')
+ax.set_ylabel('\\texttt{olim8rhr}')
 
 ax = axes[0, 1]
 tol = 1e-15
@@ -219,7 +219,7 @@ ax.loglog(N[2:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
 ax.set_title('Relative $\ell_\infty$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
-ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
+# ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
 
 print('3d plots')
 
@@ -244,7 +244,8 @@ ax.loglog(N_3d[3:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
-ax.set_ylabel('\texttt{olim26rhr}')
+ax.set_ylabel('\\texttt{olim26rhr}')
+ax.legend(prop={'size': 6})
 
 ax = axes[1, 1]
 tol = 1e-15
@@ -267,8 +268,8 @@ ax.loglog(N_3d[3:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
-ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
+# ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
 
 fig.tight_layout()
-fig.subplots_adjust(0.045, 0.1, 0.795, 0.9325)
+fig.subplots_adjust(0.07, 0.1, 0.995, 0.9325)
 fig.savefig('factoring-error-example.eps')

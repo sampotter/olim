@@ -26,11 +26,11 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Npows = np.arange(3, 7)
+Npows = np.arange(3, 9)
 N = 2**Npows + 1
 
 use_local_factoring = True
-r_fac = 0.3
+r_fac = 0.1
 
 Slows = [speedfuncs3d.s1, speedfuncs3d.s2, speedfuncs3d.s3, speedfuncs3d.s4]
 Solns = {

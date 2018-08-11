@@ -625,7 +625,8 @@ void olim3d_hu<
   printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
-  double h = this->get_h(), s = this->get_speed(i, j, k), s_[26], s_fac;
+  double h = this->get_h(), s = this->get_speed(i, j, k), s_[26],
+    s_fac = INF(double);
   for (int l = 0; l < 26; ++l) {
     if (nb[l]) {
       s_[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));

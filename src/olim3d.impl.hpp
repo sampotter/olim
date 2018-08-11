@@ -434,6 +434,8 @@ void olim3d_bv<
     /**
      * Tetrahedron updates:
      */
+    // TODO: decide which octants to do based on the parent index
+    // (only need to look at 1, 2, or 4 octants, never more than that)
     for (int octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::group_I) {

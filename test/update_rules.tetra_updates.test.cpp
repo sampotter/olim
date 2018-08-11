@@ -372,6 +372,22 @@ TEST (tetra_updates, tetra111_is_symmetric_with_nonconstant_slowness) {
   tetra111_mp0_is_symmetric_with_nonconstant_slowness();
 }
 
+TEST (tetra_updates, tetra122_is_symmetric_with_nonconstant_slowness) {
+  double U0, U1, U2, s, s0, s1, s2, h, Uhat012, Uhat021;
+  mp0_tetra_updates r;
+  U0 = 0.5793323043350438;
+  U1 = 0.5613607127519399;
+  U2 = 0.5864779604924129;
+  s = 0.05655157497705388;
+  s0 = 0.1194445225749439;
+  s1 = 0.1479946250737618;
+  s2 = 0.0679609140327736;
+  h = 0.2;
+  Uhat012 = get_T(TETRA122(r, U0, U1, U2, s, s0, s1, s2, h));
+  Uhat021 = get_T(TETRA122(r, U0, U2, U1, s, s0, s2, s1, h));
+  ASSERT_EQ(Uhat012, Uhat021);
+}
+
 template <class rules>
 testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
   double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;

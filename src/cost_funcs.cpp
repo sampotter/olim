@@ -475,6 +475,8 @@ F1_fac<3, 2>::set_lambda_impl(double const lam[2])
 
   _l_fac_lam_sq = z[0]*z[0] + z[1]*z[1] + z[2]*z[2];
   _l_fac_lam = std::sqrt(_l_fac_lam_sq);
+
+  _tau_lam = _tau0 + _dtau[0]*lam[0] + _dtau[1]*lam[1];
 }
 
 template <>

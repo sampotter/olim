@@ -355,3 +355,16 @@ TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
     rhr.tri<2>(u0, u1, s, s0, s1, h, p0, p1, p_fac, s_fac);
   }
 }
+
+TEST (tri_updates, rhr_non_bv_tri_update_works) {
+  {
+    double p0[3] = {0, -1, 0};
+    double p1[3] = {-1, -1, 0};
+    double U0 = 1, U1 = 0, s = 1, s0 = 1, s1 = 1, h = 1;
+    double u0 = TRI12(rhr, U0, U1, s, s0, s1, h);
+    double u1 = rhr.tri<2>(p0, p1, U0, U1, s, s0, s1, h).value;
+    ASSERT_DOUBLE_EQ(u0, u1);
+    ASSERT_DOUBLE_EQ(u0, sqrt2);
+    ASSERT_DOUBLE_EQ(u1, sqrt2);
+  }
+}

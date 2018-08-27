@@ -358,8 +358,8 @@ update_rules::rhr_tri_updates::tri(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  double const F0 = u0 + sh*norm2<d>(p0)/2;
-  double const F1 = u1 + sh*norm2<d>(p1)/2;
+  double const F0 = u0 + sh*norm2<d>(p0);
+  double const F1 = u1 + sh*norm2<d>(p1);
 
   update_info<1> update;
   if (disc < 0 || a == 0) {

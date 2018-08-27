@@ -150,6 +150,11 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
                             std::tuple<int, int, int> index) {
         return m(std::get<0>(index), std::get<1>(index), std::get<2>(index));
     })
+#if NODE_MONITORING
+    .def("monitor_node", [] (${cpp_class_name} & m, int i, int j, int k) {
+      m(i, j, k).start_monitoring();
+    })
+#endif
     .def(
       "addBoundaryNode",
       py::overload_cast<int, int, int, double>(

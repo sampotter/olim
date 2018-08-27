@@ -5,10 +5,22 @@
 
 #include <array>
 #include <limits>
+#include <ostream>
+#include <sstream>
+#include <string>
 
 #include "common.macros.hpp"
 
 enum class state {valid, trial, far};
+
+inline
+std::string
+to_string(state const & s)
+{
+  if (s == state::valid) return "valid";
+  else if (s == state::trial) return "trial";
+  else return "far";
+}
 
 struct abstract_node {
   abstract_node(): _fac_parent {nullptr} {}
@@ -39,6 +51,11 @@ struct abstract_node {
     _parents = parents;
   }
 #endif
+#if NODE_MONITORING
+  inline void start_monitoring() { _monitor_node = true; }
+  inline void stop_monitoring() { _monitor_node = false; }
+  inline bool monitoring_node() const { return _monitor_node; }
+#endif
 EIKONAL_PROTECTED:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};
@@ -47,6 +64,27 @@ EIKONAL_PROTECTED:
 #if TRACK_PARENTS
   std::array<abstract_node *, 3> _parents {{nullptr, nullptr, nullptr}};
 #endif
+#if NODE_MONITORING
+  bool _monitor_node {false};
+#endif
 };
+
+inline
+std::string
+to_string(abstract_node const & n)
+{
+  std::ostringstream os;
+  os.precision(std::numeric_limits<double>::max_digits10);
+  os << "value = " << n.get_value() << ", "
+     << "state = " << to_string(n.get_state());
+  return os.str();
+}
+
+inline
+std::ostream &
+operator<<(std::ostream & o, abstract_node const & n)
+{
+  return o << "abstract_node {" << to_string(n) << "}";
+}
 
 #endif // __ABSTRACT_NODE_HPP__

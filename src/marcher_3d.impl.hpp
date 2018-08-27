@@ -1,6 +1,8 @@
 #ifndef __MARCHER_3D_IMPL_HPP__
 #define __MARCHER_3D_IMPL_HPP__
 
+#include <src/config.hpp>
+
 #include <cassert>
 #include <cmath>
 
@@ -282,6 +284,18 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
     double T = INF(double);
     node * update_node = &operator()(i, j, k);
     update_impl(update_node, child_nb, parent, T);
+#if NODE_MONITORING
+    if (update_node->monitoring_node()) {
+      std::cout << *update_node << std::endl;
+#if TRACK_PARENTS
+      for (auto & parent: update_node->get_parents()) {
+        if (parent) {
+          std::cout << "- " << *parent << std::endl;
+        }
+      }
+#endif
+    }
+#endif
     if (T < update_node->get_value()) {
       update_node->set_value(T);
       adjust_heap_entry(update_node);

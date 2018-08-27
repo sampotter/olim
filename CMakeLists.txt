@@ -15,6 +15,7 @@ option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
 option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 option (TRACK_PARENTS "Track parent update information for debugging." OFF)
+option (NODE_MONITORING "Allow node updates to be monitored." OFF)
 
 include (CMakeDependentOption)
 include (GoogleTest)

@@ -8,6 +8,7 @@
 #cmakedefine01 TRIAL_NODE_OPTIMIZATION
 #cmakedefine01 USE_ARMADILLO
 #cmakedefine01 TRACK_PARENTS
+#cmakedefine01 NODE_MONITORING
 
 #ifdef EIKONAL_DEBUG
 #    cmakedefine01 PRINT_UPDATES

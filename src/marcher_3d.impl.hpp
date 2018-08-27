@@ -231,8 +231,7 @@ void marcher_3d<base, node>::visit_neighbors_impl(abstract_node * n) {
   int k = static_cast<node *>(n)->get_k();
 
 #if PRINT_UPDATES
-  printf("olim3d::visit_neighbors_impl(i = %d, j = %d, k = %d)\n",
-         i, j, k);
+  printf("olim3d::visit_neighbors_impl(i = %d, j = %d, k = %d)\n", i, j, k);
 #endif
 
   // See comments in marcher.impl.hpp; the visit_neighbors_impl there

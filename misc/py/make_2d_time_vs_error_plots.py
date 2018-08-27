@@ -25,7 +25,7 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Npows =np.arange(3, 11) 
+Npows =np.arange(3, 7)
 N = 2**Npows + 1
 
 use_local_factoring = True
@@ -78,7 +78,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
         o = Olim(S, h)
         if use_local_factoring:
             for i, j in zip(I, J):
-                o.set_node_parent(i, j, i0, j0)
+                o.set_node_fac_parent(i, j, i0, j0)
         o.addBoundaryNode(i0, j0)
 
         t0 = time.perf_counter()

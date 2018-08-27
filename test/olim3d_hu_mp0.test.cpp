@@ -18,9 +18,6 @@ TEST (MARCHER, octants_are_correct) {
 TEST (MARCHER, planes_are_correct) {
   auto res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
   ASSERT_TRUE(res);
-
-  res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1], 9);
-  ASSERT_TRUE(res);
 }
 
 TEST (MARCHER, result_is_symmetric) {

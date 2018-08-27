@@ -45,7 +45,7 @@ class TestPybind11Wrapper(unittest.TestCase):
         ly = np.linspace(-ydiam, ydiam, ny)
         lz = np.linspace(-zdiam, zdiam, nz)
         x, y, z = np.meshgrid(lx, ly, lz)
-        S = sf3d.s4(x, y, z)
+        S = sf3d.get_field(sf3d.s4, x, y, z)
         m = eik.Olim6Rect(S, h)
         for i, j, k in prod(range(ni), range(nj), range(nk)):
             msg = 'i = %d, j = %d, k = %d' % (i, j, k)

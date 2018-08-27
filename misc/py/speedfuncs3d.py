@@ -37,9 +37,9 @@ def get_field(g, X, Y, Z):
     assert(X.shape == Y.shape)
     assert(X.shape == Z.shape)
     m, n, p = X.shape
-    return np.array([[[g(X[i, j, k], Y[i, j, k], Z[i, j, k]) for j in range(n)]
-                      for i in range(m)]
-                     for k in range(p)])
+    return np.array([[[g(X[i, j, k], Y[i, j, k], Z[i, j, k]) for k in range(p)]
+                      for j in range(n)]
+                     for i in range(m)])
 
 def get_fields(u, s, X, Y, Z):
     return get_field(u, X, Y, Z), get_field(s, X, Y, Z)

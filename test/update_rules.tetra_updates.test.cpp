@@ -427,9 +427,9 @@ TEST (tetra_updates, tetra122_is_symmetric_with_nonconstant_slowness) {
     s1 = 0.0876808174859417;
     s2 = 0.169616336715433;
     h = 0.2;
-    Uhat1 = r.tetra(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
+    Uhat2 = r.tetra(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
 
-    ASSERT_EQ(Uhat1, Uhat2);
+    ASSERT_DOUBLE_EQ(Uhat1, Uhat2);
   }
 }
 

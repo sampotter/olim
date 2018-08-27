@@ -146,24 +146,21 @@ constexpr int oct2inds[8][7] = {
 #  define __tri_update_value() do {             \
     if (tmp.value < T) {                        \
       T = tmp.value;                            \
-      index3_t ind0 = {                         \
-        n->get_i() + __di(l0),                  \
-        n->get_j() + __dj(l0),                  \
-        n->get_k() + __dk(l0)                   \
-      };                                        \
-      n->set_parent_index(0, ind0);              \
-      index3_t ind1 = {                         \
-        n->get_i() + __di(l1),                  \
-        n->get_j() + __dj(l1),                  \
-        n->get_k() + __dk(l1)                   \
-      };                                        \
-      n->set_parent_index(1, ind1);              \
-      index3_t ind2 = {-1, -1, -1};             \
-      n->set_parent_index(2, ind2);              \
+      n->set_parents({{                         \
+        &this->operator()(                      \
+          n->get_i() + __di(l0),                \
+          n->get_j() + __dj(l0),                \
+          n->get_k() + __dk(l0)),               \
+        &this->operator()(                      \
+          n->get_i() + __di(l1),                \
+          n->get_j() + __dj(l1),                \
+          n->get_k() + __dk(l1)),               \
+        nullptr                                 \
+      }});                                      \
     }                                           \
   } while (0)
 #else
-#  define __tetra_update_value() do {           \
+#  define __tri_update_value() do {             \
     T = min(T, tmp.value);                      \
   } while (0)
 #endif
@@ -179,7 +176,7 @@ constexpr int oct2inds[8][7] = {
           h,                                                    \
           ffvec<P##p0> {},                                      \
           ffvec<P##p1> {});                                     \
-        T = min(T, tmp.value);                                  \
+        __tri_update_value();                                   \
         UPDATE_TRI_STATS(tmp, P##p0, P##p1);                    \
       }                                                         \
       __skip_tri(i, j) = 0x1;                                   \
@@ -205,7 +202,7 @@ constexpr int oct2inds[8][7] = {
           p1,                                                   \
           p_fac,                                                \
           s_fac);                                               \
-        T = min(T, tmp.value);                                  \
+        __tri_update_value();                                   \
         /* TODO: collect stats */                               \
       }                                                         \
       __skip_tri(i, j) = 0x1;                                   \
@@ -227,24 +224,20 @@ constexpr int oct2inds[8][7] = {
 #  define __tetra_update_value() do {                                   \
     if (tmp.value < T) {                                                \
       T = tmp.value;                                                    \
-      index3_t ind0 = {                                                 \
-        n->get_i() + __di(l0),                                          \
-        n->get_j() + __dj(l0),                                          \
-        n->get_k() + __dk(l0)                                           \
-      };                                                                \
-      n->set_parent_index(0, ind0);                                      \
-      index3_t ind1 = {                                                 \
-        n->get_i() + __di(l1),                                          \
-        n->get_j() + __dj(l1),                                          \
-        n->get_k() + __dk(l1)                                           \
-      };                                                                \
-      n->set_parent_index(1, ind1);                                      \
-      index3_t ind2 = {                                                 \
-        n->get_i() + __di(l2),                                          \
-        n->get_j() + __dj(l2),                                          \
-        n->get_k() + __dk(l2)                                           \
-      };                                                                \
-      n->set_parent_index(2, ind2);                                      \
+      n->set_parents({{                                                 \
+        &this->operator()(                                              \
+          n->get_i() + __di(l0),                                        \
+          n->get_j() + __dj(l0),                                        \
+          n->get_k() + __dk(l0)),                                       \
+        &this->operator()(                                              \
+          n->get_i() + __di(l1),                                        \
+          n->get_j() + __dj(l1),                                        \
+          n->get_k() + __dk(l1)),                                       \
+        &this->operator()(                                              \
+          n->get_i() + __di(l2),                                        \
+          n->get_j() + __dj(l2),                                        \
+          n->get_k() + __dk(l2))                                        \
+      }});                                                              \
     }                                                                   \
   } while (0)
 #else
@@ -396,13 +389,10 @@ void olim3d_bv<
 #if TRACK_PARENTS
     if (Tnew < T) {
       T = Tnew;
-      index3_t ind0, ind1, ind2;
-      ind0 = {i + __di(parent), j + __dj(parent), k + __dk(parent)};
-      ind1 = {-1, -1, -1};
-      ind2 = {-1, -1, -1};
-      n->set_parent_index(0, ind0);
-      n->set_parent_index(1, ind1);
-      n->set_parent_index(2, ind2);
+      n->set_parents({{
+        &this->operator()(i + __di(parent), j + __dj(parent), k + __dk(parent)),
+        nullptr,
+        nullptr}});
     }
 #else
     T = min(T, Tnew);
@@ -420,8 +410,8 @@ void olim3d_bv<
   char tri_skip_list[8*21];
   memset((void *) tri_skip_list, 0x0, sizeof(char)*8*21);
 
-  if (n->has_parent()) {
-    auto n_fac = static_cast<node *>(n->get_parent());
+  if (n->has_fac_parent()) {
+    auto n_fac = static_cast<node *>(n->get_fac_parent());
     int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
     double s_fac = this->get_speed(i_fac, j_fac, k_fac);
     double p0[3], p1[3], p2[3]; // TODO: these should be template parameters!
@@ -685,8 +675,8 @@ void olim3d_hu<
   p0[2] = __dk(l0);
 #endif // HU_USE_PARENT_NODE
 
-  if (n->has_parent()) {
-    auto n_fac = static_cast<node *>(n->get_parent());
+  if (n->has_fac_parent()) {
+    auto n_fac = static_cast<node *>(n->get_fac_parent());
     int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
     s_fac = this->get_speed(i_fac, j_fac, k_fac);
     p_fac[0] = i_fac - i;
@@ -720,7 +710,7 @@ void olim3d_hu<
       }
 
       // Do the triangle update.
-      auto const tmp = n->has_parent() ?
+      auto const tmp = n->has_fac_parent() ?
         this->template tri<3>(
           VAL(l0), VAL(l), SPEED_ARGS(l0, l), h, p0, p1, p_fac, s_fac) :
         this->template tri<3>(
@@ -832,7 +822,7 @@ void olim3d_hu<
         // third update. It's unclear how efficient this will be...
 
         // Finally, do the tetrahedron update.
-        auto const tmp = n->has_parent() ?
+        auto const tmp = n->has_fac_parent() ?
           this->tetra(
             VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h, p0, p1, p2,
             p_fac, s_fac) :

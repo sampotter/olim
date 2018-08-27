@@ -29,7 +29,7 @@ struct marcher: public abstract_marcher {
   void add_boundary_node(int i, int j, double value = 0.0);
   void add_boundary_node(double i, double j, double value = 0.0);
   void add_boundary_nodes(node const * nodes, int num_nodes);
-  void set_node_parent(int i, int j, int i_parent, int j_parent);
+  void set_node_fac_parent(int i, int j, int i_parent, int j_parent);
 
   node * get_node_pointer() const { return _nodes; }
   double get_speed(int i, int j) const;

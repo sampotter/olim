@@ -60,8 +60,8 @@ marcher_template = Template('''
       "j"_a,
       "value"_a = 0.0)
     .def(
-      "set_node_parent",
-      &${cpp_class_name}::set_node_parent,
+      "set_node_fac_parent",
+      &${cpp_class_name}::set_node_fac_parent,
       "i"_a,
       "j"_a,
       "i_parent"_a,
@@ -159,8 +159,8 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "k"_a,
       "value"_a = 0.0)
     .def(
-      "set_node_parent",
-      &${cpp_class_name}::set_node_parent,
+      "set_node_fac_parent",
+      &${cpp_class_name}::set_node_fac_parent,
       "i"_a,
       "j"_a,
       "k"_a,

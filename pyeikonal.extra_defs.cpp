@@ -24,6 +24,6 @@ py::class_<node_3d>(m, "Node3d")
   .def_property_readonly("j", &node_3d::get_j)
   .def_property_readonly("k", &node_3d::get_k)
 #if TRACK_PARENTS
-  .def("get_parent_index", &node_3d::get_parent_index, "i"_a)
+  .def("get_parents", &node_3d::get_parents)
 #endif
   ;

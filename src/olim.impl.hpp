@@ -87,11 +87,11 @@ update_impl(node * n, node ** nb, double & T)
     }
   }
 
-  if (n->has_parent()) {
+  if (n->has_fac_parent()) {
     // TODO: this is a rough draft quality implementation of additive
     // local factoring... this can definitely be optimized
 
-    auto n_fac = static_cast<node *>(n->get_parent());
+    auto n_fac = static_cast<node *>(n->get_fac_parent());
     int i_fac = n_fac->get_i(), j_fac = n_fac->get_j();
     double s_fac = this->get_speed(i_fac, j_fac);
     double p0[2], p1[2];

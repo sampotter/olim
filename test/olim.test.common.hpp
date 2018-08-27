@@ -717,7 +717,7 @@ solution_is_exact_in_factored_square(
   olim o {n, n, h, (speed_func) default_speed_func, 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      o.set_node_parent(i, j, i0, j0);
+      o.set_node_fac_parent(i, j, i0, j0);
     }
   }
   o.add_boundary_node(i0, j0);
@@ -749,7 +749,7 @@ solution_is_exact_in_factored_square(
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        o.set_node_parent(i, j, k, i0, j0, k0);
+        o.set_node_fac_parent(i, j, k, i0, j0, k0);
       }
     }
   }

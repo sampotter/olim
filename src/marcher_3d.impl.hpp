@@ -160,12 +160,12 @@ void marcher_3d<base, node>::add_boundary_nodes(node const * nodes, int num) {
 }
 
 template <class base, class node>
-void marcher_3d<base, node>::set_node_parent(
+void marcher_3d<base, node>::set_node_fac_parent(
   int i, int j, int k, int i_par, int j_par, int k_par)
 {
   assert(in_bounds(i, j, k));
   assert(in_bounds(i_par, j_par, k_par));
-  operator()(i, j, k).set_parent(&operator()(i_par, j_par, k_par));
+  operator()(i, j, k).set_fac_parent(&operator()(i_par, j_par, k_par));
 }
 
 template <class base, class node>

@@ -82,7 +82,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
         o = Olim(S, h)
         if use_local_factoring:
             for i, j, k in zip(I, J, K):
-                o.set_node_parent(i, j, k, i0, j0, k0)
+                o.set_node_fac_parent(i, j, k, i0, j0, k0)
         o.addBoundaryNode(i0, j0, k0)
 
         t0 = time.perf_counter()

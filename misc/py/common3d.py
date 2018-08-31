@@ -82,6 +82,25 @@ _marchers_by_name = {v: k for k, v in _marcher_names.items()}
 def get_marcher_by_name(name):
     return _marchers_by_name[name]
 
+_marcher_plot_names = {
+    eik.BasicMarcher3D: '\\texttt{basic\_3d}',
+    eik.Olim6Mid0: '\\texttt{olim6\_mp0}',
+    eik.Olim6Mid1: '\\texttt{olim6\_mp1}',
+    eik.Olim6Rect: '\\texttt{olim6\_rhr}',
+    eik.Olim18Mid0: '\\texttt{olim18\_mp0}',
+    eik.Olim18Mid1: '\\texttt{olim18\_mp1}',
+    eik.Olim18Rect: '\\texttt{olim18\_rhr}',
+    eik.Olim26Mid0: '\\texttt{olim26\_mp0}',
+    eik.Olim26Mid1: '\\texttt{olim26\_mp1}',
+    eik.Olim26Rect: '\\texttt{olim26\_rhr}',
+    eik.Olim3dHuMid0: '\\texttt{olimhu\_mp0}',
+    eik.Olim3dHuMid1: '\\texttt{olimhu\_mp1}',
+    eik.Olim3dHuRect: '\\texttt{olimhu\_rhr}'
+}
+
+def get_marcher_plot_name(marcher):
+    return _marcher_plot_names[marcher]
+
 def relerr(x, y, ord_):
     norm = lambda x: np.linalg.norm(x.flat, ord_)
     distxy = norm(x - y)

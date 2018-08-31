@@ -28,6 +28,18 @@ _marcher_names = {
 def get_marcher_name(marcher):
     return _marcher_names[marcher]
 
+_marcher_plot_names = {
+    eik.BasicMarcher: '\\texttt{basic}',
+    eik.Olim4Mid0: '\\texttt{olim4\_mp0}',
+    eik.Olim4Mid1: '\\texttt{olim4\_mp1}',
+    eik.Olim4Rect: '\\texttt{olim4\_rhr}',
+    eik.Olim8Mid0: '\\texttt{olim8\_mp0}',
+    eik.Olim8Mid1: '\\texttt{olim8\_mp1}',
+    eik.Olim8Rect: '\\texttt{olim8\_rhr}'}
+
+def get_marcher_plot_name(marcher):
+    return _marcher_plot_names[marcher]
+
 _marchers_by_name = {v: k for k, v in _marcher_names.items()}
 
 def get_marcher_by_name(name):

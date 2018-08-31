@@ -15,7 +15,7 @@ plt.rc('image', cmap='cubehelix')
 plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
-p = 8
+p = 6
 n = 2**p + 1
 h = 2/(n - 1)
 i0 = int(n/2)
@@ -55,7 +55,7 @@ for a, (s, f) in enumerate([(s1, f1), (s2, f2), (s3, f3), (s4, f4)]):
         o = Olim(S, h)
         o.addBoundaryNode(i0, i0)
         for i, j in zip(*np.where(R <= r)):
-            o.set_node_parent(i, j, i0, i0)
+            o.set_node_fac_parent(i, j, i0, i0)
         o.run()
 
         U = np.array([[o.getValue(i, j) for j in range(n)] for i in range(n)])

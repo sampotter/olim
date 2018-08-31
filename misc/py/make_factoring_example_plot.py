@@ -7,7 +7,6 @@ import sys
 if '../../build/%s' % BUILD_TYPE not in sys.path:
     sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
 
-import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pyeikonal as eik
@@ -28,29 +27,22 @@ Olim = eik.Olim8Rect
 Olim3d = eik.Olim26Rect
 
 # Npow = np.array([3, 6, 9, 12])
-Npow = np.arange(3, 13)
+Npow = np.arange(4, 10)
 # Npow = np.arange(3, 10)
 N = 2**Npow + 1
 
 # Npow_3d = np.array([2, 4, 6, 8])
-Npow_3d = np.arange(2, 9)
+Npow_3d = np.arange(4, 7)
 # Npow_3d = np.arange(2, 7)
 N_3d = 2**Npow_3d + 1
 
-r_fac = 0.1
-radinf = range(1, 4)
+rfacs = [0.05, 0.1, 0.15, 0.2]
+nrfac = len(rfacs)
 
-E2, E2fac = np.empty(len(N)), np.empty(len(N))
-E2facinf = {scale: np.empty(len(N)) for scale in radinf}
-
-EI, EIfac = np.empty(len(N)), np.empty(len(N))
-EIfacinf = {scale: np.empty(len(N)) for scale in radinf}
-
-E2_3d, E2fac_3d = np.empty(len(N_3d)), np.empty(len(N_3d))
-E2facinf_3d = {scale: np.empty(len(N_3d)) for scale in radinf}
-
-EI_3d, EIfac_3d = np.empty(len(N_3d)), np.empty(len(N_3d))
-EIfacinf_3d = {scale: np.empty(len(N_3d)) for scale in radinf}
+E2, E2fac = np.empty(len(N)), np.empty((len(N), nrfac))
+EI, EIfac = np.empty(len(N)), np.empty((len(N), nrfac))
+E2_3d, E2fac_3d = np.empty(len(N_3d)), np.empty((len(N_3d), nrfac))
+EI_3d, EIfac_3d = np.empty(len(N_3d)), np.empty((len(N_3d), nrfac))
 
 print('solving 2d problems')
 for ind, n in enumerate(N):
@@ -73,44 +65,26 @@ for ind, n in enumerate(N):
     EI[ind] = norm(u - U, np.inf)/norm(u, np.inf)
 
     # factored using constant radius disk
+
+    for rfac_ind, r_fac in enumerate(rfacs):
+        print('  * r_fac = %g' % r_fac)
     
-    R = np.sqrt(x**2 + y**2)
-    I, J = np.where(R < r_fac)
-
-    ofac = Olim(s, h)
-    for i, j in zip(I, J):
-        ofac.set_node_parent(i, j, i0, j0)
-    ofac.addBoundaryNode(i0, j0)
-    ofac.run()
-    Ufac = np.array([[ofac.getValue(i, j) for j in range(n)] for i in range(n)])
-    E2fac[ind] = norm(u - Ufac, 'fro')/norm(u, 'fro')
-    EIfac[ind] = norm(u - Ufac, np.inf)/norm(u, np.inf)
-
-    # factored using square with logarithmic side length
-
-    for scale in radinf:
-        rad = min(n//2, scale*int(np.ceil(np.log2(n))))
-        dI, dJ = np.meshgrid(range(-rad, rad + 1), range(-rad, rad + 1))
-        dI = dI.flatten()
-        dJ = dJ.flatten()
-
-        dI = np.delete(dI, (len(dI)//2,), axis=0)
-        dJ = np.delete(dJ, (len(dJ)//2,), axis=0)
+        R = np.sqrt(x**2 + y**2)
+        I, J = np.where(R < r_fac)
 
         ofac = Olim(s, h)
-        for di, dj in zip(dI, dJ):
-            ofac.set_node_parent(i0 + di, j0 + dj, i0, j0)
+        for i, j in zip(I, J):
+            ofac.set_node_fac_parent(i, j, i0, j0)
         ofac.addBoundaryNode(i0, j0)
         ofac.run()
-        Ufac = np.array(
-            [[ofac.getValue(i, j) for j in range(n)] for i in range(n)])
-        E2facinf[scale][ind] = norm(u - Ufac, 'fro')/norm(u, 'fro')
-        EIfacinf[scale][ind] = norm(u - Ufac, np.inf)/norm(u, np.inf)
+        Ufac = np.array([[ofac.getValue(i, j) for j in range(n)] for i in range(n)])
+        E2fac[ind, rfac_ind] = norm(u - Ufac, 'fro')/norm(u, 'fro')
+        EIfac[ind, rfac_ind] = norm(u - Ufac, np.inf)/norm(u, np.inf)
 
 print('- solving 3d problems')
-
 for ind, n in enumerate(N_3d):
     print('- n = %d' % n)
+
     h = 2/(n - 1)
     i0, j0, k0 = n//2, n//2, n//2
     l = np.linspace(-1, 1, n)
@@ -131,44 +105,22 @@ for ind, n in enumerate(N_3d):
 
     # factored using constant radius disk
     
-    R = np.sqrt(x**2 + y**2 + z**2)
-    I, J, K = np.where(R < r_fac)
+    for rfac_ind, r_fac in enumerate(rfacs):
+        print('  * r_fac = %g' % r_fac)
 
-    ofac = Olim3d(s, h)
-    for i, j, k in zip(I, J, K):
-        ofac.set_node_parent(i, j, k, i0, j0, k0)
-    ofac.addBoundaryNode(i0, j0, k0)
-    ofac.run()
-    Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
-                      for j in range(n)]
-                     for k in range(n)])
-    E2fac_3d[ind] = norm((u - Ufac).flatten())/norm(u.flatten())
-    EIfac_3d[ind] = norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
-
-    # factored using square with logarithmic side length
-
-    for scale in radinf:
-        rad = min(n//2, scale*int(np.ceil(np.log2(n))))
-        dI, dJ, dK = np.meshgrid(
-            range(-rad, rad + 1), range(-rad, rad + 1), range(-rad, rad + 1))
-        dI = dI.flatten()
-        dJ = dJ.flatten()
-        dK = dK.flatten()
-
-        dI = np.delete(dI, (len(dI)//2,), axis=0)
-        dJ = np.delete(dJ, (len(dJ)//2,), axis=0)
-        dK = np.delete(dK, (len(dK)//2,), axis=0)
+        R = np.sqrt(x**2 + y**2 + z**2)
+        I, J, K = np.where(R < r_fac)
 
         ofac = Olim3d(s, h)
-        for di, dj, dk in zip(dI, dJ, dK):
-            ofac.set_node_parent(i0 + di, j0 + dj, k0 + dk, i0, j0, k0)
+        for i, j, k in zip(I, J, K):
+            ofac.set_node_fac_parent(i, j, k, i0, j0, k0)
         ofac.addBoundaryNode(i0, j0, k0)
         ofac.run()
         Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
                           for j in range(n)]
                          for k in range(n)])
-        E2facinf_3d[scale][ind] = norm((u - Ufac).flatten())/norm(u.flatten())
-        EIfacinf_3d[scale][ind] = \
+        E2fac_3d[ind, rfac_ind] = norm((u - Ufac).flatten())/norm(u.flatten())
+        EIfac_3d[ind, rfac_ind] = \
             norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
 fig, axes = plt.subplots(2, 2, sharey='row', figsize=(8, 4))
@@ -179,20 +131,11 @@ ax = axes[0, 0]
 tol = 1e-15
 mask = E2 > tol
 ax.loglog(N[mask], E2[mask], '*--', label='Unfactored', linewidth=1)
-for scale in radinf:
-    mask = E2facinf[scale] > tol
-    ax.loglog(N[mask], E2facinf[scale][mask],
-              '*--', label='Square ($k_{fac} = %d$)' % scale,
+for j, r_fac in enumerate(rfacs):
+    mask = E2fac[:, j] > tol
+    ax.loglog(N[mask], E2fac[mask, j], '*--',
+              label='Disk ($r_{fac} = %g$)' % r_fac,
               linewidth=1)
-mask = E2fac > tol
-ax.loglog(N[mask], E2fac[mask], '*--',
-          label='Disk ($r_{fac} = %g$)' % r_fac,
-          linewidth=1)
-ones = np.ones_like(N[2:])
-H = 1/N[2:]
-A = np.column_stack([H])
-C = np.linalg.lstsq(A, E2fac[2:])[0]
-ax.loglog(N[2:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_title('Relative $\ell_2$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
@@ -202,20 +145,11 @@ ax = axes[0, 1]
 tol = 1e-15
 mask = EI > tol
 ax.loglog(N[mask], EI[mask], '*--', label='Unfactored', linewidth=1)
-for scale in radinf:
-    mask = EIfacinf[scale] > tol
-    ax.loglog(N[mask], EIfacinf[scale][mask],
-              '*--', label='Square ($k_{fac} = %d$)' % scale,
+for j, r_fac in enumerate(rfacs):
+    mask = EIfac[:, j] > tol
+    ax.loglog(N[mask], EIfac[mask, j], '*--',
+              label='Disk ($r_{fac} = %g$)' % r_fac,
               linewidth=1)
-mask = EIfac > tol
-ax.loglog(N[mask], EIfac[mask], '*--',
-          label='Disk ($r_{fac} = %g$)' % r_fac,
-          linewidth=1)
-ones = np.ones_like(N[2:])
-H = 1/N[2:]
-A = np.column_stack([H])
-C = np.linalg.lstsq(A, EIfac[2:])[0]
-ax.loglog(N[2:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
 ax.set_title('Relative $\ell_\infty$ Error')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
@@ -227,20 +161,11 @@ ax = axes[1, 0]
 tol = 1e-15
 mask = E2_3d > tol
 ax.loglog(N_3d[mask], E2_3d[mask], '*--', label='Unfactored', linewidth=1)
-for scale in radinf:
-    mask = E2facinf_3d[scale] > tol
-    ax.loglog(N_3d[mask], E2facinf_3d[scale][mask],
-              '*--', label='Square ($k_{fac} = %d$)' % scale,
+for j, r_fac in enumerate(rfacs):
+    mask = E2fac_3d[:, j] > tol
+    ax.loglog(N_3d[mask], E2fac_3d[mask, j], '*--',
+              label='Disk ($r_{fac} = %g$)' % r_fac,
               linewidth=1)
-mask = E2fac_3d > tol
-ax.loglog(N_3d[mask], E2fac_3d[mask], '*--',
-          label='Disk ($r_{fac} = %g$)' % r_fac,
-          linewidth=1)
-ones = np.ones_like(N_3d[3:])
-H = 1/N_3d[3:]
-A = np.column_stack([H])
-C = np.linalg.lstsq(A, E2fac_3d[3:])[0]
-ax.loglog(N_3d[3:], A@C, '^-k', label='$Ch^{-1}$', linewidth=1)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
@@ -251,20 +176,11 @@ ax = axes[1, 1]
 tol = 1e-15
 mask = EI_3d > tol
 ax.loglog(N_3d[mask], EI_3d[mask], '*--', label='Unfactored', linewidth=1)
-for scale in radinf:
-    mask = EIfacinf_3d[scale] > tol
-    ax.loglog(N_3d[mask], EIfacinf_3d[scale][mask],
-              '*--', label='Square ($k_{fac} = %d$)' % scale,
+for j, r_fac in enumerate(rfacs):
+    mask = EIfac_3d[:, j] > tol
+    ax.loglog(N_3d[mask], EIfac_3d[mask, j], '*--',
+              label='Disk ($r_{fac} = %g$)' % r_fac,
               linewidth=1)
-mask = EIfac_3d > tol
-ax.loglog(N_3d[mask], EIfac_3d[mask], '*--',
-          label='Disk ($r_{fac} = %g$)' % r_fac,
-          linewidth=1)
-ones = np.ones_like(N_3d[3:])
-H = 1/N_3d[3:]
-A = np.column_stack([H])
-C = np.linalg.lstsq(A, EIfac_3d[3:])[0]
-ax.loglog(N_3d[3:], A@C, '^-k', label='Least squares fit ($Ch^{-1}$)', linewidth=1)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])

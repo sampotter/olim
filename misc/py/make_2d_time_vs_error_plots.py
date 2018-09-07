@@ -108,7 +108,7 @@ axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows):
     for ind, Olim in enumerate(Olims):
-        name = common.get_marcher_name(Olim)
+        name = common.get_marcher_plot_name(Olim)
         axes[row, 0].loglog(
             T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
             linestyle=linestyles[ind % 3], linewidth=1, label=name)
@@ -144,7 +144,7 @@ axes[0, 1].set_title('Relative $\ell_\infty$ Error')
 
 for row, slow in enumerate(Slows):
     for ind, Olim in enumerate(Olims):
-        name = common.get_marcher_name(Olim)
+        name = common.get_marcher_plot_name(Olim)
         axes[row, 0].loglog(
             N, E2[slow, Olim], marker=marker, color=colors[ind//3],
             linestyle=linestyles[ind % 3], linewidth=1, label=name)

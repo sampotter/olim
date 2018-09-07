@@ -8,6 +8,7 @@ if '../../build/%s' % BUILD_TYPE not in sys.path:
     sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
 
 import common3d
+import datetime
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
@@ -77,7 +78,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
     t = np.inf
 
-    for _ in range(ntrials):
+    for _ in range(1 if n > 100 else ntrials):
 
         o = Olim(S, h)
         if use_local_factoring:

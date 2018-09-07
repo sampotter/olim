@@ -26,14 +26,10 @@ plt.style.use('bmh')
 Olim = eik.Olim8Rect
 Olim3d = eik.Olim26Rect
 
-# Npow = np.array([3, 6, 9, 12])
-Npow = np.arange(4, 10)
-# Npow = np.arange(3, 10)
+Npow = np.arange(4, 15)
 N = 2**Npow + 1
 
-# Npow_3d = np.array([2, 4, 6, 8])
-Npow_3d = np.arange(4, 7)
-# Npow_3d = np.arange(2, 7)
+Npow_3d = np.arange(4, 10)
 N_3d = 2**Npow_3d + 1
 
 rfacs = [0.05, 0.1, 0.15, 0.2]

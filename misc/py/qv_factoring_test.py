@@ -18,8 +18,8 @@ plt.style.use('bmh')
 # parameters
 
 R_fac = 0.1
-N = 2**np.arange(3, 9) + 1
-N3D = 2**np.arange(3, 6) + 1
+N = 2**np.arange(3, 15) + 1
+N3D = 2**np.arange(3, 10) + 1
 vx, vy, vz = 5, 13, 20
 
 x_fac_1, y_fac_1, z_fac_1 = 0.0, 0.0, 0.0

@@ -26,7 +26,7 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Npows = np.arange(3, 9)
+Npows = np.arange(3, 10)
 N = 2**Npows + 1
 
 use_local_factoring = True

@@ -162,7 +162,7 @@ ax.legend(loc='lower left', prop={'size': 9})
 
 fig.tight_layout()
 fig.show()
-fig.savefig('../data/qv_plots_2d.eps')
+fig.savefig('qv_plots_2d.eps')
 
 ################################################################################
 # 3D
@@ -320,4 +320,4 @@ ax.set_xlabel('$N$')
 
 fig.tight_layout()
 fig.show()
-fig.savefig('../data/qv_plots_3d.eps')
+fig.savefig('qv_plots_3d.eps')

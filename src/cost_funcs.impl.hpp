@@ -29,7 +29,9 @@ inline void lag_mult_impl(double df[2], double d2f[3], double const lam[2],
 
   *k = num_active;
 
-  // If the active_set is {0, 1}, mu = -df, and we can return early.
+  // If the active_set is {0, 1}, then mu = -df, which means that we
+  // can return early.
+
   if (num_active == 2 &&
       ((active_set[0] == 0 && active_set[1] == 1) ||
        (active_set[0] == 1 && active_set[1] == 0))) {

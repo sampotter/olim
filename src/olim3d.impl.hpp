@@ -805,8 +805,7 @@ void olim3d_hu<
         }
 
         // TODO: not totally sure if this should be -1 or if it might
-        // be -1 in some cases... Originally, this was also an assert,
-        // like the l1 check above.
+        // be -1 in some cases...
         if (arglam[l2] != -1) {
           lam[0] = 0;
           lam[1] = arglam[l2];

@@ -89,13 +89,15 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
         o.run()
         t = min(t, time.perf_counter() - t0)
 
+        print('    + %s' % datetime.timedelta(seconds=t))
+
     T[slow, Olim][ind] = t
 
     # get errors
 
-    U = np.array([[[o.getValue(i, j, k) for i in range(n)]
+    U = np.array([[[o.getValue(i, j, k) for k in range(n)]
                    for j in range(n)]
-                  for k in range(n)])
+                  for i in range(n)])
     E2[slow, Olim][ind] = norm((u - U).flatten())/norm(u.flatten())
     EI[slow, Olim][ind] = norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
 

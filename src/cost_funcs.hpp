@@ -16,7 +16,7 @@ struct F0_wkspc {
   double theta; // TODO: delete?
 };
 
-template <int d, char... ps>
+template <int d, class... ps>
 struct F0_bv_wkspc;
 
 template <int d>
@@ -49,7 +49,7 @@ struct F1_wkspc {
   double theta;
 };
 
-template <int d, char... ps>
+template <int d, class... ps>
 struct F1_bv_wkspc;
 
 template <int d>

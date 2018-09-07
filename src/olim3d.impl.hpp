@@ -348,10 +348,6 @@ void olim3d_bv<
 
   assert(parent <= groups::nneib);
 
-  // TODO: not currently using this. An easy way to use it would be to
-  // map each parent index to a list of octants to iterate over.
-  (void) parent;
-
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
 #if PRINT_UPDATES
   printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
@@ -691,8 +687,6 @@ void olim3d_hu<
   std::fill(arglam, arglam + sizeof(arglam)/sizeof(double), -1);
 
   // Find the minimal triangle update containing l0.
-  //
-  // TODO: skip triangle updates
   for (int l = 0; l < 26; ++l) {
     if (l != l0 && nb[l]) {
       p1[0] = __di(l);
@@ -708,6 +702,8 @@ void olim3d_hu<
       } else {
         if (distmax<3>(p0, p1) > d1) continue;
       }
+
+      // TODO: skip triangle updates using KKT theory
 
       // Do the triangle update.
       auto const tmp = n->has_fac_parent() ?

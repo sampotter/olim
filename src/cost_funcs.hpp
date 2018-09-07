@@ -253,9 +253,6 @@ EIKONAL_PROTECTED:
 #endif
 };
 
-// TODO: if this is the "general template", we would ideally like to
-// replace "p0, p1, p2" with something like "char... ps"---not sure if
-// we can still specialize the way we want to if we do this, though
 template <char p0, char p1, char p2, int d>
 struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F0_bv(double h, double theta): _h {h}, _theta {theta} {}
@@ -300,7 +297,6 @@ EIKONAL_PROTECTED:
   double _theta;
 };
 
-// TODO: see comment for F0_bv<p0, p1, p2, d>
 template <char p0, char p1, char p2, int d>
 struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
   F1_bv(double h, double theta): _h {h}, _theta {theta} {}

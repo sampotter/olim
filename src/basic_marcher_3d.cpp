@@ -18,7 +18,6 @@
 void basic_marcher_3d::update_impl(
   node_3d * n, node_3d ** nb, int parent, double & T)
 {
-  // TODO: not currently using this, but could do so easily.
   (void) parent;
 
   using std::min;

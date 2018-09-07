@@ -51,7 +51,8 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
     eval_func.set_lambda(update.lambda);
     eval_func.eval(update.value);
   } else {
-    func.set_lambda(update.lambda); // TODO: maybe unnecessary
+    func.set_lambda(update.lambda); // TODO: maybe unnecessary, see
+                                    // above TODO for fix
     func.eval(update.value);
   }
 

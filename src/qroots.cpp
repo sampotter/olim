@@ -74,8 +74,7 @@ int sigma(double const * const * polys, double x) {
   y = POLY0M(polys[4]);
   signs = (signs << (y != 0)) | (y > 0);
 
-  // TODO: compare with modding and adding---that may actually be
-  // faster
+  // TODO: compare with modding and adding---may be faster
   return nbits[((signs ^ (signs << 1)) >> 1) & 15];
 }
 

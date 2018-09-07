@@ -16,19 +16,6 @@
 #define __sym_mat_size(d) ((d*(d + 1))/2)
 
 /**
- * TODO: this was a vaguely interesting way to go about implementing
- * the cost functions, but this isn't a particularly flexible
- * approach. It would be better to define a POD type structure which
- * contains the parameters, and then define a set of free functions
- * operating on that structure for each cost function. This way
- * (i.e. for mp0wr) we don't need to waste time reconstructing the
- * cost function and setting arguments, we can just reevaluate using a
- * different cost function. This approach should also give us the
- * simultaneous benefits of organization via OO and speed via "having
- * everything inline in the loop".
- */
-
-/**
  * An explanation of the template arguments:
  * - derived: the effective derived subclass (cost_func uses CRTP)
  * - n: the dimension of the ambient space (where each p_i lives)

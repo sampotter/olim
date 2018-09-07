@@ -164,7 +164,7 @@ for row, slow in enumerate(Slows):
 
 axes[-1, 0].set_xlabel('$N$')
 
-xticklabels = ['$2^%d + 1$' % p for p in Npows]
+xticklabels = ['$2^{%d} + 1$' % p for p in Npows]
 axes[-1, 1].set_xlabel('$N$')    
 axes[-1, 1].set_xticks(N[::2])
 axes[-1, 1].set_xticklabels(xticklabels[::2])

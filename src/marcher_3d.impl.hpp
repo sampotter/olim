@@ -51,17 +51,14 @@ marcher_3d<base, node>::marcher_3d(
   _width {width},
   _depth {depth}
 {
-  /**
-   * Temporarily grab a writable pointer to cache the speed function
-   * values.
-   */
-  // TODO: make sure this is being done in the most cache-friendly way
-  // possible
-  double * ptr = const_cast<double *>(_s_cache);
+  // Grab a writable pointer to cache the speed function values.
+  double x, z, * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < depth; ++k) {
+    z = __z(k);
     for (int j = 0; j < width; ++j) {
+      x = __x(j);
       for (int i = 0; i < height; ++i) {
-        ptr[__linear_index(i, j, k)] = s(__x(j), __y(i), __z(k));
+        ptr[__linear_index(i, j, k)] = s(x, __y(i), z);
       }
     }
   }

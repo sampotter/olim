@@ -19,15 +19,14 @@ A = np.array([
 alpha = np.pi/5
 C = lambda x, y, z: np.array([np.cos(alpha*x), np.cos(alpha*y), np.cos(alpha*z)])
 S = lambda x, y, z: np.array([np.sin(alpha*x), np.sin(alpha*y), np.sin(alpha*z)])
-# s3 = lambda x, y, z: np.linalg.norm(
-#     alpha*(np.diag(C(x, y, z))@(A + A.T)@S(x, y, z) - np.diag(S(x, y, z))@b))
-# f3 = lambda x, y, z: S(x, y, z)@A@S(x, y, z) + b@C(x, y, z) - b@C(0,0,0)
 s3 = lambda x, y, z: np.linalg.norm(alpha*np.diag(C(x, y, z))@(A + A.T)@S(x, y, z))
+s3 = np.vectorize(s3)
 f3 = lambda x, y, z: S(x, y, z)@A@S(x, y, z)
+f3 = np.vectorize(f3)
 
 Bsqrt = A
-s4 = lambda x, y, z: np.linalg.norm(Bsqrt@[x, y, z])
-f4 = lambda x, y, z: [x, y, z]@Bsqrt@[x, y, z]/2
+s4 = np.vectorize(lambda x, y, z: np.linalg.norm(Bsqrt@[x, y, z]))
+f4 = np.vectorize(lambda x, y, z: [x, y, z]@Bsqrt@[x, y, z]/2)
 
 _slowness_funcs = [s0, s1, s2, s3, s4]
 
@@ -36,10 +35,7 @@ _soln_funcs = [f0, f1, f2, s3, s4]
 def get_field(g, X, Y, Z):
     assert(X.shape == Y.shape)
     assert(X.shape == Z.shape)
-    m, n, p = X.shape
-    return np.array([[[g(X[i, j, k], Y[i, j, k], Z[i, j, k]) for k in range(p)]
-                      for j in range(n)]
-                     for i in range(m)])
+    return g(X, Y, Z)
 
 def get_fields(u, s, X, Y, Z):
     return get_field(u, X, Y, Z), get_field(s, X, Y, Z)

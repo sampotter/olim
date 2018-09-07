@@ -1,6 +1,10 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
+template <int d>
+void lagmults(double const * lam, double const * df, double const * d2f,
+              double * mu, int * k);
+
 template <int n, int d>
 struct F0_wkspc {
   double sh;
@@ -80,119 +84,23 @@ struct fac_wkspc {
   double l_fac_lam_sq;
 };
 
-template <int n, int d>
-struct F0_fac: public cost_func<F0_fac<n, d>, n, d>
-{
-  F0_fac(double h, double theta): _h {h}, _theta {theta} {}
-  void eval_impl(double & f) const;
-  void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[__sym_mat_size(d)]) const;
-  void set_lambda_impl(double const lambda[d]);
-  void set_args(double const u[d + 1], double s_hat,
-                double const s[d + 1], double const p[d + 1][n],
-                double const p_fac[n], double s_fac);
-};  
+template <class wkspc>
+void eval(wkspc const & w, double & f);
 
-template <int n, int d>
-struct F1_fac: public cost_func<F1_fac<n, d>, n, d>
-{
-  F1_fac(double h, double theta): _h {h}, _theta {theta} {}
-  void eval_impl(double & f) const;
-  void grad_impl(double df[d]) const;
-  void hess_impl(double d2f[__sym_mat_size(d)]) const;
-  void set_lambda_impl(double const lambda[d]);
-  void set_args(double const u[d + 1], double s_hat,
-                double const s[d + 1], double const p[d + 1][n],
-                double const p_fac[n], double s_fac);
-};
+template <class wkspc>
+void eval(wkspc const & w, fac_wkspc const & fw, double & f);
 
-template <class derived, char p0, char p1, char p2, int d>
-struct cost_func_bv {
-  inline void eval(double & f) const {
-    static_cast<derived const *>(this)->eval_impl(f);
-  }
+template <class wkspc>
+void grad(wkspc const & w, double * df);
 
-  inline void grad(double df[d]) const {
-    static_cast<derived const *>(this)->grad_impl(df);
-  }
+template <class wkspc>
+void grad(wkspc const & w, fac_wkspc const & fw, double * df);
 
-  inline void hess(double d2f[__sym_mat_size(d)]) const {
-    static_cast<derived const *>(this)->hess_impl(d2f);
-  }
+template <class wkspc>
+void hess(wkspc const & w, double * d2f);
 
-  void lag_mult(double const lambda[d], double * mu, int * k);
-
-  inline void set_lambda(double const lambda[d]) {
-    static_cast<derived *>(this)->set_lambda_impl(lambda);
-  }
-
-  inline void set_args(double const u[d + 1], double s_hat,
-                       double const s[d + 1]) {
-    static_cast<derived *>(this)->set_args_impl(u, s_hat, s);
-  }
-};
-
-// template <char p0, char p1, char p2, int d>
-// struct F0_bv: public cost_func_bv<F0_bv<p0, p1, p2, d>, p0, p1, p2, d> {
-//   F0_bv(double h, double theta): _h {h}, _theta {theta} {}
-//   void eval_impl(double & f) const;
-//   void grad_impl(double df[d]) const;
-//   void hess_impl(double d2f[__sym_mat_size(d)]) const;
-//   void set_lambda_impl(double const lambda[d]);
-//   void set_args_impl(double const u[d + 1], double s_hat,
-//                      double const s[d + 1]);
-// };
-
-template <char p0, char p1, char p2>
-struct F0_bv<p0, p1, p2, 2>:
-  public cost_func_bv<F0_bv<p0, p1, p2, 2>, p0, p1, p2, 2>
-{
-  F0_bv(double h, double theta): _h {h}, _theta {theta} {}
-  void eval_impl(double & f) const;
-  void grad_impl(double df[2]) const;
-  void hess_impl(double d2f[3]) const;
-  void set_lambda_impl(double const lambda[2]);
-  void set_args_impl(double const u[3], double s_hat,
-                     double const s[3]);
-};
-
-// template <char p0, char p1, char p2, int d>
-// struct F1_bv: public cost_func_bv<F1_bv<p0, p1, p2, d>, p0, p1, p2, d> {
-//   F1_bv(double h, double theta): _h {h}, _theta {theta} {}
-//   void eval_impl(double & f) const;
-//   void grad_impl(double df[d]) const;
-//   void hess_impl(double d2f[__sym_mat_size(d)]) const;
-//   void set_lambda_impl(double const lambda[d]);
-//   void set_args_impl(double const u[d + 1], double s_hat,
-//                      double const s[d + 1]);
-// EIKONAL_PROTECTED:
-// };
-
-// Specialization for d = 2
-template <char p0, char p1, char p2>
-struct F1_bv<p0, p1, p2, 2>:
-  public cost_func_bv<F1_bv<p0, p1, p2, 2>, p0, p1, p2, 2>
-{
-  F1_bv(double h, double theta): _h {h}, _theta {theta} {}
-  void eval_impl(double & f) const;
-  void grad_impl(double df[2]) const;
-  void hess_impl(double d2f[3]) const;
-  void set_lambda_impl(double const lambda[2]);
-  void set_args_impl(double const u[3], double s_hat,
-                     double const s[3]);
-EIKONAL_PROTECTED:
-  double _s_hat;
-  double _sh;
-  double _s0;
-  double _ds[2];
-  double _l;
-  double _u_lam;
-  double _u0;
-  double _du[2];
-  double _y[2];
-  double _h;
-  double _theta;
-};
+template <class wkspc>
+void hess(wkspc const & w, fac_wkspc const & fw, double * d2f);
 
 #include "cost_funcs.impl.hpp"
 

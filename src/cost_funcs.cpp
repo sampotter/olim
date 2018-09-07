@@ -1,7 +1,7 @@
 #include "cost_funcs.hpp"
 
+#include <cassert>
 #include <cmath>
-#include <cstring>
 
 template <>
 void

@@ -1,20 +1,6 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
-#include <src/config.hpp>
-
-#include "common.macros.hpp"
-
-#include <cassert>
-#include <cmath>
-
-#define __check(x) do {                         \
-    assert(!std::isinf(x));                     \
-    assert(!std::isnan(x));                     \
-  } while (0)
-
-#define __sym_mat_size(d) ((d*(d + 1))/2)
-
 template <int n, int d>
 struct F0_wkspc {
   double sh;
@@ -209,8 +195,5 @@ EIKONAL_PROTECTED:
 };
 
 #include "cost_funcs.impl.hpp"
-
-#undef __sym_mat_size
-#undef __check
 
 #endif // __COST_FUNCS_HPP__

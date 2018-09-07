@@ -1,9 +1,16 @@
 #ifndef __COST_FUNCS_IMPL_HPP__
 #define __COST_FUNCS_IMPL_HPP__
 
+#include <cassert>
 #include <cmath>
 
+#include "common.macros.hpp"
 #include "update_rules.utils.hpp"
+
+#define __check(x) do {                         \
+    assert(!std::isinf(x));                     \
+    assert(!std::isnan(x));                     \
+  } while (0)
 
 #define __invert2x2inplace(X) do {              \
     double const det = X[0]*X[2] - X[1]*X[1];   \
@@ -244,6 +251,7 @@ F1_bv<p0, p1, p2, 2>::set_lambda_impl(double const lam[2])
   _y[1] = (__dP(2, 0)*p[0] + __dP(2, 1)*p[1] + __dP(2, 2)*p[2])/_l;
 }
 
+#undef __check
 #undef __dP
 
 #endif // __COST_FUNCS_IMPL_HPP__

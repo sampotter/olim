@@ -39,12 +39,18 @@ constexpr char dp(char i) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-template <char p0, char p1, char p2>
-void
-F0_bv<p0, p1, p2, 2>::eval_impl(double & f) const
-{
-  f = _u_lam + _sh*_l;
-}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// OLD /////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// template <char p0, char p1, char p2>
+// void
+// F0_bv<p0, p1, p2, 2>::eval_impl(double & f) const
+// {
+//   f = _u_lam + _sh*_l;
+// }
 
 template <char p0, char p1, char p2>
 void
@@ -91,12 +97,12 @@ F0_bv<p0, p1, p2, 2>::set_args_impl(double const u[3], double s_hat,
   _du[1] = u[2] - _u0;
 }
 
-template <char p0, char p1, char p2>
-void
-F1_bv<p0, p1, p2, 2>::eval_impl(double & f) const
-{
-  f = _u_lam + _sh*_l;
-}
+// template <char p0, char p1, char p2>
+// void
+// F1_bv<p0, p1, p2, 2>::eval_impl(double & f) const
+// {
+//   f = _u_lam + _sh*_l;
+// }
 
 template <char p0, char p1, char p2>
 void

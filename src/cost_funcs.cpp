@@ -89,12 +89,29 @@ void lagmults<2>(double const * lam, double const * df, double const * d2f,
 
 #undef __invert2x2inplace
 
-template <>
-void
-F0<3, 2>::eval_impl(double & f) const
+
+void eval(eval_wkspc const & w, double & f)
 {
-  f = _u_lam + _sh*_l;
+  f = w.u_lam + w.sh*w.l;
 }
+
+void eval(eval_wkspc const & w, fac_wkspc const & fw, double & f)
+{
+  f = fw.tau_lam + fw.sh_fac*fw.l_fac_lam + w.sh*w.l;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// OLD /////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+// template <>
+// void
+// F0<3, 2>::eval_impl(double & f) const
+// {
+//   f = _u_lam + _sh*_l;
+// }
 
 template <>
 void
@@ -169,12 +186,12 @@ F0<3, 2>::set_args_impl(double const u[3], double s_hat, double const s[3],
   _dP[1][2] = p[2][2] - p[0][2];
 }
 
-template <>
-void
-F1<3, 2>::eval_impl(double & f) const
-{
-  f = _u_lam + _h*_stheta*_l;
-}
+// template <>
+// void
+// F1<3, 2>::eval_impl(double & f) const
+// {
+//   f = _u_lam + _h*_stheta*_l;
+// }
 
 template <>
 void
@@ -267,12 +284,12 @@ F1<3, 2>::set_lambda_impl(double const lam[2])
   _l = sqrt(_q);
 }
 
-template <>
-void
-F0_fac<3, 2>::eval_impl(double & f) const
-{
-  f = _tau_lam + _s_fac*_h*_l_fac_lam + _sh*_l;
-}
+// template <>
+// void
+// F0_fac<3, 2>::eval_impl(double & f) const
+// {
+//   f = _tau_lam + _s_fac*_h*_l_fac_lam + _sh*_l;
+// }
 
 template <>
 void
@@ -434,12 +451,12 @@ F0_fac<3, 2>::set_args(double const u[3], double s_hat,
     _dP[1][2]*_p_fac[2];
 }
 
-template <>
-void
-F1_fac<3, 2>::eval_impl(double & f) const
-{
-  f = _tau_lam + _s_fac*_h*_l_fac_lam + _stheta*_h*_l;
-}
+// template <>
+// void
+// F1_fac<3, 2>::eval_impl(double & f) const
+// {
+//   f = _tau_lam + _s_fac*_h*_l_fac_lam + _stheta*_h*_l;
+// }
 
 template <>
 void

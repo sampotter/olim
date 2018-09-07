@@ -1,6 +1,11 @@
+BUILD_TYPE='Release'
+
+import os
 import sys
-if '../../build/Release' not in sys.path:
-    sys.path.insert(0, '../../build/Release')
+build_path = os.path.abspath('../../build/%s' % BUILD_TYPE)
+print(build_path)
+if build_path not in sys.path:
+    sys.path.insert(0, build_path)
 
 import pyeikonal as eik
 import numpy as np

@@ -205,7 +205,6 @@ for row, slow in enumerate(Slows[:2]):
                           transform=axes[row, 0].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
-        axes[row, 0].minorticks_off()
         axes[row, 1].loglog(
             N, EI[slow, Olim], marker=marker, color=colors[ind//3],
             linestyle=linestyles[ind % 3], linewidth=1, label=name)
@@ -213,7 +212,6 @@ for row, slow in enumerate(Slows[:2]):
                           transform=axes[row, 1].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
-        axes[row, 1].minorticks_off()
     Olim = Olims[-1]
     axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
     axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
@@ -224,6 +222,9 @@ xticklabels = ['$2^{%d} + 1$' % p for p in Npows]
 axes[-1, 1].set_xlabel('$N$')    
 axes[-1, 1].set_xticks(N)
 axes[-1, 1].set_xticklabels(xticklabels)
+
+for row, col in itertools.product(range(2), range(2)):
+    axes[row, col].minorticks_off()
 
 handles, labels = axes[-1, -1].get_legend_handles_labels()
     
@@ -250,7 +251,6 @@ for row, slow in enumerate(Slows[2:]):
                           transform=axes[row, 0].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
-        axes[row, 0].minorticks_off()
         axes[row, 1].loglog(
             N, EI[slow, Olim], marker=marker, color=colors[ind//3],
             linestyle=linestyles[ind % 3], linewidth=1, label=name)
@@ -258,7 +258,6 @@ for row, slow in enumerate(Slows[2:]):
                           transform=axes[row, 1].transAxes,
                           horizontalalignment='center',
                           verticalalignment='center')
-        axes[row, 1].minorticks_off()
     Olim = Olims[-1]
     axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
     axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
@@ -269,6 +268,9 @@ xticklabels = ['$2^{%d} + 1$' % p for p in Npows]
 axes[-1, 1].set_xlabel('$N$')    
 axes[-1, 1].set_xticks(N)
 axes[-1, 1].set_xticklabels(xticklabels)
+
+for row, col in itertools.product(range(2), range(2)):
+    axes[row, col].minorticks_off()
 
 handles, labels = axes[-1, -1].get_legend_handles_labels()
     

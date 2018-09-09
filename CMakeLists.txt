@@ -20,7 +20,6 @@ option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
-option (INCLUDE_ARMDILLO "Find and include Armadillo (for development)." OFF)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 option (BUILD_TIMINGS "Build the timings executable." OFF)
 option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
@@ -52,14 +51,6 @@ endif ()
 CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
   "Compile all 256 3D marchers (this takes a while!)" OFF
   "BUILD_PYTHON_BINDINGS" ON)
-CMAKE_DEPENDENT_OPTION (USE_ARMADILLO_FOR_NUMOPT
-  "Use Armadillo in the implementation of numerical optimization functions." OFF
-  "INCLUDE_ARMADILLO" ON)
-
-if (INCLUDE_ARMADILLO)
-  find_package (Armadillo REQUIRED)
-  include_directories (${ARMADILLO_INCLUDE_DIR})
-endif ()
 
 if (LINK_PROFILE)
   find_package (Gperftools REQUIRED)
@@ -95,12 +86,9 @@ endif ()
 
 add_library (eikonal STATIC ${EIKONAL_SRC_FILES})
 if (IPO_RESULT)
-  target_set_property (eikonal PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_target_properties (eikonal PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif ()
 target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-if (INCLUDE_ARMADILLO)
-  target_link_libraries (eikonal ${ARMADILLO_LIBRARIES})
-endif ()
 if (LINK_PROFILE)
   target_link_libraries (eikonal ${GPERFTOOLS_PROFILER})
 endif ()

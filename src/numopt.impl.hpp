@@ -67,7 +67,6 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     if (status == hybrid_status::DEGENERATE && fabs(alpha) < tol) {
       alpha = 1;
     }
-    // if (alpha < 1) { printf("alpha = %g\n", alpha); }
 
     // Save current values for next iteration
     x0[0] = x1[0];
@@ -77,14 +76,6 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     f0 = f1;
     func.set_lambda(x1);
     func.eval(f1);
-
-    // Check for convergence
-    // if (max(fabs(x1[0] - x0[0]), fabs(x1[1] - x0[1]))/fmax(
-    //       fmax(x0[0], x0[1]),
-    //       fmax(x1[0], x1[1])) < tol ||
-    //     fabs(f1 - f0)/fmax(f0, f1) < tol) {
-    //   break;
-    // }
 
     if (fabs(f1 - f0) <= tol*fmax(f0, f1) + tol) {
       break;

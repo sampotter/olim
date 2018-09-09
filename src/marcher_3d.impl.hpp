@@ -105,7 +105,7 @@ void marcher_3d<base, node>::add_boundary_node(int i, int j, int k, double value
 
 template <class base, class node>
 void marcher_3d<base, node>::add_boundary_node(double x, double y, double z,
-                                         double value) {
+                                               double value) {
   auto const dist = [x, y, z] (int i, int j, int k) -> double {
     return std::sqrt((i - y)*(i - y) + (j - x)*(j - x) + (k - z)*(k - z));
   };

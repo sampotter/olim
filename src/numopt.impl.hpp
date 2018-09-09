@@ -13,7 +13,7 @@
 
 template <class cost_func_t>
 void
-numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
+sqp_bary<cost_func_t, 3, 2>::operator()(
   cost_func_t & func, double * x, bool * error, double tol, int niters)
 {
   using std::max;
@@ -50,7 +50,7 @@ numopt::sqp_baryplex<cost_func_t, 3, 2>::operator()(
     found_opt = false;
     qpi_tol = tol;
     while (!found_opt) {
-      qpi_baryplex<2>(G, c, x1, g, &qpi_error, qpi_tol, qpi_niters);
+      qpi_bary<2>(G, c, x1, g, &qpi_error, qpi_tol, qpi_niters);
       if (qpi_error) qpi_tol *= 10;
       else found_opt = true;
     }

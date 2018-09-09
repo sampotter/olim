@@ -37,7 +37,7 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
 
   update_info<2> update;
   bool error;
-  numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
+  sqp_bary<cost_func_t, 3, 2> sqp;
   sqp(func, update.lambda, &error);
   assert(!error);
 
@@ -95,7 +95,7 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
 
   update_info<2> update;
   bool error;
-  numopt::sqp_baryplex<factored_cost_func_t, 3, 2> sqp;
+  sqp_bary<factored_cost_func_t, 3, 2> sqp;
   sqp(func, update.lambda, &error);
   assert(!error);
 
@@ -136,7 +136,7 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
 
   update_info<2> update;
   bool error;
-  numopt::sqp_baryplex<cost_func_t, 3, 2> sqp;
+  sqp_bary<cost_func_t, 3, 2> sqp;
   sqp(func, update.lambda, &error);
   assert(!error);
 

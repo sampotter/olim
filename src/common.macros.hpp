@@ -7,6 +7,11 @@
 #define INF(T) std::numeric_limits<T>::infinity()
 #define VAL(i) (nb[i]->get_value())
 
+#define CHECK(x) do {                           \
+    assert(!std::isinf(x));                     \
+    assert(!std::isnan(x));                     \
+  } while (0)
+
 #define GET_MACRO_NAME_3(_1, _2, _3, NAME, ...) NAME
 
 #define SPEED_ARGS(...)                         \

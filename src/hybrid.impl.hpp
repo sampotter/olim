@@ -21,7 +21,7 @@ hybrid(F const & f, T a, T b, T tol)
     return {b, hybrid_status::OK};
   }
 
-  T c = a, fc = f(c), fd, d, dm, df, ds, dd;
+  T c = a, fc = fa, fd, d, dm, df, ds, dd;
 
   if (sgn(fb) == sgn(fc)) {
     return {0, hybrid_status::DEGENERATE};

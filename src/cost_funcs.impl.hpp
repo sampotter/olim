@@ -4,85 +4,307 @@
 #include <cassert>
 #include <cmath>
 
+#include "bitops.hpp"
 #include "common.macros.hpp"
 #include "update_rules.utils.hpp"
 
+template <cost_func F, class wkspc>
+void set_sh_lam(wkspc & w, double s, double s0, double s1, double s2, double h)
+{
+  if (F == MP0) {
+    w.sh_lam = h*(s + (s0 + s1 + s2)/3)/2;
+  } else if (F == MP1) {
+    w.sh_lam = h*s;
+  }
+}
 
-////////////////////////////////////////////////////////////////////////////////
-// TODO: consolidate this stuff into a "bit ops" module ////////////////////////
+template <cost_func F>
+void set_args_common(F0_wkspc<2> & w, double u0, double u1, double u2,
+                     double s, double s0, double s1, double s2, double h)
+{
+  w.u0 = u0;
+  w.du[0] = u1 - u0;
+  w.du[1] = u2 - u0;
 
-// #define __dP(i, j) dp<p##i, p0>(j)
-
-// #define __dPt_dP(i, j) (                        \
-//     dp<p##i, p0>(0)*dp<p##j, p0>(0) +           \
-//     dp<p##i, p0>(1)*dp<p##j, p0>(1) +           \
-//     dp<p##i, p0>(2)*dp<p##j, p0>(2))
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+  set_sh_lam<F>(w, s, s0, s1, s2, h);
+}
 
 
-////////////////////////////////////////////////////////////////////////////////
-// TODO: move this into a common "num utils" module ////////////////////////////
+template <cost_func F>
+void set_args_common(F1_wkspc<2> & w, double u0, double u1, double u2,
+                     double s, double s0, double s1, double s2, double h)
+{
+  static_assert(F == MP1);
 
-#define __check(x) do {                         \
-    assert(!std::isinf(x));                     \
-    assert(!std::isnan(x));                     \
-  } while (0)
+  set_args_common<F>(
+    static_cast<F0_wkspc<2> &>(w), u0, u1, u2, s, s0, s1, s2, h);
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+  w.sh_bar = (s + s0)*h/2;
 
+  w.theta_h_ds[0] = h*(s1 - s0)/2;
+  w.theta_h_ds[1] = h*(s2 - s0)/2;
+}
+
+template <cost_func F, int n, char p0, char p1, char p2>
+void set_args(F_wkspc<F, 2> & w, double u0, double u1, double u2,
+              double s, double s0, double s1, double s2, double h)
+{
+  using namespace bitops;
+  using dim_t = dim<n>;
+
+  set_args_common<F>(w, u0, u1, u2, s, s0, s1, s2, h);
+
+  w.dPt_dP[0] = p_dot_q<p1, p1>(dim_t {}) - 2*p_dot_q<p1, p0>(dim_t {})
+    + p_dot_q<p0, p0>(dim_t {});
+  w.dPt_dP[1] = p_dot_q<p1, p2>(dim_t {}) - p_dot_q<p1, p0>(dim_t {})
+    - p_dot_q<p2, p0>(dim_t {}) + p_dot_q<p0, p0>(dim_t {});
+  w.dPt_dP[2] = p_dot_q<p2, p2>(dim_t {}) - 2*p_dot_q<p2, p0>(dim_t {})
+    + p_dot_q<p0, p0>(dim_t {});
+}
+
+template <int n, class wkspc>
+void set_dPt_dP(wkspc & w, double const * p0, double const * p1,
+                double const * p2)
+{
+  double dp1[n], dp2[n];
+  sub<n>(p1, p0, dp1);
+  sub<n>(p2, p0, dp2);
+
+  w.dPt_dP[0] = dot<n>(dp1, dp1);
+  w.dPt_dP[1] = dot<n>(dp1, dp2);
+  w.dPt_dP[2] = dot<n>(dp2, dp2);
+}
+
+template <cost_func F, int n>
+void set_args(F_wkspc<F, 2> & w,
+              double const * p0, double const * p1, double const * p2,
+              double u0, double u1, double u2, double s,
+              double s0, double s1, double s2, double h)
+{
+  set_args_common<F>(w, u0, u1, u2, s, s0, s1, s2, h);
+  set_dPt_dP<n>(w, p0, p1, p2);
+}
+
+template <cost_func F, int n>
+void set_args(F0_wkspc<2, fac_wkspc<2>> & w,
+              double const * p0, double const * p1, double const * p2,
+              double u0, double u1, double u2, double s,
+              double s0, double s1, double s2, double h,
+              double const * p_fac, double s_fac)
+{
+  w.sh_fac = s_fac*h;
+
+  double const T0 = w.sh_fac*dist2<n>(p0, p_fac);
+
+  w.tau0 = u0 - T0;
+  w.dtau[0] = u1 - u0 - (w.sh_fac*dist2<n>(p1, p_fac) - T0);
+  w.dtau[1] = u2 - u0 - (w.sh_fac*dist2<n>(p2, p_fac) - T0);
+
+  set_sh_lam<F>(w, s, s0, s1, s2, h);
+
+  set_dPt_dP<n>(w, p0, p1, p2);
+}
+
+template <cost_func F, int n>
+void set_args(F1_wkspc<2, fac_wkspc<2>> & w,
+              double const * p0, double const * p1, double const * p2,
+              double u0, double u1, double u2, double s,
+              double s0, double s1, double s2, double h,
+              double const * p_fac, double s_fac)
+{
+  static_assert(F == MP1);
+
+  set_args<F, n>(
+    static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w),
+    p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+
+  w.sh_bar = (s + s0)*h/2;
+
+  w.theta_h_ds[0] = h*(s1 - s0)/2;
+  w.theta_h_ds[1] = h*(s2 - s0)/2;
+}
+
+inline void set_lambda_common(F0_wkspc<2> & w, double const * lam)
+{
+  w.u_lam = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1];
+}
+
+inline void set_lambda_common(F1_wkspc<2> & w, double const * lam)
+{
+  set_lambda_common(static_cast<F0_wkspc<2> &>(w), lam);
+
+  w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
+}
+
+template <cost_func F, int n, char p0, char p1, char p2>
+void set_lambda(F_wkspc<F, 2> & w, double const * lam)
+{
+  using namespace bitops;
+  using dim_t = dim<n>;
+
+  set_lambda_common(w, lam);
+
+  w.l_lam = sqrtf(
+    p_dot_q<p0, p0>(dim_t {}) +
+    2*(p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[0] +
+    2*(p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[1] +
+    w.dPt_dP[0]*lam[0]*lam[0] +
+    2*w.dPt_dP[1]*lam[0]*lam[1] +
+    w.dPt_dP[2]*lam[1]*lam[1]);
+  CHECK(w.l_lam);
+
+  w.dPt_nu_lam[0] = (
+    p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
+    w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[0]);
+
+  w.dPt_nu_lam[1] = (
+    p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
+    w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[1]);
+}
+
+template <cost_func F, int n>
+void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
+                double const * p2, double const * lam)
+{
+  set_lambda_common(w, lam);
+
+  // TODO: it isn't very efficient to recompute these over and over
+  // again, when we could just do it once and store the results
+  double p0_dot_p0 = dot<n>(p0, 0),
+    dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
+    dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
+
+  w.l_lam = sqrtf(
+    p0_dot_p0 +
+    2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
+    w.dPt_dP[0]*lam[0]*lam[0] +
+    2*w.dPt_dP[1]*lam[0]*lam[1] +
+    w.dPt_dP[2]*lam[1]*lam[1]);
+  CHECK(w.l_lam);
+
+  w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[0]);
+
+  w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[1]);
+}
+
+template <int n>
+void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
+                double const * p0, double const * p1, double const * p2,
+                double const * p_fac, double const * lam)
+{
+  w.tau_lam = w.tau0 + w.dtau[0]*lam[0] + w.dtau[1]*lam[1];
+
+  // TODO: it isn't very efficient to recompute these over and over
+  // again, when we could just do it once and store the results
+  double p0_dot_p0 = dot<n>(p0, 0),
+    dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
+    dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
+
+  w.l_lam = sqrtf(
+    p0_dot_p0 +
+    2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
+    w.dPt_dP[0]*lam[0]*lam[0] +
+    2*w.dPt_dP[1]*lam[0]*lam[1] +
+    w.dPt_dP[2]*lam[1]*lam[1]);
+  CHECK(w.l_lam);
+
+  w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[0]);
+
+  w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  CHECK(w.dPt_nu_lam[1]);
+  
+  double p0_dot_p_fac = dot<3>(p0, p_fac),
+    dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
+    dp2_dot_p_fac = dot<n>(p2, p_fac) - p0_dot_p_fac;
+
+  w.l_fac_lam = sqrtf(
+    w.l_lam*w.l_lam -
+    2*(p0_dot_p_fac + lam[0]*dp1_dot_p_fac + lam[1]*dp2_dot_p_fac) +
+    dot<n>(p_fac, p_fac));
+
+  w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
+  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp1_dot_p_fac)/w.l_fac_lam;
+}
+
+template <int n>
+void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
+                double const * p0, double const * p1, double const * p2,
+                double const * p_fac, double const * lam)
+{
+  set_lambda<n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w),
+                p0, p1, p2, p_fac, lam);
+
+  w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
+}
+
+template <int d>
+void eval(eval_wkspc<d> const & w, double & f)
+{
+  f = w.u_lam + w.sh_lam*w.l_lam;
+  CHECK(f);
+}
+
+template <int d>
+void eval(fac_wkspc<d> const & w, double & f)
+{
+  f = w.tau_lam + w.sh_fac*w.l_fac_lam + w.sh_lam*w.l_lam;
+  CHECK(f);
+}
 
 template <int d>
 void grad(F0_wkspc<d> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) df[i] = w.du[i] + w.sh*w.dPt_nu_lam[i];
-  for (int i = 0; i < d; ++i) __check(df[i]);
+  for (int i = 0; i < d; ++i) df[i] = w.du[i] + w.sh_lam*w.dPt_nu_lam[i];
+  for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
 
 template <int d>
 void grad(F0_wkspc<d> const & w, fac_wkspc<d> const & fw, double * df)
 {
-  for (int i = 0; i < d; ++i) df[i] = fw.dtau[i] + w.sh*w.dPt_nu_lam[i];
+  for (int i = 0; i < d; ++i) df[i] = fw.dtau[i] + w.sh_lam*w.dPt_nu_lam[i];
   if (fw.l_fac_lam > 1e1*EPS(double)) {
     for (int i = 0; i < d; ++i) df[i] += fw.sh_fac*fw.dPt_nu_fac_lam[i];
   }
-  for (int i = 0; i < d; ++i) __check(df[i]);
+  for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
 
 template <int d>
 void grad(F1_wkspc<d> const & w, double * df)
 {
   for (int i = 0; i < d; ++i) {
-    df[i] = w.du[i] + w.theta_h_ds[i]*w.l_lam + w.sh*w.dPt_nu_lam[i];
+    df[i] = w.du[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
   }
-  for (int i = 0; i < d; ++i) __check(df[i]);
+  for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
 
 template <int d>
 void grad(F1_wkspc<d> const & w, fac_wkspc<d> const & fw, double * df)
 {
   for (int i = 0; i < d; ++i) {
-    df[i] = fw.dtau[i] + w.theta_h_ds[i]*w.l_lam + w.sh*w.dPt_nu_lam[i];
+    df[i] = fw.dtau[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
   }
   if (fw.l_fac_lam > 1e1*EPS(double)) {
     for (int i = 0; i < d; ++i) df[i] += fw.sh_fac*fw.dPt_nu_fac_lam[i];
   }
-  for (int i = 0; i < d; ++i) __check(df[i]);
+  for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
 
 template <int d>
 void hess(F0_wkspc<d> const & w, double * d2f)
 {
-  double tmp = w.sh/w.l_lam;
+  double tmp = w.sh_lam/w.l_lam;
   for (int i = 0; i < d; ++i) {
     for (int j = i; j < d; ++j) {
       int k = (d - 1)*i + j;
       d2f[k] = tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
     }
   }
-  for (int k = 0; k < sym_mat_size(d); ++k) __check(d2f[k]);
+  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
 }
 
 // TODO: this and the F1 fac hess below are identical, should try to
@@ -96,17 +318,17 @@ void hess(F0_wkspc<d> const & w, fac_wkspc<d> const & fw, double * d2f)
     for (int i = 0; i < d; ++i) {
       for (int j = i; j < d; ++j) {
         int k = (d - 1)*i + j;
-        d2f[k] += tmp*(w.dPt_dP[k] - w.dPt_nu_fac_lam[i]*w.dPt_nu_fac_lam[j]);
+        d2f[k] += tmp*(w.dPt_dP[k] - fw.dPt_nu_fac_lam[i]*fw.dPt_nu_fac_lam[j]);
       }
     }
   }
-  for (int k = 0; k < sym_mat_size(d); ++k) __check(d2f[k]);
+  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
 }
 
 template <int d>
 void hess(F1_wkspc<d> const & w, double * d2f)
 {
-  double tmp = w.sh/w.l_lam;
+  double tmp = w.sh_lam/w.l_lam;
   for (int i = 0; i < d; ++i) {
     for (int j = i; j < d; ++j) {
       int k = (d - 1)*i + j;
@@ -115,7 +337,7 @@ void hess(F1_wkspc<d> const & w, double * d2f)
         tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
     }
   }
-  for (int k = 0; k < sym_mat_size(d); ++k) __check(d2f[k]);
+  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
 }
 
 template <int d>
@@ -131,125 +353,7 @@ void hess(F1_wkspc<d> const & w, fac_wkspc<d> const & fw, double * d2f)
       }
     }
   }
-  for (int k = 0; k < sym_mat_size(d); ++k) __check(d2f[k]);
+  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-// OLD /////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-// template <char p0, char p1, char p2>
-// void
-// F0_bv<p0, p1, p2, 2>::eval_impl(double & f) const
-// {
-//   f = _u_lam + _sh*_l;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F0_bv<p0, p1, p2, 2>::grad_impl(double df[2]) const
-// {
-//   df[0] = _du[0] + _sh*_y[0];
-//   df[1] = _du[1] + _sh*_y[1];
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F0_bv<p0, p1, p2, 2>::hess_impl(double d2f[3]) const
-// {
-//   d2f[0] = _sh*(__dPt_dP(1, 1) - _y[0]*_y[0])/_l;
-//   d2f[1] = _sh*(__dPt_dP(1, 2) - _y[0]*_y[1])/_l;
-//   d2f[2] = _sh*(__dPt_dP(2, 2) - _y[1]*_y[1])/_l;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F0_bv<p0, p1, p2, 2>::set_lambda_impl(double const lam[2])
-// {
-//   _u_lam = _u0 + lam[0]*_du[0] + lam[1]*_du[1];
-
-//   double const p[3] = {
-//     component(p0, 0) + lam[0]*__dP(1, 0) + lam[1]*__dP(2, 0),
-//     component(p0, 1) + lam[0]*__dP(1, 1) + lam[1]*__dP(2, 1),
-//     component(p0, 2) + lam[0]*__dP(1, 2) + lam[1]*__dP(2, 2)
-//   };
-//   _l = sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
-
-//   _y[0] = (__dP(1, 0)*p[0] + __dP(1, 1)*p[1] + __dP(1, 2)*p[2])/_l;
-//   _y[1] = (__dP(2, 0)*p[0] + __dP(2, 1)*p[1] + __dP(2, 2)*p[2])/_l;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F0_bv<p0, p1, p2, 2>::set_args_impl(double const u[3], double s_hat,
-//                                     double const s[3])
-// {
-//   _sh = _h*((1 - _theta)*s_hat + _theta*(s[0] + s[1] + s[2])/3);
-//   _u0 = u[0];
-//   _du[0] = u[1] - _u0;
-//   _du[1] = u[2] - _u0;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F1_bv<p0, p1, p2, 2>::eval_impl(double & f) const
-// {
-//   f = _u_lam + _sh*_l;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F1_bv<p0, p1, p2, 2>::grad_impl(double df[2]) const
-// {
-//   df[0] = _du[0] + _theta*_h*_l*_ds[0] + _sh*_y[0];
-//   df[1] = _du[1] + _theta*_h*_l*_ds[1] + _sh*_y[1];
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F1_bv<p0, p1, p2, 2>::hess_impl(double d2f[3]) const
-// {
-//   d2f[0] = _sh*(__dPt_dP(1, 1) - _y[0]*_y[0])/_l + 2*_h*_theta*_y[0]*_ds[0];
-//   d2f[1] = _sh*(__dPt_dP(1, 2) - _y[0]*_y[1])/_l + _h*_theta*(_y[0]*_ds[1] + _y[1]*_ds[0]);
-//   d2f[2] = _sh*(__dPt_dP(2, 2) - _y[1]*_y[1])/_l + 2*_h*_theta*_y[1]*_ds[1];
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F1_bv<p0, p1, p2, 2>::set_args_impl(double const u[3], double s_hat,
-//                                     double const s[3])
-// {
-//   _s_hat = s_hat;
-
-//   _s0 = s[0];
-//   _ds[0] = s[1] - s[0];
-//   _ds[1] = s[2] - s[0];
-
-//   _u0 = u[0];
-//   _du[0] = u[1] - _u0;
-//   _du[1] = u[2] - _u0;
-// }
-
-// template <char p0, char p1, char p2>
-// void
-// F1_bv<p0, p1, p2, 2>::set_lambda_impl(double const lam[2])
-// {
-//   _sh = ((1 - _theta)*_s_hat + _theta*(_s0 + _ds[0]*lam[0] + _ds[1]*lam[1]))*_h;
-
-//   _u_lam = _u0 + lam[0]*_du[0] + lam[1]*_du[1];
-
-//   double const p[3] = {
-//     component(p0, 0) + lam[0]*__dP(1, 0) + lam[1]*__dP(2, 0),
-//     component(p0, 1) + lam[0]*__dP(1, 1) + lam[1]*__dP(2, 1),
-//     component(p0, 2) + lam[0]*__dP(1, 2) + lam[1]*__dP(2, 2)
-//   };
-//   _l = sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
-
-//   _y[0] = (__dP(1, 0)*p[0] + __dP(1, 1)*p[1] + __dP(1, 2)*p[2])/_l;
-//   _y[1] = (__dP(2, 0)*p[0] + __dP(2, 1)*p[1] + __dP(2, 2)*p[2])/_l;
-// }
-
-// #undef __dP
 
 #endif // __COST_FUNCS_IMPL_HPP__

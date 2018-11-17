@@ -11,10 +11,10 @@
     lambda_min = half_tr - sqrt(half_tr*half_tr - det);             \
   } while (0)                                                       \
 
-template <class cost_func_t>
+template <class wkspc>
 void
-sqp_bary<cost_func_t, 3, 2>::operator()(
-  cost_func_t & func, double * x, bool * error, double tol, int niters)
+sqp_bary<wkspc, 3, 2>::operator()(
+  wkspc const & w, double * x, bool * error, double tol, int niters)
 {
   using std::max;
 
@@ -28,12 +28,12 @@ sqp_bary<cost_func_t, 3, 2>::operator()(
 
   (void) c1;
 
-  func.set_lambda(x1);
-  func.eval(f1);
+  set_lambda(w, x1);
+  eval(w, f1);
 
   while (true) {
     // Compute Hessian and perturb it if it isn't positive definite
-    func.hess(G);
+    hess(w, G);
     __compute_lambda_min();
     if (lambda_min < 0) {
       G[0] -= 1.1*lambda_min;
@@ -41,7 +41,7 @@ sqp_bary<cost_func_t, 3, 2>::operator()(
     }
 
     // Compute load vector for quadratic program
-    func.grad(c);
+    grad(w, c);
     c[0] -= G[0]*x1[0] + G[1]*x1[1];
     c[1] -= G[1]*x1[0] + G[2]*x1[1];
 
@@ -59,8 +59,8 @@ sqp_bary<cost_func_t, 3, 2>::operator()(
 
     auto const step_sel = [&] (double alpha) {
       double tmp[2] = {x1[0] + alpha*g[0], x1[1] + alpha*g[1]};
-      func.set_lambda(tmp);
-      func.grad(tmp);
+      set_lambda(w, tmp);
+      grad(w, tmp);
       return g[0]*tmp[0] + g[1]*tmp[1];
     };
     std::tie(alpha, status) = hybrid(step_sel, 0., 1., tol);
@@ -74,8 +74,8 @@ sqp_bary<cost_func_t, 3, 2>::operator()(
     x1[0] += alpha*g[0];
     x1[1] += alpha*g[1];
     f0 = f1;
-    func.set_lambda(x1);
-    func.eval(f1);
+    set_lambda(w, x1);
+    eval(w, f1);
 
     if (fabs(f1 - f0) <= tol*fmax(f0, f1) + tol) {
       break;

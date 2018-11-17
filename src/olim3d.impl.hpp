@@ -772,30 +772,31 @@ void olim3d_hu<
         // Compute Lagrange multipliers to see if we can skip the
         // tetrahedron update.
 
-        // TODO: this is pretty inefficient! we will just end up
-        // redoing the setup phase for this cost_func once we get
-        // inside tetra in the next section
-        typename tetra_updates::template cost_func<3, 2> func(h, this->theta());
-        {
-          double U[3] = {VAL(l0), VAL(l1), VAL(l2)};
-          double S[3] = {s_[l0], s_[l1], s_[l2]};
-          double P[3][3] = {
-            {p0[0], p0[1], p0[2]},
-            {p1[0], p1[1], p1[2]},
-            {p2[0], p2[1], p2[2]}
-          };
-          func.set_args(U, s, S, P);
-        }
-
-        double mu[2], lam[2];
+        double mu[2], lam[2], df[2], d2f[3];
         int k;
 
-        // We get the first two checks for free using arglam
+        F_wkspc<F, 2> wkspc;
+        F_fac_wkspc<F, 2> fac_wkspc;
 
+        auto const compute_lagrange_mults = [&] () {
+          if (n->has_fac_parent()) {
+            assert(false);
+          } else {
+            set_args<F, 3>(
+              wkspc, p0, p1, p2,
+              VAL(l0), VAL(l1), VAL(l2), s, s_[l0], s_[l1], s_[l2], h);
+            set_lambda<F, 3>(wkspc, p0, p1, p2, lam);
+            grad<2>(wkspc, df);
+            hess<2>(wkspc, d2f);
+            lagmults<2>(lam, df, d2f, mu, &k);
+          }
+        };
+
+        // We get the first two checks for free using arglam
         assert(arglam[l1] != -1);
         lam[0] = arglam[l1];
         lam[1] = 0;
-        func.lag_mult(lam, mu, &k);
+        compute_lagrange_multipliers();
         if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
           continue;
         }
@@ -805,7 +806,7 @@ void olim3d_hu<
         if (arglam[l2] != -1) {
           lam[0] = 0;
           lam[1] = arglam[l2];
-          func.lag_mult(lam, mu, &k);
+          compute_lagrange_multipliers();
           if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
             continue;
           }

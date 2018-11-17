@@ -14,95 +14,103 @@
 
 #include "common.defs.hpp"
 #include "common.macros.hpp"
+#include "cost_funcs.hpp"
 #include "numopt.hpp"
 #include "update_rules.tetra_updates.util.hpp"
 
-#define __theta() static_cast<derived const *>(this)->theta()
-
-template <class derived>
-template <char p0, char p1, char p2>
-update_info<2> update_rules::tetra_updates<derived>::tetra(
+template <cost_func F>
+update_info<2> update_rules::tetra<F>::operator()(
+  double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h,
-  ffvec<p0>, ffvec<p1>, ffvec<p2>) const
+  double s0, double s1, double s2, double h) const
 {
-  double u[3] = {u0, u1, u2};
-  double s_hat = s;
-  double s_[3] = {s0, s1, s2};
+  struct {
+    inline void eval(double & f) const { ::eval(w, f); }
+    inline void grad(double * df) const { ::grad(w, df); }
+    inline void hess(double * d2f) const { ::hess(w, d2f); }
+    inline void set_lambda(double * lam) {
+      ::set_lambda<F, 3>(w, p0, p1, p2, lam);
+    }
+    F_wkspc<F, 2> w;
+    double const * p0, * p1, * p2;
+  } func;
 
-  using cost_func_t = typename derived::template cost_func_bv<p0, p1, p2>;
+  func.p0 = p0;
+  func.p1 = p1;
+  func.p2 = p2;
 
-  cost_func_t func {h, __theta()};
-  func.set_args(u, s_hat, s_);
+  set_args<F, 3>(func.w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
 
   update_info<2> update;
   bool error;
-  sqp_bary<cost_func_t, 3, 2> sqp;
+  sqp_bary<decltype(func), 3, 2> sqp;
   sqp(func, update.lambda, &error);
   assert(!error);
 
-  // TODO: awful hack for now---need to fix the way we've organized
-  // the cost functions
-  if (std::is_same<derived, mp0_tetra_updates>::value) {
-    F1_bv<p0, p1, p2, 2> eval_func {h, __theta()};
-    eval_func.set_args(u, s_hat, s_);
-    eval_func.set_lambda(update.lambda);
-    eval_func.eval(update.value);
+  if (F == cost_func::mp0) {
+    // TODO: check and see if this can be optimized at all to avoid
+    // redundant calculations with set_args call above
+    F_wkspc<MP1, 2> w;
+    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<MP1, 3>(w, p0, p1, p2, update.lambda);
+    eval(w, update.value);
   } else {
-    func.set_lambda(update.lambda); // TODO: maybe unnecessary, see
-                                    // above TODO for fix
-    func.eval(update.value);
+    // TODO: we're doing an unnecessary eval here: we could reorganize
+    // things so that we're using the most recent eval done by
+    // sqp... i.e., have sqp write over update.value internally
+    eval(func.w, update.value);
   }
 
 #if PRINT_UPDATES
-  printf("tetra<%d, %d, %d>(u0 = %g, u1 = %g, u2 = %g, s = %g, "
+  printf("tetra(u0 = %g, u1 = %g, u2 = %g, s = %g, "
          "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
-         p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, value);
+         u0, u1, u2, s, s0, s1, s2, h, update.value);
 #endif
+
   return update;
 }
 
-template <class derived>
-update_info<2> update_rules::tetra_updates<derived>::tetra(
+template <cost_func F>
+update_info<2> update_rules::tetra<F>::operator()(
+  double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h,
-  double const * p0, double const * p1, double const * p2,
   double const * p_fac, double s_fac) const  
 {
-  using factored_cost_func_t =
-    typename derived::template factored_cost_func<3, 2>;
+  struct {
+    inline void eval(double & f) const { ::eval(w, f); }
+    inline void grad(double * df) const { ::grad(w, df); }
+    inline void hess(double * d2f) const { ::hess(w, d2f); }
+    inline void set_lambda(double const * lam) {
+      ::set_lambda<3>(w, p0, p1, p2, p_fac, lam);
+    }
+    F_fac_wkspc<F, 2> w;
+    double const * p0, * p1, * p2, * p_fac;
+  } func;
 
-  using eval_func_t = typename std::conditional<
-    std::is_same<derived, mp0_tetra_updates>::value,
-    F1_fac<3, 2>,
-    factored_cost_func_t
-  >::type;
-
-  // TODO: we want to avoid having to pack everything into these
-  // arrays, this is a waste
-  double u[3] = {u0, u1, u2};
-  double s_hat = s;
-  double s_[3] = {s0, s1, s2};
-  double p[3][3];
-
-  // TODO: we want to avoid doing this, this is totally unnecessary
-  memcpy((void *) p[0], (void *) p0, 3*sizeof(double));
-  memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
-  memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
+  func.p0 = p0;
+  func.p1 = p1;
+  func.p2 = p2;
+  func.p_fac = p_fac;
   
-  factored_cost_func_t func {h, __theta()};
-  func.set_args(u, s_hat, s_, p, p_fac, s_fac);
-
+  set_args<F, 3>(func.w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  
   update_info<2> update;
   bool error;
-  sqp_bary<factored_cost_func_t, 3, 2> sqp;
+  sqp_bary<decltype(func), 3, 2> sqp;
   sqp(func, update.lambda, &error);
   assert(!error);
 
-  eval_func_t eval_func {h, __theta()};
-  eval_func.set_args(u, s_hat, s_, p, p_fac, s_fac);
-  eval_func.set_lambda(update.lambda);
-  eval_func.eval(update.value);
+  if (F == cost_func::mp0) {
+    // TODO: check and see if this can be optimized at all to avoid
+    // redundant calculations with set_args call above
+    F_fac_wkspc<MP1, 2> w;
+    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+    set_lambda<3>(w, p0, p1, p2, p_fac, update.lambda);
+    eval(w, update.value);
+  } else {
+    eval(func.w, update.value);
+  }
 
 #if PRINT_UPDATES
 #  error Not implemented yet
@@ -111,51 +119,79 @@ update_info<2> update_rules::tetra_updates<derived>::tetra(
   return update;
 }
 
-template <class derived>
-update_info<2> update_rules::tetra_updates<derived>::tetra(
-  double const * p0, double const * p1, double const * p2,
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+template <cost_func F, char p0, char p1, char p2>
+update_info<2>
+update_rules::tetra_bv<F, p0, p1, p2>::operator()(F_wkspc<F, 2> const & w) const
 {
-  // TODO: we want to avoid having to pack everything into these
-  // arrays, this is a waste
-  double u[3] = {u0, u1, u2};
-  double s_hat = s;
-  double s_[3] = {s0, s1, s2};
-  double p[3][3];
-
-  // TODO: we want to avoid doing this, this is totally unnecessary
-  memcpy((void *) p[0], (void *) p0, 3*sizeof(double));
-  memcpy((void *) p[1], (void *) p1, 3*sizeof(double));
-  memcpy((void *) p[2], (void *) p2, 3*sizeof(double));
-
-  using cost_func_t = typename derived::template cost_func<3, 2>;
-
-  cost_func_t func {h, __theta()};
-  func.set_args(u, s_hat, s_, p);
-
   update_info<2> update;
   bool error;
-  sqp_bary<cost_func_t, 3, 2> sqp;
-  sqp(func, update.lambda, &error);
+  sqp_bary<F_wkspc<F, 2>, 3, 2> sqp;
+  sqp(w, update.lambda, &error);
   assert(!error);
 
-  // TODO: awful hack for now---need to fix the way we've organized
-  // the cost functions
-  if (std::is_same<derived, mp0_tetra_updates>::value) {
-    F1<3, 2> eval_func {h, __theta()};
-    eval_func.set_args(u, s_hat, s_, p);
-    eval_func.set_lambda(update.lambda);
-    eval_func.eval(update.value);
+  if (F == cost_func::mp0) {
+    assert(false); // fix later
+    // TODO: check and see if this can be optimized at all to avoid
+    // redundant calculations with set_args call above
+    // F_wkspc<MP1, 2> w;
+    // set_args<MP1, 3, p0, p1, p2>(w, u0, u1, u2, s, s0, s1, s2, h);
+    // set_lambda<MP1, 3, p0, p1, p2>(w, update.lambda);
+    // eval(w, update.value);
   } else {
-    func.set_lambda(update.lambda); // TODO: maybe unnecessary
-    func.eval(update.value);
+    // TODO: I think we should actually be okay to remove this---try
+    // doing so once tests are stabilized after this big change
+    eval(w, update.value);
   }
 
 #if PRINT_UPDATES
-  printf("tetra(u0 = %g, u1 = %g, u2 = %g, s = %g, "
+  printf("tetra<%d, %d, %d>(u0 = %g, u1 = %g, u2 = %g, s = %g, "
          "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
-         u0, u1, u2, s, s0, s1, s2, h, value);
+         p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, update.value);
+#endif
+
+  return update;
+}
+
+template <cost_func F, char p0, char p1, char p2>
+update_info<2>
+update_rules::tetra_bv<F, p0, p1, p2>::operator()(F_fac_wkspc<F, 2> const & fw) const
+{
+  // struct {
+  //   inline void eval(double & f) const { eval(w, fw, f); }
+  //   inline void grad(double * df) const { grad(w, fw, df); }
+  //   inline void hess(double * d2f) const { hess(w, fw, d2f); }
+  //   inline void set_lambda(double const * lam) const {
+  //     ::set_lambda<3, p0, p1, p2>(w, lam);
+  //     ::set_lambda<3, p0, p1, p2>(fw, lam);
+  //   }
+  //   F_wkspc<F, 2> w;
+  //   fac_wkspc<2> fw;
+  // } func;
+
+  // set_args<F, 3, p0, p1, p2>(func.w, u0, u1, u2, s, s0, s1, s2, h);
+  // set_args<F, 3, p0, p1, p2>(func.fw, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  
+  update_info<2> update;
+  bool error;
+  sqp_bary<F_fac_wkspc<F, 2>, 3, 2> sqp;
+  sqp(fw, update.lambda, &error);
+  assert(!error);
+
+  if (F == cost_func::mp0) {
+    assert(false); // fix later
+    // TODO: check and see if this can be optimized at all to avoid
+    // redundant calculations with set_args call above
+    // F_wkspc<MP1, 2> w;
+    // set_args<MP1, 3, p0, p1, p2>(w, u0, u1, u2, s, s0, s1, s2, h);
+    // set_lambda<MP1, 3, p0, p1, p2>(w, update.lambda);
+    // eval(w, func.fw, update.value);
+  } else {
+    // TODO: can probably remove
+    eval(fw, update.value);
+  }
+
+#if PRINT_UPDATES
+#  error Not implemented yet
 #endif
 
   return update;

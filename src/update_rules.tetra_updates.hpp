@@ -6,65 +6,41 @@
 
 namespace update_rules {
 
-template <class derived>
-struct tetra_updates
+template <cost_func F_>
+struct tetra
 {
-  template <char p0, char p1, char p2>
-  update_info<2> tetra(
-    double u0, double u1, double u2, double s,
-    double s0, double s1, double s2, double h,
-    ffvec<p0>, ffvec<p1>, ffvec<p2>) const;
-
-  update_info<2> tetra(
-    double u0, double u1, double u2, double s,
-    double s0, double s1, double s2, double h,
-    double const * p0, double const * p1, double const * p2,
-    double const * p_fac, double s_fac) const;
-
-  update_info<2> tetra(
+  update_info<2> operator()(
     double const * p0, double const * p1, double const * p2,
     double u0, double u1, double u2, double s,
     double s0, double s1, double s2, double h) const;
+
+  update_info<2> operator()(
+    double const * p0, double const * p1, double const * p2,
+    double u0, double u1, double u2, double s,
+    double s0, double s1, double s2, double h,
+    double const * p_fac, double s_fac) const;
 };
 
-struct mp0_tetra_updates: tetra_updates<mp0_tetra_updates> {
-  template <int n, int d>
-  using cost_func = F0<n, d>;
+using tetra_mp0 = tetra<cost_func::mp0>;
+using tetra_mp1 = tetra<cost_func::mp1>;
+using tetra_rhr = tetra<cost_func::rhr>;
 
-  template <char p0, char p1, char p2>
-  using cost_func_bv = F0_bv<p0, p1, p2, 2>;
-
-  template <int n, int d>
-  using factored_cost_func = F0_fac<n, d>;
-
-  inline double theta() const { return 0.5; }
+template <cost_func F, char p0, char p1, char p2>
+struct tetra_bv {
+  using wkspc = F_wkspc<F, 2>;
+  using fac_wkspc = F_fac_wkspc<F, 2>;
+  update_info<2> operator()(wkspc const & w) const;
+  update_info<2> operator()(fac_wkspc const & fw) const;
 };
 
-struct mp1_tetra_updates: tetra_updates<mp1_tetra_updates> {
-  template <int n, int d>
-  using cost_func = F1<n, d>;
+template <char p0, char p1, char p2>
+using tetra_bv_mp0 = tetra_bv<cost_func::mp0, p0, p1, p2>;
 
-  template <char p0, char p1, char p2>
-  using cost_func_bv = F1_bv<p0, p1, p2, 2>;
+template <char p0, char p1, char p2>
+using tetra_bv_mp1 = tetra_bv<cost_func::mp1, p0, p1, p2>;
 
-  template <int n, int d>
-  using factored_cost_func = F1_fac<n, d>;
-
-  inline double theta() const { return 0.5; }
-};
-
-struct rhr_tetra_updates: tetra_updates<rhr_tetra_updates> {
-  template <int n, int d>
-  using cost_func = F0<n, d>;
-
-  template <char p0, char p1, char p2>
-  using cost_func_bv = F0_bv<p0, p1, p2, 2>;
-
-  template <int n, int d>
-  using factored_cost_func = F0_fac<n, d>;
-
-  inline double theta() const { return 0.0; }
-};
+template <char p0, char p1, char p2>
+using tetra_bv_rhr = tetra_bv<cost_func::rhr, p0, p1, p2>;
 
 }
 

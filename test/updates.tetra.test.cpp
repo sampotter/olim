@@ -3,9 +3,9 @@
 #include <src/config.hpp>
 
 #include "common.defs.hpp"
-#include "update_rules.tetra_updates.hpp"
+#include "updates.tetra.hpp"
 
-using namespace update_rules;
+using namespace updates;
 
 #define P001 1
 #define P010 2
@@ -20,53 +20,38 @@ using namespace update_rules;
 // difference...
 
 template <cost_func F>
-update_info<2> tetra111(double u0, double u1, double u2, double s,
-                        double s0, double s1, double s2, double h)
+info<2> tetra111(double u0, double u1, double u2, double s,
+                 double s0, double s1, double s2, double h)
 {
-  using tetra = tetra_bv<F, P001, P010, P100>;
-  typename tetra::wkspc w;
-  set_args<F, 3, P001, P010, P100>(w, u0, u1, u2, s, s0, s1, s2, h);
-  return tetra()(w);
+  return tetra_bv<F, 3, P001, P010, P100>()(u0, u1, u2, s, s0, s1, s2, h);
 }
 
 template <cost_func F>
-update_info<2> tetra122(double u0, double u1, double u2, double s,
-                        double s0, double s1, double s2, double h)
+info<2> tetra122(double u0, double u1, double u2, double s,
+                 double s0, double s1, double s2, double h)
 {
-  using tetra = tetra_bv<F, P001, P011, P101>;
-  typename tetra::wkspc w;
-  set_args(w, u0, u1, u2, s, s0, s1, s2, h);
-  return tetra()(w);
+  return tetra_bv<F, 3, P001, P011, P101>()(u0, u1, u2, s, s0, s1, s2, h);
 }
 
 template <cost_func F>
-update_info<2> tetra123(double u0, double u1, double u2, double s,
+info<2> tetra123(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  using tetra = tetra_bv<F, P001, P011, P111>;
-  typename tetra::wkspc w;
-  set_args(w, u0, u1, u2, s, s0, s1, s2, h);
-  return tetra()(w);
+  return tetra_bv<F, 3, P001, P011, P111>()(u0, u1, u2, s, s0, s1, s2, h);
 }
 
 template <cost_func F>
-update_info<2> tetra222(double u0, double u1, double u2, double s,
+info<2> tetra222(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  using tetra = tetra_bv<F, P011, P101, P110>;
-  typename tetra::wkspc w;
-  set_args(w, u0, u1, u2, s, s0, s1, s2, h);
-  return tetra()(w);
+  return tetra_bv<F, 3, P011, P101, P110>()(u0, u1, u2, s, s0, s1, s2, h);
 }
 
 template <cost_func F>
-update_info<2> tetra223(double u0, double u1, double u2, double s,
+info<2> tetra223(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  using tetra = tetra_bv<F, P011, P101, P111>;
-  typename tetra::wkspc w;
-  set_args(w, u0, u1, u2, s, s0, s1, s2, h);
-  return tetra()(w);
+  return tetra_bv<F, 3, P011, P101, P111>()(u0, u1, u2, s, s0, s1, s2, h);
 }
 
 template <cost_func F>
@@ -244,7 +229,7 @@ TEST (tetra_updates, tetra122_works_with_constant_slowness) {
 
 template <cost_func F>
 void tetra123_works_with_constant_slowness() {
-  double u = tetra123<F>(0, 0, 0, 1, 1, 1, 1, 1), uhat = 1.0;
+  double u = tetra123<F>(0, 0, 0, 1, 1, 1, 1, 1).value, uhat = 1.0;
   ASSERT_DOUBLE_EQ(u, uhat);
 }
 
@@ -257,16 +242,16 @@ TEST (tetra_updates, tetra123_works_with_constant_slowness) {
 template <cost_func F>
 void tetra222_works_with_constant_slowness() {
   {
-    double U = tetra222<F>(0, 0, 0, 1, 1, 1, 1, 1);
-    ASSERT_DOUBLE_EQ(U, 2.0/sqrt(3));
+    double u = tetra222<F>(0, 0, 0, 1, 1, 1, 1, 1).value;
+    ASSERT_DOUBLE_EQ(u, 2.0/sqrt(3));
   }
   {
     double u0 = 0.18181818181818182;
     double u1 = 0.33244129540839806;
     double u2 = 0.33244129540839812;
     double h = 0.18181818181818182;
-    double U = tetra222<F>(u0, u1, u2, 1, 1, 1, 1, h).value;
-    ASSERT_DOUBLE_EQ(U, 0.4389479204314718);
+    double u = tetra222<F>(u0, u1, u2, 1, 1, 1, 1, h).value;
+    ASSERT_DOUBLE_EQ(u, 0.4389479204314718);
   }
 }
 

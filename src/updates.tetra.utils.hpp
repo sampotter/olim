@@ -1,7 +1,7 @@
 #ifndef __UPDATE_RULES_TETRA_UPDATES_UTIL_HPP__
 #define __UPDATE_RULES_TETRA_UPDATES_UTIL_HPP__
 
-#include "update_rules.utils.hpp"
+#include "updates.utils.hpp"
 
 template <char p0, char p1, char p2>
 constexpr char dpi_dot_p0(char i) {

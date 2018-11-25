@@ -17,9 +17,9 @@ static inline size_t get_initial_heap_size(int width, int height) {
   return static_cast<size_t>(std::max(8.0, std::log(width*height)));
 }
 
-template <class base, class node>
-marcher<base, node>::marcher(int height, int width, double h,
-                             no_speed_func_t const &):
+template <class base, class node, int num_neighbors>
+marcher<base, node, num_neighbors>::marcher(
+  int height, int width, double h, no_speed_func_t const &):
   abstract_marcher {get_initial_heap_size(width, height)},
   _nodes {new node[width*height]},
   _s_cache {new double[width*height]},
@@ -30,9 +30,9 @@ marcher<base, node>::marcher(int height, int width, double h,
   init();
 }
 
-template <class base, class node>
-marcher<base, node>::marcher(int height, int width, double h,
-                             double const * s_cache):
+template <class base, class node, int num_neighbors>
+marcher<base, node, num_neighbors>::marcher(
+  int height, int width, double h, double const * s_cache):
   abstract_marcher {get_initial_heap_size(width, height)},
   _nodes {new node[width*height]},
   _s_cache {new double[width*height]},
@@ -44,10 +44,10 @@ marcher<base, node>::marcher(int height, int width, double h,
   init();
 }
 
-template <class base, class node>
-marcher<base, node>::marcher(int height, int width, double h,
-                       std::function<double(double, double)> s,
-                       double x0, double y0):
+template <class base, class node, int num_neighbors>
+marcher<base, node, num_neighbors>::marcher(
+  int height, int width, double h,
+  std::function<double(double, double)> s, double x0, double y0):
   abstract_marcher {get_initial_heap_size(width, height)},
   _nodes {new node[width*height]},
   _s_cache {new double[width*height]},
@@ -61,12 +61,11 @@ marcher<base, node>::marcher(int height, int width, double h,
       ptr[i*width + j] = s(h*j - x0, h*i - y0);
     }
   }
-
   init();
 }
 
-template <class base, class node>
-marcher<base, node>::~marcher()
+template <class base, class node, int num_neighbors>
+marcher<base, node, num_neighbors>::~marcher()
 {
   assert(_nodes != nullptr);
   delete[] _nodes;
@@ -84,8 +83,10 @@ marcher<base, node>::~marcher()
  * to the node just added. This should be fixed, since there is a
  * correct way to enable this behavior.
  */
-template <class base, class node>
-void marcher<base, node>::add_boundary_node(int i, int j, double value) {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::add_boundary_node(int i, int j, double value)
+{
 #if PRINT_UPDATES
   printf("add_boundary_node(i = %d, j = %d, value = %g)\n", i, j, value);
 #endif // PRINT_UPDATES
@@ -94,8 +95,10 @@ void marcher<base, node>::add_boundary_node(int i, int j, double value) {
   visit_neighbors(&(operator()(i, j) = {i, j, value}));
 }
 
-template <class base, class node>
-void marcher<base, node>::add_boundary_node(double x, double y, double value) {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::add_boundary_node(double x, double y, double value)
+{
   auto const dist = [x, y] (int i, int j) -> double {
     return std::sqrt((i - y)*(i - y) + (j - x)*(j - x));
   };
@@ -113,8 +116,10 @@ void marcher<base, node>::add_boundary_node(double x, double y, double value) {
   add_boundary_nodes(nodes, 4);
 }
 
-template <class base, class node>
-void marcher<base, node>::add_boundary_nodes(node const * nodes, int num) {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int num)
+{
 #if PRINT_UPDATES
   printf("add_boundary_nodes(nodes = %p, num = %d)\n", nodes, num);
 #endif // PRINT_UPDATES
@@ -152,52 +157,68 @@ void marcher<base, node>::add_boundary_nodes(node const * nodes, int num) {
   }
 }
 
-template <class base, class node>
-void marcher<base, node>::set_node_fac_parent(int i, int j, int i_par, int j_par) {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::set_node_fac_parent(int i, int j, int i_par, int j_par)
+{
   assert(in_bounds(i, j));
   assert(in_bounds(i_par, j_par));
   operator()(i, j).set_fac_parent(&operator()(i_par, j_par));
 }
 
-template <class base, class node>
-double marcher<base, node>::get_value(int i, int j) const {
+template <class base, class node, int num_neighbors>
+double
+marcher<base, node, num_neighbors>::get_value(int i, int j) const
+{
   assert(in_bounds(i, j));
   return operator()(i, j).get_value();
 }
 
-template <class base, class node>
-node & marcher<base, node>::operator()(int i, int j) {
+template <class base, class node, int num_neighbors>
+node &
+marcher<base, node, num_neighbors>::operator()(int i, int j)
+{
   assert(in_bounds(i, j));
   assert(_nodes != nullptr);
   return _nodes[_width*i + j];
 }
 
-template <class base, class node>
-node const & marcher<base, node>::operator()(int i, int j) const {
+template <class base, class node, int num_neighbors>
+node const &
+marcher<base, node, num_neighbors>::operator()(int i, int j) const
+{
   assert(in_bounds(i, j));
   assert(_nodes != nullptr);
   return _nodes[_width*i + j];
 }
 
-template <class base, class node>
-bool marcher<base, node>::in_bounds(int i, int j) const {
+template <class base, class node, int num_neighbors>
+bool
+marcher<base, node, num_neighbors>::in_bounds(int i, int j) const
+{
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
 
-template <class base, class node>
-double marcher<base, node>::get_speed(int i, int j) const {
+template <class base, class node, int num_neighbors>
+double
+marcher<base, node, num_neighbors>::get_speed(int i, int j) const
+{
   assert(in_bounds(i, j));
   assert(_s_cache != nullptr);
   return _s_cache[_width*i + j];
 }
 
-template <class base, class node>
-bool marcher<base, node>::is_valid(int i, int j) const {
+template <class base, class node, int num_neighbors>
+bool
+marcher<base, node, num_neighbors>::is_valid(int i, int j) const
+{
   return in_bounds(i, j) && operator()(i, j).is_valid();
 }
 
-template <class base, class node>
-void marcher<base, node>::init() {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::init()
+{
   /**
    * Set the indices associated with each node in the grid.
    */
@@ -209,8 +230,10 @@ void marcher<base, node>::init() {
   }
 }
 
-template <class base, class node>
-void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
+{
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
 #if PRINT_UPDATES
@@ -224,7 +247,7 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
 
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
-  for (int k = 0; k < base::nneib; ++k) {
+  for (int k = 0; k < num_neighbors; ++k) {
     a = i + __di(k), b = j + __dj(k);
     if (in_bounds(a, b) && operator()(a, b).is_far()) {
       operator()(a, b).set_trial();
@@ -234,12 +257,11 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  node * valid_nb[8], * child_nb[base::nneib];
-  memset(valid_nb, 0x0, 8*sizeof(abstract_node *));
+  memset(valid, 0x0, 8*sizeof(abstract_node *));
   for (int k = 0; k < 8; ++k) {
     a = i + __di(k), b = j + __dj(k);
     if (in_bounds(a, b) && operator()(a, b).is_valid()) {
-      valid_nb[k] = &this->operator()(a, b);
+      valid[k] = &this->operator()(a, b);
     }
   }
 
@@ -248,10 +270,11 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   // - parent is the radial index of (i, j) expressed in the same
   //   index space as l
   int di_k, dj_k;
-  auto const set_child_nb = [&] (int parent) {
-    memset(child_nb, 0x0, base::nneib*sizeof(abstract_node *));
-    child_nb[parent] = static_cast<node *>(n);
-    for (int l = 0; l < base::nneib; ++l) {
+  node ** nb = static_cast<base *>(this)->nb;
+  auto const set_nb = [&] (int parent) {
+    memset(nb, 0x0, num_neighbors*sizeof(abstract_node *));
+    nb[parent] = static_cast<node *>(n);
+    for (int l = 0; l < num_neighbors; ++l) {
       if (l == parent) {
         continue;
       }
@@ -262,18 +285,19 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
       }
       if (in_bounds(i + di_kl, j + dj_kl)) {
         int m = d2l(di_kl, dj_kl);
-        child_nb[l] = valid_nb[m];
+        nb[l] = valid[m];
       }
     }
   };
 
-  // Update the node at (i, j). Before calling, child_nb needs to be
+  // Update the node at (i, j). Before calling, `nb' needs to be
   // filled appropriately. Upon updating, this sets the value of n and
   // adjusts its position in the heap.
   auto const update = [&] (int i, int j) {
     double T = INF(double);
     node * update_node = &operator()(i, j);
-    update_impl(update_node, child_nb, T);
+    static_cast<base *>(this)->s_hat = this->get_speed(i, j);
+    update_impl(update_node, T);
     if (T < update_node->get_value()) {
       update_node->set_value(T);
       adjust_heap_entry(update_node);
@@ -282,7 +306,7 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
 
   // Get the parent index of a radial index `k'.
   auto const get_parent = [] (int k) {
-    if (base::nneib == 4) {
+    if (num_neighbors == 4) {
       return (k + 2) % 4;
     } else {
       if (k < 4) return (k + 2) % 4;
@@ -291,16 +315,16 @@ void marcher<base, node>::visit_neighbors_impl(abstract_node * n) {
   };
 
   // This the main update loop. Each neighbor of n which isn't valid
-  // is now trial. For each neighboring trial node, use `set_child_nb'
+  // is now trial. For each neighboring trial node, use `set_nb'
   // to grab its valid neighbors and use `update' to actually update
   // the node's value and update its position in the heap.
-  for (int k = 0; k < base::nneib; ++k) {
-    if (!valid_nb[k]) {
+  for (int k = 0; k < num_neighbors; ++k) {
+    if (!valid[k]) {
       di_k = __di(k), dj_k = __dj(k);
       a = i + di_k, b = j + dj_k;
       if (!in_bounds(a, b)) continue;
       int parent = get_parent(k);
-      set_child_nb(parent);
+      set_nb(parent);
       update(a, b);
     }
   }

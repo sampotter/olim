@@ -11,18 +11,24 @@
 
 #include "common.macros.hpp"
 
-void basic_marcher::update_impl(node * n, node ** nb, double & T) {
+void basic_marcher::update_impl(node * n, double & T) {
   using std::min;
 
-  int i = n->get_i(), j = n->get_j();
 #if PRINT_UPDATES
-  printf("basic_marcher::update_impl(i = %d, j = %d)\n", i, j);
+  printf("basic_marcher::update_impl(i = %d, j = %d)\n",n->get_i(),n->get_j());
+#else
+  (void) n;
 #endif
 
-  double sh = this->get_h()*this->get_speed(i, j);
+  double sh = this->s_hat*this->get_h();
 
-  double T1 = min(nb[0] ? VAL(0) : INF(double), nb[2] ? VAL(2) : INF(double));
-  double T2 = min(nb[1] ? VAL(1) : INF(double), nb[3] ? VAL(3) : INF(double));
+  double T1 = min(
+    nb[0] ? this->nb[0]->get_value() : INF(double),
+    nb[2] ? this->nb[2]->get_value() : INF(double));
+
+  double T2 = min(
+    nb[1] ? this->nb[1]->get_value() : INF(double),
+    nb[3] ? this->nb[3]->get_value() : INF(double));
 
   bool T1_inf = std::isinf(T1), T2_inf = std::isinf(T2);
 

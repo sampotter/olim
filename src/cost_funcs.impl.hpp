@@ -6,7 +6,7 @@
 
 #include "bitops.hpp"
 #include "common.macros.hpp"
-#include "update_rules.utils.hpp"
+#include "updates.utils.hpp"
 
 template <cost_func F, class wkspc>
 void set_sh_lam(wkspc & w, double s, double s0, double s1, double s2, double h)
@@ -34,7 +34,7 @@ template <cost_func F>
 void set_args_common(F1_wkspc<2> & w, double u0, double u1, double u2,
                      double s, double s0, double s1, double s2, double h)
 {
-  static_assert(F == MP1);
+  static_assert(F == MP1, "Cost function must be MP1");
 
   set_args_common<F>(
     static_cast<F0_wkspc<2> &>(w), u0, u1, u2, s, s0, s1, s2, h);
@@ -112,7 +112,7 @@ void set_args(F1_wkspc<2, fac_wkspc<2>> & w,
               double s0, double s1, double s2, double h,
               double const * p_fac, double s_fac)
 {
-  static_assert(F == MP1);
+  static_assert(F == MP1, "Cost function must be MP1");
 
   set_args<F, n>(
     static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w),

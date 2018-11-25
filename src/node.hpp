@@ -13,6 +13,16 @@ struct node: public abstract_node {
   inline void set_i(int i) { _i = i; }
   inline int get_j() const { return _j; }
   inline void set_j(int j) { _j = j; }
+
+  // TODO: these are candidates for a bit more optimization, probably
+  // in the constructor of this class...
+  inline int get_i_fac() const {
+    return _i - static_cast<node *>(get_fac_parent())->get_i();
+  }
+  inline int get_j_fac() const {
+    return _j - static_cast<node *>(get_fac_parent())->get_j();
+  }
+
 EIKONAL_PRIVATE:
   int _i {-1}, _j {-1};
 };

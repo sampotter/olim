@@ -9,7 +9,7 @@
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-template <class base, class node>
+template <class base, class node, int num_neighbors>
 struct marcher: public abstract_marcher {
   // These are for use with our pybind11 bindings. They aren't used
   // internally.
@@ -17,6 +17,7 @@ struct marcher: public abstract_marcher {
   using node_type = node;
 
   static constexpr int ndim = 2;
+  // static constexpr int num_neighbors = base::num_neighbors;
 
   marcher(int height, int width, double h, no_speed_func_t const &);
   marcher(int height, int width, double h, double const * s_cache);
@@ -46,7 +47,9 @@ EIKONAL_PROTECTED:
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   
-  virtual void update_impl(node * n, node ** nb, double & T) = 0;
+  virtual void update_impl(node * n, double & T) = 0;
+
+  node * valid[8];
 
 EIKONAL_PRIVATE:
   void init();

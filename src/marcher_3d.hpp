@@ -7,7 +7,7 @@
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
-template <class base, class node>
+template <class base, class node, int num_neighbors>
 struct marcher_3d: public abstract_marcher {
   // These are for use with our pybind11 bindings. They aren't used
   // internally.

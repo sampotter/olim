@@ -23,9 +23,9 @@ void qpi_bary(double const * G, double const * c, double const * x0,
 template <class wkspc, int n, int d>
 struct sqp_bary {};
 
-template <class wkspc>
-struct sqp_bary<wkspc, 3, 2> {
-  void operator()(wkspc const & w, double * lam, bool * error,
+template <class cost_functor>
+struct sqp_bary<cost_functor, 3, 2> {
+  void operator()(cost_functor & func, double * lam, bool * error,
                   double tol = EPS(double), int niters = 0);
 };
 

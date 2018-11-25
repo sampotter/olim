@@ -135,30 +135,6 @@ inline double norm2<3>(double const * p) {
   return std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
 }
 
-/**
- * This class allows us to optionally return whether an update was
- * degenerate or not (which only makes sense for d > 1 updates). This
- * is only done if the COLLECT_STATS compiler flag is set in the CMake
- * build.
- */
-template <int d>
-struct update_info {
-  double value {INF(double)};
-  double lambda[d];
-#ifdef COLLECT_STATS
-  inline bool is_degenerate() const {
-    bool deg = false;
-    double lam0 = 1;
-    for (int i = 0; i < d; ++i) {
-      deg = deg || lambda[i] < EPS(double);
-      lam0 -= lambda[i];
-    }
-    return deg || lam0 > 1 - EPS(double);
-  }
-  bool hierarchical {false};
-#endif
-};
-
 template <char c>
 using ffvec = std::integral_constant<char, c>;
 

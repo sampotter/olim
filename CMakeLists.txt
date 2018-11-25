@@ -248,8 +248,8 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     olim3d_hu_mp1
     olim3d_hu_rhr
 	qroots
-	update_rules.tetra_updates
-	update_rules.tri_updates)
+	updates.tetra
+	updates.tri)
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
 	target_link_libraries (${test}.test eikonal gtest ${CMAKE_THREAD_LIBS_INIT})

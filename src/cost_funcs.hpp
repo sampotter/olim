@@ -120,4 +120,19 @@ void hess(F1_wkspc<d, fac_wkspc<d>> const & w, double * d2f);
 
 #include "cost_funcs.impl.hpp"
 
+template <cost_func F, char... ps>
+struct cost_functor_bv;
+
+template <cost_func F, int n, char p0, char p1, char p2>
+struct cost_functor_bv<F, n, p0, p1, p2>
+{
+  using wkspc = F_wkspc<F, 2>;
+  cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
+  void set_lambda(double const * lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
+  void eval(double & f) { ::eval(w, f); }
+  void grad(double * df) { ::grad(w, df); }
+  void hess(double * d2f) { ::hess(w, d2f); }
+  wkspc & w;
+};
+
 #endif // __COST_FUNCS_HPP__

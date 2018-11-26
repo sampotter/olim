@@ -195,10 +195,11 @@ void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
   CHECK(w.dPt_nu_lam[1]);
 }
 
-template <int n>
+template <cost_func F, int n>
 void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
                 double const * p0, double const * p1, double const * p2,
-                double const * p_fac, double const * lam)
+                double const * p_fac,
+                double const * lam)
 {
   w.tau_lam = w.tau0 + w.dtau[0]*lam[0] + w.dtau[1]*lam[1];
 
@@ -235,13 +236,13 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
   w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp1_dot_p_fac)/w.l_fac_lam;
 }
 
-template <int n>
+template <cost_func F, int n>
 void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
                 double const * p0, double const * p1, double const * p2,
-                double const * p_fac, double const * lam)
+                double const * p_fac,
+                double const * lam)
 {
-  set_lambda<n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w),
-                p0, p1, p2, p_fac, lam);
+  set_lambda<F, n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w), p0, p1, p2, p_fac, lam);
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
 }

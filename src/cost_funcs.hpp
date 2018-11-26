@@ -167,7 +167,7 @@ struct cost_functor_fac
                    double const * p_fac):
     w {w}, p0 {p0}, p1 {p1}, p2 {p2}, p_fac {p_fac} {}
   inline void set_lambda(double const * lam) {
-    ::set_lambda<n>(w, p0, p1, p2, p_fac, lam);
+    ::set_lambda<F, n>(w, p0, p1, p2, p_fac, lam);
   }
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const {::grad(w, df);}

@@ -13,7 +13,11 @@ void set_sh_lam(wkspc & w, double s, double s0, double s1, double s2, double h)
 {
   if (F == MP0) {
     w.sh_lam = h*(s + (s0 + s1 + s2)/3)/2;
-  } else if (F == MP1) {
+  } else if (F == MP1 || F == RHR) {
+    // NOTE: MP1 and RHR do different things here, and treat the
+    // variable sh_lam differently. Later, MP1 also computes a
+    // perturbation which is used when eval is called, and treats
+    // sh_lam as the base term.
     w.sh_lam = h*s;
   }
 }
@@ -144,7 +148,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 
   set_lambda_common(w, lam);
 
-  w.l_lam = sqrtf(
+  w.l_lam = std::sqrt(
     p_dot_q<p0, p0>(dim_t {}) +
     2*(p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[0] +
     2*(p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[1] +
@@ -176,7 +180,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
-  w.l_lam = sqrtf(
+  w.l_lam = std::sqrt(
     p0_dot_p0 +
     2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +
@@ -204,7 +208,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
-  w.l_lam = sqrtf(
+  w.l_lam = std::sqrt(
     p0_dot_p0 +
     2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +
@@ -222,7 +226,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
     dp2_dot_p_fac = dot<n>(p2, p_fac) - p0_dot_p_fac;
 
-  w.l_fac_lam = sqrtf(
+  w.l_fac_lam = std::sqrt(
     w.l_lam*w.l_lam -
     2*(p0_dot_p_fac + lam[0]*dp1_dot_p_fac + lam[1]*dp2_dot_p_fac) +
     dot<n>(p_fac, p_fac));

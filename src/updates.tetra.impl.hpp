@@ -25,22 +25,9 @@ updates::tetra<F, n>::operator()(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
 {
-  struct {
-    inline void eval(double & f) const { ::eval(w, f); }
-    inline void grad(double * df) const { ::grad(w, df); }
-    inline void hess(double * d2f) const { ::hess(w, d2f); }
-    inline void set_lambda(double * lam) {
-      ::set_lambda<F, n>(w, p0, p1, p2, lam);
-    }
-    F_wkspc<F, 2> w;
-    double const * p0, * p1, * p2;
-  } func;
-
-  func.p0 = p0;
-  func.p1 = p1;
-  func.p2 = p2;
-
-  set_args<F, n>(func.w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+  F_wkspc<F, 2> w;
+  set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+  cost_functor<F, 2> func {w, p0, p1, p2};
 
   info<2> info;
   bool error;
@@ -49,17 +36,19 @@ updates::tetra<F, n>::operator()(
   assert(!error);
 
   if (F == cost_func::mp0) {
+    assert(false); // fix later
     // TODO: check and see if this can be optimized at all to avoid
     // redundant calculations with set_args call above
-    F_wkspc<MP1, 2> w;
-    set_args<MP1, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP1, n>(w, p0, p1, p2, info.lambda);
-    eval(w, info.value);
+    // F_wkspc<MP1, 2> w;
+    // set_args<MP1, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+    // set_lambda<MP1, n>(w, p0, p1, p2, info.lambda);
+    // eval(w, info.value);
   } else {
     // TODO: we're doing an unnecessary eval here: we could reorganize
     // things so that we're using the most recent eval done by
     // sqp... i.e., have sqp write over info.value internally
-    eval(func.w, info.value);
+    // eval(func.w, info.value);
+    func.eval(info.value);
   }
 
 #if PRINT_UPDATES
@@ -79,23 +68,25 @@ updates::tetra<F, n>::operator()(
   double s0, double s1, double s2, double h,
   double const * p_fac, double s_fac) const  
 {
-  struct {
-    inline void eval(double & f) const { ::eval(w, f); }
-    inline void grad(double * df) const { ::grad(w, df); }
-    inline void hess(double * d2f) const { ::hess(w, d2f); }
-    inline void set_lambda(double const * lam) {
-      ::set_lambda<n>(w, p0, p1, p2, p_fac, lam);
-    }
-    F_fac_wkspc<F, 2> w;
-    double const * p0, * p1, * p2, * p_fac;
-  } func;
+  // struct {
+  //   inline void eval(double & f) const { ::eval(w, f); }
+  //   inline void grad(double * df) const { ::grad(w, df); }
+  //   inline void hess(double * d2f) const { ::hess(w, d2f); }
+  //   inline void set_lambda(double const * lam) {
+  //     ::set_lambda<n>(w, p0, p1, p2, p_fac, lam);
+  //   }
+  //   F_fac_wkspc<F, 2> w;
+  //   double const * p0, * p1, * p2, * p_fac;
+  // } func;
 
-  func.p0 = p0;
-  func.p1 = p1;
-  func.p2 = p2;
-  func.p_fac = p_fac;
+  // func.p0 = p0;
+  // func.p1 = p1;
+  // func.p2 = p2;
+  // func.p_fac = p_fac;
   
-  set_args<F, n>(func.w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  F_fac_wkspc<F, 2> w;
+  set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  cost_functor_fac<F, 2> func {w, p0, p1, p2, p_fac};
   
   info<2> info;
   bool error;
@@ -104,14 +95,15 @@ updates::tetra<F, n>::operator()(
   assert(!error);
 
   if (F == cost_func::mp0) {
+    assert(false);
     // TODO: check and see if this can be optimized at all to avoid
     // redundant calculations with set_args call above
-    F_fac_wkspc<MP1, 2> w;
-    set_args<MP1, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
-    set_lambda<n>(w, p0, p1, p2, p_fac, info.lambda);
-    eval(w, info.value);
+    // F_fac_wkspc<MP1, 2> w;
+    // set_args<MP1, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+    // set_lambda<n>(w, p0, p1, p2, p_fac, info.lambda);
+    // eval(w, info.value);
   } else {
-    eval(func.w, info.value);
+    func.eval(info.value);
   }
 
 #if PRINT_UPDATES

@@ -49,7 +49,7 @@ info<1> tri23(double u0, double u1, double s, double s0, double s1, double h) {
  * rhr tri11 tests
  */
 
-TEST (tri_updates, rhr_tri11_basic_test) {
+TEST (updates_tri, rhr_tri11_basic_test) {
   double u = tri11<RHR>(0.0, 0.0, 1.0, 1.0, 1.0, 1.0).value;
   ASSERT_DOUBLE_EQ(u, sqrt2/2);
   u = tri11<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value;
@@ -69,7 +69,7 @@ void tri11_is_symmetric_with_constant_slowness() {
   ASSERT_DOUBLE_EQ(u1, u2);
 }
 
-TEST (tri_updates, tri11_is_symmetric_with_constant_slowness) {
+TEST (updates_tri, tri11_is_symmetric_with_constant_slowness) {
   tri11_is_symmetric_with_constant_slowness<MP0>();
   tri11_is_symmetric_with_constant_slowness<MP1>();
   tri11_is_symmetric_with_constant_slowness<RHR>();
@@ -86,7 +86,7 @@ void tri11_is_symmetric_with_nonconstant_slowness(
   ASSERT_DOUBLE_EQ(U1, U2);
 }
 
-TEST (tri_updates, tri11_is_symmetric_with_nonconstant_slowness) {
+TEST (updates_tri, tri11_is_symmetric_with_nonconstant_slowness) {
   double u0 = 0, u1 = 0.1, s = 1, s0 = 1.2, s1 = 1.1, h = 1;
   double u_mp0 = 0.809661416377184, u_mp1 = 0.809452960468600,
     u_rhr = 0.7553367989832942;
@@ -95,7 +95,7 @@ TEST (tri_updates, tri11_is_symmetric_with_nonconstant_slowness) {
   tri11_is_symmetric_with_nonconstant_slowness<MP0>(u_rhr, u0, u1, s, s0, s1, h);
 }
 
-TEST (tri_updates, rhr_tri12_works) {
+TEST (updates_tri, rhr_tri12_works) {
   double t, u0, u1, s = 1, s0 = 1, s1 = 1, h = 0.25;
 
   t = tri12<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value;
@@ -122,12 +122,12 @@ TEST (tri_updates, rhr_tri12_works) {
   ASSERT_NEAR(tri12<RHR>(u0, u1, s, s0, s1, h).value, 1.013293390593274, 1e-14);
 }
 
-TEST (tri_updates, rhr_tri13_works) {
+TEST (updates_tri, rhr_tri13_works) {
   ASSERT_DOUBLE_EQ(tri13<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value, 1.707106781186547);
   ASSERT_DOUBLE_EQ(tri13<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value, 1.0);
 }
 
-TEST (tri_updates, rhr_tri22_works) {
+TEST (updates_tri, rhr_tri22_works) {
   ASSERT_DOUBLE_EQ(tri22<RHR>(0.0, 0.0, 1.0, 1.0, 1.0, 1.0).value, 1.224744871391589);
   ASSERT_DOUBLE_EQ(tri22<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value, 1.414213562373095);
   ASSERT_DOUBLE_EQ(tri22<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value, 1.414213562373095);
@@ -152,18 +152,18 @@ void tri22_is_symmetric() {
   ASSERT_DOUBLE_EQ(val01, val10);
 }
 
-TEST (tri_updates, tri22_is_symmetric_with_constant_slowness) {
+TEST (updates_tri, tri22_is_symmetric_with_constant_slowness) {
   tri22_is_symmetric<MP0>();
   tri22_is_symmetric<MP1>();
   tri22_is_symmetric<RHR>();
 }
 
-TEST (tri_updates, rhr_tri23_works) {
+TEST (updates_tri, rhr_tri23_works) {
   ASSERT_DOUBLE_EQ(tri23<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value, 1.732050807568877);
   ASSERT_DOUBLE_EQ(tri23<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value, 1.414213562373095);
 }
 
-TEST (tri_updates, mp1_tri11_works) {
+TEST (updates_tri, mp1_tri11_works) {
   double u0, u1, s, s0, s1, h, T;
 
   u0 = 0.1, u1 = 0, s = 1, s0 = 1.2, s1 = 1.1, h = 0.9, T = 0.7309362364283433;
@@ -180,7 +180,7 @@ TEST (tri_updates, mp1_tri11_works) {
   ASSERT_NEAR(tri11<MP1>(u1, u0, s, s1, s0, h).value, T, 1e-13);
 }
 
-TEST (tri_updates, mp1_tri12_works) {
+TEST (updates_tri, mp1_tri12_works) {
   double u0, u1, s, s0, s1, h, T;
 
   u0 = 0.46487865669951, u1 = 0.4, s = 1, s0 = 1, s1 = 1, h = 0.2;
@@ -188,14 +188,14 @@ TEST (tri_updates, mp1_tri12_works) {
   ASSERT_DOUBLE_EQ(tri12<MP1>(u0, u1, s, s0, s1, h).value, T);
 }
 
-TEST (tri_updates, mp1_tri13_works) {
+TEST (updates_tri, mp1_tri13_works) {
   double u0, u1, s, s0, s1, h;
 
   u0 = 2, u1 = 1, s = 1, s0 = 1, s1 = 1, h = 1;
   ASSERT_DOUBLE_EQ(tri13<MP1>(u0, u1, s, s0, s1, h).value, 2 + 1./std::sqrt(2));
 }
 
-TEST (tri_updates, mp1_tri22_works) {
+TEST (updates_tri, mp1_tri22_works) {
   double u0, u1, s, s0, s1, h, T;
 
   u0 = 0.65974, u1 = 0.707107, s = 1, s0 = 1, s1 = 1, h = 0.25;
@@ -212,7 +212,7 @@ TEST (tri_updates, mp1_tri22_works) {
   ASSERT_DOUBLE_EQ(tri22<MP1>(u0, u1, s, s0, s1, h).value, T);
 }
 
-TEST (tri_updates, rhr_basic_factoring_test) {
+TEST (updates_tri, rhr_basic_factoring_test) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -232,7 +232,7 @@ TEST (tri_updates, rhr_basic_factoring_test) {
   ASSERT_NEAR(update.value, sqrt2, EPS(double));
 }
 
-TEST (tri_updates, mp0_basic_factoring_test) {
+TEST (updates_tri, mp0_basic_factoring_test) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -252,7 +252,7 @@ TEST (tri_updates, mp0_basic_factoring_test) {
   ASSERT_NEAR(update.value, sqrt2, EPS(double));
 }
 
-TEST (tri_updates, mp1_basic_factoring_test) {
+TEST (updates_tri, mp1_basic_factoring_test) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -272,7 +272,7 @@ TEST (tri_updates, mp1_basic_factoring_test) {
   ASSERT_NEAR(update.value, sqrt2, EPS(double));
 }
 
-TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
+TEST (updates_tri, factored_mp0_with_constant_slowness_works) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -287,7 +287,7 @@ TEST (tri_updates, factored_mp0_with_constant_slowness_works) {
   ASSERT_DOUBLE_EQ(ufac, tri12<MP0>(u0, u1, s, s0, s1, h).value);
 }
 
-TEST (tri_updates, factored_mp1_with_constant_slowness_works) {
+TEST (updates_tri, factored_mp1_with_constant_slowness_works) {
   double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -303,7 +303,7 @@ TEST (tri_updates, factored_mp1_with_constant_slowness_works) {
   ASSERT_DOUBLE_EQ(u, ufac);
 }
 
-TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
+TEST (updates_tri, factored_rhr_with_constant_slowness_works) {
   double u, u_fac, u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
 
   {
@@ -321,7 +321,7 @@ TEST (tri_updates, factored_rhr_with_constant_slowness_works) {
   }
 }
 
-TEST (tri_updates, rhr_non_bv_tri_update_works) {
+TEST (updates_tri, rhr_non_bv_tri_update_works) {
   {
     double p0[3] = {0, -1, 0};
     double p1[3] = {-1, -1, 0};

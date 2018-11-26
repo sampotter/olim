@@ -264,11 +264,11 @@ void grad(F0_wkspc<d> const & w, double * df)
 }
 
 template <int d>
-void grad(F0_wkspc<d> const & w, fac_wkspc<d> const & fw, double * df)
+void grad(F0_fac_wkspc<d> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) df[i] = fw.dtau[i] + w.sh_lam*w.dPt_nu_lam[i];
-  if (fw.l_fac_lam > 1e1*EPS(double)) {
-    for (int i = 0; i < d; ++i) df[i] += fw.sh_fac*fw.dPt_nu_fac_lam[i];
+  for (int i = 0; i < d; ++i) df[i] = w.dtau[i] + w.sh_lam*w.dPt_nu_lam[i];
+  if (w.l_fac_lam > 1e1*EPS(double)) {
+    for (int i = 0; i < d; ++i) df[i] += w.sh_fac*w.dPt_nu_fac_lam[i];
   }
   for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
@@ -283,13 +283,13 @@ void grad(F1_wkspc<d> const & w, double * df)
 }
 
 template <int d>
-void grad(F1_wkspc<d> const & w, fac_wkspc<d> const & fw, double * df)
+void grad(F1_fac_wkspc<d> const & w, double * df)
 {
   for (int i = 0; i < d; ++i) {
-    df[i] = fw.dtau[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
+    df[i] = w.dtau[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
   }
-  if (fw.l_fac_lam > 1e1*EPS(double)) {
-    for (int i = 0; i < d; ++i) df[i] += fw.sh_fac*fw.dPt_nu_fac_lam[i];
+  if (w.l_fac_lam > 1e1*EPS(double)) {
+    for (int i = 0; i < d; ++i) df[i] += w.sh_fac*w.dPt_nu_fac_lam[i];
   }
   for (int i = 0; i < d; ++i) CHECK(df[i]);
 }
@@ -310,15 +310,15 @@ void hess(F0_wkspc<d> const & w, double * d2f)
 // TODO: this and the F1 fac hess below are identical, should try to
 // combine them into one function
 template <int d>
-void hess(F0_wkspc<d> const & w, fac_wkspc<d> const & fw, double * d2f)
+void hess(F0_fac_wkspc<d> const & w, double * d2f)
 {
   hess(w, d2f);
-  if (fw.l_fac_lam > EPS(double)) {
-    double tmp = fw.sh_fac/fw.l_fac_lam;
+  if (w.l_fac_lam > EPS(double)) {
+    double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {
       for (int j = i; j < d; ++j) {
         int k = (d - 1)*i + j;
-        d2f[k] += tmp*(w.dPt_dP[k] - fw.dPt_nu_fac_lam[i]*fw.dPt_nu_fac_lam[j]);
+        d2f[k] += tmp*(w.dPt_dP[k] - w.dPt_nu_fac_lam[i]*w.dPt_nu_fac_lam[j]);
       }
     }
   }
@@ -341,11 +341,11 @@ void hess(F1_wkspc<d> const & w, double * d2f)
 }
 
 template <int d>
-void hess(F1_wkspc<d> const & w, fac_wkspc<d> const & fw, double * d2f)
+void hess(F1_fac_wkspc<d> const & w, double * d2f)
 {
   hess(w, d2f);
-  if (fw.l_fac_lam > EPS(double)) {
-    double tmp = fw.sh_fac/fw.l_fac_lam;
+  if (w.l_fac_lam > EPS(double)) {
+    double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {
       for (int j = i; j < d; ++j) {
         int k = (d - 1)*i + j;

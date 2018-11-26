@@ -48,9 +48,15 @@ struct F1_wkspc: public F0_wkspc<d, base_wkspc> {
 template <cost_func F, int d>
 using F_wkspc = std::conditional_t<F == MP1, F1_wkspc<d>, F0_wkspc<d>>;
 
+template <int d>
+using F0_fac_wkspc = F0_wkspc<d, fac_wkspc<d>>;
+
+template <int d>
+using F1_fac_wkspc = F1_wkspc<d, fac_wkspc<d>>;
+
 template <cost_func F, int d>
 using F_fac_wkspc = std::conditional_t<
-  F == MP1, F1_wkspc<d, fac_wkspc<d>>, F0_wkspc<d, fac_wkspc<d>>>;
+  F == MP1, F1_fac_wkspc<d>, F0_fac_wkspc<d>>;
 
 // TODO: below are specializations for d = 2
 
@@ -78,15 +84,20 @@ template <cost_func F, int n>
 void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
                 double const * p2, double const * lam);
 
-template <int n>
-void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
+template <cost_func F, int n>
+void set_lambda(F_fac_wkspc<F, 2> & w,
                 double const * p0, double const * p1, double const * p2,
                 double const * p_fac, double const * lam);
 
-template <int n>
-void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
-                double const * p0, double const * p1, double const * p2,
-                double const * p_fac, double const * lam);
+// template <int n>
+// void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
+//                 double const * p0, double const * p1, double const * p2,
+//                 double const * p_fac, double const * lam);
+
+// template <int n>
+// void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
+//                 double const * p0, double const * p1, double const * p2,
+//                 double const * p_fac, double const * lam);
 
 // template <int d>
 // void eval(eval_wkspc<d> const & w, double & f);
@@ -120,6 +131,9 @@ void hess(F1_wkspc<d, fac_wkspc<d>> const & w, double * d2f);
 
 #include "cost_funcs.impl.hpp"
 
+// TODO: it would be nice to get rid of these and be able to just pass
+// these functions to SQP directly (for example, as template parameters)
+
 template <cost_func F, char... ps>
 struct cost_functor_bv;
 
@@ -128,11 +142,49 @@ struct cost_functor_bv<F, n, p0, p1, p2>
 {
   using wkspc = F_wkspc<F, 2>;
   cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
-  void set_lambda(double const * lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
-  void eval(double & f) { ::eval(w, f); }
-  void grad(double * df) { ::grad(w, df); }
-  void hess(double * d2f) { ::hess(w, d2f); }
+  inline void set_lambda(double const * lam) {
+    ::set_lambda<F, n, p0, p1, p2>(w, lam);
+  }
+  inline void eval(double & f) const {::eval(w, f);}
+  inline void grad(double * df) const {::grad(w, df);}
+  inline void hess(double * d2f) const {::hess(w, d2f);}
   wkspc & w;
 };
+
+template <cost_func F, int n>
+struct cost_functor
+{
+  using wkspc = F_wkspc<F, 2>;
+  cost_functor(F_wkspc<F, 2> & w,
+               double const * p0, double const * p1, double const * p2):
+    w {w}, p0 {p0}, p1 {p1}, p2 {p2} {}
+  inline void set_lambda(double const * lam) {
+    ::set_lambda<F, n>(w, p0, p1, p2, lam);
+  }
+  inline void eval(double & f) const {::eval(w, f);}
+  inline void grad(double * df) const  {::grad(w, df);}
+  inline void hess(double * d2f) const {::hess(w, d2f);}
+  wkspc & w;
+  double const * p0, * p1, * p2;
+};
+
+template <cost_func F, int n>
+struct cost_functor_fac
+{
+  using wkspc = F_fac_wkspc<F, 2>;
+  cost_functor_fac(F_fac_wkspc<F, 2> & w,
+                   double const * p0, double const * p1, double const * p2,
+                   double const * p_fac):
+    w {w}, p0 {p0}, p1 {p1}, p2 {p2}, p_fac {p_fac} {}
+  inline void set_lambda(double const * lam) {
+    ::set_lambda<n>(w, p0, p1, p2, p_fac, lam);
+  }
+  inline void eval(double & f) const {::eval(w, f);}
+  inline void grad(double * df) const {::grad(w, df);}
+  inline void hess(double * d2f) const {::hess(w, d2f);}
+  wkspc & w;
+  double const * p0, * p1, * p2, * p_fac;
+};
+
 
 #endif // __COST_FUNCS_HPP__

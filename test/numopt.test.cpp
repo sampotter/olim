@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "numopt.hpp"
+#include "updates.common.hpp"
 
 TEST (numopt, test_qpe_baryplex) {
   double G[3], c[2], x[2];
@@ -193,6 +194,41 @@ TEST (numopt, test_qpi_baryplex) {
       G[1] = 0.85973167304062859;
       G[2] = 1.7194633460812576;
     }
+  }
+}
+
+TEST (numopt, sqp_bary_works_with_mp0) {
+  bool error;
+  updates::info<2> info;
+  double u[3], h, s_hat, s[3], xgt[2], p[3][3], u_hat;
+  {
+    u[0] = 0.6463130101112646;
+    u[1] = 0.962396190011243;
+    u[2] = 0.9825909814628997;
+    h = 0.4455862007108995;
+    s_hat = 0.12299296536073;
+    s[0] = 0.3028661333922572;
+    s[1] = 0.2919026306839974;
+    s[2] = 0.07245754527638229;
+    xgt[0] = 0;
+    xgt[1] = 0;
+    u_hat = 0.7920957514401045;
+    p[0][0] = -1.113500741486764;
+    p[0][1] = -0.7696659137536819;
+    p[0][2] = 1.117356138814467;
+    p[1][0] = -0.006849328103348064;
+    p[1][1] = 0.3713788127600577;
+    p[1][2] = -1.089064295052236;
+    p[2][0] = 1.53263030828475;
+    p[2][1] = -0.2255844022712519;
+    p[2][2] = 0.03255746416497347;
+    F_wkspc<RHR, 2> w;
+    set_args<RHR, 3>(w, p[0], p[1], p[2], u[0], u[1], u[2], s_hat, s[0], s[1], s[2], h);
+    cost_functor<RHR, 3> func {w, p[0], p[1], p[2]};
+    sqp_bary<decltype(func), 3, 2>()(func, info.lambda, &error);
+    assert(!error);
+    func.eval(info.value);
+    ASSERT_FALSE(error);
   }
 }
 

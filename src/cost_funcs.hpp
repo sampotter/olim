@@ -89,21 +89,11 @@ void set_lambda(F_fac_wkspc<F, 2> & w,
                 double const * p0, double const * p1, double const * p2,
                 double const * p_fac, double const * lam);
 
-// template <int n>
-// void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
-//                 double const * p0, double const * p1, double const * p2,
-//                 double const * p_fac, double const * lam);
+template <int d>
+void eval(eval_wkspc<d> const & w, double & f);
 
-// template <int n>
-// void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
-//                 double const * p0, double const * p1, double const * p2,
-//                 double const * p_fac, double const * lam);
-
-// template <int d>
-// void eval(eval_wkspc<d> const & w, double & f);
-
-// template <int d>
-// void eval(fac_wkspc<d> const & w, double & f);
+template <int d>
+void eval(fac_wkspc<d> const & w, double & f);
 
 template <int d>
 void grad(F0_wkspc<d> const & w, double * df);

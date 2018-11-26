@@ -76,7 +76,6 @@ set (EIKONAL_SRC_FILES
   src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
   src/numopt.cpp
-  src/qroots.cpp
   src/speed_funcs.cpp)
 
 if (${COLLECT_STATS})
@@ -247,7 +246,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     olim3d_hu_mp0
     olim3d_hu_mp1
     olim3d_hu_rhr
-	qroots
 	updates.tetra
 	updates.tri)
   foreach (test ${tests})

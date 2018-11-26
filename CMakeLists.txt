@@ -84,8 +84,11 @@ if (${COLLECT_STATS})
 endif ()
 
 add_library (eikonal STATIC ${EIKONAL_SRC_FILES})
-if (IPO_RESULT)
-  set_target_properties (eikonal PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  if (IPO_RESULT)
+    set_target_properties (eikonal PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif ()
 endif ()
 target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 if (LINK_PROFILE)

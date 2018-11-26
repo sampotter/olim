@@ -172,7 +172,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
 
   // TODO: it isn't very efficient to recompute these over and over
   // again, when we could just do it once and store the results
-  double p0_dot_p0 = dot<n>(p0, 0),
+  double p0_dot_p0 = dot<n>(p0, p0),
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 

@@ -713,4 +713,6 @@ TEST (cost_funcs, mp1_fac_works) {
   }
 }
 
-// TODO: test lag_mults
+TEST (cost_funcs, lagmults_works) {
+  ASSERT_TRUE(false); // TODO: implement me
+}

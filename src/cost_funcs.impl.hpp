@@ -205,7 +205,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
 
   // TODO: it isn't very efficient to recompute these over and over
   // again, when we could just do it once and store the results
-  double p0_dot_p0 = dot<n>(p0, 0),
+  double p0_dot_p0 = dot<n>(p0, p0),
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
@@ -233,7 +233,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dot<n>(p_fac, p_fac));
 
   w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
-  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp1_dot_p_fac)/w.l_fac_lam;
+  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
 }
 
 template <cost_func F, int n>
@@ -317,7 +317,15 @@ void hess(F0_wkspc<d> const & w, double * d2f)
 template <int d>
 void hess(F0_fac_wkspc<d> const & w, double * d2f)
 {
-  hess(w, d2f);
+  {
+    double tmp = w.sh_lam/w.l_lam;
+    for (int i = 0; i < d; ++i) {
+      for (int j = i; j < d; ++j) {
+        int k = (d - 1)*i + j;
+        d2f[k] = tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
+      }
+    }
+  }
   if (w.l_fac_lam > EPS(double)) {
     double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {
@@ -348,7 +356,17 @@ void hess(F1_wkspc<d> const & w, double * d2f)
 template <int d>
 void hess(F1_fac_wkspc<d> const & w, double * d2f)
 {
-  hess(w, d2f);
+  {
+    double tmp = w.sh_lam/w.l_lam;
+    for (int i = 0; i < d; ++i) {
+      for (int j = i; j < d; ++j) {
+        int k = (d - 1)*i + j;
+        d2f[k] = w.theta_h_ds[i]*w.dPt_nu_lam[j] +
+          w.theta_h_ds[j]*w.dPt_nu_lam[i] +
+          tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
+      }
+    }
+  }
   if (w.l_fac_lam > EPS(double)) {
     double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {

@@ -22,27 +22,27 @@ using namespace updates;
 
 template <cost_func F>
 info<1> tri11(double u0, double u1, double s, double s0, double s1, double h) {
-  return tri_bv<RHR, 2, P01, P10>()(u0, u1, s, s0, s1, h);
+  return tri_bv<F, 2, P01, P10>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
 info<1> tri12(double u0, double u1, double s, double s0, double s1, double h) {
-  return tri_bv<RHR, 2, P01, P11>()(u0, u1, s, s0, s1, h);
+  return tri_bv<F, 2, P01, P11>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
 info<1> tri13(double u0, double u1, double s, double s0, double s1, double h) {
-  return tri_bv<RHR, 3, P001, P111>()(u0, u1, s, s0, s1, h);
+  return tri_bv<F, 3, P001, P111>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
 info<1> tri22(double u0, double u1, double s, double s0, double s1, double h) {
-  return tri_bv<RHR, 3, P011, P101>()(u0, u1, s, s0, s1, h);
+  return tri_bv<F, 3, P011, P101>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
 info<1> tri23(double u0, double u1, double s, double s0, double s1, double h) {
-  return tri_bv<RHR, 3, P011, P111>()(u0, u1, s, s0, s1, h);
+  return tri_bv<F, 3, P011, P111>()(u0, u1, s, s0, s1, h);
 }
 
 /**
@@ -91,8 +91,8 @@ TEST (updates_tri, tri11_is_symmetric_with_nonconstant_slowness) {
   double u_mp0 = 0.809661416377184, u_mp1 = 0.809452960468600,
     u_rhr = 0.7553367989832942;
   tri11_is_symmetric_with_nonconstant_slowness<MP0>(u_mp0, u0, u1, s, s0, s1, h);
-  tri11_is_symmetric_with_nonconstant_slowness<MP0>(u_mp1, u0, u1, s, s0, s1, h);
-  tri11_is_symmetric_with_nonconstant_slowness<MP0>(u_rhr, u0, u1, s, s0, s1, h);
+  tri11_is_symmetric_with_nonconstant_slowness<MP1>(u_mp1, u0, u1, s, s0, s1, h);
+  tri11_is_symmetric_with_nonconstant_slowness<RHR>(u_rhr, u0, u1, s, s0, s1, h);
 }
 
 TEST (updates_tri, rhr_tri12_works) {

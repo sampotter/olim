@@ -1,4 +1,8 @@
-function out = sqp(f, df, d2f, A, b, x0, tol, niters)
+function out = sqp(f, df, d2f, A, b, x0, tol, niters, verbose)
+    if nargin < 9
+        verbose = false;
+    end
+
     n = size(A, 2);
     
     out = struct;
@@ -11,7 +15,7 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters)
     out.alphas = zeros(1, niters);
     
     for k = 1:niters
-        fprintf('k = %d\n', k);
+        if verbose, fprintf('k = %d\n', k); end
 
         % Compute Hessian
         x = out.xs(:, k);
@@ -20,7 +24,7 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters)
         % Perturb Hessian if it isn't positive definite
         lambda_min = min(eig(H));
         if lambda_min < 0
-            fprintf('- fixing H\n');
+            if verbose, fprintf('- fixing H\n'); end
             H = H - 1.1*lambda_min*eye(size(H));
             assert(min(eig(H)) > 0);
         end
@@ -42,7 +46,7 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters)
                 found_opt = true;
             catch
                 tol_ = 10*tol_;
-                fprintf('- tol_ <- %g\n', tol_);
+                if verbose, fprintf('- tol_ <- %g\n', tol_); end
             end
             if tol_ > 1e-4
                 error('some sort of failure happened')
@@ -56,7 +60,7 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters)
         if norm(g, 'inf') > tol
             while f(x + alpha*g) > f(x) + c1*alpha*dot(df(x), g)
                 alpha = 0.5*alpha;
-                fprintf('- alpha = %g\n', alpha);
+                if verbose, fprintf('- alpha = %g\n', alpha); end
             end
         end
 

@@ -336,17 +336,9 @@ struct olim3d_hu:
   void update_crtp(double & T);
 };
 
-#define __norm L1
-#define __d1 1
-#define __d2 2
-
-using olim3d_hu_rhr = olim3d_hu<RHR, node_3d, __norm, __d1, __d2>;
-using olim3d_hu_mp0 = olim3d_hu<MP0, node_3d, __norm, __d1, __d2>;
-using olim3d_hu_mp1 = olim3d_hu<MP1, node_3d, __norm, __d1, __d2>;
-
-#undef __norm
-#undef __d1
-#undef __d2
+using olim3d_hu_rhr = olim3d_hu<RHR, node_3d, L1, 1, 2>;
+using olim3d_hu_mp0 = olim3d_hu<MP0, node_3d, L1, 1, 2>;
+using olim3d_hu_mp1 = olim3d_hu<MP1, node_3d, L1, 1, 2>;
 
 #include "olim3d.impl.hpp"
 

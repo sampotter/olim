@@ -69,230 +69,7 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
-// // tri11 updates
-// #define __index02 0
-// #define __index20 0
-// #define __index24 1
-// #define __index42 1
-// #define __index04 2
-// #define __index40 2
-
-// // tri12 updates
-// #define __index01 3
-// #define __index10 3
-// #define __index05 4
-// #define __index50 4
-// #define __index21 5
-// #define __index12 5
-// #define __index23 6
-// #define __index32 6
-// #define __index34 7
-// #define __index43 7
-// #define __index45 8
-// #define __index54 8
-// #define __index03 9
-// #define __index30 9
-// #define __index14 10
-// #define __index41 10
-// #define __index25 11
-// #define __index52 11
-
-// // tri13 updates
-// #define __index06 12
-// #define __index60 12
-// #define __index26 13
-// #define __index62 13
-// #define __index46 14
-// #define __index64 14
-
-// // tri22 updates
-// #define __index13 15
-// #define __index31 15
-// #define __index35 16
-// #define __index53 16
-// #define __index15 17
-// #define __index51 17
-
-// // tri23 updates
-// #define __index16 18
-// #define __index61 18
-// #define __index36 19
-// #define __index63 19
-// #define __index56 20
-// #define __index65 20
-
-// #define __skip_tri(i, j) tri_skip_list[21*octant + __index##i##j]
-
-// #if COLLECT_STATS
-// #  define UPDATE_TRI_STATS(tmp, p0, p1) do {                            \
-//     tmp.hierarchical = l0 == parent || l1 == parent;                    \
-//     node_stats.inc_tri_updates(weight(p0), weight(p1),                  \
-//                                tmp.is_degenerate(),                     \
-//                                tmp.hierarchical);                       \
-//   } while (0)
-// #else
-// #  define UPDATE_TRI_STATS(tmp, p0, p1) do {} while (0)
-// #endif
-
-// #if TRACK_PARENTS
-// #  define __tri_update_value() do {             \
-//     if (tmp.value < T) {                        \
-//       T = tmp.value;                            \
-//       n->set_parents({{                         \
-//         &this->operator()(                      \
-//           n->get_i() + __di(l0),                \
-//           n->get_j() + __dj(l0),                \
-//           n->get_k() + __dk(l0)),               \
-//         &this->operator()(                      \
-//           n->get_i() + __di(l1),                \
-//           n->get_j() + __dj(l1),                \
-//           n->get_k() + __dk(l1)),               \
-//         nullptr                                 \
-//       }});                                      \
-//     }                                           \
-//   } while (0)
-// #else
-// #  define __tri_update_value() do {             \
-//     T = min(T, tmp.value);                      \
-//   } while (0)
-// #endif
-
-// #define TRI(i, j, p0, p1) do {                                  \
-//     if (!__skip_tri(i, j)) {                                    \
-//       int l0 = inds[i], l1 = inds[j];                           \
-//       if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) { \
-//         auto tmp = this->tri(                                   \
-//           VAL(l0),                                              \
-//           VAL(l1),                                              \
-//           SPEED_ARGS(l0, l1),                                   \
-//           h,                                                    \
-//           ffvec<P##p0> {},                                      \
-//           ffvec<P##p1> {});                                     \
-//         __tri_update_value();                                   \
-//         UPDATE_TRI_STATS(tmp, P##p0, P##p1);                    \
-//       }                                                         \
-//       __skip_tri(i, j) = 0x1;                                   \
-//     }                                                           \
-//   } while (0)
-
-// #define TRI_FAC(i, j) do {                                      \
-//     if (!__skip_tri(i, j)) {                                    \
-//       int l0 = inds[i], l1 = inds[j];                           \
-//       if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) { \
-//         p0[0] = __di(l0);                                       \
-//         p0[1] = __dj(l0);                                       \
-//         p0[2] = __dk(l0);                                       \
-//         p1[0] = __di(l1);                                       \
-//         p1[1] = __dj(l1);                                       \
-//         p1[2] = __dk(l1);                                       \
-//         auto tmp = this->template tri<3>(                       \
-//           VAL(l0),                                              \
-//           VAL(l1),                                              \
-//           SPEED_ARGS(l0, l1),                                   \
-//           h,                                                    \
-//           p0,                                                   \
-//           p1,                                                   \
-//           p_fac,                                                \
-//           s_fac);                                               \
-//         __tri_update_value();                                   \
-//         /* TODO: collect stats */                               \
-//       }                                                         \
-//       __skip_tri(i, j) = 0x1;                                   \
-//     }                                                           \
-//   } while (0)
-
-// #if COLLECT_STATS
-// #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {                      \
-//     tmp.hierarchical = l0 == parent || l1 == parent || l2 == parent;    \
-//     node_stats.inc_tetra_updates(weight(p0), weight(p1), weight(p2),    \
-//                                  tmp.is_degenerate(),                   \
-//                                  tmp.hierarchical);                     \
-//   } while (0)
-// #else
-// #  define UPDATE_TETRA_STATS(tmp, p0, p1, p2) do {} while (0)
-// #endif
-
-// #if TRACK_PARENTS
-// #  define __tetra_update_value() do {                                   \
-//     if (tmp.value < T) {                                                \
-//       T = tmp.value;                                                    \
-//       n->set_parents({{                                                 \
-//         &this->operator()(                                              \
-//           n->get_i() + __di(l0),                                        \
-//           n->get_j() + __dj(l0),                                        \
-//           n->get_k() + __dk(l0)),                                       \
-//         &this->operator()(                                              \
-//           n->get_i() + __di(l1),                                        \
-//           n->get_j() + __dj(l1),                                        \
-//           n->get_k() + __dk(l1)),                                       \
-//         &this->operator()(                                              \
-//           n->get_i() + __di(l2),                                        \
-//           n->get_j() + __dj(l2),                                        \
-//           n->get_k() + __dk(l2))                                        \
-//       }});                                                              \
-//     }                                                                   \
-//   } while (0)
-// #else
-// #  define __tetra_update_value() do {           \
-//     T = min(T, tmp.value);                      \
-//   } while (0)
-// #endif
-
-// #define TETRA(i, j, k, p0, p1, p2) do {                                 \
-//     int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
-//     if ((l0 == parent || l1 == parent || l2 == parent) &&               \
-//         nb[l0] && nb[l1] && nb[l2]) {                                   \
-//       auto tmp = this->tetra(                                           \
-//         VAL(l0),                                                        \
-//         VAL(l1),                                                        \
-//         VAL(l2),                                                        \
-//         SPEED_ARGS(l0, l1, l2),                                         \
-//         h,                                                              \
-//         ffvec<P ## p0> {},                                              \
-//         ffvec<P ## p1> {},                                              \
-//         ffvec<P ## p2> {});                                             \
-//       __tetra_update_value();                                           \
-//       UPDATE_TETRA_STATS(tmp, P##p0, P##p1, P##p2);                     \
-//       __skip_tri(i, j) = 0x1;                                           \
-//       __skip_tri(j, k) = 0x1;                                           \
-//       __skip_tri(i, k) = 0x1;                                           \
-//     }                                                                   \
-//   } while (0)
-
-// #define TETRA_FAC(i, j, k) do {                                         \
-//     int l0 = inds[i], l1 = inds[j], l2 = inds[k];                       \
-//     if ((l0 == parent || l1 == parent || l2 == parent) &&               \
-//         nb[l0] && nb[l1] && nb[l2]) {                                   \
-//       p0[0] = __di(l0);                                                 \
-//       p0[1] = __dj(l0);                                                 \
-//       p0[2] = __dk(l0);                                                 \
-//       p1[0] = __di(l1);                                                 \
-//       p1[1] = __dj(l1);                                                 \
-//       p1[2] = __dk(l1);                                                 \
-//       p2[0] = __di(l2);                                                 \
-//       p2[1] = __dj(l2);                                                 \
-//       p2[2] = __dk(l2);                                                 \
-//       auto tmp = this->tetra(                                           \
-//         VAL(l0),                                                        \
-//         VAL(l1),                                                        \
-//         VAL(l2),                                                        \
-//         SPEED_ARGS(l0, l1, l2),                                         \
-//         h,                                                              \
-//         p0,                                                             \
-//         p1,                                                             \
-//         p2,                                                             \
-//         p_fac,                                                          \
-//         s_fac);                                                         \
-//       __tetra_update_value();                                           \
-//       /* TODO: collect stats */                                         \
-//       __skip_tri(i, j) = 0x1;                                           \
-//       __skip_tri(j, k) = 0x1;                                           \
-//       __skip_tri(i, k) = 0x1;                                           \
-//     }                                                                   \
-//   } while (0)
-
 #if COLLECT_STATS
-
 template <class base, class node, int num_neighbors>
 void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
 {
@@ -314,7 +91,6 @@ void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
     }
   }
 }
-
 #endif // COLLECT_STATS
 
 template <class base, class node, int num_neighbors>
@@ -616,7 +392,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   p0[0] = __di(l0);
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
-  T0 = updates::line<F, 3>()(//p0, VAL(l0), SPEED_ARGS(l0), h);
+  T0 = updates::line<F, 3>()(
     p0, this->nb[l0]->get_value(), this->s_hat, this->s[l0], this->get_h());
 #  if COLLECT_STATS
   node_stats.inc_line_updates(p0, 3);
@@ -627,7 +403,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
       p0[0] = __di(l);
       p0[1] = __dj(l);
       p0[2] = __dk(l);
-      // Tnew = this->template line<3>(p0, VAL(l), SPEED_ARGS(l), h);
       Tnew = updates::line<F, 3>()(
         p0, this->nb[l]->get_value(), this->s_hat, this->s[l], this->get_h());
 #  if COLLECT_STATS

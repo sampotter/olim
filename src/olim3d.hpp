@@ -138,7 +138,7 @@ EIKONAL_PROTECTED:
 
   template <int d>
   inline void line(int i, double & u) {
-    if (!this->nb[i]) {
+    if (this->nb[i]) {
       auto u_hat = updates::line_bv<F, d>()(
         this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
 #if TRACK_PARENTS

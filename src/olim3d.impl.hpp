@@ -356,15 +356,15 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
   {
     double Tnew = INF(double);
     if (parent < 6) {
-      line<1>(parent, T);
+      line<1>(parent, Tnew);
       // Tnew = this->template line<1>(VAL(parent), SPEED_ARGS(parent), h);
       // UPDATE_LINE_STATS(1);
     } else if (groups::num_neighbors > 6 && parent < 18) {
-      line<2>(parent, T);
+      line<2>(parent, Tnew);
       // Tnew = this->template line<2>(VAL(parent), SPEED_ARGS(parent), h);
       // UPDATE_LINE_STATS(2);
     } else if (groups::num_neighbors > 18) {
-      line<3>(parent, T);
+      line<3>(parent, Tnew);
       // Tnew = this->template line<3>(VAL(parent), SPEED_ARGS(parent), h);
       // UPDATE_LINE_STATS(3);
     }

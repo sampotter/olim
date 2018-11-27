@@ -227,13 +227,26 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
     dp2_dot_p_fac = dot<n>(p2, p_fac) - p0_dot_p_fac;
 
-  w.l_fac_lam = std::sqrt(
-    w.l_lam*w.l_lam -
+  w.l_fac_lam = w.l_lam*w.l_lam -
     2*(p0_dot_p_fac + lam[0]*dp1_dot_p_fac + lam[1]*dp2_dot_p_fac) +
-    dot<n>(p_fac, p_fac));
+    dot<n>(p_fac, p_fac);
+  if (w.l_fac_lam > 1e1*EPS(double)) {
+    w.l_fac_lam = std::sqrt(w.l_fac_lam);
+  } else {
+    w.l_fac_lam = 0;
+  }
 
-  w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
-  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
+  CHECK(w.l_fac_lam);
+
+  if (w.l_fac_lam > 1e1*EPS(double)) {
+    w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
+    CHECK(w.dPt_nu_fac_lam[0]);
+    w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
+    CHECK(w.dPt_nu_fac_lam[1]);
+  } else {
+    w.dPt_nu_fac_lam[0] = 0;
+    w.dPt_nu_fac_lam[1] = 0;
+  }
 }
 
 template <cost_func F, int n>
@@ -245,6 +258,7 @@ void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
   set_lambda<F, n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w), p0, p1, p2, p_fac, lam);
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
+  CHECK(w.sh_lam);
 }
 
 template <int d>

@@ -27,7 +27,7 @@ updates::tetra<F, n>::operator()(
 {
   F_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-  cost_functor<F, 2> func {w, p0, p1, p2};
+  cost_functor<F, 3> func {w, p0, p1, p2};
 
   info<2> info;
   bool error;
@@ -63,7 +63,7 @@ updates::tetra<F, n>::operator()(
 {
   F_fac_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
-  cost_functor_fac<F, 2> func {w, p0, p1, p2, p_fac};
+  cost_functor_fac<F, 3> func {w, p0, p1, p2, p_fac};
   
   info<2> info;
   bool error;

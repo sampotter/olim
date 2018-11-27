@@ -217,7 +217,7 @@ void tetra122_works_with_constant_slowness() {
     double s2 = 1;
     double h = 1;
     double u = tetra122<F>(u0, u1, u2, s, s0, s1, s2, h).value;
-    double uhat = 2.781997898655415;
+    double uhat = 2.8080604124904465;
     ASSERT_DOUBLE_EQ(u, uhat);
 }
 

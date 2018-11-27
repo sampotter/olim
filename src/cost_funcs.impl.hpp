@@ -262,6 +262,27 @@ void eval(fac_wkspc<d> const & w, double & f)
 }
 
 template <int d>
+void eval_mp1_fix(
+  eval_wkspc<d> const & w,
+  double s, double s0, double s1, double s2, double h,
+  double const * lam, double & f)
+{
+  f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
+  CHECK(f);
+}
+
+template <int d>
+void eval_mp1_fix(
+  fac_wkspc<d> const & w,
+  double s, double s0, double s1, double s2, double h,
+  double const * lam, double & f)
+{
+  f = w.tau_lam + w.sh_fac*w.l_fac_lam +
+    h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
+  CHECK(f);
+}
+
+template <int d>
 void grad(F0_wkspc<d> const & w, double * df)
 {
   for (int i = 0; i < d; ++i) df[i] = w.du[i] + w.sh_lam*w.dPt_nu_lam[i];

@@ -96,6 +96,16 @@ template <int d>
 void eval(fac_wkspc<d> const & w, double & f);
 
 template <int d>
+void eval_mp1_fix(eval_wkspc<d> const & w,
+                  double s, double s0, double s1, double s2,
+                  double const * lam, double & f);
+
+template <int d>
+void eval_mp1_fix(fac_wkspc<d> const & w,
+                  double s, double s0, double s1, double s2,
+                  double const * lam, double & f);
+
+template <int d>
 void grad(F0_wkspc<d> const & w, double * df);
 
 template <int d>

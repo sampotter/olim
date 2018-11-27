@@ -35,8 +35,6 @@ function out = sqp(f, df, d2f, A, b, x0, tol, niters, verbose)
         % Compute load vector for quadratic programx
         c = df(x) - H*x;
 
-        % xopt = quadprog(H, c, A, b, [], [], [], [], zeros(N - 1, 1), opts);
-
         % Compute descent direction g
         found_opt = false;
         tol_ = eps;

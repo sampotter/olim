@@ -3,6 +3,20 @@
 
 #include <cassert>
 
+// TODO: almost all of the uses of this in hybrid are to check if the
+// sign of two numbers is the same or different: we might be able to
+// speed this up by using this function from Stephen Canon on SO:
+//
+// template <typename T>
+// inline bool samesign(T a, T b) {
+//   return a*b >= 0;
+// }
+//
+// See here for a few comments:
+// https://stackoverflow.com/questions/2922619/how-to-efficiently-compare-the-sign-of-two-floating-point-values-while-handling
+//
+// This may be worth trying out since it appears that most of the time
+// spent *inside* hybrid (i.e., not in calls to f), is spent in `sgn'.
 template <typename T> int sgn(T val) {
   return (T(0) < val) - (val < T(0));
 }

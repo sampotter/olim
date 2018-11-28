@@ -381,50 +381,49 @@ void tetra122_is_symmetric_with_nonconstant_slowness() {
     Uhat021 = tetra122<F>(U0, U2, U1, s, s0, s2, s1, h).value;
     ASSERT_EQ(Uhat012, Uhat021);
   }
-  // TODO: add non-bv tetra functions to get more coverage... see below
-  // {
-  //   double p0[3], p1[3], p2[3], U0, U1, U2, s, s0, s1, s2, h, Uhat1, Uhat2;
+  {
+    double p0[3], p1[3], p2[3], U0, U1, U2, s, s0, s1, s2, h, Uhat1, Uhat2;
 
-  //   p0[0] = 0;
-  //   p0[1] = 1;
-  //   p0[2] = 1;
-  //   p1[0] = 0;
-  //   p1[1] = 0;
-  //   p1[2] = 1;
-  //   p2[0] = -1;
-  //   p2[1] = 0;
-  //   p2[2] = 1;
-  //   U0 = 0.5879149021639897;
-  //   U1 = 0.5823885480524517;
-  //   U2 = 0.5637199168161153;
-  //   s = 0.05655157497705388;
-  //   s0 = 0.05655157497705388;
-  //   s1 = 0.0876808174859417;
-  //   s2 = 0.169616336715433;
-  //   h = 0.2;
-  //   Uhat1 = update_rules::tetra<F>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
+    p0[0] = 0;
+    p0[1] = 1;
+    p0[2] = 1;
+    p1[0] = 0;
+    p1[1] = 0;
+    p1[2] = 1;
+    p2[0] = -1;
+    p2[1] = 0;
+    p2[2] = 1;
+    U0 = 0.5879149021639897;
+    U1 = 0.5823885480524517;
+    U2 = 0.5637199168161153;
+    s = 0.05655157497705388;
+    s0 = 0.05655157497705388;
+    s1 = 0.0876808174859417;
+    s2 = 0.169616336715433;
+    h = 0.2;
+    Uhat1 = updates::tetra<F, 3>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
 
-  //   p0[0] = 0;
-  //   p0[1] = 1;
-  //   p0[2] = 1;
-  //   p1[0] = 0;
-  //   p1[1] = 0;
-  //   p1[2] = 1;
-  //   p2[0] = 1;
-  //   p2[1] = 0;
-  //   p2[2] = 1;
-  //   U0 = 0.5879149021639898;
-  //   U1 = 0.5823885480524518;
-  //   U2 = 0.5637199168161156;
-  //   s = 0.05655157497705388;
-  //   s0 = 0.05655157497705388;
-  //   s1 = 0.0876808174859417;
-  //   s2 = 0.169616336715433;
-  //   h = 0.2;
-  //   Uhat2 = update_rules::tetra<F>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
+    p0[0] = 0;
+    p0[1] = 1;
+    p0[2] = 1;
+    p1[0] = 0;
+    p1[1] = 0;
+    p1[2] = 1;
+    p2[0] = 1;
+    p2[1] = 0;
+    p2[2] = 1;
+    U0 = 0.5879149021639898;
+    U1 = 0.5823885480524518;
+    U2 = 0.5637199168161156;
+    s = 0.05655157497705388;
+    s0 = 0.05655157497705388;
+    s1 = 0.0876808174859417;
+    s2 = 0.169616336715433;
+    h = 0.2;
+    Uhat2 = updates::tetra<F, 3>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
 
-  //   ASSERT_DOUBLE_EQ(Uhat1, Uhat2);
-  // }
+    ASSERT_DOUBLE_EQ(Uhat1, Uhat2);
+  }
 }
 
 TEST (updates_tetra, tetra122_is_symmetric_with_nonconstant_slowness) {
@@ -433,53 +432,48 @@ TEST (updates_tetra, tetra122_is_symmetric_with_nonconstant_slowness) {
   tetra122_is_symmetric_with_nonconstant_slowness<RHR>();
 }
 
-// TODO: do what I need to do to enable below
+template <cost_func F>
+testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
+  double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;
+  u0 = u1 = u2 = sqrt2;
+  h = 1;
+  s = s0 = s1 = s2 = s_fac = 1;
 
-// template <class rules>
-// testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
-//   double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;
-//   u0 = u1 = u2 = sqrt2;
-//   h = 1;
-//   s = s0 = s1 = s2 = s_fac = 1;
+  // p_hat = (1, 1, 1), p0 = (1, 1, 0), p1 = (1, 0, 1),
+  // p1 = (0, 1, 1), p_fac = (0, 0, 0)
+  p0[0] = p1[1] = p2[2] = -1;
+  p0[1] = p1[2] = p2[0] = 0;
+  p0[2] = p1[0] = p2[1] = 0;
+  p_fac[0] = p_fac[1] = p_fac[2] = -1;
 
-//   // p_hat = (1, 1, 1), p0 = (1, 1, 0), p1 = (1, 0, 1),
-//   // p1 = (0, 1, 1), p_fac = (0, 0, 0)
-//   p0[0] = p1[1] = p2[2] = -1;
-//   p0[1] = p1[2] = p2[0] = 0;
-//   p0[2] = p1[0] = p2[1] = 0;
-//   p_fac[0] = p_fac[1] = p_fac[2] = -1;
+  auto info = updates::tetra<F, 3>()(
+    p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  {
+    double gt = 1./3;
+    if (fabs(info.lambda[0] - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << info.lambda[0] << " - 1/3| > " << tol*gt + tol;
+    }
+  }
+  {
+    double gt = 1./3;
+    if (fabs(info.lambda[1] - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << info.lambda[1] << " - 1/3| > " << tol*gt + tol;
+    }
+  }
+  {
+    double gt = sqrt3;
+    if (fabs(info.value - gt) > tol*gt + tol) {
+      return testing::AssertionFailure()
+        << "|" << info.value << " - sqrt(3)| > " << tol*gt + tol;
+    }
+  }
+  return testing::AssertionSuccess();
+}
 
-//   rules r;
-//   auto update = r.tetra(p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
-//   {
-//     double gt = 1./3;
-//     if (fabs(update.lambda[0] - gt) > tol*gt + tol) {
-//       return testing::AssertionFailure()
-//         << "|" << update.lambda[0] << " - 1/3| > " << tol*gt + tol;
-//     }
-//   }
-//   {
-//     double gt = 1./3;
-//     if (fabs(update.lambda[1] - gt) > tol*gt + tol) {
-//       return testing::AssertionFailure()
-//         << "|" << update.lambda[1] << " - 1/3| > " << tol*gt + tol;
-//     }
-//   }
-//   {
-//     double gt = sqrt3;
-//     if (fabs(update.value - gt) > tol*gt + tol) {
-//       return testing::AssertionFailure()
-//         << "|" << update.value << " - sqrt(3)| > " << tol*gt + tol;
-//     }
-//   }
-//   return testing::AssertionSuccess();
-// }
-
-// TEST (updates_tetra, mp0_basic_factoring_test) {
-//   ASSERT_TRUE(basic_factoring_works<tetra_bv_mp0>());
-//   ASSERT_TRUE(basic_factoring_works<tetra_bv_mp1>());
-//   ASSERT_TRUE(basic_factoring_works<tetra_bv_rhr>());
-//   ASSERT_TRUE(basic_factoring_works<tetra_mp0>());
-//   ASSERT_TRUE(basic_factoring_works<tetra_mp1>());
-//   ASSERT_TRUE(basic_factoring_works<tetra_rhr>());
-// }
+TEST (updates_tetra, basic_factoring_test) {
+  ASSERT_TRUE(basic_factoring_works<MP0>());
+  ASSERT_TRUE(basic_factoring_works<MP1>());
+  ASSERT_TRUE(basic_factoring_works<RHR>());
+}

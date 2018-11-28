@@ -533,8 +533,23 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
         // Lagrange multipliers in the 3D Qpot paper---check this out
         auto const compute_lagrange_multipliers = [&] () {
           if (n->has_fac_parent()) {
-            // F_fac_wkspc<F, 2> fac_wkspc; // TODO: enable
-            assert(false);
+            F_fac_wkspc<F, 2> w;
+            set_args<F, 3>(
+              w, p0, p1, p2,
+              this->nb[l0]->get_value(),
+              this->nb[l1]->get_value(),
+              this->nb[l2]->get_value(),
+              this->s_hat,
+              this->s[l0],
+              this->s[l1],
+              this->s[l2],
+              this->get_h(),
+              p_fac,
+              s_fac);
+            set_lambda<F, 3>(w, p0, p1, p2, p_fac, lam);
+            grad<2>(w, df);
+            hess<2>(w, d2f);
+            lagmults<2>(lam, df, d2f, mu, &k);
           } else {
             F_wkspc<F, 2> w;
             set_args<F, 3>(

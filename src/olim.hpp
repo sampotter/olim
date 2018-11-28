@@ -17,15 +17,15 @@ struct olim:
     do_diag ? 8 : 4>
 {
   static constexpr int num_neighbors = do_diag ? 8 : 4;
-  
+
   using marcher<olim<F, node, do_adj, do_diag>, node, num_neighbors>::marcher;
   static_assert(do_adj || do_diag, "error");
 
-EIKONAL_PRIVATE:
-  virtual void update_impl(node * n, double & T);
-
   double s_hat, s[num_neighbors];
   node * nb[num_neighbors];
+
+EIKONAL_PRIVATE:
+  virtual void update_impl(node * n, double & T);
 
   template <int d>
   inline void line(int i, double & u) {

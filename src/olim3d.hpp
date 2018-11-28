@@ -95,11 +95,11 @@ struct abstract_olim3d:
   olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
 #endif
 
+  double s_hat, s[num_neighbors];
+
 EIKONAL_PRIVATE:
   virtual void update_impl(node * n, node ** nb, int parent, double & T);
   void init();
-
-  double s_hat, s[num_neighbors];
 
 #if COLLECT_STATS
   olim3d_node_stats * _node_stats {nullptr};
@@ -115,14 +115,15 @@ struct olim3d_bv:
   using abstract_olim3d<
     olim3d_bv<F, node, groups>, node, num_neighbors>::abstract_olim3d;
 
-EIKONAL_PROTECTED:
-  void update_crtp(double & T);
-
   node * n;
   node ** nb;
   int parent, octant;
   int const * inds;
   bool tri_skip_list[42*8]; // TODO: compress
+
+  void update_crtp(double & T);
+
+EIKONAL_PRIVATE:
 
   inline void reset_tri_skip_list() {
     for (int i = 0; i < 42*8; ++i) {

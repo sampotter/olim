@@ -1,8 +1,6 @@
 #include "cost_funcs.hpp"
 
 #include <cassert>
-#include <cmath>
-#include <utility>
 
 template <>
 void lagmults<2>(double const * lam, double const * df, double const * d2f,

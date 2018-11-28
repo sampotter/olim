@@ -1,20 +1,13 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
-#include <cassert>
-#include <cmath>
 #include <type_traits>
-
-#include "common.macros.hpp"
 
 enum class cost_func {mp0, mp1, rhr};
 
 constexpr auto MP0 = cost_func::mp0;
 constexpr auto MP1 = cost_func::mp1;
 constexpr auto RHR = cost_func::rhr;
-
-// template <cost_func F>
-// constexpr double theta = F == MP0 || F == MP1 ? 0.5 : 0;
 
 constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;
@@ -57,8 +50,6 @@ using F1_fac_wkspc = F1_wkspc<d, fac_wkspc<d>>;
 template <cost_func F, int d>
 using F_fac_wkspc = std::conditional_t<
   F == MP1, F1_fac_wkspc<d>, F0_fac_wkspc<d>>;
-
-// TODO: below are specializations for d = 2
 
 template <cost_func F, int n, char p0, char p1, char p2>
 void set_args(F_wkspc<F, 2> & w, double u0, double u1, double u2,

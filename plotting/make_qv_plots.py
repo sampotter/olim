@@ -1,6 +1,23 @@
 #!/usr/bin/env python3
 
-import sys; sys.path.insert(0, '../../build/Release')
+################################################################################
+# parse arguments first
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--min_2d_power', type=int, default=3)
+parser.add_argument('--max_2d_power', type=int, default=15)
+parser.add_argument('--min_3d_power', type=int, default=3)
+parser.add_argument('--max_3d_power', type=int, default=10)
+args = parser.parse_args()
+
+################################################################################
+# preliminaries
+
+import sys;
+sys.path.insert(0, '../build/Release')
+sys.path.insert(0, '../misc/py')
 
 import common
 import common3d
@@ -20,8 +37,8 @@ plt.style.use('bmh')
 # parameters
 
 R_fac = 0.1
-N = 2**np.arange(3, 15) + 1
-N3D = 2**np.arange(3, 10) + 1
+N = 2**np.arange(args.min_2d_power, args.max_2d_power) + 1
+N3D = 2**np.arange(args.min_3d_power, args.max_3d_power) + 1
 vx, vy, vz = 5, 13, 20
 
 x_fac_1, y_fac_1, z_fac_1 = 0.0, 0.0, 0.0

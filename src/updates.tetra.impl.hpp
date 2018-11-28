@@ -16,7 +16,6 @@
 #include "common.macros.hpp"
 #include "cost_funcs.hpp"
 #include "numopt.hpp"
-#include "updates.tetra.utils.hpp"
 
 template <cost_func F, int n>
 updates::info<2>

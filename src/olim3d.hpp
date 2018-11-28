@@ -326,7 +326,6 @@ struct olim3d_hu:
   using abstract_olim3d<
     olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>::abstract_olim3d;
 
-  double s_hat, s[26];
   node * n;
   node ** nb;
   int parent, octant;

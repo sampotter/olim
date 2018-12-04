@@ -153,7 +153,7 @@ EIKONAL_PRIVATE:
     }
   }
 
-  template <int a, int b, char p0, char p1>
+  template <int a, int b, int p0, int p1>
   inline void tri(double & u) {
     if (skip_tri<a, b>()) {
       return;
@@ -220,7 +220,7 @@ EIKONAL_PRIVATE:
     }
   }
 
-  template <int a, int b, int c, char p0, char p1, char p2>
+  template <int a, int b, int c, int p0, int p1, int p2>
   inline void tetra(double & u) {
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&

@@ -35,7 +35,7 @@ EIKONAL_PRIVATE:
     }
   }
 
-  template <char p0, char p1>
+  template <int p0, int p1>
   inline void tri(int i, int j, double & u) {
     if (this->nb[i] && this->nb[j]) {
       u = std::min(u, updates::tri_bv<F, 2, p0, p1>()(

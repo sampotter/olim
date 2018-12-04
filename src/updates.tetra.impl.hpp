@@ -82,7 +82,7 @@ updates::tetra<F, n>::operator()(
   return info;
 }
 
-template <cost_func F, int n, char p0, char p1, char p2>
+template <cost_func F, int n, int p0, int p1, int p2>
 updates::info<2>
 updates::tetra_bv<F, n, p0, p1, p2>::operator()(
   double u0, double u1, double u2, double s,
@@ -116,7 +116,7 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 }
 
 // TODO: we aren't actually using this overload yet...
-// template <cost_func F, char p0, char p1, char p2>
+// template <cost_func F, int p0, int p1, int p2>
 // updates::info<2>
 // updates::tetra_bv<F, p0, p1, p2>::operator()(F_fac_wkspc<F, 2> & fw) const
 // { ... }

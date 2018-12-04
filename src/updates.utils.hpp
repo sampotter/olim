@@ -138,13 +138,13 @@ inline double norm2<3>(double const * p) {
 /**
  * Number of bits that are set for integers 0 through 7.
  */
-constexpr char nbits[8] = {0, 1, 1, 2, 1, 2, 2, 3};
+constexpr int nbits[8] = {0, 1, 1, 2, 1, 2, 2, 3};
 
 /**
  * Compute dot product between p and q, interpreting them as bit
  * vectors. Assumes that 0 <= p < 8 and 0 <= q < 8.
  */
-constexpr char dot(char p, char q) {
+constexpr int dot(int p, int q) {
   assert(0 <= p && p < 8);
   assert(0 <= q && q < 8);
   return nbits[p & q];

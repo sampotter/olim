@@ -158,8 +158,8 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
    *
    * TODO: we could use a bitvector here instead.
    */
-  // char tri_skip_list[8*21];
-  // memset((void *) tri_skip_list, 0x0, sizeof(char)*8*21);
+  // int tri_skip_list[8*21];
+  // memset((void *) tri_skip_list, 0x0, sizeof(int)*8*21);
   reset_tri_skip_list();
 
   if (n->has_fac_parent()) {

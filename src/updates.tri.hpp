@@ -55,23 +55,23 @@ struct tri<RHR, n>
     double const * p_fac, double s_fac) const;
 };
 
-template <cost_func F, int n, char p0, char p1> struct tri_bv {};
+template <cost_func F, int n, int p0, int p1> struct tri_bv {};
 
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 struct tri_bv<MP0, n, p0, p1>
 {
   info<1> operator()(
     double u0, double u1, double s, double s0, double s1, double h) const;
 };
 
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 struct tri_bv<MP1, n, p0, p1>
 {
   info<1> operator()(
     double u0, double u1, double s, double s0, double s1, double h) const;
 };
 
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 struct tri_bv<RHR, n, p0, p1>
 {
   info<1> operator()(

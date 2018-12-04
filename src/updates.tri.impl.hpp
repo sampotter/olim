@@ -18,12 +18,12 @@
 #define l__(x) std::sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define check__(x) std::fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
 
-#define char_sqrt__(c) _sqrt_table[static_cast<int>(c)]
+#define int_sqrt__(c) _sqrt_table[static_cast<int>(c)]
 #define s__(x) (s + (1 - x)*s0 + x*s1)/2
 
-#define F0_line__(i) (u##i + h*(s + s##i)*char_sqrt__(p##i##_dot_p##i)/2)
+#define F0_line__(i) (u##i + h*(s + s##i)*int_sqrt__(p##i##_dot_p##i)/2)
 
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 updates::info<1>
 updates::tri_bv<MP0, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -42,12 +42,12 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
     1.7320508075688772
   };
 
-  constexpr char p0_dot_p0 = dot(p0, p0);
-  constexpr char p0_dot_p1 = dot(p0, p1);
-  constexpr char p1_dot_p1 = dot(p1, p1);
-  constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
-  constexpr char dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
-  constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
+  constexpr int p0_dot_p0 = dot(p0, p0);
+  constexpr int p0_dot_p1 = dot(p0, p1);
+  constexpr int p1_dot_p1 = dot(p1, p1);
+  constexpr int dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
+  constexpr int dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
+  constexpr int dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   double const du = u1 - u0;
   double const alpha = -du/(s__(0.5)*h), alpha_sq = alpha*alpha;
@@ -194,9 +194,9 @@ updates::tri<MP0, n>::operator()(
   return info;
 }
 
-#define F0_line__(i) (u##i + sh*char_sqrt__(p##i##_dot_p##i))
+#define F0_line__(i) (u##i + sh*int_sqrt__(p##i##_dot_p##i))
 
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 updates::info<1>
 updates::tri_bv<RHR, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -217,12 +217,12 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
     1.7320508075688772
   };
 
-  constexpr char p0_dot_p0 = dot(p0, p0);
-  constexpr char p0_dot_p1 = dot(p0, p1);
-  constexpr char p1_dot_p1 = dot(p1, p1);
-  constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
-  constexpr char dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
-  constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
+  constexpr int p0_dot_p0 = dot(p0, p0);
+  constexpr int p0_dot_p1 = dot(p0, p1);
+  constexpr int p1_dot_p1 = dot(p1, p1);
+  constexpr int dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
+  constexpr int dp_dot_p0_sq = dp_dot_p0*dp_dot_p0;
+  constexpr int dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   double const du = u1 - u0;
   double const sh = s*h;
@@ -258,7 +258,7 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
   return info;
 }
 
-#undef char_sqrt__
+#undef int_sqrt__
 #undef s__
 
 template <int n>
@@ -390,7 +390,7 @@ updates::tri<RHR, n>::operator()(
 /**
  * F1 specialization
  */
-template <int n, char p0, char p1>
+template <int n, int p0, int p1>
 updates::info<1>
 updates::tri_bv<MP1, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -399,11 +399,11 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
   assert(s0 > 0);
   assert(s1 > 0);
 
-  constexpr char p0_dot_p0 = dot(p0, p0);
-  constexpr char p0_dot_p1 = dot(p0, p1);
-  constexpr char p1_dot_p1 = dot(p1, p1);
-  constexpr char dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
-  constexpr char dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
+  constexpr int p0_dot_p0 = dot(p0, p0);
+  constexpr int p0_dot_p1 = dot(p0, p1);
+  constexpr int p1_dot_p1 = dot(p1, p1);
+  constexpr int dp_dot_p0 = p0_dot_p1 - p0_dot_p0;
+  constexpr int dp_dot_dp = p1_dot_p1 - 2*p0_dot_p1 + p0_dot_p0;
 
   double const ds = s1 - s0, du = u1 - u0;
   double dp_dot_p_lam, l_lam, s_lam;

@@ -27,7 +27,7 @@ out1 = sqp(F1, dF1, d2F1, -A, -b, lam0, eps, 100);
 lam0gt = out0.xs(:, out0.iters + 1);
 lam1gt = out1.xs(:, out1.iters + 1);
 
-fprintf('F1(lam0gt) = %0.16g\n', F1(lam0gt));
+% fprintf('F1(lam0gt) = %0.16g\n', F1(lam0gt));
 
 out0fac = sqp(F0fac, dF0fac, d2F0fac, -A, -b, lam0, eps, 100);
 
@@ -120,3 +120,4 @@ skip_F1_tetra = any(mu1p0 < 0) || any(mu1p1 < 0) || any(mu1p2 < 0);
 
 fprintf('F0 skip = %d... OK? %d\n', skip_F0_tetra, ~F0_interior_soln);
 fprintf('F1 skip = %d... OK? %d\n', skip_F1_tetra, ~F1_interior_soln);
+

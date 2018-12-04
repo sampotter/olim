@@ -6,10 +6,15 @@
 
 #include "hybrid.hpp"
 
-#define __compute_lambda_min() do {                                 \
-    double half_tr = (G[0] + G[2])/2, det = G[0]*G[2] - G[1]*G[1];  \
-    lambda_min = half_tr - sqrt(half_tr*half_tr - det);             \
-  } while (0)                                                       \
+template <int d>
+inline double compute_lambda_min_symmetric(double const * A);
+
+template <>
+inline double compute_lambda_min_symmetric<2>(double const * A) {
+  double const half_tr = (A[0] + A[2])/2;
+  double const det = A[0]*A[2] - A[1]*A[1];
+  return half_tr - sqrt(half_tr*half_tr - det);
+}
 
 template <class cost_functor>
 void
@@ -21,59 +26,56 @@ sqp_bary<cost_functor, 3, 2>::operator()(
 
   if (error) *error = false;
 
-  double G[3], x0[2], x1[2] = {1./3, 1./3}, c[2], g[2], f0, f1,
-    lambda_min, qpi_tol, c1 = 1e-4, alpha;
-  bool qpi_error, found_opt;
-  int k = 0, qpi_niters = 10;
+  int k = 0;
+  double x0[2], x1[2], f0, f1, lambda_min;
+  double d2f[3], df[2], h[2], c[2], alpha;
+  bool qpi_error;
   hybrid_status status;
 
-  (void) c1;
-
+  x1[0] = x1[1] = 1./3;
   func.set_lambda(x1);
   func.eval(f1);
 
   while (true) {
-    // Compute Hessian and perturb it if it isn't positive definite
-    func.hess(G);
-    __compute_lambda_min();
+    // Compute Hessian
+    func.hess(d2f);
+
+    // ... perturb it if it isn't positive definite
+    lambda_min = compute_lambda_min_symmetric<2>(d2f);
     if (lambda_min < 0) {
-      G[0] -= 1.1*lambda_min;
-      G[2] -= 1.1*lambda_min;
+      d2f[0] -= 1.1*lambda_min;
+      d2f[2] -= 1.1*lambda_min;
     }
 
-    // Compute load vector for quadratic program
-    func.grad(c);
-    c[0] -= G[0]*x1[0] + G[1]*x1[1];
-    c[1] -= G[1]*x1[0] + G[2]*x1[1];
+    func.grad(df);
 
-    // Compute descent direction by solving inequality-constrained
-    // quadratic program
-    found_opt = false;
-    qpi_tol = tol;
-    while (!found_opt) {
-      qpi_bary<2>(G, c, x1, g, &qpi_error, qpi_tol, qpi_niters);
-      if (qpi_error) qpi_tol *= 10;
-      else found_opt = true;
-    }
-    g[0] -= x1[0];
-    g[1] -= x1[1];
+    c[0] = df[0] - d2f[0]*x1[0] - d2f[1]*x1[1];
+    c[1] = df[1] - d2f[1]*x1[0] - d2f[2]*x1[1];
 
-    auto const step_sel = [&] (double alpha) {
-      double tmp[2] = {x1[0] + alpha*g[0], x1[1] + alpha*g[1]};
-      func.set_lambda(tmp);
-      func.grad(tmp);
-      return g[0]*tmp[0] + g[1]*tmp[1];
+    x0[0] = x1[0];
+    x0[1] = x1[1];
+
+    qpi_bary<2>(d2f, c, x0, x1, &qpi_error, tol, 10);
+    assert(!qpi_error);
+
+    // Compute descent step: h = x1 - x0 = x_{n+1} - x_{n}
+    sub<2>(x1, x0, h);
+
+    // Apply Wilkinson hybrid method to minimize f(x0 + alpha*h) for
+    // alpha st 0 <= alpha <= 1. We do this by finding the zero of
+    // df(x0 + alpha*h)'*alpha over the same interval.
+    auto const step = [&] (double alpha) {
+      axpy<2>(alpha, h, x0, x1);
+      func.set_lambda(x1);
+      func.grad(df);
+      return dot<2>(df, h);
     };
-    std::tie(alpha, status) = hybrid(step_sel, 0., 1., tol);
-    if (status == hybrid_status::DEGENERATE && fabs(alpha) < tol) {
+    std::tie(alpha, status) = hybrid(step, 0., 1., tol);
+    if (status == hybrid_status::DEGENERATE) {
       alpha = 1;
     }
 
-    // Save current values for next iteration
-    x0[0] = x1[0];
-    x0[1] = x1[1];
-    x1[0] += alpha*g[0];
-    x1[1] += alpha*g[1];
+    axpy<2>(alpha, h, x0, x1);
     f0 = f1;
     func.set_lambda(x1);
     func.eval(f1);

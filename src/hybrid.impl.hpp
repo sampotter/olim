@@ -61,10 +61,8 @@ hybrid(F const & f, T a, T b, T tol)
     d = b + dd;
     fd = f(d);
     if (fabs(fd) < tol) {
-      c = d;
-      b = c;
-      fc = fd;
-      fb = fc;
+      b = c = d;
+      fb = fc = fd;
       break;
     }
     a = b;
@@ -76,8 +74,12 @@ hybrid(F const & f, T a, T b, T tol)
       fc = fa;
     }
   }
-  // return {(b + c)/2, hybrid_status::OK};
-  return {a, hybrid_status::OK};
+
+  // NOTE: in G.W. Stewart's Afternotes chapter on this algorithm, he
+  // notes that on termination the b and c will satisfy |c - b| <
+  // eps. So, we might as well take our final result to be the average
+  // of the two in this case.
+  return {(b + c)/2, hybrid_status::OK};
 }
 
 #endif // __HYBRID_IMPL_HPP__

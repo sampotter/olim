@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "common.defs.hpp"
 #include "numopt.hpp"
 #include "updates.common.hpp"
 
@@ -541,6 +542,38 @@ TEST (numopt, sqp_bary_works_with_mp0_fac) {
     ASSERT_FALSE(error);
     ASSERT_NEAR(info.lambda[0], 0, 2.22045e-16);
     ASSERT_NEAR(info.lambda[1], 0.06325936565896506, 4e-16);
+  }
+  {
+    u0 = 0;
+    u1 = 1;
+    u2 = sqrt2;
+    s = 1;
+    s0 = 1;
+    s1 = 1;
+    s2 = 1;
+    sf = 1;
+    h = 1;
+    p0[0] = 1;
+    p0[1] = 0;
+    p0[2] = -1;
+    p1[0] = 1;
+    p1[1] = 0;
+    p1[2] = 0;
+    p2[0] = 1;
+    p2[1] = 1;
+    p2[2] = 0;
+    pf[0] = 1;
+    pf[1] = 0;
+    pf[2] = -1;
+    F_fac_wkspc<MP0, 2> w;
+    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
+    cost_functor_fac<MP0, 3> func {w, p0, p1, p2, pf};
+    updates::info<2> info;
+    sqp_bary<decltype(func), 3, 2>()(func, info.lambda, &error);
+    ASSERT_FALSE(error);
+    ASSERT_NEAR(info.lambda[0], 0, 2.22045e-16);
+    ASSERT_NEAR(info.lambda[1], 0, 2.22045e-16);
+    ASSERT_NEAR(info.value, sqrt2, 2.22045e-16);
   }
 }
 

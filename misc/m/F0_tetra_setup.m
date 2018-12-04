@@ -40,7 +40,7 @@ n = @(x) p(x)/l(x);
 pfac = @(x) p(x) - pfac;
 lfac = @(x) norm(pfac(x));
 T = @(x) sfac*h*lfac(x);
-nfac = @(x) pfac(x)/lfac(x);
+nfac = @(x) (lfac(x) > 1e1*eps)*(pfac(x)/max(eps, lfac(x)));
 
 T0 = T([0; 0]);
 T1 = T([1; 0]);

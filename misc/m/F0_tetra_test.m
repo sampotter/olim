@@ -8,7 +8,8 @@ d2F0 = @(x) sh*dP'*cprojp(x)*dP/l(x);
 
 F0fac = @(x) tau(x) + T(x) + sh*l(x);
 dF0fac = @(x) dtau + sfac*h*dP'*nfac(x) + sh*dP'*n(x);
-d2F0fac = @(x) d2F0(x) + sfac*h*dP'*(I - nfac(x)*nfac(x)')*dP/lfac(x);
+d2F0fac = @(x) d2F0(x) + ...
+          (lfac(x) > 1e1*eps)*(sfac*h*dP'*(I - nfac(x)*nfac(x)')*dP/(max(eps, lfac(x))));
 
 sh = @(x) h*((1 - theta)*s + theta*((1 - sum(x))*s0 + x(1)*s1 + x(2)*s2));
 F1 = @(x) u(x) + sh(x)*l(x);

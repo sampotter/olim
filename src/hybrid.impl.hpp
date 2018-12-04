@@ -53,14 +53,14 @@ hybrid(F const & f, T a, T b, T tol)
     }
     dm = (c - b)/2;
     df = fa - fb;
-    ds = df == 0 ? dm : -fb*(a - b)/df;
+    ds = fabs(df) < tol ? dm : -fb*(a - b)/df;
     dd = sgn(ds) != sgn(dm) || fabs(ds) > fabs(dm) ? dm : ds;
     if (fabs(dd) < tol) {
       dd = tol*sgn(dm)/2;
     }
     d = b + dd;
     fd = f(d);
-    if (fd == 0) {
+    if (fabs(fd) < tol) {
       c = d;
       b = c;
       fc = fd;
@@ -76,7 +76,8 @@ hybrid(F const & f, T a, T b, T tol)
       fc = fa;
     }
   }
-  return {(b + c)/2, hybrid_status::OK};
+  // return {(b + c)/2, hybrid_status::OK};
+  return {a, hybrid_status::OK};
 }
 
 #endif // __HYBRID_IMPL_HPP__

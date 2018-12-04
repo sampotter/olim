@@ -30,17 +30,11 @@ updates::tetra<F, n>::operator()(
 
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &error);
+  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
-  } else {
-    // TODO: we're doing an unnecessary eval here: we could reorganize
-    // things so that we're using the most recent eval done by
-    // sqp... i.e., have sqp write over info.value internally
-    // eval(func.w, info.value);
-    func.eval(info.value);
   }
 
 #if PRINT_UPDATES
@@ -66,13 +60,11 @@ updates::tetra<F, n>::operator()(
   
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &error);
+  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
-  } else {
-    func.eval(info.value);
   }
 
 #if PRINT_UPDATES
@@ -94,16 +86,11 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &error);
+  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
-  } else {
-    // TODO: I think we should actually be okay to remove this---try
-    // doing so once tests are stabilized after this big change
-    // eval(w, info.value);
-    func.eval(info.value);
   }
 
 #if PRINT_UPDATES

@@ -25,7 +25,7 @@ struct sqp_bary {};
 
 template <class cost_functor>
 struct sqp_bary<cost_functor, 3, 2> {
-  void operator()(cost_functor & func, double * lam, bool * error,
+  void operator()(cost_functor & func, double * x, double * f, bool * error,
                   double tol = EPS(double), int niters = 0);
 };
 

@@ -14,7 +14,8 @@
 template <class cost_functor>
 void
 sqp_bary<cost_functor, 3, 2>::operator()(
-  cost_functor & func, double * x, bool * error, double tol, int niters)
+  cost_functor & func, double * x, double * f, bool * error, double tol,
+  int niters)
 {
   using std::max;
 
@@ -93,8 +94,14 @@ sqp_bary<cost_functor, 3, 2>::operator()(
     }
   }
 
-  x[0] = x1[0];
-  x[1] = x1[1];
+  if (x != nullptr) {
+    x[0] = x1[0];
+    x[1] = x1[1];
+  }
+
+  if (f != nullptr) {
+    *f = f1;
+  }
 }
 
 #undef __compute_lambda_min

@@ -439,7 +439,7 @@ void hess(F0_fac_wkspc<d> const & w, double * d2f)
       }
     }
   }
-  if (w.l_fac_lam > EPS(double)) {
+  if (w.l_fac_lam > 1e1*EPS(double)) {
     double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {
       for (int j = i; j < d; ++j) {
@@ -490,7 +490,7 @@ void hess(F1_fac_wkspc<d> const & w, double * d2f)
       }
     }
   }
-  if (w.l_fac_lam > EPS(double)) {
+  if (w.l_fac_lam > 1e1*EPS(double)) {
     double tmp = w.sh_fac/w.l_fac_lam;
     for (int i = 0; i < d; ++i) {
       for (int j = i; j < d; ++j) {

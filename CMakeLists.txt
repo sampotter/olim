@@ -227,6 +227,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   set (tests
 	basic_marcher
 	basic_marcher_3d
+    bitops
     cost_funcs
 	heap
     hybrid

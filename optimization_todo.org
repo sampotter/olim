@@ -1,0 +1,25 @@
+* Optimization Todo
+** TODO Fix remaining bugs
+   1. [ ] Fix the bugs
+   2. [ ] Add command-line arguments to Python plotting scripts
+   3. [ ] Make plots and ensure that they agree with old results
+** TODO Add ||-R^-T dU|| check for skipping updates in top-down algorithm
+** TODO Add direct solver 
+** TODO Warm start for sqp
+   Right now, we just solve sqps starting from (1/3, 1/3). This is
+   fine, but we can probably do better for the bottom-up algorithm by
+   using a warm start. Will need to think a little about what the best
+   thing to do is. Probably just the minimizer of the
+   lower-dimensional triangle updates that abut it---maybe the one
+   with the smallest value.
+** TODO Smaller stuff
+   - [ ] Try replacing instances of generic std:: algorithms (such as
+     std::max) with the correct functions (e.g., replace std::max with
+     fmax)
+   - [ ] When calling step_sel, the first thing that's done inside
+     hybrid is to evaluate f(a). Since tmp = x1 + alpha*g, and since
+     the last lambda that the cost_func would have been set to is x1,
+     we effectively set the cost_func to the same lambda twice in a
+     row. We should *definitely* avoid doing this.
+   - [ ] Shouldn't be checking if anything == 0 in hybrid, should use
+     relative checks

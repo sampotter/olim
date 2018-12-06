@@ -10,20 +10,18 @@ if fac, assert(~bv); end
 
 I = eye(3);
 
-h = 1;
-
-u = sqrt(2);
 u0 = 0;
 u1 = 1;
-u2 = sqrt(2);
-du = [u1 - u0; u2 - u0];
-
+u2 = 1.4142135623730951;
+h = 1;
 s = 1;
 s0 = 1;
 s1 = 1;
 s2 = 1;
-ds = [s1 - s0; s2 - s0];
 sf = 1;
+
+ds = [s1 - s0; s2 - s0];
+du = [u1 - u0; u2 - u0];
 
 % P = rand(3);
 P = [1 1 1; 0 0 1; -1 0 0];
@@ -159,9 +157,7 @@ if test_sqp
     fprintf('ASSERT_FALSE(error);\n');
     fprintf('ASSERT_NEAR(info.lambda[0], %0.16g, %g);\n', out.xs(1, out.iters + 1), tol);
     fprintf('ASSERT_NEAR(info.lambda[1], %0.16g, %g);\n', out.xs(2, out.iters + 1), tol);
-    if exist('u')
-        fprintf('ASSERT_NEAR(info.value, %0.16g, %g);\n', out.fs(out.iters  + 1), tol);
-    end
+    fprintf('ASSERT_NEAR(info.value, %0.16g, %g);\n', out.fs(out.iters  + 1), tol);
 else
     lam = rand(2, 1);
     lam = lam/sum(lam);

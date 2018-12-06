@@ -9,13 +9,15 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--min_3d_power', type=int, default=3)
 parser.add_argument('--max_3d_power', type=int, default=10)
+parser.add_argument('--build_type', type=str, default='Release')
+parser.add_argument('--no_factoring', action='store_true')
 args = parser.parse_args()
 
 ################################################################################
 # preliminaries
 
 import sys
-sys.path.insert(0, '../build/Release')
+sys.path.insert(0, '../build/%s' % args.build_type)
 sys.path.insert(0, '../misc/py')
 
 import common3d
@@ -41,7 +43,6 @@ plt.style.use('bmh')
 Npows = np.arange(args.min_3d_power, args.max_3d_power + 1)
 N = 2**Npows + 1
 
-use_local_factoring = True
 r_fac = 0.1
 
 Slows = [speedfuncs3d.s1, speedfuncs3d.s2, speedfuncs3d.s3, speedfuncs3d.s4]
@@ -92,7 +93,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     for _ in range(1 if n > 100 else ntrials):
 
         o = Olim(S, h)
-        if use_local_factoring:
+        if not args.no_factoring:
             for i, j, k in zip(I, J, K):
                 o.set_node_fac_parent(i, j, k, i0, j0, k0)
         o.addBoundaryNode(i0, j0, k0)

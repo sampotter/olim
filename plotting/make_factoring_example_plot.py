@@ -10,13 +10,14 @@ parser.add_argument('--min_2d_power', type=int, default=3)
 parser.add_argument('--max_2d_power', type=int, default=15)
 parser.add_argument('--min_3d_power', type=int, default=3)
 parser.add_argument('--max_3d_power', type=int, default=10)
+parser.add_argument('--build_type', type=str, default='Release')
 args = parser.parse_args()
 
 ################################################################################
 # preliminaries
 
 import sys;
-sys.path.insert(0, '../build/Release')
+sys.path.insert(0, '../build/%s' % args.build_type)
 sys.path.insert(0, '../misc/py')
 
 import matplotlib.pyplot as plt

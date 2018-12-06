@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 
-BUILD_TYPE='Release'
+################################################################################
+# parse arguments first
 
-import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--min_2d_power', type=int, default=3)
+parser.add_argument('--max_2d_power', type=int, default=15)
+args = parser.parse_args()
+
+################################################################################
+# preliminaries
+
 import sys
-if '../../build/%s' % BUILD_TYPE not in sys.path:
-    sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
+sys.path.insert(0, '../build/Release')
+sys.path.insert(0, '../misc/py')
 
 import common
 import itertools
@@ -25,7 +35,7 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Npows = np.arange(3, 15)
+Npows = np.arange(args.min_2d_power, args.max_2d_power + 1)
 N = 2**Npows + 1
 
 use_local_factoring = True

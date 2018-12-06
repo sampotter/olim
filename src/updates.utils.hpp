@@ -6,7 +6,20 @@
 #include <utility>
 
 template <int dim>
-void sub(double const * p, double const * q, double * r);
+inline bool equal(double const * p, double const * q);
+
+template <>
+inline bool equal<2>(double const * p, double const * q) {
+  return p[0] == q[0] && p[1] == q[1];
+}
+
+template <>
+inline bool equal<3>(double const * p, double const * q) {
+  return p[0] == q[0] && p[1] == q[1] && p[2] && q[2];
+}
+
+template <int dim>
+inline void sub(double const * p, double const * q, double * r);
 
 template <>
 inline void sub<2>(double const * p, double const * q, double * r) {
@@ -86,7 +99,7 @@ double dist2(double const * p, double const * q);
 
 template <>
 inline double dist2<2>(double const * p, double const * q) {
-  return std::sqrt(
+  return sqrt(
     (q[0] - p[0])*(q[0] - p[0]) +
     (q[1] - p[1])*(q[1] - p[1]));
 }
@@ -101,6 +114,11 @@ inline double dist2<3>(double const * p, double const * q) {
 
 template <int dim>
 double dist2sq(double const * p, double const * q);
+
+template <>
+inline double dist2sq<2>(double const * p, double const * q) {
+  return (q[0] - p[0])*(q[0] - p[0]) + (q[1] - p[1])*(q[1] - p[1]);
+}
 
 template <>
 inline double dist2sq<3>(double const * p, double const * q) {

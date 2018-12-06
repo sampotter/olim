@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 
-BUILD_TYPE='Release'
+################################################################################
+# parse arguments first
 
-import os
-import sys
-if '../../build/%s' % BUILD_TYPE not in sys.path:
-    sys.path.insert(0, os.path.abspath('../../build/%s' % BUILD_TYPE))
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--min_2d_power', type=int, default=3)
+parser.add_argument('--max_2d_power', type=int, default=15)
+parser.add_argument('--min_3d_power', type=int, default=3)
+parser.add_argument('--max_3d_power', type=int, default=10)
+args = parser.parse_args()
+
+################################################################################
+# preliminaries
+
+import sys;
+sys.path.insert(0, '../build/Release')
+sys.path.insert(0, '../misc/py')
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,10 +38,10 @@ plt.style.use('bmh')
 Olim = eik.Olim8Rect
 Olim3d = eik.Olim26Rect
 
-Npow = np.arange(4, 15)
+Npow = np.arange(args.min_2d_power, args.max_2d_power + 1)
 N = 2**Npow + 1
 
-Npow_3d = np.arange(4, 10)
+Npow_3d = np.arange(args.min_3d_power, args.max_3d_power + 1)
 N_3d = 2**Npow_3d + 1
 
 rfacs = [0.05, 0.1, 0.15, 0.2]

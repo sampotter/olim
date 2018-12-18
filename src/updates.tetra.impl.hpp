@@ -62,17 +62,57 @@ updates::tetra<F, n>::operator()(
   return info;
 }
 
+#define __r11 bitops::R<p0, p1, p2, 0>(bitops::dim<3> {})
+#define __r12 bitops::R<p0, p1, p2, 1>(bitops::dim<3> {})
+#define __r22 bitops::R<p0, p1, p2, 2>(bitops::dim<3> {})
+#define __numer bitops::exact_soln_numer<p0, p1, p2>(bitops::dim<3> {})
+#define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
+
 template <cost_func F, int n, int p0, int p1, int p2>
 updates::info<2>
 updates::tetra_bv<F, n, p0, p1, p2>::operator()(
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h) const
 {
+  info<2> info;
+
+  if (F == MP0 || F == RHR) {
+    double sh = (F == RHR ? s : (s + (s0 + s1 + s2)/3)/2)*h;
+    double du[2] = {u1 - u0, u2 - u0};
+
+    // Compute q = inv(R')*du/sh here.
+    double q[2] = {du[0]/sh, du[1]/sh};
+    q[1] -= __r12*q[0]/__r11;
+    q[1] /= __r22;
+    q[0] /= __r11;
+
+    double q_dot_q = dot<2>(q, q);
+    if (q_dot_q < 1) {
+      double lopt = sqrt(__numer/(1 - q_dot_q));
+
+      auto & lam = info.lambda;
+      lam[0] = __Qt_p0(0) + lopt*q[0];
+      lam[1] = __Qt_p0(1) + lopt*q[1];
+      lam[1] /= -__r22;
+      lam[0] += __r12*lam[1];
+      lam[0] /= -__r11;
+
+      if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
+        info.value = u0 + du[0]*lam[0] + du[1]*lam[1];
+        if (F == RHR) {
+          info.value += lopt*sh;
+        } else {
+          info.value += lopt*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*h/2;
+        }
+        return info;
+      }
+    }
+  }
+
   F_wkspc<F, 2> w;
   set_args<F, n, p0, p1, p2>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, n, p0, p1, p2> func {w};
 
-  info<2> info;
   bool error;
   sqp_bary<decltype(func), n, 2>()(
     func, info.is_degenerate() ? nullptr : info.lambda,
@@ -85,6 +125,12 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 
   return info;
 }
+
+#undef __r11
+#undef __r12
+#undef __r22
+#undef __numer
+#undef __Qt_p0
 
 // TODO: we aren't actually using this overload yet...
 // template <cost_func F, int p0, int p1, int p2>

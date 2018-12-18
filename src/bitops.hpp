@@ -85,6 +85,27 @@ constexpr double R(dim<3> n)
   return r[i];
 }
 
+#define __Q(i, j) Q<p0, p1, p2, i, j>(n)
+
+template <int p0, int p1, int p2, int j>
+constexpr double Qt_dot_p0(dim<3> n)
+{
+  int p0_[3] = {bit<0, p0>(), bit<1, p0>(), bit<2, p0>()};
+  return __Q(0, j)*p0_[0] + __Q(1, j)*p0_[1] + __Q(2, j)*p0_[2];
+}
+
+#undef __Q
+
+#define __Qt_p0(j) Qt_dot_p0<p0, p1, p2, j>(n)
+
+template <int p0, int p1, int p2>
+constexpr double exact_soln_numer(dim<3> n)
+{
+  return p_dot_q<p0, p0>(n) - __Qt_p0(0)*__Qt_p0(0) - __Qt_p0(1)*__Qt_p0(1);
+}
+
+#undef __Qt_p0
+
 }
 
 #endif // __BITOPS_HPP__

@@ -369,7 +369,11 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
    */
   double Tnew, T0 = INF(double), T1 = INF(double), T2 = INF(double);
   int l0 = parent, l1 = -1;
-  double p0[3] = {__di(l0), __dj(l0), __dk(l0)}, p1[3], p2[3], p_fac[3];
+  double p0[3], p1[3], p2[3], p_fac[3];
+
+  p0[0] = __di(l0);
+  p0[1] = __dj(l0);
+  p0[2] = __dk(l0);
 
   T0 = updates::line<F, 3>()(
     p0, this->nb[l0]->get_value(), this->s_hat, this->s[l0], this->get_h());
@@ -551,8 +555,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
         // Finally, do the tetrahedron update.
         auto const tmp = n->has_fac_parent() ?
           updates::tetra<F, 3>()(
-            //p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h, 
-            // p_fac, s_fac) :
             p0, p1, p2,
             this->nb[l0]->get_value(),
             this->nb[l1]->get_value(),
@@ -560,7 +562,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
             this->s_hat, this->s[l0], this->s[l1], this->s[l2],
             this->get_h(), p_fac, s_fac) :
           updates::tetra<F, 3>()(
-            // p0, p1, p2, VAL(l0), VAL(l1), VAL(l2), SPEED_ARGS(l0, l1, l2), h);
             p0, p1, p2,
             this->nb[l0]->get_value(),
             this->nb[l1]->get_value(),

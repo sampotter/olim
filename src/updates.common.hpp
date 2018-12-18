@@ -7,7 +7,6 @@ template <int d>
 struct info {
   double value {INF(double)};
   double lambda[d];
-#ifdef COLLECT_STATS
   inline bool is_degenerate() const {
     bool deg = false;
     double lam0 = 1;
@@ -15,8 +14,22 @@ struct info {
       deg = deg || lambda[i] < EPS(double);
       lam0 -= lambda[i];
     }
-    return deg || lam0 > 1 - EPS(double);
+    return std::isinf(value) || deg || lam0 > 1 - EPS(double);
   }
+#ifdef COLLECT_STATS
+  bool hierarchical {false};
+#endif
+};
+
+template <>
+struct info<2> {
+  double value {INF(double)};
+  double lambda[2];
+  inline bool is_degenerate() const {
+    return std::isinf(value) ||
+      lambda[0] < 0 || lambda[1] < 0 || lambda[0] + lambda[1] > 1;
+  }
+#ifdef COLLECT_STATS
   bool hierarchical {false};
 #endif
 };

@@ -56,6 +56,7 @@ info<2> tetra223(double u0, double u1, double u2, double s,
 
 template <cost_func F>
 void tetra111_is_symmetric_with_constant_slowness() {
+  double uhat = 3.022472858860726;
   double u0 = 2.5453289254261224;
   double u1 = 2.5453289254261224;
   double u2 = 2.2844570503761732;
@@ -72,6 +73,12 @@ void tetra111_is_symmetric_with_constant_slowness() {
   ASSERT_DOUBLE_EQ(val201, val210);
   ASSERT_DOUBLE_EQ(val210, val102);
   ASSERT_DOUBLE_EQ(val102, val021);
+  ASSERT_DOUBLE_EQ(val012, uhat);
+  ASSERT_DOUBLE_EQ(val120, uhat);
+  ASSERT_DOUBLE_EQ(val201, uhat);
+  ASSERT_DOUBLE_EQ(val210, uhat);
+  ASSERT_DOUBLE_EQ(val102, uhat);
+  ASSERT_DOUBLE_EQ(val021, uhat);
 
   u0 = 2.4;
   u1 = 2.2;

@@ -362,49 +362,18 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   /**
    * Tnew: temporary variable used for updating T, the update value
    * T0, T1, T2: separate minimum values for degree 0/1/2 updates
-   * l0, l1: indices of p0 and p1
+   * l0, l1: indices of p0 and p1 in 26 point neighborhood
    * p0, p1, p2: update node vectors
    */
   double Tnew, T0 = INF(double), T1 = INF(double), T2 = INF(double);
-  int l0 = -1, l1 = -1;
-  double p0[3], p1[3], p2[3], p_fac[3];
+  int l0 = parent, l1 = -1;
+  double p0[3] = {__di(l0), __dj(l0), __dk(l0)}, p1[3], p2[3], p_fac[3];
 
-  // Depending on the compilation flag HU_USE_PARENT_NODE, either let
-  // l0 be the index of the updating parent, or let l0 be the index of
-  // the neighboring valid node with the minimum degree 0 update
-  // value.
-#if HU_USE_PARENT_NODE
-  l0 = parent;
-  p0[0] = __di(l0);
-  p0[1] = __dj(l0);
-  p0[2] = __dk(l0);
   T0 = updates::line<F, 3>()(
     p0, this->nb[l0]->get_value(), this->s_hat, this->s[l0], this->get_h());
-#  if COLLECT_STATS
+#if COLLECT_STATS
   node_stats.inc_line_updates(p0, 3);
-#  endif
-#else // HU_USE_PARENT_NODE
-  for (int l = 0; l < 26; ++l) {
-    if (nb[l]) {
-      p0[0] = __di(l);
-      p0[1] = __dj(l);
-      p0[2] = __dk(l);
-      Tnew = updates::line<F, 3>()(
-        p0, this->nb[l]->get_value(), this->s_hat, this->s[l], this->get_h());
-#  if COLLECT_STATS
-      node_stats.inc_line_updates(p0, 3);
-#  endif
-      if (Tnew < T0) {
-        T0 = Tnew;
-        l0 = l;
-      }
-    }
-  }
-  assert(l0 != -1);
-  p0[0] = __di(l0);
-  p0[1] = __dj(l0);
-  p0[2] = __dk(l0);
-#endif // HU_USE_PARENT_NODE
+#endif
 
   if (n->has_fac_parent()) {
     auto n_fac = static_cast<node *>(n->get_fac_parent());

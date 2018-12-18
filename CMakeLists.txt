@@ -15,7 +15,6 @@ else ()
 endif ()
 
 option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
-option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)

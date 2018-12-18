@@ -51,7 +51,8 @@ updates::tetra<F, n>::operator()(
   
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
+  sqp_bary<decltype(func), n, 2, line_search::BACKTRACK>()(
+    func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {

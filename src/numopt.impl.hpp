@@ -16,9 +16,9 @@ inline double compute_lambda_min_symmetric<2>(double const * A) {
   return half_tr - sqrt(half_tr*half_tr - det);
 }
 
-template <class cost_functor>
+template <class cost_functor, line_search L>
 void
-sqp_bary<cost_functor, 3, 2>::operator()(
+sqp_bary<cost_functor, 3, 2, L>::operator()(
   cost_functor & func, double const * xinit, double * x, double * f,
   bool * error, double tol, int niters)
 {
@@ -63,18 +63,31 @@ sqp_bary<cost_functor, 3, 2>::operator()(
     // Compute descent step: h = x1 - x0 = x_{n+1} - x_{n}
     sub<2>(x1, x0, h);
 
-    // Apply Wilkinson's hybrid method to minimize f(x0 + alpha*h) for
-    // alpha st 0 <= alpha <= 1. We do this by finding the zero of
-    // df(x0 + alpha*h)'*alpha over the same interval.
-    auto const step = [&] (double alpha) {
+    if (L == line_search::BACKTRACK) {
+      alpha = 1;
+      double lhs, rhs = f1 + 1e-4*alpha*dot<2>(df, h);
+    repeat:
       axpy<2>(alpha, h, x0, x1);
       func.set_lambda(x1);
-      func.grad(df);
-      return dot<2>(df, h);
-    };
-    std::tie(alpha, status) = hybrid(step, 0., 1., tol);
-    if (status == hybrid_status::DEGENERATE) {
-      alpha = 1;
+      func.eval(lhs);
+      if (alpha > tol && lhs > rhs) {
+        alpha /= 2;
+        goto repeat;
+      }
+    } else if (L == line_search::HYBRID) {
+      // Apply Wilkinson's hybrid method to minimize f(x0 + alpha*h) for
+      // alpha st 0 <= alpha <= 1. We do this by finding the zero of
+      // df(x0 + alpha*h)'*alpha over the same interval.
+      auto const step = [&] (double alpha) {
+                          axpy<2>(alpha, h, x0, x1);
+                          func.set_lambda(x1);
+                          func.grad(df);
+                          return dot<2>(df, h);
+                        };
+      std::tie(alpha, status) = hybrid(step, 0., 1., tol);
+      if (status == hybrid_status::DEGENERATE) {
+        alpha = 1;
+      }
     }
 
     axpy<2>(alpha, h, x0, x1);

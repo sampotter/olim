@@ -331,6 +331,12 @@ struct olim3d_hu:
   node ** nb;
   int parent;
 
+  inline double get_p_norm(int l) const {
+    if (l < 6) return 1;
+    else if (l < 18) return sqrt2;
+    else return sqrt3;
+  };
+
   void update_crtp(double & T);
 };
 

@@ -375,8 +375,9 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   p0[1] = __dj(l0);
   p0[2] = __dk(l0);
 
-  T0 = updates::line<F, 3>()(
-    p0, this->nb[l0]->get_value(), this->s_hat, this->s[l0], this->get_h());
+  T0 = updates::line<F>()(
+    get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
+    this->get_h());
 #if COLLECT_STATS
   node_stats.inc_line_updates(p0, 3);
 #endif

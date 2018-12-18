@@ -12,11 +12,10 @@ struct line_bv {
   }
 };
 
-template <cost_func F, int n>
+template <cost_func F>
 struct line {
-  double operator()(double const * p0, double u0, double s, double s0,
-                    double h) const {
-    return u0 + (F == RHR ? s : (s + s0)/2)*h*norm2<n>(p0);
+  double operator()(double l0, double u0, double s, double s0, double h) const {
+    return u0 + (F == RHR ? s : (s + s0)/2)*h*l0;
   }
 };
 

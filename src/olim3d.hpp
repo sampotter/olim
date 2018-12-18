@@ -329,9 +329,7 @@ struct olim3d_hu:
 
   node * n;
   node ** nb;
-  int parent, octant;
-  int const * inds;
-  int tri_skip_list[42*8];
+  int parent;
 
   void update_crtp(double & T);
 };

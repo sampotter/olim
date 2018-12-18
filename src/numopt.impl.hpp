@@ -19,8 +19,8 @@ inline double compute_lambda_min_symmetric<2>(double const * A) {
 template <class cost_functor>
 void
 sqp_bary<cost_functor, 3, 2>::operator()(
-  cost_functor & func, double * x, double * f, bool * error, double tol,
-  int niters)
+  cost_functor & func, double const * xinit, double * x, double * f,
+  bool * error, double tol, int niters)
 {
   using std::max;
 
@@ -32,7 +32,9 @@ sqp_bary<cost_functor, 3, 2>::operator()(
   bool qpi_error;
   hybrid_status status;
 
-  x1[0] = x1[1] = 1./3;
+  x1[0] = xinit ? xinit[0] : 1./3;
+  x1[1] = xinit ? xinit[1] : 1./3;
+
   func.set_lambda(x1);
   func.eval(f1);
 

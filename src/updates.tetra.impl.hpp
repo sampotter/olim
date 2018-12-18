@@ -27,7 +27,7 @@ updates::tetra<F, n>::operator()(
 
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
+  sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {
@@ -51,7 +51,7 @@ updates::tetra<F, n>::operator()(
   
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
+  sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {
@@ -73,7 +73,9 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 
   info<2> info;
   bool error;
-  sqp_bary<decltype(func), n, 2>()(func, info.lambda, &info.value, &error);
+  sqp_bary<decltype(func), n, 2>()(
+    func, info.is_degenerate() ? nullptr : info.lambda,
+    info.lambda, &info.value, &error);
   assert(!error);
 
   if (F == cost_func::mp0) {

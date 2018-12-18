@@ -352,6 +352,8 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   using std::min;
 
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
+
+  // TODO: why am I setting this to infinity?
   double s_fac = INF(double);
 
 #if COLLECT_STATS
@@ -388,9 +390,12 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   // tetrahedron updates. Initialize it to -1 so that we can tell
   // which triangle updates have been computed.
   double arglam[26];
-  std::fill(arglam, arglam + sizeof(arglam)/sizeof(double), -1);
+  std::fill(arglam, arglam + 26, -1);
 
   // Find the minimal triangle update containing l0.
+  //
+  // TODO: a way to speed this up a bit: make a l->neighbors map to
+  // reduce the number of distances we have to compute...
   for (int l = 0; l < 26; ++l) {
     if (l != l0 && nb[l]) {
       p1[0] = __di(l);
@@ -399,25 +404,18 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 
       // Check to see how far apart p0 and p1, and continue to the
       // next candidate for p1 if they're too far apart.
-      if (lp_norm == L1) {
-        if (dist1<3>(p0, p1) > d1) continue;
-      } else if (lp_norm == L2) {
-        if (dist2sq<3>(p0, p1) > d1) continue;
-      } else {
-        if (distmax<3>(p0, p1) > d1) continue;
-      }
+      if (lp_norm == L1 && dist1<3>(p0, p1) > d1) continue;
+      else if (lp_norm == L2 && dist2sq<3>(p0, p1) > d1) continue;
+      else if (distmax<3>(p0, p1) > d1) continue;
 
       // TODO: skip triangle updates using KKT theory
 
       // Do the triangle update.
       auto const tmp = n->has_fac_parent() ?
-        // this->template tri<3>(
         updates::tri<F, 3>()(
-          // p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h, p_fac, s_fac)
           p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
           this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
         updates::tri<F, 3>()(
-          // p0, p1, VAL(l0), VAL(l), SPEED_ARGS(l0, l), h);
           p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
           this->s_hat, this->s[l0], this->s[l], this->get_h());
 #if COLLECT_STATS
@@ -437,10 +435,11 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   if (l1 == -1) {
     assert(std::isinf(T1));
     goto coda;
+  } else {
+    p1[0] = __di(l1);
+    p1[1] = __dj(l1);
+    p1[2] = __dk(l1);
   }
-  p1[0] = __di(l1);
-  p1[1] = __dj(l1);
-  p1[2] = __dk(l1);
 
   {
     // Use the scalar triple product (dot(p x q, r)) to check if three

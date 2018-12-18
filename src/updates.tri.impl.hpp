@@ -4,9 +4,6 @@
 #include <src/config.hpp>
 
 #include <algorithm>
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif
 #include <cmath>
 
 #include "common.hpp"
@@ -75,11 +72,7 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
       min(F0_line__(0), F0_line__(1)) :
       u0 + info.lambda[0]*du + h*s__(info.lambda[0])*l__(info.lambda[0]);
   }
-#if PRINT_UPDATES
-  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         p0, p1, u0, u1, s, s0, s1, h, info.value);
-#endif
+
   return info;
 }
 
@@ -133,9 +126,6 @@ updates::tri<MP0, n>::operator()(
     info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
       sh*norm2<n>(nu);
   }
-#if PRINT_UPDATES
-#  error Not implemented yet!
-#endif
   return info;
 }
 
@@ -186,11 +176,6 @@ updates::tri<MP0, n>::operator()(
       min(F0, F1) :
       u0 + info.lambda[0]*du + h*s__(info.lambda[0])*l__(info.lambda[0]);
   }
-#if PRINT_UPDATES
-  printf("tri<%d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         d, u0, u1, s, s0, s1, h, info.value);
-#endif
   return info;
 }
 
@@ -251,10 +236,6 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
       min(F0_line__(0), F0_line__(1)) :
       u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
   }
-#if PRINT_UPDATES
-  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, h = %g) -> %g\n", p0, p1, u0, u1, s, h, info.value);
-#endif
   return info;
 }
 
@@ -312,9 +293,6 @@ updates::tri<RHR, n>::operator()(
     info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
       sh*norm2<n>(nu);
   }
-#if PRINT_UPDATES
-#  error Not implemented yet!
-#endif
   return info;
 }
 
@@ -368,10 +346,6 @@ updates::tri<RHR, n>::operator()(
       min(F0, F1) :
       u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
   }
-#if PRINT_UPDATES
-  printf("tri<%d>::update_impl(u0 = %g, u1 = %g, s = %g, h = %g) -> %g\n",
-         d, u0, u1, s, h, info.value);
-#endif
   return info;
 }
 
@@ -433,11 +407,6 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
     s_lam = (s + s0 + ds*arglam)/2;
     info.value = u0 + du*arglam + s_lam*h*l_lam;
   }
-#if PRINT_UPDATES
-  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         p0, p1, u0, u1, s, s0, s1, h, info.value);
-#endif
   return info;
 }
 
@@ -493,9 +462,6 @@ updates::tri<MP1, n>::operator()(
     info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
       s_lam*h*norm2<n>(nu);
   }
-#if PRINT_UPDATES
-#  error Not implemented yet!
-#endif
   return info;
 }
 
@@ -589,11 +555,6 @@ updates::tri<MP1, n>::operator()(
     info.value = F1__(lam);
     info.lambda[0] = lam;
   }
-#if PRINT_UPDATES
-  printf("tri<%d, %d>::update_impl(u0 = %g, u1 = %g, "
-         "s = %g, s0 = %g, s1 = %g, h = %g) -> %g\n",
-         p0, p1, u0, u1, s, s0, s1, h, info.value);
-#endif
   return info;
 }
 

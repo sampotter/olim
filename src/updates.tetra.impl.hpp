@@ -7,9 +7,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif
 #include <type_traits>
 
 #include "common.defs.hpp"
@@ -37,12 +34,6 @@ updates::tetra<F, n>::operator()(
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
 
-#if PRINT_UPDATES
-  printf("tetra(u0 = %g, u1 = %g, u2 = %g, s = %g, "
-         "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
-         u0, u1, u2, s, s0, s1, s2, h, info.value);
-#endif
-
   return info;
 }
 
@@ -67,10 +58,6 @@ updates::tetra<F, n>::operator()(
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
 
-#if PRINT_UPDATES
-#  error Not implemented yet
-#endif
-
   return info;
 }
 
@@ -92,12 +79,6 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
-
-#if PRINT_UPDATES
-  printf("tetra<%d, %d, %d>(u0 = %g, u1 = %g, u2 = %g, s = %g, "
-         "s0 = %g, s1 = %g, s2 = %g, h = %g) -> %g\n",
-         p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, info.value);
-#endif
 
   return info;
 }

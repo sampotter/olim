@@ -14,7 +14,6 @@ else ()
   endif ()
 endif ()
 
-option (PRINT_UPDATES "Output individual updates for debugging." OFF)
 option (HIERARCHICAL_UPDATES "Do hierarchical updates." ON)
 option (HU_USE_PARENT_NODE "Start from the parent node for HU." ON)
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
@@ -54,18 +53,6 @@ CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
 
 if (LINK_PROFILE)
   find_package (Gperftools REQUIRED)
-endif ()
-
-# If we have a macro like PRINT_UPDATES defined, because of the way
-# the preprocessor works, it's helpful to turn this warning on to make
-# sure that we're using PRINT_UPDATES correctly. If we don't have it
-# defined, then turning this warning on just spams us during our
-# builds.
-#
-# TODO: in the future, it would be better to turn this on and off
-# locally to avoid missing other errors related to undefined macros.
-if (${PRINT_UPDATES})
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)

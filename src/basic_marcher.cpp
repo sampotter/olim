@@ -5,20 +5,13 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif
 
 #include "common.macros.hpp"
 
 void basic_marcher::update_impl(node * n, double & T) {
   using std::min;
 
-#if PRINT_UPDATES
-  printf("basic_marcher::update_impl(i = %d, j = %d)\n",n->get_i(),n->get_j());
-#else
   (void) n;
-#endif
 
   double sh = this->s_hat*this->get_h();
 
@@ -42,8 +35,4 @@ void basic_marcher::update_impl(node * n, double & T) {
   } else {
     assert(false);
   }
-
-#if PRINT_UPDATES
-  printf("basic_marcher::update_impl: T <- %g\n", T);
-#endif
 }

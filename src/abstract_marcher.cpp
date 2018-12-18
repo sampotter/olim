@@ -1,24 +1,10 @@
 #include "abstract_marcher.hpp"
 
-#include <src/config.hpp>
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif // PRINT_UPDATES
-
 #include <cmath>
 
 void abstract_marcher::run() {
-#if PRINT_UPDATES
-  puts("abstract_marcher::run()");
-#endif // PRINT_UPDATES
   abstract_node * n {nullptr};
   while (!_heap.empty()) {
-#if PRINT_UPDATES
-    // This is "fake", but still useful for debugging
-    // purposes---nominally, calling 'run' is just calling 'step'
-    // repeatedly until the solution is fully computed
-    puts("abstract_marcher::step()");
-#endif
     n = get_next_node();
     n->set_valid();
     visit_neighbors(n);
@@ -26,9 +12,6 @@ void abstract_marcher::run() {
 }
 
 void abstract_marcher::step() {
-#if PRINT_UPDATES
-  puts("abstract_marcher::step()");
-#endif
   auto * n = get_next_node();
   n->set_valid();
   visit_neighbors(n);

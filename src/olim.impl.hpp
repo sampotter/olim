@@ -3,10 +3,6 @@
 
 #include <src/config.hpp>
 
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif
-
 #include "common.macros.hpp"
 #include "updates.utils.hpp"
 
@@ -24,9 +20,6 @@ olim<F, node, do_adj, do_diag>::update_impl(node * n, double & T)
   using std::min;
 
   int i_hat = n->get_i(), j_hat = n->get_j();
-#if PRINT_UPDATES
-  printf("olim::update_impl(i = %d, j = %d)\n", i, j);
-#endif
 
   for (int k = 0; k < num_neighbors; ++k) {
     if (this->nb[k]) {
@@ -68,10 +61,6 @@ olim<F, node, do_adj, do_diag>::update_impl(node * n, double & T)
       }
     }
   }
-  
-#if PRINT_UPDATES
-  printf("olim::update_impl: T <- %g\n", T);
-#endif
 }
 
 #undef __di

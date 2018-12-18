@@ -117,12 +117,6 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
 
   assert(parent <= groups::num_neighbors);
 
-  // int i = n->get_i(), j = n->get_j(), k = n->get_k();
-#if PRINT_UPDATES
-  printf("olim3d::update_impl(i = %d, j = %d, k = %d)\n",
-         n->get_i(), n->get_j(), n->get_k());
-#endif
-
 #if COLLECT_STATS
   node_stats = this->get_node_stats(i, j, k);
   node_stats.inc_num_visits();
@@ -350,10 +344,6 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
       }
     }
   }
-
-#if PRINT_UPDATES
-  printf("olim3d::update_impl: T <- %g\n", T);
-#endif
 }
 
 template <cost_func F, class node, int lp_norm, int d1, int d2>
@@ -362,10 +352,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   using std::min;
 
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
-#if PRINT_UPDATES
-  printf("olim3d_hu::update_impl(i = %d, j = %d, k = %d)\n", i, j, k);
-#endif
-
   double s_fac = INF(double);
 
 #if COLLECT_STATS
@@ -627,10 +613,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   // Set T to be the minimum of T0, T1, and T2.
 coda:
   T = min(T0, min(T1, T2));
-
-#if PRINT_UPDATES
-  printf("olim3d_hu::update_impl: T <- %g\n", T);
-#endif
 }
 
 #undef LINE

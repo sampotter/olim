@@ -3,9 +3,6 @@
 
 #include <cassert>
 #include <cmath>
-#if PRINT_UPDATES
-#    include <cstdio>
-#endif // PRINT_UPDATES
 
 #include "common.macros.hpp"
 #include "offsets.hpp"
@@ -87,9 +84,6 @@ template <class base, class node, int num_neighbors>
 void
 marcher<base, node, num_neighbors>::add_boundary_node(int i, int j, double value)
 {
-#if PRINT_UPDATES
-  printf("add_boundary_node(i = %d, j = %d, value = %g)\n", i, j, value);
-#endif // PRINT_UPDATES
   assert(in_bounds(i, j));
   assert(operator()(i, j).is_far());
   visit_neighbors(&(operator()(i, j) = {i, j, value}));
@@ -120,10 +114,6 @@ template <class base, class node, int num_neighbors>
 void
 marcher<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int num)
 {
-#if PRINT_UPDATES
-  printf("add_boundary_nodes(nodes = %p, num = %d)\n", nodes, num);
-#endif // PRINT_UPDATES
-
   node const * n;
   int i, j;
 
@@ -149,10 +139,6 @@ marcher<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int n
     n = &nodes[k];
     i = n->get_i();
     j = n->get_j();
-#if PRINT_UPDATES
-    printf("add_boundary_node(i = %d, j = %d, value = %g)\n",
-           i, j, n->get_value());
-#endif // PRINT_UPDATES
     visit_neighbors(&operator()(i, j));
   }
 }
@@ -236,10 +222,6 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
 {
   int i = static_cast<node *>(n)->get_i();
   int j = static_cast<node *>(n)->get_j();
-#if PRINT_UPDATES
-  printf("marcher::visit_neighbors_impl(i = %d, j = %d)\n",
-         i, j);
-#endif
 
   // These are temporary indices used below, analogous to i and j,
   // respectively.

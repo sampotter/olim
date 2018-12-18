@@ -582,9 +582,9 @@ TEST (numopt, sqp_bary_works_with_mp0_fac) {
     p2[0] = 1;
     p2[1] = 1;
     p2[2] = 0;
-    pf[0] = 1;
-    pf[1] = 0;
-    pf[2] = -1;
+    pf[0] = p0[0];
+    pf[1] = p0[1];
+    pf[2] = p0[2];
     F_fac_wkspc<MP0, 2> w;
     set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
     cost_functor_fac<MP0, 3> func {w, p0, p1, p2, pf};

@@ -12,10 +12,6 @@
 #  include "update_rules.utils.hpp"
 #endif
 
-#define __di(l) di<3>[l]
-#define __dj(l) dj<3>[l]
-#define __dk(l) dk<3>[l]
-
 namespace ind {
   // degree 1
   constexpr int N = 0;
@@ -69,6 +65,12 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
+template <class base, class node, int num_neighbors>
+void abstract_olim3d<base, node, num_neighbors>::init()
+{
+  static_cast<base *>(this)->init_crtp();
+}
+
 #if COLLECT_STATS
 template <class base, class node, int num_neighbors>
 void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
@@ -100,7 +102,7 @@ void abstract_olim3d<base, node, num_neighbors>::update_impl(
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
   for (int l = 0; l < num_neighbors; ++l) {
     if (nb[l]) {
-      this->s[l] = this->get_speed(i + __di(l), j + __dj(l), k + __dk(l));
+      this->s[l] = this->get_speed(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
     }
   }
 
@@ -137,7 +139,7 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
     if (Tnew < T) {
       T = Tnew;
       n->set_parents({{
-        &this->operator()(i + __di(parent), j + __dj(parent), k + __dk(parent)),
+        &this->operator()(i + di<3>[parent], j + dj<3>[parent], k + dk<3>[parent]),
         nullptr,
         nullptr}});
     }
@@ -152,21 +154,9 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
    *
    * TODO: we could use a bitvector here instead.
    */
-  // int tri_skip_list[8*21];
-  // memset((void *) tri_skip_list, 0x0, sizeof(int)*8*21);
   reset_tri_skip_list();
 
   if (n->has_fac_parent()) {
-    // auto n_fac = static_cast<node *>(n->get_fac_parent());
-    // int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
-    // double s_fac = this->get_speed(i_fac, j_fac, k_fac);
-    // // double p0[3], p1[3], p2[3]; // TODO: these should be template parameters!
-    // double p_fac[3] = {
-    //   (double) (i_fac - i),
-    //   (double) (j_fac - j),
-    //   (double) (k_fac - k)
-    // };
-
     /**
      * Tetrahedron updates:
      */
@@ -347,15 +337,64 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
 }
 
 template <cost_func F, class node, int lp_norm, int d1, int d2>
+void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
+{
+  valid_d1 = new bool[26*26];
+  valid_d2 = new bool[26*26];
+  coplanar = new bool[26*26*26];
+
+  static constexpr double tol = EPS(double);
+
+  auto const is_valid = [&] (int l0, int l1, int d) -> bool {
+    double p0[3], p1[3];
+    get_p(l0, p0);
+    get_p(l1, p1);
+    if (lp_norm == L1) {
+      return dist1<3>(p0, p1) <= tol*d + tol;
+    } else if (lp_norm == L2) {
+      return dist2sq<3>(p0, p1) <= tol*d + tol;
+    } else {
+      return distmax<3>(p0, p1) <= tol*d + tol;
+    }
+  };
+
+  for (int l0 = 0; l0 < 26; ++l0) {
+    for (int l1 = 0; l1 < 26; ++l1) {
+      is_valid_d1(l0, l1) = is_valid(l0, l1, d1);
+    }
+  }
+
+  for (int l0 = 0; l0 < 26; ++l0) {
+    for (int l1 = 0; l1 < 26; ++l1) {
+      is_valid_d2(l0, l1) = is_valid(l0, l1, d2);
+    }
+  }
+
+  double p0[3], p1[3], p2[3], p0_x_p1[3];
+  for (int l0 = 0; l0 < 26; ++l0) {
+    get_p(l0, p0);
+    for (int l1 = 0; l1 < 26; ++l1) {
+      get_p(l1, p1);
+      // Use the scalar triple product (dot(p x q, r)) to check if
+      // three points are coplanar.
+      p0_x_p1[0] = p0[1]*p1[2] - p0[2]*p1[1];
+      p0_x_p1[1] = p0[2]*p1[0] - p0[0]*p1[2];
+      p0_x_p1[2] = p0[0]*p1[1] - p0[1]*p1[0];
+      for (int l2 = 0; l2 < 26; ++l2) {
+        get_p(l2, p2);
+        is_coplanar(l0, l1, l2) = fabs(
+          p0_x_p1[0]*p2[0] + p0_x_p1[1]*p2[1] + p0_x_p1[2]*p2[2]) < 1e1*tol;
+      }
+    }
+  }
+}
+
+template <cost_func F, class node, int lp_norm, int d1, int d2>
 void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 {
   using std::min;
 
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
-
-  // TODO: why am I setting this to infinity?
-  double s_fac = INF(double);
-
 #if COLLECT_STATS
   auto & node_stats = this->get_node_stats(i, j, k);
   node_stats.inc_num_visits();
@@ -370,10 +409,9 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   double Tnew, T0 = INF(double), T1 = INF(double), T2 = INF(double);
   int l0 = parent, l1 = -1;
   double p0[3], p1[3], p2[3], p_fac[3];
+  double s_fac;
 
-  p0[0] = __di(l0);
-  p0[1] = __dj(l0);
-  p0[2] = __dk(l0);
+  get_p(l0, p0);
 
   T0 = updates::line<F>()(
     get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
@@ -398,41 +436,32 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   std::fill(arglam, arglam + 26, -1);
 
   // Find the minimal triangle update containing l0.
-  //
-  // TODO: a way to speed this up a bit: make a l->neighbors map to
-  // reduce the number of distances we have to compute...
   for (int l = 0; l < 26; ++l) {
-    if (l != l0 && nb[l]) {
-      p1[0] = __di(l);
-      p1[1] = __dj(l);
-      p1[2] = __dk(l);
-
-      // Check to see how far apart p0 and p1, and continue to the
-      // next candidate for p1 if they're too far apart.
-      if (lp_norm == L1 && dist1<3>(p0, p1) > d1) continue;
-      else if (lp_norm == L2 && dist2sq<3>(p0, p1) > d1) continue;
-      else if (distmax<3>(p0, p1) > d1) continue;
-
-      // TODO: skip triangle updates using KKT theory
-
-      // Do the triangle update.
-      auto const tmp = n->has_fac_parent() ?
-        updates::tri<F, 3>()(
-          p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
-          this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
-        updates::tri<F, 3>()(
-          p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
-          this->s_hat, this->s[l0], this->s[l], this->get_h());
-#if COLLECT_STATS
-      node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
-#endif
-      Tnew = tmp.value;
-      if (Tnew < T1) {
-        T1 = Tnew;
-        l1 = l;
-      }
-      arglam[l] = tmp.lambda[0];
+    if (l == l0 || !nb[l] || !is_valid_d1(l0, l)) {
+      continue;
     }
+
+    get_p(l, p1);
+
+    // TODO: skip triangle updates using KKT theory
+
+    // Do the triangle update.
+    auto const tmp = n->has_fac_parent() ?
+      updates::tri<F, 3>()(
+        p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+        this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
+      updates::tri<F, 3>()(
+        p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+        this->s_hat, this->s[l0], this->s[l], this->get_h());
+#if COLLECT_STATS
+    node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
+#endif
+    Tnew = tmp.value;
+    if (Tnew < T1) {
+      T1 = Tnew;
+      l1 = l;
+    }
+    arglam[l] = tmp.lambda[0];
   }
   // There may only be a single valid neighbor, in which case we
   // should jump to the end of this function and skip all of the
@@ -441,142 +470,113 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     assert(std::isinf(T1));
     goto coda;
   } else {
-    p1[0] = __di(l1);
-    p1[1] = __dj(l1);
-    p1[2] = __dk(l1);
+    get_p(l1, p1);
   }
 
-  {
-    // Use the scalar triple product (dot(p x q, r)) to check if three
-    // points are coplanar. We precompute the cross product of p0 and
-    // p1 here so that we only have to compute a dot product up ahead.
-    double const p0_cross_p1[3] = {
-      p0[1]*p1[2] - p0[2]*p1[1],
-      p0[2]*p1[0] - p0[0]*p1[2],
-      p0[0]*p1[1] - p0[1]*p1[0]
+  // Do the tetrahedron updates such that p2 is sufficiently near p0
+  // and p1.
+  for (int l2 = 0; l2 < 26; ++l2) {
+    if (l1 == l2 || l0 == l2 || !nb[l2] ||
+        is_coplanar(l0, l1, l2) ||
+        !is_valid_d2(l0, l2) || !is_valid_d2(l1, l2)) {
+      continue;
+    }
+
+    get_p(l2, p2);
+
+    // Compute Lagrange multipliers to see if we can skip the
+    // tetrahedron update.
+
+    double mu[2], lam[2], df[2], d2f[3];
+    int k;
+
+    // TODO: Masha has some simplified way of computing the
+    // Lagrange multipliers in the 3D Qpot paper---check this out
+    auto const compute_lagrange_multipliers = [&] () {
+      if (n->has_fac_parent()) {
+        F_fac_wkspc<F, 2> w;
+        set_args<F, 3>(
+          w, p0, p1, p2,
+          this->nb[l0]->get_value(),
+          this->nb[l1]->get_value(),
+          this->nb[l2]->get_value(),
+          this->s_hat,
+          this->s[l0],
+          this->s[l1],
+          this->s[l2],
+          this->get_h(),
+          p_fac,
+          s_fac);
+        set_lambda<F, 3>(w, p0, p1, p2, p_fac, lam);
+        grad<2>(w, df);
+        hess<2>(w, d2f);
+        lagmults<2>(lam, df, d2f, mu, &k);
+      } else {
+        F_wkspc<F, 2> w;
+        set_args<F, 3>(
+          w, p0, p1, p2,
+          this->nb[l0]->get_value(),
+          this->nb[l1]->get_value(),
+          this->nb[l2]->get_value(),
+          this->s_hat,
+          this->s[l0],
+          this->s[l1],
+          this->s[l2],
+          this->get_h());
+        set_lambda<F, 3>(w, p0, p1, p2, lam);
+        grad<2>(w, df);
+        hess<2>(w, d2f);
+        lagmults<2>(lam, df, d2f, mu, &k);
+      }
     };
 
-    // Do the tetrahedron updates such that p2 is sufficiently near p0
-    // and p1.
-    for (int l2 = 0; l2 < 26; ++l2) {
-      if (l2 != l1 && l2 != l0 && nb[l2]) {
-        p2[0] = __di(l2);
-        p2[1] = __dj(l2);
-        p2[2] = __dk(l2);
+    // We get the first two checks for free using arglam
+    assert(arglam[l1] != -1);
+    lam[0] = arglam[l1];
+    lam[1] = 0;
+    compute_lagrange_multipliers();
+    if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
+      continue;
+    }
 
-        // Check if p0, p1, and p2 are coplanar: if they are, we can
-        // skip the tetrahedron update.
-        if (fabs(p0_cross_p1[0]*p2[0] +
-                 p0_cross_p1[1]*p2[1] +
-                 p0_cross_p1[2]*p2[2]) < 1e2*EPS(double)) {
-          continue;
-        }
-
-        // Check to see how far p2 is from p0 and p1---if it's too
-        // far, proceed to the next candidate for p2.
-        if (lp_norm == L1) {
-          if (dist1<3>(p0, p2) > d2 || dist1<3>(p1, p2) > d2) continue;
-        } else if (lp_norm == L2) {
-          if (dist2sq<3>(p0, p2) > d2 || dist2sq<3>(p1, p2) > d2) continue;
-        } else {
-          if (distmax<3>(p0, p2) > d2 || distmax<3>(p1, p2) > d2) continue;
-        }
-
-        // Compute Lagrange multipliers to see if we can skip the
-        // tetrahedron update.
-
-        double mu[2], lam[2], df[2], d2f[3];
-        int k;
-
-        // TODO: Masha has some simplified way of computing the
-        // Lagrange multipliers in the 3D Qpot paper---check this out
-        auto const compute_lagrange_multipliers = [&] () {
-          if (n->has_fac_parent()) {
-            F_fac_wkspc<F, 2> w;
-            set_args<F, 3>(
-              w, p0, p1, p2,
-              this->nb[l0]->get_value(),
-              this->nb[l1]->get_value(),
-              this->nb[l2]->get_value(),
-              this->s_hat,
-              this->s[l0],
-              this->s[l1],
-              this->s[l2],
-              this->get_h(),
-              p_fac,
-              s_fac);
-            set_lambda<F, 3>(w, p0, p1, p2, p_fac, lam);
-            grad<2>(w, df);
-            hess<2>(w, d2f);
-            lagmults<2>(lam, df, d2f, mu, &k);
-          } else {
-            F_wkspc<F, 2> w;
-            set_args<F, 3>(
-              w, p0, p1, p2,
-              this->nb[l0]->get_value(),
-              this->nb[l1]->get_value(),
-              this->nb[l2]->get_value(),
-              this->s_hat,
-              this->s[l0],
-              this->s[l1],
-              this->s[l2],
-              this->get_h());
-            set_lambda<F, 3>(w, p0, p1, p2, lam);
-            grad<2>(w, df);
-            hess<2>(w, d2f);
-            lagmults<2>(lam, df, d2f, mu, &k);
-          }
-        };
-
-        // We get the first two checks for free using arglam
-        assert(arglam[l1] != -1);
-        lam[0] = arglam[l1];
-        lam[1] = 0;
-        compute_lagrange_multipliers();
-        if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
-          continue;
-        }
-
-        // TODO: not totally sure if this should be -1 or if it might
-        // be -1 in some cases...
-        if (arglam[l2] != -1) {
-          lam[0] = 0;
-          lam[1] = arglam[l2];
-          compute_lagrange_multipliers();
-          if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
-            continue;
-          }
-        }
-
-        // TODO: We're not doing the third triangle update right
-        // now. This seems to work okay for now, but we can't do the
-        // "exact solve" using the QR decomposition if we don't do the
-        // third update. It's unclear how efficient this will be...
-
-        // Finally, do the tetrahedron update.
-        auto const tmp = n->has_fac_parent() ?
-          updates::tetra<F, 3>()(
-            p0, p1, p2,
-            this->nb[l0]->get_value(),
-            this->nb[l1]->get_value(),
-            this->nb[l2]->get_value(),
-            this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-            this->get_h(), p_fac, s_fac) :
-          updates::tetra<F, 3>()(
-            p0, p1, p2,
-            this->nb[l0]->get_value(),
-            this->nb[l1]->get_value(),
-            this->nb[l2]->get_value(),
-            this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-            this->get_h());
-#if COLLECT_STATS
-        node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
-#endif
-        Tnew = tmp.value;
-        if (Tnew < T2) {
-          T2 = Tnew;
-        }
+    // TODO: not totally sure if this should be -1 or if it might
+    // be -1 in some cases...
+    if (arglam[l2] != -1) {
+      lam[0] = 0;
+      lam[1] = arglam[l2];
+      compute_lagrange_multipliers();
+      if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
+        continue;
       }
+    }
+
+    // TODO: We're not doing the third triangle update right
+    // now. This seems to work okay for now, but we can't do the
+    // "exact solve" using the QR decomposition if we don't do the
+    // third update. It's unclear how efficient this will be...
+
+    // Finally, do the tetrahedron update.
+    auto const tmp = n->has_fac_parent() ?
+      updates::tetra<F, 3>()(
+        p0, p1, p2,
+        this->nb[l0]->get_value(),
+        this->nb[l1]->get_value(),
+        this->nb[l2]->get_value(),
+        this->s_hat, this->s[l0], this->s[l1], this->s[l2],
+        this->get_h(), p_fac, s_fac) :
+      updates::tetra<F, 3>()(
+        p0, p1, p2,
+        this->nb[l0]->get_value(),
+        this->nb[l1]->get_value(),
+        this->nb[l2]->get_value(),
+        this->s_hat, this->s[l0], this->s[l1], this->s[l2],
+        this->get_h());
+#if COLLECT_STATS
+    node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
+#endif
+    Tnew = tmp.value;
+    if (Tnew < T2) {
+      T2 = Tnew;
     }
   }
 
@@ -598,10 +598,6 @@ coda:
 #undef P101
 #undef P110
 #undef P111
-
-#undef __di
-#undef __dj
-#undef __dk
 
 #if COLLECT_STATS
 

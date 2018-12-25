@@ -57,16 +57,15 @@ struct abstract_olim3d:
     node,
     num_neighbors>;
 
-  abstract_olim3d() {}
+  abstract_olim3d() { init(); }
 
   abstract_olim3d(int height, int width, int depth, double h,
                   no_speed_func_t const &):
       marcher_3d_t {height, width, depth, h, no_speed_func_t {}}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
-#else
-    {}
+    , _node_stats {new olim3d_node_stats[height*width*depth]}
 #endif
+  { init(); }
 
   abstract_olim3d(int height, int width, int depth, double h = 1,
                   std::function<double(double, double, double)> speed =
@@ -74,19 +73,19 @@ struct abstract_olim3d:
                   double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
       marcher_3d_t {height, width, depth, h, speed, x0, y0, z0}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
-#else
-    {}
+    , _node_stats {new olim3d_node_stats[height*width*depth]}
 #endif
+  { init(); }
 
   abstract_olim3d(int height, int width, int depth, double h,
                   double const * s_cache):
       marcher_3d_t {height, width, depth, h, s_cache}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]} {}
-#else
-    {}
+    , _node_stats {new olim3d_node_stats[height*width*depth]}
 #endif
+  { init(); }
+
+  void init();
 
 #if COLLECT_STATS
   virtual ~abstract_olim3d() { delete[] _node_stats; }
@@ -99,7 +98,6 @@ struct abstract_olim3d:
 
 EIKONAL_PRIVATE:
   virtual void update_impl(node * n, node ** nb, int parent, double & T);
-  void init();
 
 #if COLLECT_STATS
   olim3d_node_stats * _node_stats {nullptr};
@@ -114,6 +112,8 @@ struct olim3d_bv:
   
   using abstract_olim3d<
     olim3d_bv<F, node, groups>, node, num_neighbors>::abstract_olim3d;
+
+  void init_crtp() {}
 
   node * n;
   node ** nb;
@@ -327,15 +327,42 @@ struct olim3d_hu:
   using abstract_olim3d<
     olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>::abstract_olim3d;
 
+  ~olim3d_hu() {
+    delete[] valid_d1;
+    delete[] valid_d2;
+    delete[] coplanar;
+  }
+
+  void init_crtp();
+
   node * n;
   node ** nb;
   int parent;
+  bool * valid_d1, * valid_d2, * coplanar;
+
+  inline void get_p(int l, double * p) const {
+    p[0] = di<3>[l];
+    p[1] = dj<3>[l];
+    p[2] = dk<3>[l];
+  }
 
   inline double get_p_norm(int l) const {
     if (l < 6) return 1;
     else if (l < 18) return sqrt2;
     else return sqrt3;
   };
+
+  inline bool & is_valid_d1(int l0, int l1) {
+    return valid_d1[26*l0 + l1];
+  }
+
+  inline bool & is_valid_d2(int l0, int l1) {
+    return valid_d2[26*l0 + l1];
+  }
+
+  inline bool & is_coplanar(int l0, int l1, int l2) {
+    return coplanar[26*(26*l0 + l1) + l2];
+  }
 
   void update_crtp(double & T);
 };

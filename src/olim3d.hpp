@@ -225,7 +225,8 @@ EIKONAL_PRIVATE:
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] && this->nb[l1] && this->nb[l2]) {
-      auto info = updates::tetra_bv<F, 3, p0, p1, p2>()(
+      updates::info<2> info;
+      updates::tetra_bv<F, 3, p0, p1, p2>()(
         this->nb[l0]->get_value(),
         this->nb[l1]->get_value(),
         this->nb[l2]->get_value(),
@@ -233,7 +234,8 @@ EIKONAL_PRIVATE:
         this->s[l0],
         this->s[l1],
         this->s[l2],
-        this->get_h());
+        this->get_h(),
+        info);
 #if TRACK_PARENTS
 #  error Not implemented yet!
 #else
@@ -265,7 +267,8 @@ EIKONAL_PRIVATE:
         (double) (j_fac - n->get_j()),
         (double) (k_fac - n->get_k())
       };
-      auto info = updates::tetra<F, 3>()(
+      updates::info<2> info;
+      updates::tetra<F, 3>()(
         p0,
         p1,
         p2,
@@ -278,7 +281,8 @@ EIKONAL_PRIVATE:
         this->s[l2],
         this->get_h(),
         p_fac,
-        this->get_speed(i_fac, j_fac, k_fac));
+        this->get_speed(i_fac, j_fac, k_fac),
+        info);
 #if TRACK_PARENTS
 #  error Not implemented yet!
 #else

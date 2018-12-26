@@ -483,25 +483,28 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     get_p(l2, p2);
 
     // Finally, do the tetrahedron update.
-    auto const tmp = n->has_fac_parent() ?
+    updates::info<2> info;
+    if (n->has_fac_parent()) {
       updates::tetra<F, 3>()(
         p0, p1, p2,
         this->nb[l0]->get_value(),
         this->nb[l1]->get_value(),
         this->nb[l2]->get_value(),
         this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-        this->get_h(), p_fac, s_fac) :
+        this->get_h(), p_fac, s_fac, info);
+    } else {
       updates::tetra<F, 3>()(
         p0, p1, p2,
         this->nb[l0]->get_value(),
         this->nb[l1]->get_value(),
         this->nb[l2]->get_value(),
         this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-        this->get_h());
+        this->get_h(), info);
+    }
 #if COLLECT_STATS
     node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
 #endif
-    Tnew = tmp.value;
+    Tnew = info.value;
     if (Tnew < T2) {
       T2 = Tnew;
     }

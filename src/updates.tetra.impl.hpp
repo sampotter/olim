@@ -15,17 +15,17 @@
 #include "numopt.hpp"
 
 template <cost_func F, int n>
-updates::info<2>
+void
 updates::tetra<F, n>::operator()(
   double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+  double s0, double s1, double s2, double h,
+  info<2> & info) const
 {
   F_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor<F, 3> func {w, p0, p1, p2};
 
-  info<2> info;
   bool error;
   sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
@@ -33,23 +33,21 @@ updates::tetra<F, n>::operator()(
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
-
-  return info;
 }
 
 template <cost_func F, int n>
-updates::info<2>
+void
 updates::tetra<F, n>::operator()(
   double const * p0, double const * p1, double const * p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h,
-  double const * p_fac, double s_fac) const  
+  double const * p_fac, double s_fac,
+  info<2> & info) const
 {
   F_fac_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
   cost_functor_fac<F, 3> func {w, p0, p1, p2, p_fac};
   
-  info<2> info;
   bool error;
   sqp_bary<decltype(func), n, 2, line_search::BACKTRACK>()(
     func, nullptr, info.lambda, &info.value, &error);
@@ -58,8 +56,6 @@ updates::tetra<F, n>::operator()(
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
-
-  return info;
 }
 
 #define __r11 bitops::R<p0, p1, p2, 0>(bitops::dim<3> {})
@@ -69,13 +65,12 @@ updates::tetra<F, n>::operator()(
 #define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
-updates::info<2>
+void
 updates::tetra_bv<F, n, p0, p1, p2>::operator()(
   double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h) const
+  double s0, double s1, double s2, double h,
+  info<2> & info) const
 {
-  info<2> info;
-
   if (F == MP0 || F == RHR) {
     double sh = (F == RHR ? s : (s + (s0 + s1 + s2)/3)/2)*h;
     double du[2] = {u1 - u0, u2 - u0};
@@ -104,7 +99,7 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
         } else {
           info.value += lopt*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*h/2;
         }
-        return info;
+        return;
       }
     }
   }
@@ -122,8 +117,6 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
   if (F == cost_func::mp0) {
     eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
-
-  return info;
 }
 
 #undef __r11

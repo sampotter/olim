@@ -24,7 +24,7 @@ struct info {
 template <>
 struct info<2> {
   double value {INF(double)};
-  double lambda[2];
+  double lambda[2] = {1./3, 1./3};
   inline bool is_degenerate() const {
     return std::isinf(value) ||
       lambda[0] < 0 || lambda[1] < 0 || lambda[0] + lambda[1] > 1;

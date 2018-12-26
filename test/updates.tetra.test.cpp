@@ -23,35 +23,45 @@ template <cost_func F>
 info<2> tetra111(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
-  return tetra_bv<F, 3, P001, P010, P100>()(u0, u1, u2, s, s0, s1, s2, h);
+  updates::info<2> info;
+  tetra_bv<F, 3, P001, P010, P100>()(u0, u1, u2, s, s0, s1, s2, h, info);
+  return info;
 }
 
 template <cost_func F>
 info<2> tetra122(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
-  return tetra_bv<F, 3, P001, P011, P101>()(u0, u1, u2, s, s0, s1, s2, h);
+  updates::info<2> info;
+  tetra_bv<F, 3, P001, P011, P101>()(u0, u1, u2, s, s0, s1, s2, h, info);
+  return info;
 }
 
 template <cost_func F>
 info<2> tetra123(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  return tetra_bv<F, 3, P001, P011, P111>()(u0, u1, u2, s, s0, s1, s2, h);
+  updates::info<2> info;
+  tetra_bv<F, 3, P001, P011, P111>()(u0, u1, u2, s, s0, s1, s2, h, info);
+  return info;
 }
 
 template <cost_func F>
 info<2> tetra222(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  return tetra_bv<F, 3, P011, P101, P110>()(u0, u1, u2, s, s0, s1, s2, h);
+  updates::info<2> info;
+  tetra_bv<F, 3, P011, P101, P110>()(u0, u1, u2, s, s0, s1, s2, h, info);
+  return info;
 }
 
 template <cost_func F>
 info<2> tetra223(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
-  return tetra_bv<F, 3, P011, P101, P111>()(u0, u1, u2, s, s0, s1, s2, h);
+  updates::info<2> info;
+  tetra_bv<F, 3, P011, P101, P111>()(u0, u1, u2, s, s0, s1, s2, h, info);
+  return info;
 }
 
 template <cost_func F>
@@ -367,6 +377,17 @@ void tetra111_mp0_is_symmetric_with_nonconstant_slowness() {
   }
 }
 
+template <cost_func F>
+double do_tetra(double const * p0, double const * p1, double const * p2,
+                double u0, double u1, double u2,
+                double s, double s0, double s1, double s2,
+                double h)
+{
+  updates::info<2> info;
+  updates::tetra<F, 3>()(p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, info);
+  return info.value;
+}
+
 TEST (updates_tetra, tetra111_is_symmetric_with_nonconstant_slowness) {
   tetra111_mp0_is_symmetric_with_nonconstant_slowness<MP0>();
   // TODO: add mp1 and rhr
@@ -408,7 +429,7 @@ void tetra122_is_symmetric_with_nonconstant_slowness() {
     s1 = 0.0876808174859417;
     s2 = 0.169616336715433;
     h = 0.2;
-    Uhat1 = updates::tetra<F, 3>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
+    Uhat1 = do_tetra<F>(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h);
 
     p0[0] = 0;
     p0[1] = 1;
@@ -427,7 +448,7 @@ void tetra122_is_symmetric_with_nonconstant_slowness() {
     s1 = 0.0876808174859417;
     s2 = 0.169616336715433;
     h = 0.2;
-    Uhat2 = updates::tetra<F, 3>()(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h).value;
+    Uhat2 = do_tetra<F>(p0, p1, p2, U0, U1, U2, s, s0, s1, s2, h);
 
     ASSERT_DOUBLE_EQ(Uhat1, Uhat2);
   }
@@ -437,6 +458,18 @@ TEST (updates_tetra, tetra122_is_symmetric_with_nonconstant_slowness) {
   tetra122_is_symmetric_with_nonconstant_slowness<MP0>();
   tetra122_is_symmetric_with_nonconstant_slowness<MP1>();
   tetra122_is_symmetric_with_nonconstant_slowness<RHR>();
+}
+
+template <cost_func F>
+updates::info<2>
+do_tetra(double const * p0, double const * p1, double const * p2,
+         double u0, double u1, double u2, double s,
+         double s0, double s1, double s2, double h,
+         double const * p_fac, double s_fac)
+{
+  updates::info<2> info;
+  updates::tetra<F, 3>()(p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac, info);
+  return info;
 }
 
 template <cost_func F>
@@ -453,8 +486,7 @@ testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
   p0[2] = p1[0] = p2[1] = 0;
   p_fac[0] = p_fac[1] = p_fac[2] = -1;
 
-  auto info = updates::tetra<F, 3>()(
-    p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  auto info = do_tetra<F>(p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
   {
     double gt = 1./3;
     if (fabs(info.lambda[0] - gt) > tol*gt + tol) {

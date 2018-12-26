@@ -10,23 +10,27 @@ namespace updates {
 template <cost_func F, int n>
 struct tetra
 {
-  info<2> operator()(
-    double const * p0, double const * p1, double const * p2,
-    double u0, double u1, double u2, double s,
-    double s0, double s1, double s2, double h) const;
-
-  info<2> operator()(
+  void operator()(
     double const * p0, double const * p1, double const * p2,
     double u0, double u1, double u2, double s,
     double s0, double s1, double s2, double h,
-    double const * p_fac, double s_fac) const;
+    info<2> & info) const;
+
+  void operator()(
+    double const * p0, double const * p1, double const * p2,
+    double u0, double u1, double u2, double s,
+    double s0, double s1, double s2, double h,
+    double const * p_fac, double s_fac,
+    info<2> & info) const;
 };
 
 template <cost_func F, int n, int p0, int p1, int p2>
 struct tetra_bv
 {
-  info<2> operator()(double u0, double u1, double u2, double s,
-                     double s0, double s1, double s2, double h) const;
+  void operator()(
+    double u0, double u1, double u2, double s,
+    double s0, double s1, double s2, double h,
+    info<2> & info) const;
 
   // TODO: we aren't actually using this overload yet...
   // template <int n, int p0, int p1, int p2>

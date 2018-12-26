@@ -478,76 +478,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 
     get_p(l2, p2);
 
-    // Compute Lagrange multipliers to see if we can skip the
-    // tetrahedron update.
-
-    double mu[2], lam[2], df[2], d2f[3];
-    int k;
-
-    // TODO: Masha has some simplified way of computing the
-    // Lagrange multipliers in the 3D Qpot paper---check this out
-    auto const compute_lagrange_multipliers = [&] () {
-      if (n->has_fac_parent()) {
-        F_fac_wkspc<F, 2> w;
-        set_args<F, 3>(
-          w, p0, p1, p2,
-          this->nb[l0]->get_value(),
-          this->nb[l1]->get_value(),
-          this->nb[l2]->get_value(),
-          this->s_hat,
-          this->s[l0],
-          this->s[l1],
-          this->s[l2],
-          this->get_h(),
-          p_fac,
-          s_fac);
-        set_lambda<F, 3>(w, p0, p1, p2, p_fac, lam);
-        grad<2>(w, df);
-        hess<2>(w, d2f);
-        lagmults<2>(lam, df, d2f, mu, &k);
-      } else {
-        F_wkspc<F, 2> w;
-        set_args<F, 3>(
-          w, p0, p1, p2,
-          this->nb[l0]->get_value(),
-          this->nb[l1]->get_value(),
-          this->nb[l2]->get_value(),
-          this->s_hat,
-          this->s[l0],
-          this->s[l1],
-          this->s[l2],
-          this->get_h());
-        set_lambda<F, 3>(w, p0, p1, p2, lam);
-        grad<2>(w, df);
-        hess<2>(w, d2f);
-        lagmults<2>(lam, df, d2f, mu, &k);
-      }
-    };
-
-    // We get the first two checks for free using arglam
-    assert(arglam[l1] != -1);
-    lam[0] = arglam[l1];
-    lam[1] = 0;
-    compute_lagrange_multipliers();
-    if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
-      continue;
-    }
-
-    // TODO: not totally sure if this should be -1 or if it might
-    // be -1 in some cases...
-    if (arglam[l2] != -1) {
-      lam[0] = 0;
-      lam[1] = arglam[l2];
-      compute_lagrange_multipliers();
-      if (mu[0] < 0 || (k == 2 && mu[1] < 0)) {
-        continue;
-      }
-    }
-
-    // TODO: We're not doing the third triangle update right
-    // now. This seems to work okay for now, but we can't do the
-    // "exact solve" using the QR decomposition if we don't do the
-    // third update. It's unclear how efficient this will be...
+    // TODO: need to redo skipping using Lagrange multipliers
 
     // Finally, do the tetrahedron update.
     auto const tmp = n->has_fac_parent() ?

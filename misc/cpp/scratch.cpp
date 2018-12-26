@@ -3,27 +3,27 @@
 #include <src/config.hpp>
 #include <string>
 
-int main(int argc, char * argv[]) {
-  if (argc < 3) {
-    std::exit(0);
-  }
+constexpr int n = 65;
 
-  std::string marcher_name {argv[1]};
-  int n = atoi(argv[2]);
+int main() {
 
-  if (marcher_name == "olim3d_hu_mp1") {
-    olim3d_hu_mp1 m {n, n, n, 2./(n-1), (speed_func_3d) s1, 1., 1., 1.};
-    m.add_boundary_node(n/2, n/2, n/2);
-    m.run();
-#if COLLECT_STATS
-    m.dump_stats();
-#endif
-  } else if (marcher_name == "olim26_mp1") {
-    olim26_mp1 m {n, n, n, 2./(n-1), (speed_func_3d) s1, 1., 1., 1.};
-    m.add_boundary_node(n/2, n/2, n/2);
-    m.run();
-#if COLLECT_STATS
-    m.dump_stats();
-#endif
-  }
+  int i0 = n/2;
+  double h = 2./(n-1);
+
+  double * S = new double[n*n*n];
+  for (int i = 0; i < n*n*n; ++i) S[i] = 1;
+  
+  olim26_mp0 o {n, n, n, h, S};
+  // olim3d_hu_mp0 o {n, n, n, h, S};
+
+  // for (int i = 0; i < n; ++i) {
+  //   for (int j = 0; j < n; ++j) {
+  //     for (int k = 0; k < n; ++k) {
+  //       o.set_node_fac_parent(i, j, k, i0, i0, i0);
+  //     }
+  //   }
+  // }
+
+  o.add_boundary_node(i0, i0, i0);
+  o.run();
 }

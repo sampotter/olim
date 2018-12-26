@@ -1,8 +1,15 @@
 * Optimization Todo
-** TODO Fix remaining bugs
-   1. [ ] Fix the bugs
-   2. [ ] Add command-line arguments to Python plotting scripts
-   3. [ ] Make plots and ensure that they agree with old results
+** TODO Current
+   1. [X] Fix the bugs
+   2. [ ] Split fac and non-fac update functions
+   3. [ ] Lag mults
+      - [ ] Add initial lambda argument
+      - [ ] Warm start using triangle update arglam
+      - [ ] Check lagmults inside of tetra
+   4. [ ] Pass in precomputed stuff to tri and tetra
+      - Could also just cache cost_func structs...
+   5. [ ] Add command-line arguments to Python plotting scripts
+   6. [ ] Make plots and ensure that they agree with old results
 ** TODO Add ||-R^-T dU|| check for skipping updates in top-down algorithm
 ** TODO Add direct solver 
 ** TODO Warm start for sqp
@@ -21,5 +28,3 @@
      the last lambda that the cost_func would have been set to is x1,
      we effectively set the cost_func to the same lambda twice in a
      row. We should *definitely* avoid doing this.
-   - [ ] Shouldn't be checking if anything == 0 in hybrid, should use
-     relative checks

@@ -339,6 +339,7 @@ struct olim3d_hu:
   node ** nb;
   int parent;
   bool * valid_d1, * valid_d2, * coplanar;
+  double p0[3], p1[3], p2[3], p_fac[3];
 
   inline void get_p(int l, double * p) const {
     p[0] = di<3>[l];
@@ -362,6 +363,15 @@ struct olim3d_hu:
 
   inline bool & is_coplanar(int l0, int l1, int l2) {
     return coplanar[26*(26*l0 + l1) + l2];
+  }
+
+  inline void line(int l0, double & u) {
+    u = updates::line<F>()(
+      get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
+      this->get_h());
+#if COLLECT_STATS
+    node_stats.inc_line_updates(p0, 3);
+#endif
   }
 
   void update_crtp(double & T);

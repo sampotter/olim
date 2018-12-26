@@ -1,15 +1,16 @@
 * Optimization Todo
 ** TODO Current
    1. [X] Fix the bugs
-   2. [ ] Split fac and non-fac update functions
-   3. [ ] Lag mults
+   2. [ ] Add direct solve for non-bv
+   3. [ ] Split fac and non-fac update functions
+   4. [ ] Lag mults
       - [ ] Add initial lambda argument
       - [ ] Warm start using triangle update arglam
       - [ ] Check lagmults inside of tetra
-   4. [ ] Pass in precomputed stuff to tri and tetra
+   5. [ ] Pass in precomputed stuff to tri and tetra
       - Could also just cache cost_func structs...
-   5. [ ] Add command-line arguments to Python plotting scripts
-   6. [ ] Make plots and ensure that they agree with old results
+   6. [ ] Add command-line arguments to Python plotting scripts
+   7. [ ] Make plots and ensure that they agree with old results
 ** TODO Add ||-R^-T dU|| check for skipping updates in top-down algorithm
 ** TODO Add direct solver 
 ** TODO Warm start for sqp

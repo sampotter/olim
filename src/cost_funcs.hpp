@@ -207,29 +207,20 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
     2*(p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[1] +
     dPt_dP<p0, p1, p2, 0>(dim_t {})*lam[0]*lam[0] +
     2*dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[0]*lam[1] +
-    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1]*lam[1]
-    // w.dPt_dP[0]*lam[0]*lam[0] +
-    // 2*w.dPt_dP[1]*lam[0]*lam[1] +
-    // w.dPt_dP[2]*lam[1]*lam[1]
-    );
+    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1]*lam[1]);
   check(w.l_lam);
+  assert(w.l_lam != 0);
 
   w.dPt_nu_lam[0] = (
     p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
     dPt_dP<p0, p1, p2, 0>(dim_t {})*lam[0] +
-    dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[1]
-    // w.dPt_dP[0]*lam[0] +
-    // w.dPt_dP[1]*lam[1]
-  )/w.l_lam;
+    dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[0]);
 
   w.dPt_nu_lam[1] = (
     p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
     dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[0] +
-    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1]
-    // w.dPt_dP[1]*lam[0] +
-    // w.dPt_dP[2]*lam[1]
-  )/w.l_lam;
+    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
 }
 
@@ -274,7 +265,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
-  w.l_lam = std::sqrt(
+  w.l_lam = sqrt(
     p0_dot_p0 +
     2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +
@@ -292,15 +283,17 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
     dp2_dot_p_fac = dot<n>(p2, p_fac) - p0_dot_p_fac;
 
+  // TODO: the line below with the funny-looking check before we take
+  // the square root is a hack to get around the fact that if we take
+  // the square root of a very small number, like 1e-16, then the
+  // result is 1e-8. This can cause problems when p_fac corresponds
+  // with one of the update simplices (so, near the point source). The
+  // result can be needlessly inflated numerical error that propagates
+  // throughout the entire solution.
   w.l_fac_lam = w.l_lam*w.l_lam -
     2*(p0_dot_p_fac + lam[0]*dp1_dot_p_fac + lam[1]*dp2_dot_p_fac) +
     dot<n>(p_fac, p_fac);
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    w.l_fac_lam = std::sqrt(w.l_fac_lam);
-  } else {
-    w.l_fac_lam = 0;
-  }
-
+  w.l_fac_lam = w.l_fac_lam > 1e1*eps<double> ? sqrt(w.l_fac_lam) : 0;
   check(w.l_fac_lam);
 
   w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
@@ -357,43 +350,53 @@ void eval_mp1_fix(
   check(f);
 }
 
-template <int d>
-void grad(F0_wkspc<d> const & w, double * df)
+inline void grad(F0_wkspc<2> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) df[i] = w.du[i] + w.sh_lam*w.dPt_nu_lam[i];
-  for (int i = 0; i < d; ++i) CHECK(df[i]);
+  df[0] = w.du[0] + w.sh_lam*w.dPt_nu_lam[0];
+  df[1] = w.du[1] + w.sh_lam*w.dPt_nu_lam[1];
+
+  check(df[0]);
+  check(df[1]);
 }
 
-template <int d>
-void grad(F0_fac_wkspc<d> const & w, double * df)
+inline void grad(F0_fac_wkspc<2> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) df[i] = w.dtau[i] + w.sh_lam*w.dPt_nu_lam[i];
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    for (int i = 0; i < d; ++i) df[i] += w.sh_fac*w.dPt_nu_fac_lam[i];
+  df[0] = w.dtau[0] + w.sh_lam*w.dPt_nu_lam[0];
+  df[1] = w.dtau[1] + w.sh_lam*w.dPt_nu_lam[1];
+
+  if (w.l_fac_lam > 1e1*eps<double>) {
+    df[0] += w.sh_fac*w.dPt_nu_fac_lam[0];
+    df[1] += w.sh_fac*w.dPt_nu_fac_lam[1];
   }
-  for (int i = 0; i < d; ++i) CHECK(df[i]);
+
+  check(df[0]);
+  check(df[1]);
 }
 
-template <int d>
-void grad(F1_wkspc<d> const & w, double * df)
+inline void grad(F1_wkspc<2> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) {
-    df[i] = w.du[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
-  }
-  for (int i = 0; i < d; ++i) CHECK(df[i]);
+  df[0] = w.du[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
+  df[1] = w.du[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
+
+  check(df[0]);
+  check(df[1]);
 }
 
-template <int d>
-void grad(F1_fac_wkspc<d> const & w, double * df)
+inline void grad(F1_fac_wkspc<2> const & w, double * df)
 {
-  for (int i = 0; i < d; ++i) {
-    df[i] = w.dtau[i] + w.theta_h_ds[i]*w.l_lam + w.sh_lam*w.dPt_nu_lam[i];
+  df[0] = w.dtau[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
+  df[1] = w.dtau[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
+
+  if (w.l_fac_lam > 1e1*eps<double>) {
+    df[0] += w.sh_fac*w.dPt_nu_fac_lam[0];
+    df[1] += w.sh_fac*w.dPt_nu_fac_lam[1];
   }
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    for (int i = 0; i < d; ++i) df[i] += w.sh_fac*w.dPt_nu_fac_lam[i];
-  }
-  for (int i = 0; i < d; ++i) CHECK(df[i]);
+
+  check(df[0]);
+  check(df[1]);
 }
+
+#define __dPt_dP(i) dPt_dP<p0, p1, p2, i>(dim_t {})
 
 template <int n, int p0, int p1, int p2>
 void hess(F0_wkspc<2> const & w, double * d2f)
@@ -403,53 +406,49 @@ void hess(F0_wkspc<2> const & w, double * d2f)
 
   double const tmp = w.sh_lam/w.l_lam;
 
-  d2f[0] = tmp*(dPt_dP<p0,p1,p2,0>(dim_t {}) - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
-  CHECK(d2f[0]);
+  d2f[0] = tmp*(__dPt_dP(0) - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+  d2f[1] = tmp*(__dPt_dP(1) - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+  d2f[2] = tmp*(__dPt_dP(2) - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
-  d2f[1] = tmp*(dPt_dP<p0,p1,p2,1>(dim_t {}) - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
-  CHECK(d2f[1]);
-
-  d2f[2] = tmp*(dPt_dP<p0,p1,p2,2>(dim_t {}) - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
-  CHECK(d2f[2]);
+  check(d2f[0]);
+  check(d2f[1]);
+  check(d2f[2]);
 }
 
-template <int d>
-void hess(F0_wkspc<d> const & w, double * d2f)
+#undef __dPt_dP
+
+inline void hess(F0_wkspc<2> const & w, double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
-  for (int i = 0; i < d; ++i) {
-    for (int j = i; j < d; ++j) {
-      int k = (d - 1)*i + j;
-      d2f[k] = tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
-    }
-  }
-  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
+
+  d2f[0] = tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+  d2f[1] = tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+  d2f[2] = tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+
+  check(d2f[0]);
+  check(d2f[1]);
+  check(d2f[2]);
 }
 
-// TODO: this and the F1 fac hess below are identical, should try to
-// combine them into one function
-template <int d>
-void hess(F0_fac_wkspc<d> const & w, double * d2f)
+inline void hess(F0_fac_wkspc<2> const & w, double * d2f)
 {
-  {
-    double tmp = w.sh_lam/w.l_lam;
-    for (int i = 0; i < d; ++i) {
-      for (int j = i; j < d; ++j) {
-        int k = (d - 1)*i + j;
-        d2f[k] = tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
-      }
-    }
+  double tmp = w.sh_lam/w.l_lam;
+  d2f[0] = tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+  d2f[1] = tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+  d2f[2] = tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+
+  // if (w.l_fac_lam > 1e1*eps<double>) {
+  //   tmp = w.sh_fac/w.l_fac_lam;
+  tmp = w.sh_fac/w.l_fac_lam;
+  if (!std::isinf(tmp)) {
+    d2f[0] += tmp*(w.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
+    d2f[1] += tmp*(w.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
+    d2f[2] += tmp*(w.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
   }
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    double tmp = w.sh_fac/w.l_fac_lam;
-    for (int i = 0; i < d; ++i) {
-      for (int j = i; j < d; ++j) {
-        int k = (d - 1)*i + j;
-        d2f[k] += tmp*(w.dPt_dP[k] - w.dPt_nu_fac_lam[i]*w.dPt_nu_fac_lam[j]);
-      }
-    }
-  }
-  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
+
+  check(d2f[0]);
+  check(d2f[1]);
+  check(d2f[2]);
 }
 
 template <int n, int p0, int p1, int p2>
@@ -462,45 +461,47 @@ void hess(F1_wkspc<2> const & w, double * d2f)
   d2f[2] += 2*w.theta_h_ds[1]*w.dPt_nu_lam[1];
 }
 
-template <int d>
-void hess(F1_wkspc<d> const & w, double * d2f)
+inline void hess(F1_wkspc<2> const & w, double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
-  for (int i = 0; i < d; ++i) {
-    for (int j = i; j < d; ++j) {
-      int k = (d - 1)*i + j;
-      d2f[k] = w.theta_h_ds[i]*w.dPt_nu_lam[j] +
-        w.theta_h_ds[j]*w.dPt_nu_lam[i] +
-        tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
-    }
-  }
-  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
+
+  d2f[0] = 2*w.theta_h_ds[0]*w.dPt_nu_lam[0] +
+    tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+
+  d2f[1] = w.theta_h_ds[0]*w.dPt_nu_lam[1] + w.theta_h_ds[1]*w.dPt_nu_lam[0] +
+    tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+
+  d2f[2] = 2*w.theta_h_ds[1]*w.dPt_nu_lam[1] +
+    tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+
+  check(d2f[0]);
+  check(d2f[1]);
+  check(d2f[2]);
 }
 
-template <int d>
-void hess(F1_fac_wkspc<d> const & w, double * d2f)
+inline void hess(F1_fac_wkspc<2> const & w, double * d2f)
 {
-  {
-    double tmp = w.sh_lam/w.l_lam;
-    for (int i = 0; i < d; ++i) {
-      for (int j = i; j < d; ++j) {
-        int k = (d - 1)*i + j;
-        d2f[k] = w.theta_h_ds[i]*w.dPt_nu_lam[j] +
-          w.theta_h_ds[j]*w.dPt_nu_lam[i] +
-          tmp*(w.dPt_dP[k] - w.dPt_nu_lam[i]*w.dPt_nu_lam[j]);
-      }
-    }
+  double tmp = w.sh_lam/w.l_lam;
+
+  d2f[0] = 2*w.theta_h_ds[0]*w.dPt_nu_lam[0] +
+    tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+
+  d2f[1] = w.theta_h_ds[0]*w.dPt_nu_lam[1] + w.theta_h_ds[1]*w.dPt_nu_lam[0] +
+    tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+
+  d2f[2] = 2*w.theta_h_ds[1]*w.dPt_nu_lam[1] +
+    tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+
+  if (w.l_fac_lam > 1e1*eps<double>) {
+    tmp = w.sh_fac/w.l_fac_lam;
+    d2f[0] += tmp*(w.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
+    d2f[1] += tmp*(w.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
+    d2f[2] += tmp*(w.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
   }
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    double tmp = w.sh_fac/w.l_fac_lam;
-    for (int i = 0; i < d; ++i) {
-      for (int j = i; j < d; ++j) {
-        int k = (d - 1)*i + j;
-        d2f[k] += tmp*(w.dPt_dP[k] - w.dPt_nu_fac_lam[i]*w.dPt_nu_fac_lam[j]);
-      }
-    }
-  }
-  for (int k = 0; k < sym_mat_size(d); ++k) CHECK(d2f[k]);
+
+  check(d2f[0]);
+  check(d2f[1]);
+  check(d2f[2]);
 }
 
 // TODO: it would be nice to get rid of these and be able to just pass

@@ -2,8 +2,7 @@
 
 #include <src/config.hpp>
 
-#include "common.defs.hpp"
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "updates.tri.hpp"
 
 using namespace updates;
@@ -228,8 +227,8 @@ TEST (updates_tri, rhr_basic_factoring_test) {
 
   auto update = tri<RHR, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
-  ASSERT_NEAR(update.lambda[0], 0.5, EPS(double));
-  ASSERT_NEAR(update.value, sqrt2, EPS(double));
+  ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
+  ASSERT_NEAR(update.value, sqrt2, eps<double>);
 }
 
 TEST (updates_tri, mp0_basic_factoring_test) {
@@ -248,8 +247,8 @@ TEST (updates_tri, mp0_basic_factoring_test) {
 
   auto update = tri<MP0, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
-  ASSERT_NEAR(update.lambda[0], 0.5, EPS(double));
-  ASSERT_NEAR(update.value, sqrt2, EPS(double));
+  ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
+  ASSERT_NEAR(update.value, sqrt2, eps<double>);
 }
 
 TEST (updates_tri, mp1_basic_factoring_test) {
@@ -268,8 +267,8 @@ TEST (updates_tri, mp1_basic_factoring_test) {
 
   auto update = tri<MP1, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
-  ASSERT_NEAR(update.lambda[0], 0.5, EPS(double));
-  ASSERT_NEAR(update.value, sqrt2, EPS(double));
+  ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
+  ASSERT_NEAR(update.value, sqrt2, eps<double>);
 }
 
 TEST (updates_tri, factored_mp0_with_constant_slowness_works) {

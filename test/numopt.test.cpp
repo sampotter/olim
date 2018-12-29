@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "common.defs.hpp"
+#include "common.hpp"
 #include "numopt.hpp"
 #include "updates.common.hpp"
 

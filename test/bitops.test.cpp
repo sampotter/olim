@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "bitops.hpp"
-#include "common.defs.hpp"
+#include "common.hpp"
 
 #define P001 1
 #define P010 2

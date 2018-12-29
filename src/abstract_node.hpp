@@ -9,7 +9,7 @@
 #include <sstream>
 #include <string>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 
 enum class state {valid, trial, far};
 

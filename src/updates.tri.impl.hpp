@@ -7,8 +7,6 @@
 #include <cmath>
 
 #include "common.hpp"
-#include "common.defs.hpp"
-#include "common.macros.hpp"
 #include "hybrid.hpp"
 #include "updates.utils.hpp"
 
@@ -515,7 +513,7 @@ updates::tri<MP1, n>::operator()(
     dp_dot_plam = dp_dot_p0 + lam*dp_dot_dp;
     g = -dF1__(lam)/d2F1__(lam);
     lam = std::max(0., std::min(1., lam + g));
-  } while (iter++ < 10 && fabs(g) > EPS(double));
+  } while (iter++ < 10 && fabs(g) > eps<double>);
 
   if (iter == 10) {
     bool conv;
@@ -544,8 +542,8 @@ updates::tri<MP1, n>::operator()(
       }
       lam[1] = std::max(0., std::min(1., lam[0] + alpha*g));
       F1[1] = F1__(lam[1]);
-      conv = fabs(lam[1] - lam[0]) <= EPS(double) ||
-        fabs(F1[1] - F1[0]) <= EPS(double);
+      conv = fabs(lam[1] - lam[0]) <= eps<double> ||
+        fabs(F1[1] - F1[0]) <= eps<double>;
       lam[0] = lam[1];
       F1[0] = F1[1];
     } while (!conv);

@@ -5,16 +5,16 @@ namespace updates {
 
 template <int d>
 struct info {
-  double value {INF(double)};
+  double value {inf<double>};
   double lambda[d];
   inline bool is_degenerate() const {
     bool deg = false;
     double lam0 = 1;
     for (int i = 0; i < d; ++i) {
-      deg = deg || lambda[i] < EPS(double);
+      deg = deg || lambda[i] < eps<double>;
       lam0 -= lambda[i];
     }
-    return std::isinf(value) || deg || lam0 > 1 - EPS(double);
+    return std::isinf(value) || deg || lam0 > 1 - eps<double>;
   }
 #ifdef COLLECT_STATS
   bool hierarchical {false};
@@ -23,7 +23,7 @@ struct info {
 
 template <>
 struct info<2> {
-  double value {INF(double)};
+  double value {inf<double>};
   double lambda[2] = {1./3, 1./3};
   inline bool is_degenerate() const {
     return std::isinf(value) ||

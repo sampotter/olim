@@ -8,8 +8,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "common.defs.hpp"
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "speed_funcs.hpp"
 #include "typedefs.h"
 
@@ -710,7 +709,7 @@ planes_agree_nonsymmetric(
 template <class olim>
 testing::AssertionResult
 solution_is_exact_in_factored_square(
-  int n, double tol = EPS(double), std::enable_if_t<olim::ndim == 2> * = 0)
+  int n, double tol = eps<double>, std::enable_if_t<olim::ndim == 2> * = 0)
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
@@ -741,7 +740,7 @@ solution_is_exact_in_factored_square(
 template <class olim>
 testing::AssertionResult
 solution_is_exact_in_factored_square(
-  int n, double tol = EPS(double), std::enable_if_t<olim::ndim == 3> * = 0)
+  int n, double tol = eps<double>, std::enable_if_t<olim::ndim == 3> * = 0)
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2, k0 = n/2;

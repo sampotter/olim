@@ -6,7 +6,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 
 void basic_marcher::update_impl(node * n, double & T) {
   using std::min;
@@ -16,12 +16,12 @@ void basic_marcher::update_impl(node * n, double & T) {
   double sh = this->s_hat*this->get_h();
 
   double T1 = min(
-    nb[0] ? this->nb[0]->get_value() : INF(double),
-    nb[2] ? this->nb[2]->get_value() : INF(double));
+    nb[0] ? this->nb[0]->get_value() : inf<double>,
+    nb[2] ? this->nb[2]->get_value() : inf<double>);
 
   double T2 = min(
-    nb[1] ? this->nb[1]->get_value() : INF(double),
-    nb[3] ? this->nb[3]->get_value() : INF(double));
+    nb[1] ? this->nb[1]->get_value() : inf<double>,
+    nb[3] ? this->nb[3]->get_value() : inf<double>);
 
   bool T1_inf = std::isinf(T1), T2_inf = std::isinf(T2);
 

@@ -2,7 +2,7 @@
 
 #include <src/config.hpp>
 
-#include "common.defs.hpp"
+#include "common.hpp"
 #include "updates.tetra.hpp"
 
 using namespace updates;
@@ -473,7 +473,7 @@ do_tetra(double const * p0, double const * p1, double const * p2,
 }
 
 template <cost_func F>
-testing::AssertionResult basic_factoring_works(double tol = EPS(double)) {
+testing::AssertionResult basic_factoring_works(double tol = eps<double>) {
   double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;
   u0 = u1 = u2 = sqrt2;
   h = 1;

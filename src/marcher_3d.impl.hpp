@@ -274,7 +274,7 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
 
   auto & s_hat = static_cast<base *>(this)->s_hat;
   auto const update = [&] (int i, int j, int k, int parent) {
-    double T = INF(double);
+    auto T = inf<double>;
     node * update_node = &operator()(i, j, k);
     s_hat = this->get_speed(i, j, k);
     update_impl(update_node, child_nb, parent, T);

@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "offsets.hpp"
 
 #define __di(k) di<2>[k]
@@ -276,7 +276,7 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
   // filled appropriately. Upon updating, this sets the value of n and
   // adjusts its position in the heap.
   auto const update = [&] (int i, int j) {
-    double T = INF(double);
+    auto T = inf<double>;
     node * update_node = &operator()(i, j);
     static_cast<base *>(this)->s_hat = this->get_speed(i, j);
     update_impl(update_node, T);

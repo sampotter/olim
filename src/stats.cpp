@@ -50,7 +50,7 @@ void olim3d_node_stats::inc_line_updates(int d) {
 void olim3d_node_stats::inc_line_updates(double const * p, int n) {
   int d = 0;
   for (int i = 0; i < n; ++i) {
-    if (fabs(p[i]) > EPS(double)) {
+    if (fabs(p[i]) > eps<double>) {
       ++d;
     }
   }
@@ -103,8 +103,8 @@ void olim3d_node_stats::inc_tri_updates(double const * p0, double const * p1,
                                         int n, bool deg, bool hu) {
   int d1 = 0, d2 = 0;
   for (int i = 0; i < n; ++i) {
-    if (fabs(p0[i]) > EPS(double)) ++d1;
-    if (fabs(p1[i]) > EPS(double)) ++d2;
+    if (fabs(p0[i]) > eps<double>) ++d1;
+    if (fabs(p1[i]) > eps<double>) ++d2;
   }
   inc_tri_updates(d1, d2, deg, hu);
 }
@@ -180,9 +180,9 @@ void olim3d_node_stats::inc_tetra_updates(double const * p0, double const * p1,
                                           bool hu) {
   int d1 = 0, d2 = 0, d3 = 0;
   for (int i = 0; i < n; ++i) {
-    if (fabs(p0[i]) > EPS(double)) ++d1;
-    if (fabs(p1[i]) > EPS(double)) ++d2;
-    if (fabs(p2[i]) > EPS(double)) ++d3;
+    if (fabs(p0[i]) > eps<double>) ++d1;
+    if (fabs(p1[i]) > eps<double>) ++d2;
+    if (fabs(p2[i]) > eps<double>) ++d3;
   }
   inc_tetra_updates(d1, d2, d3, deg, hu);
 }

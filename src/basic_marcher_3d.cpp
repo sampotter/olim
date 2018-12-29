@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cmath>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 
 #define COMPUTE_DISC_2PT() (2*sh*sh - (T1 - T2)*(T1 - T2))
 
@@ -27,35 +27,37 @@ void basic_marcher_3d::update_impl(
   double sh = get_h()*get_speed(i, j, k), sh_sq = sh*sh;
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;
 
+  auto const value = [&] (int i) { return nb[i]->get_value(); };
+
   for (int l0 = 0, l1 = 1, l2 = 2; l0 < 6;
        ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
     if (nb[l0]) {
-      T1 = VAL(l0);
+      T1 = value(l0);
       T = min(T, T1 + sh);
       if (nb[l1]) {
-        T2 = VAL(l1);
+        T2 = value(l1);
         disc = COMPUTE_DISC_2PT();
         if (disc > 0) T = min(T, COMPUTE_VALUE_2PT());
       }
       if (nb[l2]) {
-        T2 = VAL(l2);
+        T2 = value(l2);
         disc = COMPUTE_DISC_2PT();
         if (disc > 0) T = min(T, COMPUTE_VALUE_2PT());
       }
       if (nb[l1] && nb[l2]) {
-        T2 = VAL(l1), T3 = VAL(l2);
+        T2 = value(l1), T3 = value(l2);
         disc = COMPUTE_DISC_3PT();
         if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
       }
     }
   }
   if (nb[0] && nb[2] && nb[4]) {
-    T1 = VAL(0), T2 = VAL(2), T3 = VAL(4);
+    T1 = value(0), T2 = value(2), T3 = value(4);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
   }
   if (nb[1] && nb[3] && nb[5]) {
-    T1 = VAL(1), T2 = VAL(3), T3 = VAL(5);
+    T1 = value(1), T2 = value(3), T3 = value(5);
     disc = COMPUTE_DISC_3PT();
     if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
   }

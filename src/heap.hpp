@@ -9,7 +9,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 
 template <class Node>
 struct heap

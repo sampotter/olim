@@ -9,8 +9,7 @@
 #include <cstdlib>
 #include <type_traits>
 
-#include "common.defs.hpp"
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "cost_funcs.hpp"
 #include "numopt.hpp"
 

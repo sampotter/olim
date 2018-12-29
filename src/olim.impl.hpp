@@ -3,7 +3,7 @@
 
 #include <src/config.hpp>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "updates.utils.hpp"
 
 #define __di(k) di<2>[k]

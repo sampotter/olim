@@ -126,7 +126,7 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
 
   // Do line update corresponding to parent node.
   {
-    double Tnew = INF(double);
+    double Tnew = inf<double>;
     if (parent < 6) {
       line<1>(parent, Tnew);
     } else if (groups::num_neighbors > 6 && parent < 18) {
@@ -343,7 +343,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
   valid_d2 = new bool[26*26];
   coplanar = new bool[26*26*26];
 
-  static constexpr double tol = EPS(double);
+  static constexpr double tol = eps<double>;
 
   auto const is_valid = [&] (int l0, int l1, int d) -> bool {
     get_p(l0, p0);
@@ -407,7 +407,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
    * l0, l1: indices of p0 and p1 in 26 point neighborhood
    * p0, p1, p2: update node vectors
    */
-  double Tnew, T0, T1 = INF(double), T2 = INF(double);
+  double Tnew, T0, T1 = inf<double>, T2 = inf<double>;
   int l0 = parent, l1 = -1;
   double s_fac;
 

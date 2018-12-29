@@ -16,7 +16,7 @@ TEST (olim8_rhr, quadrants_are_correct) {
 }
 
 TEST (olim8_rhr, correct_corners_in_limit) {
-  ASSERT_TRUE(correct_corners_in_limit<olim_t>(101, 10*EPS(double)));
+  ASSERT_TRUE(correct_corners_in_limit<olim_t>(101, 10*eps<double>));
 }
 
 TEST (olim8_rhr, result_is_symmetric) {

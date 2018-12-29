@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "bitops.hpp"
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "updates.utils.hpp"
 
 enum class cost_func {mp0, mp1, rhr};
@@ -17,6 +17,11 @@ constexpr auto RHR = cost_func::rhr;
 
 constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;
+}
+
+inline void check(double x) {
+  assert(!std::isinf(x));
+  assert(!std::isnan(x));
 }
 
 template <int d>
@@ -207,7 +212,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
     // 2*w.dPt_dP[1]*lam[0]*lam[1] +
     // w.dPt_dP[2]*lam[1]*lam[1]
     );
-  CHECK(w.l_lam);
+  check(w.l_lam);
 
   w.dPt_nu_lam[0] = (
     p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
@@ -216,7 +221,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
     // w.dPt_dP[0]*lam[0] +
     // w.dPt_dP[1]*lam[1]
   )/w.l_lam;
-  CHECK(w.dPt_nu_lam[0]);
+  check(w.dPt_nu_lam[0]);
 
   w.dPt_nu_lam[1] = (
     p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
@@ -225,7 +230,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
     // w.dPt_dP[1]*lam[0] +
     // w.dPt_dP[2]*lam[1]
   )/w.l_lam;
-  CHECK(w.dPt_nu_lam[1]);
+  check(w.dPt_nu_lam[1]);
 }
 
 template <cost_func F, int n>
@@ -246,13 +251,13 @@ void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
     w.dPt_dP[0]*lam[0]*lam[0] +
     2*w.dPt_dP[1]*lam[0]*lam[1] +
     w.dPt_dP[2]*lam[1]*lam[1]);
-  CHECK(w.l_lam);
+  check(w.l_lam);
 
   w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
-  CHECK(w.dPt_nu_lam[0]);
+  check(w.dPt_nu_lam[0]);
 
   w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
-  CHECK(w.dPt_nu_lam[1]);
+  check(w.dPt_nu_lam[1]);
 }
 
 template <cost_func F, int n>
@@ -275,13 +280,13 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     w.dPt_dP[0]*lam[0]*lam[0] +
     2*w.dPt_dP[1]*lam[0]*lam[1] +
     w.dPt_dP[2]*lam[1]*lam[1]);
-  CHECK(w.l_lam);
+  check(w.l_lam);
 
   w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
-  CHECK(w.dPt_nu_lam[0]);
+  check(w.dPt_nu_lam[0]);
 
   w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
-  CHECK(w.dPt_nu_lam[1]);
+  check(w.dPt_nu_lam[1]);
 
   double p0_dot_p_fac = dot<3>(p0, p_fac),
     dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
@@ -296,16 +301,12 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
     w.l_fac_lam = 0;
   }
 
-  CHECK(w.l_fac_lam);
+  check(w.l_fac_lam);
 
-  if (w.l_fac_lam > 1e1*EPS(double)) {
-    w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
-    CHECK(w.dPt_nu_fac_lam[0]);
-    w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
-    CHECK(w.dPt_nu_fac_lam[1]);
-  } else {
-    w.dPt_nu_fac_lam[0] = 0;
-    w.dPt_nu_fac_lam[1] = 0;
+  w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
+  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
+  if (std::isinf(w.dPt_nu_fac_lam[0])) {
+    w.dPt_nu_fac_lam[0] = w.dPt_nu_fac_lam[1] = 0;
   }
 }
 
@@ -318,21 +319,21 @@ void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
   set_lambda<F, n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w), p0, p1, p2, p_fac, lam);
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
-  CHECK(w.sh_lam);
+  check(w.sh_lam);
 }
 
 template <int d>
 void eval(eval_wkspc<d> const & w, double & f)
 {
   f = w.u_lam + w.sh_lam*w.l_lam;
-  CHECK(f);
+  check(f);
 }
 
 template <int d>
 void eval(fac_wkspc<d> const & w, double & f)
 {
   f = w.tau_lam + w.sh_fac*w.l_fac_lam + w.sh_lam*w.l_lam;
-  CHECK(f);
+  check(f);
 }
 
 template <int d>
@@ -342,7 +343,7 @@ void eval_mp1_fix(
   double const * lam, double & f)
 {
   f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
-  CHECK(f);
+  check(f);
 }
 
 template <int d>
@@ -353,7 +354,7 @@ void eval_mp1_fix(
 {
   f = w.tau_lam + w.sh_fac*w.l_fac_lam +
     h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
-  CHECK(f);
+  check(f);
 }
 
 template <int d>

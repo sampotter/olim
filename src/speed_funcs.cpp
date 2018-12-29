@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "common.defs.hpp"
+#include "common.hpp"
 
 using std::cos;
 using std::fabs;

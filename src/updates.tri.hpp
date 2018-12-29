@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "common.macros.hpp"
+#include "common.hpp"
 #include "cost_funcs.hpp"
 #include "updates.common.hpp"
 #include "updates.utils.hpp"

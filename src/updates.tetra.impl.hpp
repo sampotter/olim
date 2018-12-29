@@ -13,6 +13,29 @@
 #include "cost_funcs.hpp"
 #include "numopt.hpp"
 
+namespace updates {
+
+template <cost_func F>
+inline bool should_skip(cost_functor<F, 3> const & func, info<2> const & info) {
+  if (!info.on_boundary()) {
+    return false;
+  }
+
+  double df[2], d2f[3];
+  func.grad(df);
+  func.hess(d2f);
+
+  double mu[2];
+  int k;
+  lagmults<2>(info.lambda, df, d2f, mu, &k);
+
+  if (k > 0 && mu[0] < 0) return false;
+  if (k > 1 && mu[1] < 0) return false;
+  return true;
+}
+
+}
+
 template <cost_func F, int n>
 void
 updates::tetra<F, n>::operator()(
@@ -23,7 +46,13 @@ updates::tetra<F, n>::operator()(
 {
   F_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+
   cost_functor<F, 3> func {w, p0, p1, p2};
+  func.set_lambda(info.lambda);
+
+  if (should_skip(func, info)) {
+    return;
+  }
 
   bool error;
   sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -109,7 +138,7 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 
   bool error;
   sqp_bary<decltype(func), n, 2>()(
-    func, info.is_degenerate() ? nullptr : info.lambda,
+    func, info.on_boundary() ? nullptr : info.lambda,
     info.lambda, &info.value, &error);
   assert(!error);
 

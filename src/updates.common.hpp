@@ -4,17 +4,16 @@
 namespace updates {
 
 template <int d>
-struct info {
+struct info;
+
+template <>
+struct info<1>
+{
   double value {inf<double>};
-  double lambda[d];
-  inline bool is_degenerate() const {
-    bool deg = false;
-    double lam0 = 1;
-    for (int i = 0; i < d; ++i) {
-      deg = deg || lambda[i] < eps<double>;
-      lam0 -= lambda[i];
-    }
-    return std::isinf(value) || deg || lam0 > 1 - eps<double>;
+  double lambda[1] = {0.5};
+  double tol {1e1*eps<double>};
+  inline bool on_boundary() const {
+    return lambda[0] < tol || 1 - lambda[0] < tol;
   }
 #ifdef COLLECT_STATS
   bool hierarchical {false};
@@ -22,12 +21,13 @@ struct info {
 };
 
 template <>
-struct info<2> {
+struct info<2>
+{
   double value {inf<double>};
   double lambda[2] = {1./3, 1./3};
-  inline bool is_degenerate() const {
-    return std::isinf(value) ||
-      lambda[0] < 0 || lambda[1] < 0 || lambda[0] + lambda[1] > 1;
+  double tol {1e1*eps<double>};
+  inline bool on_boundary() const {
+    return lambda[0] < tol || lambda[1] < tol || lambda[0] + lambda[1] > 1 - tol;
   }
 #ifdef COLLECT_STATS
   bool hierarchical {false};

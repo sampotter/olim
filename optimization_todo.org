@@ -1,31 +1,12 @@
 * Optimization Todo
-** TODO Current
-   1. [X] Fix the bugs
-   2. [ ] Add direct solve for non-bv
-   3. [ ] Split fac and non-fac update functions
-   4. [ ] Lag mults
-      - [ ] Add initial lambda argument
-      - [ ] Warm start using triangle update arglam
-      - [ ] Check lagmults inside of tetra
-   5. [ ] Pass in precomputed stuff to tri and tetra
-      - Could also just cache cost_func structs...
-   6. [ ] Add command-line arguments to Python plotting scripts
-   7. [ ] Make plots and ensure that they agree with old results
-** TODO Add ||-R^-T dU|| check for skipping updates in top-down algorithm
-** TODO Add direct solver 
-** TODO Warm start for sqp
-   Right now, we just solve sqps starting from (1/3, 1/3). This is
-   fine, but we can probably do better for the bottom-up algorithm by
-   using a warm start. Will need to think a little about what the best
-   thing to do is. Probably just the minimizer of the
-   lower-dimensional triangle updates that abut it---maybe the one
-   with the smallest value.
-** TODO Smaller stuff
-   - [ ] Try replacing instances of generic std:: algorithms (such as
-     std::max) with the correct functions (e.g., replace std::max with
-     fmax)
-   - [ ] When calling step_sel, the first thing that's done inside
-     hybrid is to evaluate f(a). Since tmp = x1 + alpha*g, and since
-     the last lambda that the cost_func would have been set to is x1,
-     we effectively set the cost_func to the same lambda twice in a
-     row. We should *definitely* avoid doing this.
+  1. [X] Fix the bugs
+  2. [ ] Add direct solve for non-bv
+  3. [ ] Split fac and non-fac update functions
+  4. [ ] Lag mults
+     - [ ] Add initial lambda argument
+     - [ ] Warm start using triangle update arglam
+     - [ ] Check lagmults inside of tetra
+  5. [ ] Pass in precomputed stuff to tri and tetra
+     - [ ] TODO at cost_funcs.hpp:233
+  6. [ ] Add command-line arguments to Python plotting scripts
+  7. [ ] Make plots and ensure that they agree with old results

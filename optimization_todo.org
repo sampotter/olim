@@ -10,3 +10,5 @@
      - [ ] TODO at cost_funcs.hpp:233
   6. [ ] Add command-line arguments to Python plotting scripts
   7. [ ] Make plots and ensure that they agree with old results
+  8. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+     (close gap)

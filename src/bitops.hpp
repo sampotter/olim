@@ -1,7 +1,9 @@
 #ifndef __BITOPS_HPP__
 #define __BITOPS_HPP__
 
-#include <cmath>
+#include <math.h>
+
+// TODO: try to remove this
 #include <tuple>
 
 namespace bitops {

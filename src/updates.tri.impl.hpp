@@ -3,15 +3,14 @@
 
 #include <src/config.hpp>
 
-#include <algorithm>
-#include <cmath>
+#include <math.h>
 
 #include "common.hpp"
 #include "hybrid.hpp"
 #include "updates.utils.hpp"
 
 #define l__(x) sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
-#define check__(x) std::fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
+#define check__(x) fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
 
 #define int_sqrt__(c) _sqrt_table[static_cast<int>(c)]
 #define s__(x) (s + (1 - x)*s0 + x*s1)/2

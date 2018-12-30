@@ -1,6 +1,6 @@
 #include "cost_funcs.hpp"
 
-#include <cassert>
+#include <assert.h>
 
 template <>
 void lagmults<2>(double const * lam, double const * df, double const * d2f,
@@ -61,6 +61,6 @@ void lagmults<2>(double const * lam, double const * df, double const * d2f,
     }
   }
 
-  assert(!std::isnan(mu[0]));
-  assert(!std::isnan(mu[1]));
+  assert(!isnan(mu[0]));
+  assert(!isnan(mu[1]));
 }

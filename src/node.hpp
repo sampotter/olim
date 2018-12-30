@@ -3,7 +3,7 @@
 
 #include "abstract_node.hpp"
 
-#include <cmath>
+#include <math.h>
 
 struct node: public abstract_node {
   node() {}

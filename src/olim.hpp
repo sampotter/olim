@@ -1,7 +1,6 @@
 #ifndef __OLIM_HPP__
 #define __OLIM_HPP__
 
-#include <algorithm>
 #include <type_traits>
 
 #include "marcher.hpp"

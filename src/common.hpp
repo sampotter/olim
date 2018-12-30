@@ -1,7 +1,7 @@
 #ifndef __COMMON_DEFS_HPP__
 #define __COMMON_DEFS_HPP__
 
-#include <cmath>
+// TODO: try to remove these
 #include <limits>
 #include <type_traits>
 

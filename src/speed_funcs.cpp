@@ -1,13 +1,8 @@
 #include "speed_funcs.hpp"
 
-#include <cmath>
+#include <math.h>
 
 #include "common.hpp"
-
-using std::cos;
-using std::fabs;
-using std::pow;
-using std::sin;
 
 static double r(double x, double y) {
   return sqrt(x*x + y*y);

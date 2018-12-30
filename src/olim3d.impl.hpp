@@ -134,7 +134,7 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
     } else if (groups::num_neighbors > 18) {
       line<3>(parent, Tnew);
     }
-    assert(!std::isinf(Tnew));
+    assert(!isinf(Tnew));
 #if TRACK_PARENTS
     if (Tnew < T) {
       T = Tnew;
@@ -465,7 +465,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   // should jump to the end of this function and skip all of the
   // tetrahedron updates.
   if (l1 == -1) {
-    assert(std::isinf(T1));
+    assert(isinf(T1));
     goto coda;
   } else {
     get_p(l1, p1);

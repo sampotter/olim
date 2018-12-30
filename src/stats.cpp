@@ -1,8 +1,7 @@
 #include "stats.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 #include "common.macros.hpp"
 

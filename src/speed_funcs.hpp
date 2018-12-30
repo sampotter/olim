@@ -1,6 +1,7 @@
 #ifndef __SPEED_FUNCS_HPP__
 #define __SPEED_FUNCS_HPP__
 
+// TODO: remove me
 #include <array>
 
 #include "typedefs.h"

@@ -1,8 +1,7 @@
 #ifndef __NUMOPT_IMPL_HPP__
 #define __NUMOPT_IMPL_HPP__
 
-#include <algorithm>
-#include <cmath>
+#include <math.h>
 
 #include "hybrid.hpp"
 
@@ -22,8 +21,6 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
   cost_functor & func, double const * xinit, double * x, double * f,
   bool * error, double tol, int niters)
 {
-  using std::max;
-
   if (error) *error = false;
 
   int k = 0;

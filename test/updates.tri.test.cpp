@@ -191,7 +191,7 @@ TEST (updates_tri, mp1_tri13_works) {
   double u0, u1, s, s0, s1, h;
 
   u0 = 2, u1 = 1, s = 1, s0 = 1, s1 = 1, h = 1;
-  ASSERT_DOUBLE_EQ(tri13<MP1>(u0, u1, s, s0, s1, h).value, 2 + 1./std::sqrt(2));
+  ASSERT_DOUBLE_EQ(tri13<MP1>(u0, u1, s, s0, s1, h).value, 2 + 1./sqrt(2));
 }
 
 TEST (updates_tri, mp1_tri22_works) {

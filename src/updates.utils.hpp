@@ -1,8 +1,10 @@
 #ifndef __UPDATE_RULES_UTILS_HPP__
 #define __UPDATE_RULES_UTILS_HPP__
 
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
+
+// TODO: remove me
 #include <utility>
 
 template <int dim>

@@ -1,8 +1,7 @@
 #include "basic_marcher_3d.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 #include "common.hpp"
 
@@ -20,8 +19,6 @@ void basic_marcher_3d::update_impl(
 {
   (void) parent;
 
-  using std::min;
-
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
 
   double sh = get_h()*get_speed(i, j, k), sh_sq = sh*sh;
@@ -33,32 +30,32 @@ void basic_marcher_3d::update_impl(
        ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
     if (nb[l0]) {
       T1 = value(l0);
-      T = min(T, T1 + sh);
+      T = fmin(T, T1 + sh);
       if (nb[l1]) {
         T2 = value(l1);
         disc = COMPUTE_DISC_2PT();
-        if (disc > 0) T = min(T, COMPUTE_VALUE_2PT());
+        if (disc > 0) T = fmin(T, COMPUTE_VALUE_2PT());
       }
       if (nb[l2]) {
         T2 = value(l2);
         disc = COMPUTE_DISC_2PT();
-        if (disc > 0) T = min(T, COMPUTE_VALUE_2PT());
+        if (disc > 0) T = fmin(T, COMPUTE_VALUE_2PT());
       }
       if (nb[l1] && nb[l2]) {
         T2 = value(l1), T3 = value(l2);
         disc = COMPUTE_DISC_3PT();
-        if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
+        if (disc > 0) T = fmin(T, COMPUTE_VALUE_3PT());
       }
     }
   }
   if (nb[0] && nb[2] && nb[4]) {
     T1 = value(0), T2 = value(2), T3 = value(4);
     disc = COMPUTE_DISC_3PT();
-    if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
+    if (disc > 0) T = fmin(T, COMPUTE_VALUE_3PT());
   }
   if (nb[1] && nb[3] && nb[5]) {
     T1 = value(1), T2 = value(3), T3 = value(5);
     disc = COMPUTE_DISC_3PT();
-    if (disc > 0) T = min(T, COMPUTE_VALUE_3PT());
+    if (disc > 0) T = fmin(T, COMPUTE_VALUE_3PT());
   }
 }

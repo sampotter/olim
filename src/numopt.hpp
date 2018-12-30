@@ -5,10 +5,6 @@
  * Numerical optimization functions
  */
 
-#include <src/config.hpp>
-
-#include <functional>
-
 #include "common.hpp"
 #include "cost_funcs.hpp"
 

@@ -3,8 +3,8 @@
 
 #include <src/config.hpp>
 
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 #include "offsets.hpp"
 
@@ -18,7 +18,7 @@
 #define __z(l) (h*l - z0)
 
 static inline size_t get_initial_heap_size(int width, int height, int depth) {
-  return static_cast<size_t>(std::max(8.0, std::log(width*height*depth)));
+  return static_cast<size_t>(fmax(8.0, log(width*height*depth)));
 }
 
 template <class base, class node, int num_neighbors>

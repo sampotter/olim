@@ -17,8 +17,6 @@ template <cost_func F, class node, bool do_adj, bool do_diag>
 void
 olim<F, node, do_adj, do_diag>::update_impl(node * n, double & T)
 {
-  using std::min;
-
   int i_hat = n->get_i(), j_hat = n->get_j();
 
   for (int k = 0; k < num_neighbors; ++k) {

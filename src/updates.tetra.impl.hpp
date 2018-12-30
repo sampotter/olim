@@ -3,10 +3,11 @@
 
 #include <src/config.hpp>
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
+#include <assert.h>
+#include <math.h>
+#include <stdlib.h>
+
+// TODO: remove me
 #include <type_traits>
 
 #include "common.hpp"

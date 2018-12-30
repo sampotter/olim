@@ -1,7 +1,7 @@
 #ifndef __HYBRID_IMPL_HPP__
 #define __HYBRID_IMPL_HPP__
 
-#include <cassert>
+#include <assert.h>
 
 // TODO: almost all of the uses of this in hybrid are to check if the
 // sign of two numbers is the same or different: we might be able to

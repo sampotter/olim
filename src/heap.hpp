@@ -3,10 +3,11 @@
 
 #include <src/config.hpp>
 
+#include <assert.h>
+#include <stddef.h>
+#include <string.h>
+
 #include <algorithm>
-#include <cassert>
-#include <cstddef>
-#include <cstring>
 #include <iostream>
 
 #include "common.hpp"

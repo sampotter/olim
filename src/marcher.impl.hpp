@@ -1,8 +1,8 @@
 #ifndef __MARCHER_IMPL_HPP_HPP__
 #define __MARCHER_IMPL_HPP_HPP__
 
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 #include "common.hpp"
 #include "offsets.hpp"
@@ -11,7 +11,7 @@
 #define __dj(k) dj<2>[k]
 
 static inline size_t get_initial_heap_size(int width, int height) {
-  return static_cast<size_t>(std::max(8.0, std::log(width*height)));
+  return static_cast<size_t>(fmax(8.0, log(width*height)));
 }
 
 template <class base, class node, int num_neighbors>

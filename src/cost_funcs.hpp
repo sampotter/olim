@@ -1,8 +1,9 @@
 #ifndef __COST_FUNCS_HPP__
 #define __COST_FUNCS_HPP__
 
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
+
 #include <type_traits>
 
 #include "bitops.hpp"
@@ -20,8 +21,8 @@ constexpr int sym_mat_size(int d) {
 }
 
 inline void check(double x) {
-  assert(!std::isinf(x));
-  assert(!std::isnan(x));
+  assert(!isinf(x));
+  assert(!isnan(x));
 }
 
 template <int d>
@@ -300,7 +301,7 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
 
   w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
   w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
-  if (std::isinf(w.dPt_nu_fac_lam[0])) {
+  if (isinf(w.dPt_nu_fac_lam[0])) {
     w.dPt_nu_fac_lam[0] = w.dPt_nu_fac_lam[1] = 0;
   }
 }
@@ -442,7 +443,7 @@ inline void hess(F0_fac_wkspc<2> const & w, double * d2f)
   // if (w.l_fac_lam > 1e1*eps<double>) {
   //   tmp = w.sh_fac/w.l_fac_lam;
   tmp = w.sh_fac/w.l_fac_lam;
-  if (!std::isinf(tmp)) {
+  if (!isinf(tmp)) {
     d2f[0] += tmp*(w.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
     d2f[1] += tmp*(w.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
     d2f[2] += tmp*(w.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);

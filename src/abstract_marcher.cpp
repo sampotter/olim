@@ -1,6 +1,6 @@
 #include "abstract_marcher.hpp"
 
-#include <cmath>
+#include <math.h>
 
 void abstract_marcher::run() {
   abstract_node * n {nullptr};

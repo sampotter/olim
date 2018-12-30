@@ -1,8 +1,7 @@
 #include "numopt.hpp"
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
+#include <assert.h>
+#include <math.h>
 
 template <>
 void
@@ -48,9 +47,6 @@ void
 qpi_bary<2>(double const * G, double const * c, double const * x0,
             double * x, bool * error, double tol, int niters)
 {
-  using std::max;
-  using std::min;
-
   assert(x != nullptr);
 
   if (error) {
@@ -91,7 +87,7 @@ qpi_bary<2>(double const * G, double const * c, double const * x0,
       p[0] = p[1] = 0.0;
     }
 
-    if (max(fabs(p[0]), fabs(p[1])) <= tol) {
+    if (fmax(fabs(p[0]), fabs(p[1])) <= tol) {
       if (num_active == 0) {
         break;
       } else if (num_active == 1) {
@@ -151,7 +147,7 @@ qpi_bary<2>(double const * G, double const * c, double const * x0,
             argmin = 2;
           }
         }
-        alpha = max(0.0, min(alpha, 1.0));
+        alpha = fmax(0.0, fmin(alpha, 1.0));
         if (alpha < 1) {
           active[argmin] = true;
         }

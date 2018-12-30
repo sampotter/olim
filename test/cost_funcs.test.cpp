@@ -35,7 +35,7 @@ TEST (cost_funcs, rhr_works) {
     p2[2] = -0.1241443482163119;
     F_wkspc<RHR, 2> w;
     set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<RHR, 3>(w, p0, p1, p2, lam);
+    set_lambda<RHR, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
@@ -68,7 +68,7 @@ TEST (cost_funcs, rhr_works) {
     p2[2] = 0.3503210013561116;
     F_wkspc<RHR, 2> w;
     set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<RHR, 3>(w, p0, p1, p2, lam);
+    set_lambda<RHR, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
@@ -105,7 +105,7 @@ TEST (cost_funcs, mp0_works) {
     p2[2] = 0.7222540322250016;
     F_wkspc<MP0, 2> w;
     set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP0, 3>(w, p0, p1, p2, lam);
+    set_lambda<MP0, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
@@ -138,7 +138,7 @@ TEST (cost_funcs, mp0_works) {
     p2[2] = -1.66416447498706;
     F_wkspc<MP0, 2> w;
     set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP0, 3>(w, p0, p1, p2, lam);
+    set_lambda<MP0, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
@@ -175,16 +175,16 @@ TEST (cost_funcs, mp1_works) {
     p2[2] = -0.2296264509631805;
     F_wkspc<MP1, 2> w;
     set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP1, 3>(w, p0, p1, p2, lam);
+    set_lambda<MP1, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
     ASSERT_NEAR(f, 0.6375555765979776, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.3994996388285198, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.6149253208800269, 2.22045e-16);
-    ASSERT_NEAR(d2f[0], 0.1218408945664885, 2.22045e-16);
-    ASSERT_NEAR(d2f[1], -0.006797926693548648, 2.22045e-16);
-    ASSERT_NEAR(d2f[2], 0.0317874368395807, 2.22045e-16);
+    ASSERT_NEAR(d2f[0], 0.1218408945664885, 3e-16);
+    ASSERT_NEAR(d2f[1], -0.006797926693548648, 4e-16);
+    ASSERT_NEAR(d2f[2], 0.0317874368395807, 3e-16);
   }
   {
     u0 = 0.679727951377338;
@@ -208,14 +208,14 @@ TEST (cost_funcs, mp1_works) {
     p2[2] = -0.0549189146094067;
     F_wkspc<MP1, 2> w;
     set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP1, 3>(w, p0, p1, p2, lam);
+    set_lambda<MP1, 3>(w, lam);
     eval(w, f);
     grad(w, df);
     hess(w, d2f);
     ASSERT_NEAR(f, 0.456074668933617, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.4449408124402994, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.05475042537160603, 2.22045e-16);
-    ASSERT_NEAR(d2f[0], 0.285578449160759, 2.22045e-16);
+    ASSERT_NEAR(d2f[0], 0.285578449160759, 3e-16);
     ASSERT_NEAR(d2f[1], 0.1262558215206283, 2.22045e-16);
     ASSERT_NEAR(d2f[2], 0.09340734618321611, 2.22045e-16);
   }

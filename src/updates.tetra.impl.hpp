@@ -47,7 +47,7 @@ updates::tetra<F, n>::operator()(
   F_wkspc<F, 2> w;
   set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
 
-  cost_functor<F, 3> func {w, p0, p1, p2};
+  cost_functor<F, 3> func {w};
   func.set_lambda(info.lambda);
 
   if (should_skip(func, info)) {

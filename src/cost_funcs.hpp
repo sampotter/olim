@@ -41,7 +41,7 @@ struct fac_wkspc {
 
 template <int d, class base_wkspc = eval_wkspc<d>>
 struct F0_wkspc: public base_wkspc {
-  double dPt_nu_lam[d], dPt_dP[sym_mat_size(d)];
+  double p0t_p0, dPt_p0[d], dPt_nu_lam[d], dPt_dP[sym_mat_size(d)];
 };
 
 template <int d, class base_wkspc = eval_wkspc<d>>
@@ -120,13 +120,16 @@ void set_args(F_wkspc<F, 2> & w, double u0, double u1, double u2,
 }
 
 template <int n, class wkspc>
-void set_dPt_dP(wkspc & w, double const * p0, double const * p1,
-                double const * p2)
+void set_dPt_dP_etc(wkspc & w, double const * p0, double const * p1,
+                    double const * p2)
 {
   double dp1[n], dp2[n];
   sub<n>(p1, p0, dp1);
   sub<n>(p2, p0, dp2);
 
+  w.p0t_p0 = dot<n>(p0, p0);
+  w.dPt_p0[0] = dot<n>(dp1, p0);
+  w.dPt_p0[1] = dot<n>(dp2, p0);
   w.dPt_dP[0] = dot<n>(dp1, dp1);
   w.dPt_dP[1] = dot<n>(dp1, dp2);
   w.dPt_dP[2] = dot<n>(dp2, dp2);
@@ -139,7 +142,7 @@ void set_args(F_wkspc<F, 2> & w,
               double s0, double s1, double s2, double h)
 {
   set_args_common<F>(w, u0, u1, u2, s, s0, s1, s2, h);
-  set_dPt_dP<n>(w, p0, p1, p2);
+  set_dPt_dP_etc<n>(w, p0, p1, p2);
 }
 
 template <cost_func F, int n>
@@ -158,8 +161,7 @@ void set_args(F0_wkspc<2, fac_wkspc<2>> & w,
   w.dtau[1] = u2 - u0 - (w.sh_fac*dist2<n>(p2, p_fac) - T0);
 
   set_sh_lam<F>(w, s, s0, s1, s2, h);
-
-  set_dPt_dP<n>(w, p0, p1, p2);
+  set_dPt_dP_etc<n>(w, p0, p1, p2);
 }
 
 template <cost_func F, int n>
@@ -225,29 +227,22 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 }
 
 template <cost_func F, int n>
-void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
-                double const * p2, double const * lam)
+void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 {
   set_lambda_common(w, lam);
 
-  // TODO: it isn't very efficient to recompute these over and over
-  // again, when we could just do it once and store the results
-  double p0_dot_p0 = dot<n>(p0, p0),
-    dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
-    dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
-
   w.l_lam = sqrt(
-    p0_dot_p0 +
-    2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
+    w.p0t_p0 +
+    2*(w.dPt_p0[0]*lam[0] + w.dPt_p0[1]*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +
     2*w.dPt_dP[1]*lam[0]*lam[1] +
     w.dPt_dP[2]*lam[1]*lam[1]);
   check(w.l_lam);
 
-  w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[0] = (w.dPt_p0[0] + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[0]);
 
-  w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[1] = (w.dPt_p0[1] + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
 }
 
@@ -259,24 +254,24 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
 {
   w.tau_lam = w.tau0 + w.dtau[0]*lam[0] + w.dtau[1]*lam[1];
 
-  // TODO: it isn't very efficient to recompute these over and over
-  // again, when we could just do it once and store the results
-  double p0_dot_p0 = dot<n>(p0, p0),
-    dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
-    dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
+  // // TODO: it isn't very efficient to recompute these over and over
+  // // again, when we could just do it once and store the results
+  // double p0_dot_p0 = dot<n>(p0, p0),
+  //   dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
+  //   dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
   w.l_lam = sqrt(
-    p0_dot_p0 +
-    2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
+    w.p0t_p0 +
+    2*(w.dPt_p0[0]*lam[0] + w.dPt_p0[1]*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +
     2*w.dPt_dP[1]*lam[0]*lam[1] +
     w.dPt_dP[2]*lam[1]*lam[1]);
   check(w.l_lam);
 
-  w.dPt_nu_lam[0] = (dp1_dot_p0 + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[0] = (w.dPt_p0[0] + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[0]);
 
-  w.dPt_nu_lam[1] = (dp2_dot_p0 + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[1] = (w.dPt_p0[1] + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
 
   double p0_dot_p_fac = dot<3>(p0, p_fac),
@@ -528,17 +523,12 @@ template <cost_func F, int n>
 struct cost_functor
 {
   using wkspc = F_wkspc<F, 2>;
-  cost_functor(F_wkspc<F, 2> & w,
-               double const * p0, double const * p1, double const * p2):
-    w {w}, p0 {p0}, p1 {p1}, p2 {p2} {}
-  inline void set_lambda(double const * lam) {
-    ::set_lambda<F, n>(w, p0, p1, p2, lam);
-  }
+  cost_functor(F_wkspc<F, 2> & w): w {w} {}
+  inline void set_lambda(double const * lam) {::set_lambda<F, n>(w, lam);}
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const  {::grad(w, df);}
   inline void hess(double * d2f) const {::hess(w, d2f);}
   wkspc & w;
-  double const * p0, * p1, * p2;
 };
 
 template <cost_func F, int n>

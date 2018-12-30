@@ -229,7 +229,7 @@ TEST (numopt, sqp_bary_works_with_mp0) {
     p2[2] = 0.3703626865151981;
     F_wkspc<MP0, 2> w;
     set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<MP0, 3> func {w, p0, p1, p2};
+    cost_functor<MP0, 3> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -262,7 +262,7 @@ TEST (numopt, sqp_bary_works_with_mp1) {
     p2[2] = 0.2126015333588429;
     F_wkspc<MP1, 2> w;
     set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<MP1, 3> func {w, p0, p1, p2};
+    cost_functor<MP1, 3> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -294,7 +294,7 @@ TEST (numopt, sqp_bary_works_with_rhr) {
     p2[2] = 0.3224603973622594;
     F_wkspc<RHR, 2> w;
     set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<RHR, 3> func {w, p0, p1, p2};
+    cost_functor<RHR, 3> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -561,7 +561,7 @@ TEST (numopt, sqp_bary_works_with_mp0_fac) {
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
     ASSERT_NEAR(info.lambda[0], 0, 2.22045e-16);
-    ASSERT_NEAR(info.lambda[1], 0.06325936565896506, 4e-16);
+    ASSERT_NEAR(info.lambda[1], 0.06325936565896506, 5e-16);
   }
   {
     u0 = 0;

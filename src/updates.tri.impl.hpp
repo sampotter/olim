@@ -10,7 +10,7 @@
 #include "hybrid.hpp"
 #include "updates.utils.hpp"
 
-#define l__(x) std::sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
+#define l__(x) sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define check__(x) std::fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
 
 #define int_sqrt__(c) _sqrt_table[static_cast<int>(c)]
@@ -352,7 +352,7 @@ updates::tri<RHR, n>::operator()(
 
 #define u__(x) ((1 - (x))*u0 + (x)*u1)
 #define q__(x) ((dp_dot_dp*x + 2*dp_dot_p0)*(x) + p0_dot_p0)
-#define l__(x) std::sqrt(q__(x))
+#define l__(x) sqrt(q__(x))
 #define s__(x) ((s + (1 - (x))*s0 + (x)*s1)/2)
 #define F1__(x) (u__(x) + h*s__(x)*l__(x))
 #define dF1__(x) (du + h*(ds*q__(x)/2 + s__(x)*dp_dot_plam)/l__(x))
@@ -382,7 +382,7 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
 
   auto const grad = [&] (double lam) {
     dp_dot_p_lam = dp_dot_p0 + lam*dp_dot_dp;
-    l_lam = std::sqrt(p0_dot_p0 + lam*(dp_dot_p0 + dp_dot_p_lam));
+    l_lam = sqrt(p0_dot_p0 + lam*(dp_dot_p0 + dp_dot_p_lam));
     s_lam = (s + s0 + ds*lam)/2;
     return du + h*(l_lam*ds/2 + s_lam*dp_dot_p_lam/l_lam);
   };
@@ -393,15 +393,15 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
   
   info<1> info;
   if (status == hybrid_status::DEGENERATE) {
-    double F0 = u0 + (s + s0)*h*std::sqrt(p0_dot_p0)/2;
-    double F1 = u1 + (s + s1)*h*std::sqrt(p1_dot_p1)/2;
+    double F0 = u0 + (s + s0)*h*sqrt(p0_dot_p0)/2;
+    double F1 = u1 + (s + s1)*h*sqrt(p1_dot_p1)/2;
     info.lambda[0] = F0 < F1 ? 0 : 1;
     info.value = std::min(F0, F1);
   }
   else {
     info.lambda[0] = arglam;
     dp_dot_p_lam = dp_dot_p0 + arglam*dp_dot_dp;
-    l_lam = std::sqrt(p0_dot_p0 + arglam*(dp_dot_p0 + dp_dot_p_lam));
+    l_lam = sqrt(p0_dot_p0 + arglam*(dp_dot_p0 + dp_dot_p_lam));
     s_lam = (s + s0 + ds*arglam)/2;
     info.value = u0 + du*arglam + s_lam*h*l_lam;
   }

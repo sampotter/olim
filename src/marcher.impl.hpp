@@ -94,7 +94,7 @@ void
 marcher<base, node, num_neighbors>::add_boundary_node(double x, double y, double value)
 {
   auto const dist = [x, y] (int i, int j) -> double {
-    return std::sqrt((i - y)*(i - y) + (j - x)*(j - x));
+    return sqrt((i - y)*(i - y) + (j - x)*(j - x));
   };
 
   int i0 = floor(y), i1 = ceil(y);

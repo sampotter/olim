@@ -201,7 +201,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 
   set_lambda_common(w, lam);
 
-  w.l_lam = std::sqrt(
+  w.l_lam = sqrt(
     p_dot_q<p0, p0>(dim_t {}) +
     2*(p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[0] +
     2*(p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[1] +
@@ -236,7 +236,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * p0, double const * p1,
     dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
     dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
 
-  w.l_lam = std::sqrt(
+  w.l_lam = sqrt(
     p0_dot_p0 +
     2*(dp1_dot_p0*lam[0] + dp2_dot_p0*lam[1]) +
     w.dPt_dP[0]*lam[0]*lam[0] +

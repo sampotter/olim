@@ -107,7 +107,7 @@ template <class base, class node, int num_neighbors>
 void marcher_3d<base, node, num_neighbors>::add_boundary_node(double x, double y, double z,
                                                double value) {
   auto const dist = [x, y, z] (int i, int j, int k) -> double {
-    return std::sqrt((i - y)*(i - y) + (j - x)*(j - x) + (k - z)*(k - z));
+    return sqrt((i - y)*(i - y) + (j - x)*(j - x) + (k - z)*(k - z));
   };
 
   int i0 = floor(y), i1 = ceil(y);

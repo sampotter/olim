@@ -106,7 +106,7 @@ inline double dist2<2>(double const * p, double const * q) {
 
 template <>
 inline double dist2<3>(double const * p, double const * q) {
-  return std::sqrt(
+  return sqrt(
     (q[0] - p[0])*(q[0] - p[0]) +
     (q[1] - p[1])*(q[1] - p[1]) +
     (q[2] - p[2])*(q[2] - p[2]));
@@ -145,12 +145,12 @@ double norm2(double const * p);
 
 template <>
 inline double norm2<2>(double const * p) {
-  return std::sqrt(p[0]*p[0] + p[1]*p[1]);
+  return sqrt(p[0]*p[0] + p[1]*p[1]);
 }
 
 template <>
 inline double norm2<3>(double const * p) {
-  return std::sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+  return sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
 }
 
 /**

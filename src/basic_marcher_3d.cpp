@@ -8,12 +8,12 @@
 
 #define COMPUTE_DISC_2PT() (2*sh*sh - (T1 - T2)*(T1 - T2))
 
-#define COMPUTE_VALUE_2PT() ((T1 + T2 + std::sqrt(disc))/2)
+#define COMPUTE_VALUE_2PT() ((T1 + T2 + sqrt(disc))/2)
 
 #define COMPUTE_DISC_3PT() \
   (3*sh_sq - 2*(T1*T1 + T2*T2 + T3*T3 - T1*T2 - T1*T3 - T2*T3))
 
-#define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + std::sqrt(disc))/3)
+#define COMPUTE_VALUE_3PT() ((T1 + T2 + T3 + sqrt(disc))/3)
 
 void basic_marcher_3d::update_impl(
   node_3d * n, node_3d ** nb, int parent, double & T)

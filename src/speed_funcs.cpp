@@ -8,7 +8,6 @@ using std::cos;
 using std::fabs;
 using std::pow;
 using std::sin;
-using std::sqrt;
 
 static double r(double x, double y) {
   return sqrt(x*x + y*y);

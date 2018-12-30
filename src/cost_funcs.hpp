@@ -203,6 +203,9 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 
   set_lambda_common(w, lam);
 
+  // TODO: give this the same treatment as the `set_lambda' function
+  // below (compress it!)
+
   w.l_lam = sqrt(
     p_dot_q<p0, p0>(dim_t {}) +
     2*(p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[0] +
@@ -231,18 +234,20 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 {
   set_lambda_common(w, lam);
 
+  w.dPt_nu_lam[0] = w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1] + w.dPt_p0[0];
+  w.dPt_nu_lam[1] = w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1] + w.dPt_p0[1];
+
   w.l_lam = sqrt(
     w.p0t_p0 +
-    2*(w.dPt_p0[0]*lam[0] + w.dPt_p0[1]*lam[1]) +
-    w.dPt_dP[0]*lam[0]*lam[0] +
-    2*w.dPt_dP[1]*lam[0]*lam[1] +
-    w.dPt_dP[2]*lam[1]*lam[1]);
+    (w.dPt_p0[0] + w.dPt_nu_lam[0])*lam[0] +
+    (w.dPt_p0[1] + w.dPt_nu_lam[1])*lam[1]
+  );
   check(w.l_lam);
 
-  w.dPt_nu_lam[0] = (w.dPt_p0[0] + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
-  check(w.dPt_nu_lam[0]);
+  w.dPt_nu_lam[0] /= w.l_lam;
+  w.dPt_nu_lam[1] /= w.l_lam;
 
-  w.dPt_nu_lam[1] = (w.dPt_p0[1] + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  check(w.dPt_nu_lam[0]);
   check(w.dPt_nu_lam[1]);
 }
 
@@ -254,11 +259,8 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
 {
   w.tau_lam = w.tau0 + w.dtau[0]*lam[0] + w.dtau[1]*lam[1];
 
-  // // TODO: it isn't very efficient to recompute these over and over
-  // // again, when we could just do it once and store the results
-  // double p0_dot_p0 = dot<n>(p0, p0),
-  //   dp1_dot_p0 = dot<n>(p1, p0) - p0_dot_p0,
-  //   dp2_dot_p0 = dot<n>(p2, p0) - p0_dot_p0;
+  // TODO: we can probably simply this quite a lot, following the same
+  // idea in the unfactored `set_lambda' function above.
 
   w.l_lam = sqrt(
     w.p0t_p0 +
@@ -273,6 +275,11 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
 
   w.dPt_nu_lam[1] = (w.dPt_p0[1] + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
+
+  // TODO: can probably cache this so that we don't need to pass in
+  // p0, p1, p2, or p_fac (and also don't waste time computing this
+  // stuff. This is a low priority for now, though, since we spend
+  // little time on this code path.
 
   double p0_dot_p_fac = dot<3>(p0, p_fac),
     dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,

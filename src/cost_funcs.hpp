@@ -42,7 +42,7 @@ struct fac_wkspc {
 
 template <int d, class base_wkspc = eval_wkspc<d>>
 struct F0_wkspc: public base_wkspc {
-  double p0t_p0, dPt_p0[d], dPt_nu_lam[d], dPt_dP[sym_mat_size(d)];
+  double p0t_p0, dPt_p0[d], dPt_dP[sym_mat_size(d)], dPt_nu_lam[d];
 };
 
 template <int d, class base_wkspc = eval_wkspc<d>>

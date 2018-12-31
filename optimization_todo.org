@@ -1,14 +1,26 @@
 * Optimization Todo
   1. [X] Fix the bugs
   2. [ ] Add direct solve for non-bv
-  3. [ ] Split fac and non-fac update functions
-  4. [ ] Lag mults
+  3. [ ] Convert to SOA
+  4. [ ] Split fac and non-fac update functions
+  5. [ ] Lag mults
      - [ ] Add initial lambda argument
      - [ ] Warm start using triangle update arglam
      - [ ] Check lagmults inside of tetra
-  5. [ ] Pass in precomputed stuff to tri and tetra
+  6. [ ] Pass in precomputed stuff to tri and tetra
      - [ ] TODO at cost_funcs.hpp:233
-  6. [ ] Add command-line arguments to Python plotting scripts
-  7. [ ] Make plots and ensure that they agree with old results
-  8. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+  7. [ ] Add command-line arguments to Python plotting scripts
+  8. [ ] Make plots and ensure that they agree with old results
+  9. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
      (close gap)
+  10. [ ] Remove STL headers
+  11. [ ] Remove macros
+      - [ ] P*** macros -> b'***' literals
+  12. [ ] Speed up tests
+      - Try different test library?
+        - cgreen seemed fine and was written in C
+  13. [ ] Try disabling exceptions
+  14. [ ] Replace malloc and news with "operator new" (minimum number
+      of includes and no unnecessary calling of ctors via new)
+  15. [ ] Global p_fac -> pf
+  16. [ ] Global s_fac -> sf

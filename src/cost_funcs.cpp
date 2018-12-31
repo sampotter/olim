@@ -32,6 +32,7 @@ void lagmults<2>(double const * lam, double const * df, double const * d2f,
         assert(false);
       }
     } else if (*k == 2) {
+      // TODO: finish optimizing this case
       double det, inv[3], p[2];
       det = d2f[0]*d2f[2] - d2f[1]*d2f[1];
       if (fabs(det) < eps<double>) {

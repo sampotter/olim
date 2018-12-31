@@ -37,6 +37,8 @@ inline bool should_skip(cost_functor<F, 3> const & func, info<2> const & info) {
 
 }
 
+// TODO: we want to cache the geometry of each workspace and pass that
+// in instead of p0, p1, and p2
 template <cost_func F, int n>
 void
 updates::tetra<F, n>::operator()(

@@ -5,7 +5,9 @@
 
 #include "common.hpp"
 
-#define COMPUTE_DISC_2PT() (2*sh*sh - (T1 - T2)*(T1 - T2))
+// TODO: remove these macros and replace with lambdas
+
+#define COMPUTE_DISC_2PT() (2*sh_sq - (T1 - T2)*(T1 - T2))
 
 #define COMPUTE_VALUE_2PT() ((T1 + T2 + sqrt(disc))/2)
 

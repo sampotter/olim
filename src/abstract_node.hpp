@@ -41,16 +41,6 @@ struct abstract_node {
   inline bool has_fac_parent() const { return _fac_parent != nullptr; }
   inline abstract_node * get_fac_parent() const { return _fac_parent; }
   inline void set_fac_parent(abstract_node * parent) { _fac_parent = parent; }
-#if TRACK_PARENTS
-  inline bool has_parents() const {
-    return _parents[0] != nullptr && _parents[1] != nullptr &&
-      _parents[2] != nullptr;
-  }
-  inline std::array<abstract_node *, 3> get_parents() const { return _parents; }
-  inline void set_parents(std::array<abstract_node *, 3> const & parents) {
-    _parents = parents;
-  }
-#endif
 #if NODE_MONITORING
   inline void start_monitoring() { _monitor_node = true; }
   inline void stop_monitoring() { _monitor_node = false; }
@@ -61,9 +51,6 @@ EIKONAL_PROTECTED:
   state _state {state::far};
   int _heap_pos {-1};
   abstract_node * _fac_parent;
-#if TRACK_PARENTS
-  std::array<abstract_node *, 3> _parents {{nullptr, nullptr, nullptr}};
-#endif
 #if NODE_MONITORING
   bool _monitor_node {false};
 #endif

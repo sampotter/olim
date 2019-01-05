@@ -142,11 +142,7 @@ EIKONAL_PRIVATE:
     if (this->nb[i]) {
       auto u_hat = updates::line_bv<F, d>()(
         this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
-#if TRACK_PARENTS
-#  error Not implemented yet!
-#else
       u = std::min(u, u_hat);
-#endif
 #if COLLECT_STATS
       node_stats.add_line_update(d);
 #endif
@@ -167,11 +163,7 @@ EIKONAL_PRIVATE:
         this->s[l0],
         this->s[l1],
         this->get_h());
-#if TRACK_PARENTS
-#  error Not implemented yet!
-#else
       u = std::min(u, info.value);
-#endif
 #if COLLECT_STATS
       node_stats.add_tri_update(p0, p1, info);
 #endif
@@ -208,11 +200,7 @@ EIKONAL_PRIVATE:
         this->get_h(),
         p_fac,
         this->get_speed(i_fac, j_fac, k_fac));
-#if TRACK_PARENTS
-#  error Not implemented yet!
-#else
       u = std::min(u, info.value);
-#endif
 #if COLLECT_STATS
 #  error Not implemented yet!
 #endif
@@ -236,11 +224,7 @@ EIKONAL_PRIVATE:
         this->s[l2],
         this->get_h(),
         info);
-#if TRACK_PARENTS
-#  error Not implemented yet!
-#else
       u = std::min(u, info.value);
-#endif
 #if COLLECT_STATS
       node_stats.add_tetra_update(p0, p1, p2, info);
 #endif
@@ -283,11 +267,7 @@ EIKONAL_PRIVATE:
         p_fac,
         this->get_speed(i_fac, j_fac, k_fac),
         info);
-#if TRACK_PARENTS
-#  error Not implemented yet!
-#else
       u = std::min(u, info.value);
-#endif
 #if COLLECT_STATS
 #  error Not implemented yet!
 #endif

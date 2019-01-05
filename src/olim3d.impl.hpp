@@ -100,6 +100,11 @@ void abstract_olim3d<base, node, num_neighbors>::update_impl(
   node * n, node ** nb, int parent, double & T)
 {
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
+#if COLLECT_STATS
+  node_stats = this->get_node_stats(i, j, k);
+  node_stats.inc_num_visits();
+#endif
+
   for (int l = 0; l < num_neighbors; ++l) {
     if (nb[l]) {
       this->s[l] = this->get_speed(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
@@ -119,11 +124,6 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
 
   assert(parent <= groups::num_neighbors);
 
-#if COLLECT_STATS
-  node_stats = this->get_node_stats(i, j, k);
-  node_stats.inc_num_visits();
-#endif
-
   // Do line update corresponding to parent node.
   {
     double Tnew = inf<double>;
@@ -135,17 +135,8 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
       line<3>(parent, Tnew);
     }
     assert(!isinf(Tnew));
-#if TRACK_PARENTS
-    if (Tnew < T) {
-      T = Tnew;
-      n->set_parents({{
-        &this->operator()(i + di<3>[parent], j + dj<3>[parent], k + dk<3>[parent]),
-        nullptr,
-        nullptr}});
-    }
-#else
     T = min(T, Tnew);
-#endif
+    // TODO: collect stats
   }
 
   /**
@@ -396,10 +387,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   using std::min;
 
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
-#if COLLECT_STATS
-  auto & node_stats = this->get_node_stats(i, j, k);
-  node_stats.inc_num_visits();
-#endif
 
   /**
    * Tnew: temporary variable used for updating T, the update value
@@ -516,12 +503,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 coda:
   T = min(T0, min(T1, T2));
 }
-
-#undef LINE
-#undef TRI
-#undef TETRA
-
-#undef __skip_tri
 
 #undef P001
 #undef P010

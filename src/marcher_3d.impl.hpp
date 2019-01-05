@@ -281,13 +281,6 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
 #if NODE_MONITORING
     if (update_node->monitoring_node()) {
       std::cout << *update_node << std::endl;
-#if TRACK_PARENTS
-      for (auto & parent: update_node->get_parents()) {
-        if (parent) {
-          std::cout << "- " << *parent << std::endl;
-        }
-      }
-#endif
     }
 #endif
     if (T < update_node->get_value()) {

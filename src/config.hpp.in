@@ -3,9 +3,3 @@
 
 #cmakedefine01 CHECK_HEAP_PROP_IN_DEBUG
 #cmakedefine01 COLLECT_STATS
-#cmakedefine01 HIERARCHICAL_UPDATES
-#cmakedefine01 TRIAL_NODE_OPTIMIZATION
-#cmakedefine01 USE_ARMADILLO
-#cmakedefine01 TRACK_PARENTS
-#cmakedefine01 NODE_MONITORING
-#cmakedefine01 PRINT_UPDATES

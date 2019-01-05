@@ -125,6 +125,9 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
   assert(parent <= groups::num_neighbors);
 
   // Do line update corresponding to parent node.
+  //
+  // TODO: we can combine the one-point update done by the hu and bv
+  // implementations and save ourselves a few lines of code.
   {
     double Tnew = inf<double>;
     if (parent < 6) {
@@ -400,6 +403,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 
   get_p(l0, p0);
 
+  // TODO: see comment above about one-point updates
   T0 = updates::line<F>()(
     get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
     this->get_h());

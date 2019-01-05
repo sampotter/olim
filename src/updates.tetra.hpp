@@ -7,6 +7,12 @@
 
 namespace updates {
 
+// TODO: maybe we can remove the struct and replace it with a function
+// and its specializations?
+
+// TODO: can probably also remove the cost_functor thing
+// entirely... Not sure about whether this is worth it or not
+
 template <cost_func F, int n>
 struct tetra
 {

@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <math.h>
 
+// TODO: remove me
 #include <type_traits>
 
 #include "bitops.hpp"
@@ -21,8 +22,12 @@ constexpr int sym_mat_size(int d) {
 }
 
 inline void check(double x) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(!isinf(x));
   assert(!isnan(x));
+#else
+  (void) x;
+#endif
 }
 
 template <int d>

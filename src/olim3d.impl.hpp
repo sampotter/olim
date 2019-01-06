@@ -402,7 +402,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
    */
   double Tnew, T0, T1 = inf<double>, T2 = inf<double>;
   int l0 = parent, l1 = -1;
-  double s_fac;
+  double s_fac = inf<double>; // Silence warning
 
   get_p(l0, p0);
 

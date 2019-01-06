@@ -566,43 +566,37 @@ struct cost_functor_bv;
 template <cost_func F, int n, int p0, int p1, int p2>
 struct cost_functor_bv<F, n, p0, p1, p2>
 {
-  using wkspc = F_wkspc<F, 2>;
   cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
   inline void set_lambda(double const * lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess<n, p0, p1, p2>(w, d2f);}
-  wkspc & w;
+  F_wkspc<F, 2> & w;
 };
 
 template <cost_func F, int n, int d>
 struct cost_functor
 {
-  using wkspc = F_wkspc<F, d>;
-  using geom_wkspc = geom_wkspc<d>;
-  using qr_wkspc = qr_wkspc<n, d>;
-  cost_functor(wkspc & w, geom_wkspc & g): w {w}, g {g} {}
+  cost_functor(F_wkspc<F, d> & w, geom_wkspc<d> & g): w {w}, g {g} {}
   inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam);}
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const  {::grad(w, df);}
   inline void hess(double * d2f) const {::hess(w, g, d2f);}
-  wkspc & w;
-  geom_wkspc & g;
-  qr_wkspc * qr {nullptr};
+  F_wkspc<F, d> & w;
+  geom_wkspc<d> & g;
+  qr_wkspc<n, d> * qr {nullptr};
 };
 
 template <cost_func F, int n, int d>
 struct cost_functor_fac
 {
-  using wkspc = F_fac_wkspc<F, d>;
-  using geom_wkspc = geom_fac_wkspc<d>;
-  cost_functor_fac(wkspc & w, geom_wkspc & g): w {w}, g {g} {}
+  cost_functor_fac(F_fac_wkspc<F, d> & w, geom_fac_wkspc<d> & g): w {w}, g {g} {}
   inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam); }
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess(w, g, d2f);}
-  wkspc & w;
-  geom_wkspc & g;
+  F_fac_wkspc<F, d> & w;
+  geom_fac_wkspc<d> & g;
 };
 
 inline void eval_mp1_fix(F0_wkspc<2> const & w,

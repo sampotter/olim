@@ -68,7 +68,7 @@ constexpr double R(dim<3> n)
 {
   static_assert(0 <= i && i < 3, "need 0 <= i < d");
 
-  double r[3]={0,0,0}, q1[3]={0,0,0}, q2[3]={0,0,0}, z[3]={0,0,0};
+  double r[3] = {0, 0, 0}, q1[3] = {0, 0, 0}, z[3] = {0, 0, 0};
 
   r[0] = sqrt(p_dot_q<p1, p1>(n) - 2*p_dot_q<p1, p0>(n) + p_dot_q<p0, p0>(n));
   q1[0] = (bit<0, p1>() - bit<0, p0>())/r[0];
@@ -80,9 +80,6 @@ constexpr double R(dim<3> n)
   z[1] = bit<1, p2>() - bit<1, p0>() - r[1]*q1[1];
   z[2] = bit<2, p2>() - bit<2, p0>() - r[1]*q1[2];
   r[2] = sqrt(z[0]*z[0] + z[1]*z[1] + z[2]*z[2]);
-  q2[0] = z[0]/r[2];
-  q2[1] = z[1]/r[2];
-  q2[2] = z[2]/r[2];
 
   return r[i];
 }

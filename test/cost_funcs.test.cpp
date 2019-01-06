@@ -315,7 +315,7 @@ TEST (cost_funcs, mp1_works) {
 }
 
 TEST (cost_funcs, rhr111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.6554778901775566;
     u1 = 0.1711866878115618;
@@ -327,15 +327,6 @@ TEST (cost_funcs, rhr111_works) {
     s2 = 0.8234578283272926;
     lam[0] = 0.6866383302239732;
     lam[1] = 0.3133616697760268;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 0;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 0;
-    p2[1] = 0;
-    p2[2] = 1;
     F_wkspc<RHR, 2> w;
     set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P010, P001>(w, lam);
@@ -360,15 +351,6 @@ TEST (cost_funcs, rhr111_works) {
     s2 = 0.4897643957882311;
     lam[0] = 0.4080836365614623;
     lam[1] = 0.5919163634385377;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 0;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 0;
-    p2[1] = 0;
-    p2[2] = 1;
     F_wkspc<RHR, 2> w;
     set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P010, P001>(w, lam);
@@ -385,7 +367,7 @@ TEST (cost_funcs, rhr111_works) {
 }
 
 TEST (cost_funcs, rhr_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.6160446761466392;
     u1 = 0.4732888489027293;
@@ -397,15 +379,6 @@ TEST (cost_funcs, rhr_123_works) {
     s2 = 0.2858390188203735;
     lam[0] = 0.5011486754471214;
     lam[1] = 0.4988513245528786;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 1;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<RHR, 2> w;
     set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P110, P111>(w, lam);
@@ -422,7 +395,7 @@ TEST (cost_funcs, rhr_123_works) {
 }
 
 TEST (cost_funcs, rhr_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.3804458469753567;
     u1 = 0.5678216407252211;
@@ -434,15 +407,6 @@ TEST (cost_funcs, rhr_222_works) {
     s2 = 0.1299062084737301;
     lam[0] = 0.5478865585019908;
     lam[1] = 0.4521134414980094;
-    p0[0] = 1;
-    p0[1] = 1;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 0;
-    p1[2] = 1;
-    p2[0] = 0;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<RHR, 2> w;
     set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P110, P101, P011>(w, lam);
@@ -459,7 +423,7 @@ TEST (cost_funcs, rhr_222_works) {
 }
 
 TEST (cost_funcs, mp0_111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.1492940055590575;
     u1 = 0.2575082541237365;
@@ -471,15 +435,6 @@ TEST (cost_funcs, mp0_111_works) {
     s2 = 0.3499837659848087;
     lam[0] = 0.4391432317015156;
     lam[1] = 0.5608567682984844;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 0;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 0;
-    p2[1] = 0;
-    p2[2] = 1;
     F_wkspc<MP0, 2> w;
     set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P100, P010, P001>(w, lam);
@@ -496,7 +451,7 @@ TEST (cost_funcs, mp0_111_works) {
 }
 
 TEST (cost_funcs, mp0_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.7093648308580726;
     u1 = 0.7546866819823609;
@@ -508,15 +463,6 @@ TEST (cost_funcs, mp0_123_works) {
     s2 = 0.498364051982143;
     lam[0] = 0.7381909431454695;
     lam[1] = 0.2618090568545305;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 1;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<MP0, 2> w;
     set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P100, P110, P111>(w, lam);
@@ -533,7 +479,7 @@ TEST (cost_funcs, mp0_123_works) {
 }
 
 TEST (cost_funcs, mp0_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.5852677509797773;
     u1 = 0.223811939491137;
@@ -545,15 +491,6 @@ TEST (cost_funcs, mp0_222_works) {
     s2 = 0.9592914252054443;
     lam[0] = 0.7978764021813243;
     lam[1] = 0.2021235978186757;
-    p0[0] = 1;
-    p0[1] = 1;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 0;
-    p1[2] = 1;
-    p2[0] = 0;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<MP0, 2> w;
     set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P110, P101, P011>(w, lam);
@@ -570,7 +507,7 @@ TEST (cost_funcs, mp0_222_works) {
 }
 
 TEST (cost_funcs, mp1_111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.0119020695012414;
     u1 = 0.3371226443988815;
@@ -582,15 +519,6 @@ TEST (cost_funcs, mp1_111_works) {
     s2 = 0.6019819414016365;
     lam[0] = 0.2867577282668127;
     lam[1] = 0.7132422717331873;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 0;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 0;
-    p2[1] = 0;
-    p2[2] = 1;
     F_wkspc<MP1, 2> w;
     set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P100, P010, P001>(w, lam);
@@ -607,7 +535,7 @@ TEST (cost_funcs, mp1_111_works) {
 }
 
 TEST (cost_funcs, mp1_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.6892145031400078;
     u1 = 0.7481515928237095;
@@ -619,15 +547,6 @@ TEST (cost_funcs, mp1_123_works) {
     s2 = 0.8258169774895474;
     lam[0] = 0.3508311835064203;
     lam[1] = 0.6491688164935797;
-    p0[0] = 1;
-    p0[1] = 0;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 1;
-    p1[2] = 0;
-    p2[0] = 1;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<MP1, 2> w;
     set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P100, P110, P111>(w, lam);
@@ -644,7 +563,7 @@ TEST (cost_funcs, mp1_123_works) {
 }
 
 TEST (cost_funcs, mp1_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
   {
     u0 = 0.07817552875318368;
     u1 = 0.4426782697754463;
@@ -656,15 +575,6 @@ TEST (cost_funcs, mp1_222_works) {
     s2 = 0.8686947053635097;
     lam[0] = 0.1743755070300453;
     lam[1] = 0.8256244929699547;
-    p0[0] = 1;
-    p0[1] = 1;
-    p0[2] = 0;
-    p1[0] = 1;
-    p1[1] = 0;
-    p1[2] = 1;
-    p2[0] = 0;
-    p2[1] = 1;
-    p2[2] = 1;
     F_wkspc<MP1, 2> w;
     set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P110, P101, P011>(w, lam);

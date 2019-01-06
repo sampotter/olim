@@ -6,6 +6,8 @@ template <>
 void lagmults<2>(double const * lam, double const * df, double const * d2f,
                  double * mu, int * k)
 {
+  check_lambda<2>(lam);
+
   int I[2] = {-1, -1};
 
   // First, find the active set, I, for lam

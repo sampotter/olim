@@ -21,6 +21,19 @@ constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;
 }
 
+template <int d> inline void check_lambda(double const * lam);
+
+template <>
+inline void check_lambda<2>(double const * lam) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
+  assert(lam[0] >= -eps<double>);
+  assert(lam[1] >= -eps<double>);
+  assert(lam[0] + lam[1] <= 1 + eps<double>);
+#else
+  (void) lam;
+#endif
+}
+
 inline void check(double x) {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(!isinf(x));
@@ -191,11 +204,15 @@ void set_args(F1_wkspc<2, fac_wkspc<2>> & w,
 
 inline void set_lambda_common(F0_wkspc<2> & w, double const * lam)
 {
+  check_lambda<2>(lam);
+
   w.u_lam = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1];
 }
 
 inline void set_lambda_common(F1_wkspc<2> & w, double const * lam)
 {
+  check_lambda<2>(lam);
+
   set_lambda_common(static_cast<F0_wkspc<2> &>(w), lam);
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
@@ -206,6 +223,8 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 {
   using namespace bitops;
   using dim_t = dim<n>;
+
+  check_lambda<2>(lam);
 
   set_lambda_common(w, lam);
 
@@ -238,6 +257,8 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 template <cost_func F, int n>
 void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 {
+  check_lambda<2>(lam);
+
   set_lambda_common(w, lam);
 
   w.dPt_nu_lam[0] = w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1] + w.dPt_p0[0];
@@ -263,6 +284,8 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
                 double const * p_fac,
                 double const * lam)
 {
+  check_lambda<2>(lam);
+
   w.tau_lam = w.tau0 + w.dtau[0]*lam[0] + w.dtau[1]*lam[1];
 
   // TODO: we can probably simply this quite a lot, following the same
@@ -318,6 +341,8 @@ void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
                 double const * lam)
 {
   set_lambda<F, n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w), p0, p1, p2, p_fac, lam);
+  check_lambda<2>(lam);
+
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
   check(w.sh_lam);

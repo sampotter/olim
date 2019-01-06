@@ -22,7 +22,7 @@ int main() {
 
     auto start = high_resolution_clock::now();
 
-    olim26_rhr m {n, n, n, h, (speed_func_3d) s4, 1., 1., 1.};
+    olim26_rhr m {n, n, n, h, (speed_func_3d) s1, 1., 1., 1.};
     m.add_boundary_node(i0, i0, i0);
     m.run();
 

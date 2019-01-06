@@ -74,7 +74,7 @@ rms_error(int n, speed_func_3d s, speed_func_3d f) {
       }
     }
   }
-  return std::sqrt(sum/std::pow(n, 3));
+  return sqrt(sum/pow(n, 3));
 }
 
 template <class marcher_3d>

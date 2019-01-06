@@ -20,8 +20,8 @@ constexpr int maxpow2d = 7;
 constexpr int minpow3d = 3;
 constexpr int maxpow3d = 6;
 
-const double v2rn = 1./std::sqrt(vx*vx + vy*vy);
-const double v3rn = 1./std::sqrt(vx*vx + vy*vy + vz*vz);
+const double v2rn = 1/sqrt(vx*vx + vy*vy);
+const double v3rn = 1/sqrt(vx*vx + vy*vy + vz*vz);
 
 double qv_s_2d(double x, double y) {
   return 1./(a + vx*x + vy*y);
@@ -29,12 +29,12 @@ double qv_s_2d(double x, double y) {
 
 double qv_u_2d(double x, double y) {
   double s1 = qv_s_2d(X1, Y1);
-  double u1 = v2rn*std::acosh(
+  double u1 = v2rn*acosh(
     1.0 + s1*qv_s_2d(x, y)*(vx*vx + vy*vy)*(
       (x - X1)*(x - X1) + (y - Y1)*(y - Y1))/2);
 
   double s2 = qv_s_2d(X2, Y2);
-  double u2 = v2rn*std::acosh(
+  double u2 = v2rn*acosh(
     1.0 + s2*qv_s_2d(x, y)*(vx*vx + vy*vy)*(
       (x - X2)*(x - X2) + (y - Y2)*(y - Y2))/2);
 
@@ -47,8 +47,8 @@ void add_children_2d(olim & o, int i0, int j0, int n, double h) {
     double y = h*i;
     for (int j = 0; j < n; ++j) {
       double x = h*j;
-      if (std::hypot(x, y) <= r) {
-        o.set_node_parent(i, j, i0, j0);
+      if (hypot(x, y) <= r) {
+        o.set_node_fac_parent(i, j, i0, j0);
       }
     }
   }
@@ -80,7 +80,7 @@ std::pair<double, double> do_qv_2d(int n) {
       sum += (u - U)*(u - U);
     }
   }
-  rms = std::sqrt(sum)/n;
+  rms = sqrt(sum)/n;
 
   // rel linf error
   double umax = 0, Umax = 0, dmax = 0;
@@ -115,17 +115,17 @@ double qv_s_3d(double x, double y, double z) {
 
 double qv_u_3d(double x, double y, double z) {
   double s1 = qv_s_3d(X1, Y1, Y1); // TODO: double check
-  double u1 = v3rn*std::acosh(
+  double u1 = v3rn*acosh(
     1.0 + s1*qv_s_3d(x, y, z)*(vx*vx + vy*vy + vz*vz)*(
       (x - X1)*(x - X1) + (y - Y1)*(y - Y1) + (z - Z1)*(z - X1))/2);
 
   double s2 = qv_s_3d(X2, Y2, Y2); // TODO: double check
-  double u2 =  v3rn*std::acosh(
+  double u2 =  v3rn*acosh(
     1.0 + s2*qv_s_3d(x, y, z)*(vx*vx + vy*vy + vz*vz)*(
       (x - X2)*(x - X2) + (y - Y2)*(y - Y2) + (z - Z2)*(z - X2))/2);
 
   double s3 = qv_s_3d(X3, Y3, Y3); // TODO: double check
-  double u3 = v3rn*std::acosh(
+  double u3 = v3rn*acosh(
     1.0 + s3*qv_s_3d(x, y, z)*(vx*vx + vy*vy + vz*vz)*(
       (x - X3)*(x - X3) + (y - Y3)*(y - Y3) + (z - Z3)*(z - X3))/2);
 
@@ -140,8 +140,8 @@ void add_children_3d(olim & o, int i0, int j0, int k0, double h, int n) {
       double x = h*j;
       for (int k = 0; k < n; ++k) {
         double z = h*k;
-        if (std::sqrt(x*x + y*y* + z*z) <= r) {
-          o.set_node_parent(i, j, k, i0, j0, k0);
+        if (sqrt(x*x + y*y* + z*z) <= r) {
+          o.set_node_fac_parent(i, j, k, i0, j0, k0);
         }
       }
     }
@@ -179,7 +179,7 @@ std::pair<double, double> do_qv_3d(int n) {
       }
     }
   }
-  rms = std::sqrt(sum/std::pow(n, 3));
+  rms = sqrt(sum/pow(n, 3));
 
   // rel linf error
   double umax = 0, Umax = 0, dmax = 0;
@@ -212,7 +212,6 @@ void print_errors_3d(std::string const & oname) {
 
 // int main(int argc, char * argv[]) {
 int main() {
-  print_errors_2d<basic_marcher>("basic_marcher");
   print_errors_2d<olim4_rhr>("olim4_rhr");
   print_errors_2d<olim4_mp0>("olim4_mp0");
   print_errors_2d<olim4_mp1>("olim4_mp1");

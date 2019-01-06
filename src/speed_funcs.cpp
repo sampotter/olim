@@ -49,12 +49,20 @@ double f1(double x, double y, double z) {
   return cos(r(x, y, z)) + r(x, y, z) - 1;
 }
 
-double s3(double x, double y) {
+double s2(double x, double y) {
   return sqrt(x*x + y*y);
 }
 
-double f3(double x, double y) {
+double f2(double x, double y) {
   return (x*x + y*y)/2;
+}
+
+double s2(double x, double y, double z) {
+  return sqrt(x*x + y*y + z*z);
+}
+
+double f2(double x, double y, double z) {
+  return (x*x + y*y + z*z)/2;
 }
 
 double s5(double x, double y) {

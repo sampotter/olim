@@ -110,9 +110,9 @@ int main(int argc, char * argv[])
     } else if (s_name == "s1") {
       s = s1;
       f = f1;
-    } else if (s_name == "s3") {
-      s = s3;
-      f = f3;
+    } else if (s_name == "s2") {
+      s = s2;
+      f = f2;
     } else if (s_name == "s5") {
       s = s5;
       f = f5;

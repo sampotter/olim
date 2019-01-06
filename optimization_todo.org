@@ -24,3 +24,5 @@
       of includes and no unnecessary calling of ctors via new)
   15. [ ] Global p_fac -> pf
   16. [ ] Global s_fac -> sf
+  17. [ ] Try making mp0's `eval' mp1's `eval' to see if that fixes
+      the symmetry problem

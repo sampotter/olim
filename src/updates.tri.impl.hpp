@@ -22,9 +22,9 @@ updates::info<1>
 updates::tri_bv<MP0, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   using std::min;
 
@@ -82,9 +82,9 @@ updates::tri<MP0, n>::operator()(
   double u0, double u1, double s, double s0, double s1, double h,
   double const * p_fac, double s_fac) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double sh = ((s + (s0 + s1)/2)/2)*h, shfac = s_fac*h;
   double lfac0 = dist2<n>(p0, p_fac);
@@ -134,9 +134,9 @@ updates::tri<MP0, n>::operator()(
 {
   using std::min;
 
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
   sub<n>(p1, p0, dp);
@@ -188,9 +188,9 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
   (void) s0;
   (void) s1;
 
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   static constexpr double _sqrt_table[4] = {
     0.0,
@@ -246,9 +246,9 @@ updates::tri<RHR, n>::operator()(
   double u0, double u1, double s, double s0, double s1, double h,
   double const * p_fac, double s_fac) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   (void) s0;
   (void) s1;
@@ -304,9 +304,9 @@ updates::tri<RHR, n>::operator()(
 
   using std::min;
 
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
   sub<n>(p1, p0, dp);
@@ -366,9 +366,9 @@ updates::info<1>
 updates::tri_bv<MP1, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   constexpr int p0_dot_p0 = dot(p0, p0);
   constexpr int p0_dot_p1 = dot(p0, p1);
@@ -414,9 +414,9 @@ updates::tri<MP1, n>::operator()(
   double u0, double u1, double s, double s0, double s1, double h,
   double const * p_fac, double s_fac) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double shfac = s_fac*h;
   double ds = s1 - s0;
@@ -468,9 +468,9 @@ updates::tri<MP1, n>::operator()(
   double const * p0, double const * p1, double u0, double u1,
   double s, double s0, double s1, double h) const
 {
-  assert(s > 0);
-  assert(s0 > 0);
-  assert(s1 > 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
 
   double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
   sub<n>(p1, p0, dp);

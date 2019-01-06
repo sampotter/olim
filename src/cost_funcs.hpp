@@ -9,7 +9,7 @@
 
 #include "bitops.hpp"
 #include "common.hpp"
-#include "updates.utils.hpp"
+#include "vecmath.hpp"
 
 enum class cost_func {mp0, mp1, rhr};
 

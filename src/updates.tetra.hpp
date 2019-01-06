@@ -3,7 +3,7 @@
 
 #include "cost_funcs.hpp"
 #include "updates.common.hpp"
-#include "updates.utils.hpp"
+#include "vecmath.hpp"
 
 namespace updates {
 

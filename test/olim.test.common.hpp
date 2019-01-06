@@ -17,9 +17,11 @@ eq_w_rel_tol(double x, double y, double tol = 1e-13) {
   if (x == 0 && y == 0) {
     return testing::AssertionSuccess();
   } else {
-    double rel_err = fabs(x - y)/fmax(fabs(x), fabs(y));
+    double denom = fmax(fabs(x), fabs(y));
+    double rel_err = fabs(x - y)/denom;
     if (rel_err > tol) {
-      return testing::AssertionFailure() << rel_err << " > " << tol;
+      return testing::AssertionFailure()
+        << "|" << x << " - " << y << "|/|" << denom << "| > " << tol;
     } else {
       return testing::AssertionSuccess();
     }
@@ -360,8 +362,7 @@ octants_are_correct(double diag2val, double diag3val) {
         res = eq_w_rel_tol(m.get_value(i, (j + 1) % 2, (k + 1) % 2), diag2val);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),
-                           diag3val);
+        res = eq_w_rel_tol(m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),diag3val);
         if (!res) return res;
       }
     }
@@ -379,7 +380,7 @@ planes_are_correct(
 {
   assert(n % 2 == 1);
 
-  assert(n >= 5); // There are speed functions which break with n =
+  assert(n >= 5); // TODO: There are speed functions which break with n =
                   // 3... TODO: why? does this have to do with how big
                   // h is? Is some kind of CFL condition violated?
 
@@ -393,19 +394,24 @@ planes_are_correct(
   m3d.add_boundary_node(n/2, n/2, n/2);
   m3d.run();
 
+  auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
+    -> testing::AssertionResult & {
+    return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
+  };
+
   // Check that planes are correct:
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       double U = m.get_value(i, j);
 
       auto res = eq_w_rel_tol(U, m3d.get_value(i, j, n/2));
-      if (!res) return res;
+      if (!res) return msg(res, i, j, n/2);
 
       res = eq_w_rel_tol(U, m3d.get_value(i, n/2, j));
-      if (!res) return res;
+      if (!res) return msg(res, i, n/2, j);
 
       res = eq_w_rel_tol(U, m3d.get_value(n/2, i, j));
-      if (!res) return res;
+      if (!res) return msg(res, n/2, i, j);
     }
   }
 

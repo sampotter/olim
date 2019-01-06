@@ -7,7 +7,7 @@
 
 #include "common.hpp"
 #include "hybrid.hpp"
-#include "updates.utils.hpp"
+#include "vecmath.hpp"
 
 #define l__(x) sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define check__(x) fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))

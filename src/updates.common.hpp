@@ -12,6 +12,9 @@ struct info<1>
   double value {inf<double>};
   double lambda[1] = {0.5};
   double tol {1e1*eps<double>};
+  inline bool inbounds() const {
+    return 0 <= lambda[0] && lambda[0] <= 1;
+  }
   inline bool on_boundary() const {
     return lambda[0] < tol || 1 - lambda[0] < tol;
   }
@@ -26,6 +29,9 @@ struct info<2>
   double value {inf<double>};
   double lambda[2] = {1./3, 1./3};
   double tol {1e1*eps<double>};
+  inline bool inbounds() const {
+    return 0 <= lambda[0] && 0 <= lambda[1] && lambda[0] + lambda[1] <= 1;
+  }
   inline bool on_boundary() const {
     return lambda[0] < tol || lambda[1] < tol || lambda[0] + lambda[1] > 1 - tol;
   }

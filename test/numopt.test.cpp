@@ -204,6 +204,19 @@ TEST (numopt, test_qpi_baryplex) {
       G[2] = 1.7194633460812576;
     }
   }
+  {
+    G[0] = 0.035863853940916;
+    G[1] = 0.033881171909562;
+    G[2] = 0.067762343819124;
+    c[0] = -0.008196071665518;
+    c[1] = -0.016392143331036;
+    x0[0] = 2.959331874589659e-15;
+    x0[1] = 0.241906380552451;
+    qpi_bary<2>(G, c, x0, x, &error);
+    ASSERT_FALSE(error);
+    ASSERT_NEAR(x[0], 0.0, eps<double>);
+    ASSERT_NEAR(x[1], 0.241906380552462, eps<double>);
+  }
 }
 
 TEST (numopt, sqp_bary_works_with_mp0) {
@@ -227,9 +240,11 @@ TEST (numopt, sqp_bary_works_with_mp0) {
     p2[0] = 0.1841002894275112;
     p2[1] = 0.7257752674694531;
     p2[2] = 0.3703626865151981;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<MP0, 3> func {w};
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
+    cost_functor<MP0, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -260,9 +275,11 @@ TEST (numopt, sqp_bary_works_with_mp1) {
     p2[0] = 0.2999369900897889;
     p2[1] = 0.1341229328286824;
     p2[2] = 0.2126015333588429;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<MP1, 3> func {w};
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
+    cost_functor<MP1, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -292,9 +309,11 @@ TEST (numopt, sqp_bary_works_with_rhr) {
     p2[0] = 0.7498222093606359;
     p2[1] = 0.8352205104781305;
     p2[2] = 0.3224603973622594;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    cost_functor<RHR, 3> func {w};
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
+    cost_functor<RHR, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -316,7 +335,7 @@ TEST (numopt, sqp_bary_works_with_mp0_111) {
     s1 = 0.990785037206068;
     s2 = 0.9372567408877572;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP0, 3, P100, P010, P001> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -339,7 +358,7 @@ TEST (numopt, sqp_bary_works_with_mp0_123) {
     s1 = 0.7007669019392007;
     s2 = 0.7752519068977054;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP0, 3, P100, P110, P111> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -362,7 +381,7 @@ TEST (numopt, sqp_bary_works_with_mp0_222) {
     s1 = 0.5501596788096901;
     s2 = 0.4524276954209931;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP0, 3, P110, P101, P011> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -385,7 +404,7 @@ TEST (numopt, sqp_bary_works_with_mp1_111) {
     s1 = 0.004070298159995711;
     s2 = 0.004070298159995711;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP1, 3, P100, P010, P001> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -404,7 +423,7 @@ TEST (numopt, sqp_bary_works_with_mp1_111) {
     s1 = 0.477175202496374;
     s2 = 0.2656191251853977;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP1, 3, P100, P010, P001> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -427,7 +446,7 @@ TEST (numopt, sqp_bary_works_with_mp1_123) {
     s1 = 0.5182403290268277;
     s2 = 0.5369077169939814;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP1, 3, P100, P110, P111> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -450,7 +469,7 @@ TEST (numopt, sqp_bary_works_with_mp1_222) {
     s1 = 0.004244552084378484;
     s2 = 0.02080448055205524;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<MP1, 3, P110, P101, P011> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -473,7 +492,7 @@ TEST (numopt, sqp_bary_works_with_rhr_111) {
     s1 = 0.6993079853260437;
     s2 = 0.9614264378869783;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<RHR, 3, P100, P010, P001> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -496,7 +515,7 @@ TEST (numopt, sqp_bary_works_with_rhr_123) {
     s1 = 0.2043513471851703;
     s2 = 0.171964418184969;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<RHR, 3, P100, P110, P111> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -519,7 +538,7 @@ TEST (numopt, sqp_bary_works_with_rhr_222) {
     s1 = 0.9148702499040858;
     s2 = 0.9771591929603007;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     cost_functor_bv<RHR, 3, P110, P101, P011> func {w};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
@@ -554,9 +573,11 @@ TEST (numopt, sqp_bary_works_with_mp0_fac) {
     pf[0] = 0.2404774846793727;
     pf[1] = -0.8215003988470204;
     pf[2] = 0.9931121262131963;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    cost_functor_fac<MP0, 3> func {w, p0, p1, p2, pf};
+    set_args<MP0>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    cost_functor_fac<MP0, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -585,9 +606,11 @@ TEST (numopt, sqp_bary_works_with_mp0_fac) {
     pf[0] = p0[0];
     pf[1] = p0[1];
     pf[2] = p0[2];
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    cost_functor_fac<MP0, 3> func {w, p0, p1, p2, pf};
+    set_args<MP0>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    cost_functor_fac<MP0, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2, line_search::BACKTRACK>()(
       func, nullptr, info.lambda, &info.value, &error);
@@ -623,9 +646,11 @@ TEST (numopt, sqp_bary_works_with_mp1_fac) {
     pf[0] = 0.6808677941875395;
     pf[1] = -1.287415913860736;
     pf[2] = 0.2180848525247276;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<MP1, 2> w;
-    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    cost_functor_fac<MP1, 3> func {w, p0, p1, p2, pf};
+    set_args<MP1>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    cost_functor_fac<MP1, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);
@@ -659,9 +684,11 @@ TEST (numopt, sqp_bary_works_with_rhr_fac) {
     pf[0] = -0.1764880040665571;
     pf[1] = -0.6520821914757466;
     pf[2] = 0.1565338036926401;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<RHR, 2> w;
-    set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    cost_functor_fac<RHR, 3> func {w, p0, p1, p2, pf};
+    set_args<RHR>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    cost_functor_fac<RHR, 3, 2> func {w, g};
     updates::info<2> info;
     sqp_bary<decltype(func), 3, 2>()(func, nullptr, info.lambda, &info.value, &error);
     ASSERT_FALSE(error);

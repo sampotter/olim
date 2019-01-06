@@ -333,9 +333,12 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
 template <cost_func F, class node, int lp_norm, int d1, int d2>
 void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
 {
+  // TODO: only allocate once
   valid_d1 = new bool[26*26];
   valid_d2 = new bool[26*26];
   coplanar = new bool[26*26*26];
+  geom_wkspcs = new geom_wkspc<2>[26*26*26];
+  qr_wkspcs = new qr_wkspc<3, 2>[26*26*26];
 
   static constexpr double tol = eps<double>;
 
@@ -365,20 +368,20 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
 
   // Use the scalar triple product (dot(p x q, r)) to check if
   // three points are coplanar.
-  {
-    double p0_x_p1[3];
-    for (int l0 = 0; l0 < 26; ++l0) {
-      get_p(l0, p0);
-      for (int l1 = 0; l1 < 26; ++l1) {
-        get_p(l1, p1);
-        p0_x_p1[0] = p0[1]*p1[2] - p0[2]*p1[1];
-        p0_x_p1[1] = p0[2]*p1[0] - p0[0]*p1[2];
-        p0_x_p1[2] = p0[0]*p1[1] - p0[1]*p1[0];
-        for (int l2 = 0; l2 < 26; ++l2) {
-          get_p(l2, p2);
-          is_coplanar(l0, l1, l2) = fabs(
-            p0_x_p1[0]*p2[0] + p0_x_p1[1]*p2[1] + p0_x_p1[2]*p2[2]) < 1e1*tol;
-        }
+  double p0_x_p1[3];
+  for (int l0 = 0; l0 < 26; ++l0) {
+    get_p(l0, p0);
+    for (int l1 = 0; l1 < 26; ++l1) {
+      get_p(l1, p1);
+      p0_x_p1[0] = p0[1]*p1[2] - p0[2]*p1[1];
+      p0_x_p1[1] = p0[2]*p1[0] - p0[0]*p1[2];
+      p0_x_p1[2] = p0[0]*p1[1] - p0[1]*p1[0];
+      for (int l2 = 0; l2 < 26; ++l2) {
+        get_p(l2, p2);
+        is_coplanar(l0, l1, l2) = fabs(
+          p0_x_p1[0]*p2[0] + p0_x_p1[1]*p2[1] + p0_x_p1[2]*p2[2]) < 1e1*tol;
+        geom_wkspcs[linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
+        qr_wkspcs[linear_index(l0, l1, l2)].init(p0, p1, p2);
       }
     }
   }
@@ -476,23 +479,32 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     updates::info<2> info;
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
-
-    if (n->has_fac_parent()) {
-      updates::tetra<F, 3>()(
-        p0, p1, p2,
-        this->nb[l0]->get_value(),
-        this->nb[l1]->get_value(),
-        this->nb[l2]->get_value(),
-        this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-        this->get_h(), p_fac, s_fac, info);
-    } else {
-      updates::tetra<F, 3>()(
-        p0, p1, p2,
-        this->nb[l0]->get_value(),
-        this->nb[l1]->get_value(),
-        this->nb[l2]->get_value(),
-        this->s_hat, this->s[l0], this->s[l1], this->s[l2],
-        this->get_h(), info);
+    {
+      double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
+        u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+        s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
+      if (n->has_fac_parent()) {
+        geom_fac_wkspc<2> g;
+        g.init<3>(p0, p1, p2, p_fac);
+        F_fac_wkspc<F, 2> w;
+        set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
+        cost_functor_fac<F, 3, 2> func {w, g};
+        updates::tetra<F, 3>()(func, info);
+        if (F == MP0) {
+          eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
+        }
+      } else {
+        F_wkspc<F, 2> w;
+        set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
+        int lin = linear_index(l0, l1, l2);
+        cost_functor<F, 3, 2> func {w, geom_wkspcs[lin]};
+        func.qr = &qr_wkspcs[lin];
+        updates::tetra<F, 3>()(func, info);
+        if (F == MP0 && info.inbounds()) {
+          func.set_lambda(info.lambda);
+          eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
+        }
+      }
     }
 #if COLLECT_STATS
     node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);

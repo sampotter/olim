@@ -11,6 +11,87 @@
 #define P110 6
 #define P111 7
 
+TEST (cost_funcs, geom_wkspc_init_works) {
+  {
+    double p0[3] = {3, 1, 3};
+    double p1[3] = {3, 2, 3};
+    double p2[3] = {1, 2, 3};
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
+    ASSERT_EQ(g.p0t_p0, 19);
+    ASSERT_EQ(g.dPt_p0[0], 1);
+    ASSERT_EQ(g.dPt_p0[1], -5);
+    ASSERT_EQ(g.dPt_dP[0], 1);
+    ASSERT_EQ(g.dPt_dP[1], 1);
+    ASSERT_EQ(g.dPt_dP[2], 5);
+  }
+  {
+    double p0[3] = {1, 0, 1};
+    double p1[3] = {-1, 1, -1};
+    double p2[3] = {0, 1, 2};
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
+    ASSERT_EQ(g.p0t_p0, 2);
+    ASSERT_EQ(g.dPt_p0[0], -4);
+    ASSERT_EQ(g.dPt_p0[1], 0);
+    ASSERT_EQ(g.dPt_dP[0], 9);
+    ASSERT_EQ(g.dPt_dP[1], 1);
+    ASSERT_EQ(g.dPt_dP[2], 3);
+  }
+}
+
+TEST (cost_funcs, geom_fac_wkspc_init_works) {
+  {
+    double p0[3] = {-1, -1, 0};
+    double p1[3] = {0, 0, 1};
+    double p2[3] = {-1, 0, 2};
+    double pf[3] = {-5, 7, -6};
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
+    ASSERT_EQ(g.p0t_p0, 2);
+    ASSERT_EQ(g.dPt_p0[0], -2);
+    ASSERT_EQ(g.dPt_p0[1], -1);
+    ASSERT_EQ(g.dPt_dP[0], 3);
+    ASSERT_EQ(g.dPt_dP[1], 3);
+    ASSERT_EQ(g.dPt_dP[2], 5);
+    ASSERT_EQ(g.pft_pf, 110);
+    ASSERT_EQ(g.dPt_pf[0], -4);
+    ASSERT_EQ(g.dPt_pf[1], -5);
+    ASSERT_EQ(g.pft_p0, -2);
+    ASSERT_NEAR(g.L0, 10.770329614269007, eps<double>);
+    ASSERT_NEAR(g.dL[0], 0.320206892140410, eps<double>);
+    ASSERT_NEAR(g.dL[1], 0.587487077331540, 2*eps<double>);
+  }
+}
+
+TEST (cost_funcs, qr_wkspc_init_works) {
+  double p0[3], p1[3], p2[3];
+
+  p0[0] = 0.531333906565674;
+  p0[1] = 0.325145681820560;
+  p0[2] = 0.105629203329022;
+  p1[0] = 0.610958658746201;
+  p1[1] = 0.778802241824093;
+  p1[2] = 0.423452918962738;
+  p2[0] = 0.090823285787439;
+  p2[1] = 0.266471490779072;
+  p2[2] = 0.153656717591307;
+  qr_wkspc<3, 2> qr;
+  qr.init(p0, p1, p2);
+  ASSERT_NEAR(qr.q1[0], 0.142287754011544, 1e1*eps<double>);
+  ASSERT_NEAR(qr.q1[1], 0.810674711667021, eps<double>);
+  ASSERT_NEAR(qr.q1[2], 0.567944281529397, 1e1*eps<double>);
+  ASSERT_NEAR(qr.q2[0], -0.976057933121891, eps<double>);
+  ASSERT_NEAR(qr.q2[1], 0.019547935001213, 1e1*eps<double>);
+  ASSERT_NEAR(qr.q2[2], 0.216630536690951, 1e1*eps<double>);
+  ASSERT_NEAR(qr.r[0], 0.5596036899568037, eps<double>);
+  ASSERT_NEAR(qr.r[1], -0.08296799767228369, 1e1*eps<double>);
+  ASSERT_NEAR(qr.r[2], 0.4392211529528886, eps<double>);
+  ASSERT_NEAR(qr.Qt_p0[0], 0.399181192048293, 1e1*eps<double>);
+  ASSERT_NEAR(qr.Qt_p0[1], -0.489374236978515, 1e1*eps<double>);
+  ASSERT_NEAR(qr.numer, 3.601953654216578e-04, 2*eps<double>);
+}
+
 TEST (cost_funcs, rhr_works) {
   double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
   {
@@ -33,12 +114,14 @@ TEST (cost_funcs, rhr_works) {
     p2[0] = 0.7147429038260958;
     p2[1] = -0.2049660582997746;
     p2[2] = -0.1241443482163119;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<RHR, 3>(w, lam);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<RHR>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 1.689762490331113, 5e-16);
     ASSERT_NEAR(df[0], -0.4282612531697417, 2e-15);
     ASSERT_NEAR(df[1], -2.608936019769593, 2e-15);
@@ -66,12 +149,14 @@ TEST (cost_funcs, rhr_works) {
     p2[0] = -1.06670139898475;
     p2[1] = 0.9337281626712385;
     p2[2] = 0.3503210013561116;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<RHR, 3>(w, lam);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<RHR>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 1.326701745236962, 2.22045e-16);
     ASSERT_NEAR(df[0], 1.364704831564247, 5e-16);
     ASSERT_NEAR(df[1], 0.2015691301705069, 2.22045e-16);
@@ -103,12 +188,14 @@ TEST (cost_funcs, mp0_works) {
     p2[0] = -1.147952778898594;
     p2[1] = 0.104874716016494;
     p2[2] = 0.7222540322250016;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP0, 3>(w, lam);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<MP0>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.8703896887718838, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.776304163583716, 5e-16);
     ASSERT_NEAR(df[1], 0.2502826994447658, 9e-16);
@@ -136,12 +223,14 @@ TEST (cost_funcs, mp0_works) {
     p2[0] = 0.3375637006131064;
     p2[1] = 1.000060819589125;
     p2[2] = -1.66416447498706;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP0, 3>(w, lam);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<MP0>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 1.04937627761328, 5e-16);
     ASSERT_NEAR(df[0], 0.8235524285361199, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.5554223656236505, 2.22045e-16);
@@ -173,12 +262,14 @@ TEST (cost_funcs, mp1_works) {
     p2[0] = 1.603457298120044;
     p2[1] = 1.234679146890778;
     p2[2] = -0.2296264509631805;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP1, 3>(w, lam);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<MP1>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.6375555765979776, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.3994996388285198, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.6149253208800269, 2.22045e-16);
@@ -206,12 +297,14 @@ TEST (cost_funcs, mp1_works) {
     p2[0] = 0.9248259334937059;
     p2[1] = 4.984907525081331e-05;
     p2[2] = -0.0549189146094067;
+    geom_wkspc<2> g;
+    g.init<3>(p0, p1, p2);
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
-    set_lambda<MP1, 3>(w, lam);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_lambda<MP1>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.456074668933617, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.4449408124402994, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.05475042537160603, 2.22045e-16);
@@ -244,11 +337,11 @@ TEST (cost_funcs, rhr111_works) {
     p2[1] = 0;
     p2[2] = 1;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P010, P001>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P010, P001>(w, d2f);
     ASSERT_NEAR(f, 0.3454445478969491, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.4762716207665988, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.0542281005452294, 2.22045e-16);
@@ -277,11 +370,11 @@ TEST (cost_funcs, rhr111_works) {
     p2[1] = 0;
     p2[2] = 1;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P010, P001>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P010, P001>(w, d2f);
     ASSERT_NEAR(f, 0.4837561772031396, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.7499842322661709, 2.22045e-16);
     ASSERT_NEAR(df[1], -0.2710004126874189, 2.22045e-16);
@@ -314,11 +407,11 @@ TEST (cost_funcs, rhr_123_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P100, P110, P111>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P110, P111>(w, d2f);
     ASSERT_NEAR(f, 1.141809140746093, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.1814962984200262, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.2216205589568347, 2.22045e-16);
@@ -351,11 +444,11 @@ TEST (cost_funcs, rhr_222_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<RHR, 2> w;
-    set_args<RHR, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<RHR>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<RHR, 3, P110, P101, P011>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P110, P101, P011>(w, d2f);
     ASSERT_NEAR(f, 0.3805226825467133, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.2001667619329952, 2.22045e-16);
     ASSERT_NEAR(df[1], -0.2940365099200196, 2.22045e-16);
@@ -388,11 +481,11 @@ TEST (cost_funcs, mp0_111_works) {
     p2[1] = 0;
     p2[2] = 1;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P100, P010, P001>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P010, P001>(w, d2f);
     ASSERT_NEAR(f, 0.7043216835245574, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.2118249098616238, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.8237507838152849, 2.22045e-16);
@@ -425,11 +518,11 @@ TEST (cost_funcs, mp0_123_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P100, P110, P111>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P110, P111>(w, d2f);
     ASSERT_NEAR(f, 1.076654193038217, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.2615538762816094, 2.22045e-16);
     ASSERT_NEAR(df[1], -0.1604962261339898, 2.22045e-16);
@@ -462,11 +555,11 @@ TEST (cost_funcs, mp0_222_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<MP0, 2> w;
-    set_args<MP0, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP0>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP0, 3, P110, P101, P011>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P110, P101, P011>(w, d2f);
     ASSERT_NEAR(f, 0.5543810063040289, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.254931255983449, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.1929848493894792, 2.22045e-16);
@@ -499,11 +592,11 @@ TEST (cost_funcs, mp1_111_works) {
     p2[1] = 0;
     p2[2] = 1;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P100, P010, P001>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P100, P010, P001>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P010, P001>(w, d2f);
     ASSERT_NEAR(f, 0.4529430571954809, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.3311834545123941, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.4630909441088277, 2.22045e-16);
@@ -536,11 +629,11 @@ TEST (cost_funcs, mp1_123_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P100, P110, P111>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P100, P110, P111>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P100, P110, P111>(w, d2f);
     ASSERT_NEAR(f, 0.6083344569269014, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.03135544872856954, 2.22045e-16);
     ASSERT_NEAR(df[1], -0.2080235671311109, 2.22045e-16);
@@ -573,11 +666,11 @@ TEST (cost_funcs, mp1_222_works) {
     p2[1] = 1;
     p2[2] = 1;
     F_wkspc<MP1, 2> w;
-    set_args<MP1, 3, P110, P101, P011>(w, u0, u1, u2, s, s0, s1, s2, h);
+    set_args<MP1>(w, u0, u1, u2, s, s0, s1, s2, h);
     set_lambda<MP1, 3, P110, P101, P011>(w, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess<3, P110, P101, P011>(w, d2f);
     ASSERT_NEAR(f, 0.7091953080104028, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.446582281851884, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.3498090802809615, 2.22045e-16);
@@ -614,12 +707,14 @@ TEST (cost_funcs, rhr_fac_works) {
     pf[0] = -0.3728087417235042;
     pf[1] = -0.2364545837571863;
     pf[2] = 2.023690886603053;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<RHR, 2> w;
-    set_args<RHR, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    set_lambda<RHR, 3>(w, p0, p1, p2, pf, lam);
+    set_args<RHR>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    set_lambda<RHR>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.2647221281773937, 2.22045e-16);
     ASSERT_NEAR(df[0], 0.00833384190278625, 3e-16);
     ASSERT_NEAR(df[1], 0.2304578531655662, 3e-16);
@@ -656,12 +751,14 @@ TEST (cost_funcs, mp0_fac_works) {
     pf[0] = -0.4710699126831666;
     pf[1] = 0.1370248741300503;
     pf[2] = -0.2918633757535734;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<MP0, 2> w;
-    set_args<MP0, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    set_lambda<MP0, 3>(w, p0, p1, p2, pf, lam);
+    set_args<MP0>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    set_lambda<MP0>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.5587087401852298, 2.22045e-16);
     ASSERT_NEAR(df[0], -0.3024733586635268, 4e-16);
     ASSERT_NEAR(df[1], -0.8839234895192173, 2.22045e-16);
@@ -698,12 +795,14 @@ TEST (cost_funcs, mp1_fac_works) {
     pf[0] = -0.2730469494029069;
     pf[1] = 1.576300146546075;
     pf[2] = -0.4809371517788452;
+    geom_fac_wkspc<2> g;
+    g.init<3>(p0, p1, p2, pf);
     F_fac_wkspc<MP1, 2> w;
-    set_args<MP1, 3>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, pf, sf);
-    set_lambda<MP1, 3>(w, p0, p1, p2, pf, lam);
+    set_args<MP1>(w, g, u0, u1, u2, s, s0, s1, s2, h, sf);
+    set_lambda<MP1>(w, g, lam);
     eval(w, f);
     grad(w, df);
-    hess(w, d2f);
+    hess(w, g, d2f);
     ASSERT_NEAR(f, 0.2852053655607227, 2.22045e-16);
     ASSERT_NEAR(df[0], 1.511262232883143, 2.22045e-16);
     ASSERT_NEAR(df[1], 0.2055717498377105, 2.22045e-16);

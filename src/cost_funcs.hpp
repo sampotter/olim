@@ -47,24 +47,104 @@ template <int d>
 void lagmults(double const * lam, double const * df, double const * d2f,
               double * mu, int * k);
 
-template <int d>
-struct eval_wkspc {
-  double u0, du[d], u_lam, sh_lam, l_lam;
+template <int n, int d> struct qr_wkspc {};
+
+template <> struct qr_wkspc<3, 2> {
+  double q1[3];
+  double q2[3];
+  double r[3];
+  double Qt_p0[2];
+  double numer;
+
+  void init(double const * p0, double const * p1, double const * p2) {
+    // Compute 3x2 reduced QR decomposition of [p1 - p0, p2 - p0].
+    sub<3>(p1, p0, q1);
+    r[0] = norm2<3>(q1);
+    scal_inplace<3>(1/r[0], q1);
+    sub<3>(p2, p0, q2);
+    r[1] = dot<3>(q2, q1);
+    axpy<3>(-r[1], q1, q2, q2);
+    r[2] = norm2<3>(q2);
+    scal_inplace<3>(1/r[2], q2);
+
+    // Compute entries of Q'*p0:
+    Qt_p0[0] = dot<3>(q1, p0);
+    Qt_p0[1] = dot<3>(q2, p0);
+
+    // Compute the numerator in the square root for the exact
+    // solution (TODO: add reference to equation in paper).
+    numer = dot<3>(p0, p0) - dot<2>(Qt_p0, Qt_p0);
+  }
+};
+
+template <int d> struct geom_wkspc {};
+
+template <>
+struct geom_wkspc<2> {
+  double p0t_p0, dPt_p0[2], dPt_dP[sym_mat_size(2)];
+
+  template <int n>
+  void init(double const * p0, double const * p1, double const * p2) {
+    double dp1[n], dp2[n];
+    sub<n>(p1, p0, dp1);
+    sub<n>(p2, p0, dp2);
+
+    p0t_p0 = dot<n>(p0, p0);
+    dPt_p0[0] = dot<n>(dp1, p0);
+    dPt_p0[1] = dot<n>(dp2, p0);
+    dPt_dP[0] = dot<n>(dp1, dp1);
+    dPt_dP[1] = dot<n>(dp1, dp2);
+    dPt_dP[2] = dot<n>(dp2, dp2);
+  }
+};
+
+template <int d> struct geom_fac_wkspc {};
+
+template <>
+struct geom_fac_wkspc<2>: geom_wkspc<2> {
+  double pft_pf, dPt_pf[2], pft_p0, L0, dL[2];
+
+  template <int n>
+  void init(double const * p0, double const * p1, double const * p2,
+            double const * pf) {
+    double dp1[n], dp2[n];
+    sub<n>(p1, p0, dp1);
+    sub<n>(p2, p0, dp2);
+
+    this->p0t_p0 = dot<n>(p0, p0);
+    this->dPt_p0[0] = dot<n>(dp1, p0);
+    this->dPt_p0[1] = dot<n>(dp2, p0);
+    this->dPt_dP[0] = dot<n>(dp1, dp1);
+    this->dPt_dP[1] = dot<n>(dp1, dp2);
+    this->dPt_dP[2] = dot<n>(dp2, dp2);
+
+    pft_pf = dot<n>(pf, pf);
+    dPt_pf[0] = dot<n>(dp1, pf);
+    dPt_pf[1] = dot<n>(dp2, pf);
+    pft_p0 = dot<n>(pf, p0);
+    L0 = dist2<n>(pf, p0);
+    dL[0] = dist2<n>(pf, p1) - L0;
+    dL[1] = dist2<n>(pf, p2) - L0;
+  }
 };
 
 template <int d>
-struct fac_wkspc {
-  double tau0, dtau[d], tau_lam, sh_lam, l_lam, sh_fac, l_fac_lam,
-    dPt_nu_fac_lam[d];
+struct base_wkspc {
+  double sh_lam, l_lam, dPt_nu_lam[d];
 };
 
-template <int d, class base_wkspc = eval_wkspc<d>>
-struct F0_wkspc: public base_wkspc {
-  double p0t_p0, dPt_p0[d], dPt_dP[sym_mat_size(d)], dPt_nu_lam[d];
+template <int d>
+struct F0_wkspc: base_wkspc<d> {
+  double u0, du[d], u_lam;
 };
 
-template <int d, class base_wkspc = eval_wkspc<d>>
-struct F1_wkspc: public F0_wkspc<d, base_wkspc> {
+template <int d>
+struct fac_wkspc: base_wkspc<d> {
+  double tau0, dtau[d], tau_lam, sh_fac, l_fac_lam, dPt_nu_fac_lam[d];
+};
+
+template <int d, class base = F0_wkspc<d>>
+struct F1_wkspc: base {
   double sh_bar, theta_h_ds[d];
 };
 
@@ -72,7 +152,7 @@ template <cost_func F, int d>
 using F_wkspc = std::conditional_t<F == MP1, F1_wkspc<d>, F0_wkspc<d>>;
 
 template <int d>
-using F0_fac_wkspc = F0_wkspc<d, fac_wkspc<d>>;
+using F0_fac_wkspc = fac_wkspc<d>;
 
 template <int d>
 using F1_fac_wkspc = F1_wkspc<d, fac_wkspc<d>>;
@@ -81,39 +161,54 @@ template <cost_func F, int d>
 using F_fac_wkspc = std::conditional_t<
   F == MP1, F1_fac_wkspc<d>, F0_fac_wkspc<d>>;
 
-template <cost_func F, class wkspc>
-void set_sh_lam(wkspc & w, double s, double s0, double s1, double s2, double h)
+inline void check_args(double u0, double u1, double u2, double s,
+                       double s0, double s1, double s2, double h)
 {
-  if (F == MP0) {
-    w.sh_lam = h*(s + (s0 + s1 + s2)/3)/2;
-  } else if (F == MP1 || F == RHR) {
-    // NOTE: MP1 and RHR do different things here, and treat the
-    // variable sh_lam differently. Later, MP1 also computes a
-    // perturbation which is used when eval is called, and treats
-    // sh_lam as the base term.
-    w.sh_lam = h*s;
-  }
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
+  assert(u0 >= 0);
+  assert(u1 >= 0);
+  assert(u2 >= 0);
+  assert(s >= 0);
+  assert(s0 >= 0);
+  assert(s1 >= 0);
+  assert(s2 >= 0);
+  assert(h > 0);
+#else
+  (void) u0;
+  (void) u1;
+  (void) u2;
+  (void) s;
+  (void) s0;
+  (void) s1;
+  (void) s2;
+  (void) h;
+#endif
 }
 
 template <cost_func F>
-void set_args_common(F0_wkspc<2> & w, double u0, double u1, double u2,
-                     double s, double s0, double s1, double s2, double h)
+void set_args(F0_wkspc<2> & w,
+              double u0, double u1, double u2, double s,
+              double s0, double s1, double s2, double h)
 {
+  check_args(u0, u1, u2, s, s0, s1, s2, h);
+
   w.u0 = u0;
   w.du[0] = u1 - u0;
   w.du[1] = u2 - u0;
 
-  set_sh_lam<F, decltype(w)>(w, s, s0, s1, s2, h);
+  w.sh_lam = (F == RHR ? s : (s + (s0 + s1 + s2)/3)/2)*h;
 }
 
 template <cost_func F>
-void set_args_common(F1_wkspc<2> & w, double u0, double u1, double u2,
-                     double s, double s0, double s1, double s2, double h)
+void set_args(F1_wkspc<2> & w,
+              double u0, double u1, double u2, double s,
+              double s0, double s1, double s2, double h)
 {
   static_assert(F == MP1, "Cost function must be MP1");
 
-  set_args_common<F>(
-    static_cast<F0_wkspc<2> &>(w), u0, u1, u2, s, s0, s1, s2, h);
+  check_args(u0, u1, u2, s, s0, s1, s2, h);
+
+  set_args<F>(static_cast<F0_wkspc<2> &>(w), u0, u1, u2, s, s0, s1, s2, h);
 
   w.sh_bar = (s + s0)*h/2;
 
@@ -121,80 +216,36 @@ void set_args_common(F1_wkspc<2> & w, double u0, double u1, double u2,
   w.theta_h_ds[1] = h*(s2 - s0)/2;
 }
 
-template <cost_func F, int n, int p0, int p1, int p2>
-void set_args(F_wkspc<F, 2> & w, double u0, double u1, double u2,
-              double s, double s0, double s1, double s2, double h)
-{
-  using namespace bitops;
-  using dim_t = dim<n>;
-
-  set_args_common<F>(w, u0, u1, u2, s, s0, s1, s2, h);
-
-  w.dPt_dP[0] = p_dot_q<p1, p1>(dim_t {}) - 2*p_dot_q<p1, p0>(dim_t {})
-    + p_dot_q<p0, p0>(dim_t {});
-  w.dPt_dP[1] = p_dot_q<p1, p2>(dim_t {}) - p_dot_q<p1, p0>(dim_t {})
-    - p_dot_q<p2, p0>(dim_t {}) + p_dot_q<p0, p0>(dim_t {});
-  w.dPt_dP[2] = p_dot_q<p2, p2>(dim_t {}) - 2*p_dot_q<p2, p0>(dim_t {})
-    + p_dot_q<p0, p0>(dim_t {});
-}
-
-template <int n, class wkspc>
-void set_dPt_dP_etc(wkspc & w, double const * p0, double const * p1,
-                    double const * p2)
-{
-  double dp1[n], dp2[n];
-  sub<n>(p1, p0, dp1);
-  sub<n>(p2, p0, dp2);
-
-  w.p0t_p0 = dot<n>(p0, p0);
-  w.dPt_p0[0] = dot<n>(dp1, p0);
-  w.dPt_p0[1] = dot<n>(dp2, p0);
-  w.dPt_dP[0] = dot<n>(dp1, dp1);
-  w.dPt_dP[1] = dot<n>(dp1, dp2);
-  w.dPt_dP[2] = dot<n>(dp2, dp2);
-}
-
-template <cost_func F, int n>
-void set_args(F_wkspc<F, 2> & w,
-              double const * p0, double const * p1, double const * p2,
+template <cost_func F>
+void set_args(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
               double u0, double u1, double u2, double s,
-              double s0, double s1, double s2, double h)
+              double s0, double s1, double s2, double h, double s_fac)
 {
-  set_args_common<F>(w, u0, u1, u2, s, s0, s1, s2, h);
-  set_dPt_dP_etc<n>(w, p0, p1, p2);
-}
+  check_args(u0, u1, u2, s, s0, s1, s2, h);
+  assert(s_fac >= 0);
 
-template <cost_func F, int n>
-void set_args(F0_wkspc<2, fac_wkspc<2>> & w,
-              double const * p0, double const * p1, double const * p2,
-              double u0, double u1, double u2, double s,
-              double s0, double s1, double s2, double h,
-              double const * p_fac, double s_fac)
-{
   w.sh_fac = s_fac*h;
 
-  double const T0 = w.sh_fac*dist2<n>(p0, p_fac);
+  w.tau0 = u0 - w.sh_fac*g.L0;
+  w.dtau[0] = u1 - u0 - w.sh_fac*g.dL[0];
+  w.dtau[1] = u2 - u0 - w.sh_fac*g.dL[1];
 
-  w.tau0 = u0 - T0;
-  w.dtau[0] = u1 - u0 - (w.sh_fac*dist2<n>(p1, p_fac) - T0);
-  w.dtau[1] = u2 - u0 - (w.sh_fac*dist2<n>(p2, p_fac) - T0);
-
-  set_sh_lam<F>(w, s, s0, s1, s2, h);
-  set_dPt_dP_etc<n>(w, p0, p1, p2);
+  w.sh_lam = (F == RHR ? s : (s + (s0 + s1 + s2)/3)/2)*h;
 }
 
-template <cost_func F, int n>
-void set_args(F1_wkspc<2, fac_wkspc<2>> & w,
-              double const * p0, double const * p1, double const * p2,
+template <cost_func F>
+void set_args(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
               double u0, double u1, double u2, double s,
-              double s0, double s1, double s2, double h,
-              double const * p_fac, double s_fac)
+              double s0, double s1, double s2, double h, double s_fac)
 {
   static_assert(F == MP1, "Cost function must be MP1");
 
-  set_args<F, n>(
-    static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w),
-    p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
+  check_args(u0, u1, u2, s, s0, s1, s2, h);
+  assert(s_fac >= 0);
+
+  set_args<F>(
+    static_cast<F0_fac_wkspc<2> &>(w), g,
+    u0, u1, u2, s, s0, s1, s2, h, s_fac);
 
   w.sh_bar = (s + s0)*h/2;
 
@@ -218,6 +269,10 @@ inline void set_lambda_common(F1_wkspc<2> & w, double const * lam)
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
 }
 
+#define __p0t_p0 p_dot_q<p0, p0>(dim_t {})
+#define __dPt_p0(i) p_dot_q<p##i, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {})
+#define __dPt_dP(i) dPt_dP<p0, p1, p2, i>(dim_t {})
+
 template <cost_func F, int n, int p0, int p1, int p2>
 void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 {
@@ -228,46 +283,41 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 
   set_lambda_common(w, lam);
 
-  // TODO: give this the same treatment as the `set_lambda' function
-  // below (compress it!)
+  w.dPt_nu_lam[0] = __dPt_dP(0)*lam[0] + __dPt_dP(1)*lam[1] + __dPt_p0(1);
+  w.dPt_nu_lam[1] = __dPt_dP(1)*lam[0] + __dPt_dP(2)*lam[1] + __dPt_p0(2);
 
   w.l_lam = sqrt(
-    p_dot_q<p0, p0>(dim_t {}) +
-    2*(p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[0] +
-    2*(p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}))*lam[1] +
-    dPt_dP<p0, p1, p2, 0>(dim_t {})*lam[0]*lam[0] +
-    2*dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[0]*lam[1] +
-    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1]*lam[1]);
+    __p0t_p0 +
+    (__dPt_p0(1) + w.dPt_nu_lam[0])*lam[0] +
+    (__dPt_p0(2) + w.dPt_nu_lam[1])*lam[1]
+    );
   check(w.l_lam);
-  assert(w.l_lam != 0);
 
-  w.dPt_nu_lam[0] = (
-    p_dot_q<p1, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
-    dPt_dP<p0, p1, p2, 0>(dim_t {})*lam[0] +
-    dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[1])/w.l_lam;
+  w.dPt_nu_lam[0] /= w.l_lam;
+  w.dPt_nu_lam[1] /= w.l_lam;
+
   check(w.dPt_nu_lam[0]);
-
-  w.dPt_nu_lam[1] = (
-    p_dot_q<p2, p0>(dim_t {}) - p_dot_q<p0, p0>(dim_t {}) +
-    dPt_dP<p0, p1, p2, 1>(dim_t {})*lam[0] +
-    dPt_dP<p0, p1, p2, 2>(dim_t {})*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
 }
 
-template <cost_func F, int n>
-void set_lambda(F_wkspc<F, 2> & w, double const * lam)
+#undef __p0t_p0
+#undef __dPt_p0
+#undef __dPt_dP
+
+template <cost_func F>
+void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, double const * lam)
 {
   check_lambda<2>(lam);
 
   set_lambda_common(w, lam);
 
-  w.dPt_nu_lam[0] = w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1] + w.dPt_p0[0];
-  w.dPt_nu_lam[1] = w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1] + w.dPt_p0[1];
+  w.dPt_nu_lam[0] = g.dPt_dP[0]*lam[0] + g.dPt_dP[1]*lam[1] + g.dPt_p0[0];
+  w.dPt_nu_lam[1] = g.dPt_dP[1]*lam[0] + g.dPt_dP[2]*lam[1] + g.dPt_p0[1];
 
   w.l_lam = sqrt(
-    w.p0t_p0 +
-    (w.dPt_p0[0] + w.dPt_nu_lam[0])*lam[0] +
-    (w.dPt_p0[1] + w.dPt_nu_lam[1])*lam[1]
+    g.p0t_p0 +
+    (g.dPt_p0[0] + w.dPt_nu_lam[0])*lam[0] +
+    (g.dPt_p0[1] + w.dPt_nu_lam[1])*lam[1]
   );
   check(w.l_lam);
 
@@ -278,10 +328,8 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
   check(w.dPt_nu_lam[1]);
 }
 
-template <cost_func F, int n>
-void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
-                double const * p0, double const * p1, double const * p2,
-                double const * p_fac,
+template <cost_func F>
+void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
                 double const * lam)
 {
   check_lambda<2>(lam);
@@ -292,27 +340,18 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
   // idea in the unfactored `set_lambda' function above.
 
   w.l_lam = sqrt(
-    w.p0t_p0 +
-    2*(w.dPt_p0[0]*lam[0] + w.dPt_p0[1]*lam[1]) +
-    w.dPt_dP[0]*lam[0]*lam[0] +
-    2*w.dPt_dP[1]*lam[0]*lam[1] +
-    w.dPt_dP[2]*lam[1]*lam[1]);
+    g.p0t_p0 +
+    2*(g.dPt_p0[0]*lam[0] + g.dPt_p0[1]*lam[1]) +
+    g.dPt_dP[0]*lam[0]*lam[0] +
+    2*g.dPt_dP[1]*lam[0]*lam[1] +
+    g.dPt_dP[2]*lam[1]*lam[1]);
   check(w.l_lam);
 
-  w.dPt_nu_lam[0] = (w.dPt_p0[0] + w.dPt_dP[0]*lam[0] + w.dPt_dP[1]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[0] = (g.dPt_p0[0] + g.dPt_dP[0]*lam[0] + g.dPt_dP[1]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[0]);
 
-  w.dPt_nu_lam[1] = (w.dPt_p0[1] + w.dPt_dP[1]*lam[0] + w.dPt_dP[2]*lam[1])/w.l_lam;
+  w.dPt_nu_lam[1] = (g.dPt_p0[1] + g.dPt_dP[1]*lam[0] + g.dPt_dP[2]*lam[1])/w.l_lam;
   check(w.dPt_nu_lam[1]);
-
-  // TODO: can probably cache this so that we don't need to pass in
-  // p0, p1, p2, or p_fac (and also don't waste time computing this
-  // stuff. This is a low priority for now, though, since we spend
-  // little time on this code path.
-
-  double p0_dot_p_fac = dot<3>(p0, p_fac),
-    dp1_dot_p_fac = dot<n>(p1, p_fac) - p0_dot_p_fac,
-    dp2_dot_p_fac = dot<n>(p2, p_fac) - p0_dot_p_fac;
 
   // TODO: the line below with the funny-looking check before we take
   // the square root is a hack to get around the fact that if we take
@@ -321,35 +360,35 @@ void set_lambda(F0_wkspc<2, fac_wkspc<2>> & w,
   // with one of the update simplices (so, near the point source). The
   // result can be needlessly inflated numerical error that propagates
   // throughout the entire solution.
-  w.l_fac_lam = w.l_lam*w.l_lam -
-    2*(p0_dot_p_fac + lam[0]*dp1_dot_p_fac + lam[1]*dp2_dot_p_fac) +
-    dot<n>(p_fac, p_fac);
+  w.l_fac_lam = w.l_lam*w.l_lam - // TODO: set l_fac_lam to
+                                  // unnormalize l_lam first before
+                                  // adding the rest to it and
+                                  // normalizing l_lam
+    2*(g.pft_p0 + lam[0]*g.dPt_pf[0] + lam[1]*g.dPt_pf[1]) + g.pft_pf;
   w.l_fac_lam = w.l_fac_lam > 1e1*eps<double> ? sqrt(w.l_fac_lam) : 0;
   check(w.l_fac_lam);
 
-  w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - dp1_dot_p_fac)/w.l_fac_lam;
-  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - dp2_dot_p_fac)/w.l_fac_lam;
+  w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - g.dPt_pf[0])/w.l_fac_lam;
+  w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - g.dPt_pf[1])/w.l_fac_lam;
   if (isinf(w.dPt_nu_fac_lam[0])) {
     w.dPt_nu_fac_lam[0] = w.dPt_nu_fac_lam[1] = 0;
   }
 }
 
-template <cost_func F, int n>
-void set_lambda(F1_wkspc<2, fac_wkspc<2>> & w,
-                double const * p0, double const * p1, double const * p2,
-                double const * p_fac,
+template <cost_func F>
+void set_lambda(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
                 double const * lam)
 {
-  set_lambda<F, n>(static_cast<F0_wkspc<2, fac_wkspc<2>> &>(w), p0, p1, p2, p_fac, lam);
   check_lambda<2>(lam);
 
+  set_lambda<F>(static_cast<F0_fac_wkspc<2> &>(w), g, lam);
 
   w.sh_lam = w.sh_bar + w.theta_h_ds[0]*lam[0] + w.theta_h_ds[1]*lam[1];
   check(w.sh_lam);
 }
 
 template <int d>
-void eval(eval_wkspc<d> const & w, double & f)
+void eval(F0_wkspc<d> const & w, double & f)
 {
   f = w.u_lam + w.sh_lam*w.l_lam;
   check(f);
@@ -359,27 +398,6 @@ template <int d>
 void eval(fac_wkspc<d> const & w, double & f)
 {
   f = w.tau_lam + w.sh_fac*w.l_fac_lam + w.sh_lam*w.l_lam;
-  check(f);
-}
-
-template <int d>
-void eval_mp1_fix(
-  eval_wkspc<d> const & w,
-  double s, double s0, double s1, double s2, double h,
-  double const * lam, double & f)
-{
-  f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
-  check(f);
-}
-
-template <int d>
-void eval_mp1_fix(
-  fac_wkspc<d> const & w,
-  double s, double s0, double s1, double s2, double h,
-  double const * lam, double & f)
-{
-  f = w.tau_lam + w.sh_fac*w.l_fac_lam +
-    h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
   check(f);
 }
 
@@ -450,33 +468,33 @@ void hess(F0_wkspc<2> const & w, double * d2f)
 
 #undef __dPt_dP
 
-inline void hess(F0_wkspc<2> const & w, double * d2f)
+inline void hess(F0_wkspc<2> const & w, geom_wkspc<2> const & g, double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
 
-  d2f[0] = tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
-  d2f[1] = tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
-  d2f[2] = tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+  d2f[0] = tmp*(g.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+  d2f[1] = tmp*(g.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+  d2f[2] = tmp*(g.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
   check(d2f[0]);
   check(d2f[1]);
   check(d2f[2]);
 }
 
-inline void hess(F0_fac_wkspc<2> const & w, double * d2f)
+inline void hess(F0_fac_wkspc<2> const & w,
+                 geom_fac_wkspc<2> const & g,
+                 double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
-  d2f[0] = tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
-  d2f[1] = tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
-  d2f[2] = tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+  d2f[0] = tmp*(g.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+  d2f[1] = tmp*(g.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+  d2f[2] = tmp*(g.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
-  // if (w.l_fac_lam > 1e1*eps<double>) {
-  //   tmp = w.sh_fac/w.l_fac_lam;
   tmp = w.sh_fac/w.l_fac_lam;
   if (!isinf(tmp)) {
-    d2f[0] += tmp*(w.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
-    d2f[1] += tmp*(w.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
-    d2f[2] += tmp*(w.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
+    d2f[0] += tmp*(g.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
+    d2f[1] += tmp*(g.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
+    d2f[2] += tmp*(g.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
   }
 
   check(d2f[0]);
@@ -494,42 +512,44 @@ void hess(F1_wkspc<2> const & w, double * d2f)
   d2f[2] += 2*w.theta_h_ds[1]*w.dPt_nu_lam[1];
 }
 
-inline void hess(F1_wkspc<2> const & w, double * d2f)
+inline void hess(F1_wkspc<2> const & w, geom_wkspc<2> const & g, double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
 
   d2f[0] = 2*w.theta_h_ds[0]*w.dPt_nu_lam[0] +
-    tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+    tmp*(g.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
 
   d2f[1] = w.theta_h_ds[0]*w.dPt_nu_lam[1] + w.theta_h_ds[1]*w.dPt_nu_lam[0] +
-    tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+    tmp*(g.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
 
   d2f[2] = 2*w.theta_h_ds[1]*w.dPt_nu_lam[1] +
-    tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+    tmp*(g.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
   check(d2f[0]);
   check(d2f[1]);
   check(d2f[2]);
 }
 
-inline void hess(F1_fac_wkspc<2> const & w, double * d2f)
+inline void hess(F1_fac_wkspc<2> const & w,
+                 geom_fac_wkspc<2> const & g,
+                 double * d2f)
 {
   double tmp = w.sh_lam/w.l_lam;
 
   d2f[0] = 2*w.theta_h_ds[0]*w.dPt_nu_lam[0] +
-    tmp*(w.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
+    tmp*(g.dPt_dP[0] - w.dPt_nu_lam[0]*w.dPt_nu_lam[0]);
 
   d2f[1] = w.theta_h_ds[0]*w.dPt_nu_lam[1] + w.theta_h_ds[1]*w.dPt_nu_lam[0] +
-    tmp*(w.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
+    tmp*(g.dPt_dP[1] - w.dPt_nu_lam[0]*w.dPt_nu_lam[1]);
 
   d2f[2] = 2*w.theta_h_ds[1]*w.dPt_nu_lam[1] +
-    tmp*(w.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
+    tmp*(g.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
   if (w.l_fac_lam > 1e1*eps<double>) {
     tmp = w.sh_fac/w.l_fac_lam;
-    d2f[0] += tmp*(w.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
-    d2f[1] += tmp*(w.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
-    d2f[2] += tmp*(w.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
+    d2f[0] += tmp*(g.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
+    d2f[1] += tmp*(g.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
+    d2f[2] += tmp*(g.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);
   }
 
   check(d2f[0]);
@@ -548,44 +568,58 @@ struct cost_functor_bv<F, n, p0, p1, p2>
 {
   using wkspc = F_wkspc<F, 2>;
   cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
-  inline void set_lambda(double const * lam) {
-    ::set_lambda<F, n, p0, p1, p2>(w, lam);
-  }
+  inline void set_lambda(double const * lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess<n, p0, p1, p2>(w, d2f);}
   wkspc & w;
 };
 
-template <cost_func F, int n>
+template <cost_func F, int n, int d>
 struct cost_functor
 {
-  using wkspc = F_wkspc<F, 2>;
-  cost_functor(F_wkspc<F, 2> & w): w {w} {}
-  inline void set_lambda(double const * lam) {::set_lambda<F, n>(w, lam);}
+  using wkspc = F_wkspc<F, d>;
+  using geom_wkspc = geom_wkspc<d>;
+  using qr_wkspc = qr_wkspc<n, d>;
+  cost_functor(wkspc & w, geom_wkspc & g): w {w}, g {g} {}
+  inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam);}
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const  {::grad(w, df);}
-  inline void hess(double * d2f) const {::hess(w, d2f);}
+  inline void hess(double * d2f) const {::hess(w, g, d2f);}
   wkspc & w;
+  geom_wkspc & g;
+  qr_wkspc * qr {nullptr};
 };
 
-template <cost_func F, int n>
+template <cost_func F, int n, int d>
 struct cost_functor_fac
 {
-  using wkspc = F_fac_wkspc<F, 2>;
-  cost_functor_fac(F_fac_wkspc<F, 2> & w,
-                   double const * p0, double const * p1, double const * p2,
-                   double const * p_fac):
-    w {w}, p0 {p0}, p1 {p1}, p2 {p2}, p_fac {p_fac} {}
-  inline void set_lambda(double const * lam) {
-    ::set_lambda<F, n>(w, p0, p1, p2, p_fac, lam);
-  }
+  using wkspc = F_fac_wkspc<F, d>;
+  using geom_wkspc = geom_fac_wkspc<d>;
+  cost_functor_fac(wkspc & w, geom_wkspc & g): w {w}, g {g} {}
+  inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam); }
   inline void eval(double & f) const {::eval(w, f);}
   inline void grad(double * df) const {::grad(w, df);}
-  inline void hess(double * d2f) const {::hess(w, d2f);}
+  inline void hess(double * d2f) const {::hess(w, g, d2f);}
   wkspc & w;
-  double const * p0, * p1, * p2, * p_fac;
+  geom_wkspc & g;
 };
 
+inline void eval_mp1_fix(F0_wkspc<2> const & w,
+                  double s, double s0, double s1, double s2, double h,
+                  double const * lam, double & f)
+{
+  f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
+  check(f);
+}
+
+inline void eval_mp1_fix(fac_wkspc<2> const & w,
+                  double s, double s0, double s1, double s2, double h,
+                  double const * lam, double & f)
+{
+  f = w.tau_lam + w.sh_fac*w.l_fac_lam +
+    h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
+  check(f);
+}
 
 #endif // __COST_FUNCS_HPP__

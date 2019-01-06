@@ -16,11 +16,13 @@
 
 namespace updates {
 
-template <cost_func F>
-inline bool should_skip(cost_functor<F, 3> const & func, info<2> const & info) {
+template <cost_func F, int n>
+inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
   if (!info.on_boundary()) {
     return false;
   }
+
+  func.set_lambda(info.lambda);
 
   double df[2], d2f[3];
   func.grad(df);
@@ -42,51 +44,59 @@ inline bool should_skip(cost_functor<F, 3> const & func, info<2> const & info) {
 template <cost_func F, int n>
 void
 updates::tetra<F, n>::operator()(
-  double const * p0, double const * p1, double const * p2,
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h,
-  info<2> & info) const
+  cost_functor<F, n, 2> & func, info<2> & info) const
 {
-  F_wkspc<F, 2> w;
-  set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h);
+  // TODO: turn this back on
+  // if (should_skip(func, info)) {
+  //   return;
+  // }
 
-  cost_functor<F, 3> func {w};
-  func.set_lambda(info.lambda);
+  if (F == MP1) {
+    bool error;
+    sqp_bary<decltype(func), n, 2>()(
+      func,
+      nullptr, // TODO: warm start
+      info.lambda,
+      &info.value,
+      &error);
+    assert(!error);
+  } else {
+    auto & w = func.w;
+    auto & qr = func.qr;
 
-  if (should_skip(func, info)) {
-    return;
-  }
+    // Compute A = inv(R')*du/sh here.
+    double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
+    A[1] -= qr->r[1]*A[0]/qr->r[0];
+    A[1] /= qr->r[2];
+    A[0] /= qr->r[0];
 
-  bool error;
-  sqp_bary<decltype(func), n, 2>()(func, nullptr, info.lambda, &info.value, &error);
-  assert(!error);
+    double A_dot_A = dot<2>(A, A);
+    if (A_dot_A < 1) {
+      double lopt = sqrt(qr->numer/(1 - A_dot_A));
 
-  if (F == cost_func::mp0) {
-    eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
+      auto & lam = info.lambda;
+      lam[0] = qr->Qt_p0[0] + lopt*A[0];
+      lam[1] = qr->Qt_p0[1] + lopt*A[1];
+      lam[1] /= -qr->r[2];
+      lam[0] += qr->r[1]*lam[1];
+      lam[0] /= -qr->r[0];
+
+      if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
+        info.value = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
+      }
+    }
   }
 }
 
 template <cost_func F, int n>
 void
 updates::tetra<F, n>::operator()(
-  double const * p0, double const * p1, double const * p2,
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h,
-  double const * p_fac, double s_fac,
-  info<2> & info) const
+  cost_functor_fac<F, n, 2> & func, info<2> & info) const
 {
-  F_fac_wkspc<F, 2> w;
-  set_args<F, n>(w, p0, p1, p2, u0, u1, u2, s, s0, s1, s2, h, p_fac, s_fac);
-  cost_functor_fac<F, 3> func {w, p0, p1, p2, p_fac};
-  
   bool error;
   sqp_bary<decltype(func), n, 2, line_search::BACKTRACK>()(
     func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
-
-  if (F == cost_func::mp0) {
-    eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
-  }
 }
 
 #define __r11 bitops::R<p0, p1, p2, 0>(bitops::dim<3> {})
@@ -98,55 +108,41 @@ updates::tetra<F, n>::operator()(
 template <cost_func F, int n, int p0, int p1, int p2>
 void
 updates::tetra_bv<F, n, p0, p1, p2>::operator()(
-  double u0, double u1, double u2, double s,
-  double s0, double s1, double s2, double h,
-  info<2> & info) const
+  cost_functor_bv<F, n, p0, p1, p2> & func, info<2> & info) const
 {
-  if (F == MP0 || F == RHR) {
-    double sh = (F == RHR ? s : (s + (s0 + s1 + s2)/3)/2)*h;
-    double du[2] = {u1 - u0, u2 - u0};
+  if (F == MP1) {
+    bool error;
+    sqp_bary<decltype(func), n, 2>()(
+      func,
+      info.on_boundary() ? nullptr : info.lambda, // TODO: ???
+      info.lambda,
+      &info.value,
+      &error);
+    assert(!error);
+  } else {
+    auto & w = func.w;
 
-    // Compute q = inv(R')*du/sh here.
-    double q[2] = {du[0]/sh, du[1]/sh};
-    q[1] -= __r12*q[0]/__r11;
-    q[1] /= __r22;
-    q[0] /= __r11;
+    // Compute A = inv(R')*du/sh here.
+    double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
+    A[1] -= __r12*A[0]/__r11;
+    A[1] /= __r22;
+    A[0] /= __r11;
 
-    double q_dot_q = dot<2>(q, q);
-    if (q_dot_q < 1) {
-      double lopt = sqrt(__numer/(1 - q_dot_q));
+    double A_dot_A = dot<2>(A, A);
+    if (A_dot_A < 1) {
+      double lopt = sqrt(__numer/(1 - A_dot_A));
 
       auto & lam = info.lambda;
-      lam[0] = __Qt_p0(0) + lopt*q[0];
-      lam[1] = __Qt_p0(1) + lopt*q[1];
+      lam[0] = __Qt_p0(0) + lopt*A[0];
+      lam[1] = __Qt_p0(1) + lopt*A[1];
       lam[1] /= -__r22;
       lam[0] += __r12*lam[1];
       lam[0] /= -__r11;
 
       if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
-        info.value = u0 + du[0]*lam[0] + du[1]*lam[1];
-        if (F == RHR) {
-          info.value += lopt*sh;
-        } else {
-          info.value += lopt*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*h/2;
-        }
-        return;
+        info.value = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
       }
     }
-  }
-
-  F_wkspc<F, 2> w;
-  set_args<F, n, p0, p1, p2>(w, u0, u1, u2, s, s0, s1, s2, h);
-  cost_functor_bv<F, n, p0, p1, p2> func {w};
-
-  bool error;
-  sqp_bary<decltype(func), n, 2>()(
-    func, info.on_boundary() ? nullptr : info.lambda,
-    info.lambda, &info.value, &error);
-  assert(!error);
-
-  if (F == cost_func::mp0) {
-    eval_mp1_fix(w, s, s0, s1, s2, h, info.lambda, info.value);
   }
 }
 

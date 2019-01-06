@@ -84,8 +84,10 @@ template <class base, class node, int num_neighbors>
 void
 marcher<base, node, num_neighbors>::add_boundary_node(int i, int j, double value)
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(operator()(i, j).is_far());
+#endif
   visit_neighbors(&(operator()(i, j) = {i, j, value}));
 }
 
@@ -124,8 +126,10 @@ marcher<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int n
     n = &nodes[k];
     i = n->get_i();
     j = n->get_j();
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
     assert(in_bounds(i, j));
     assert(operator()(i, j).is_far());
+#endif
     operator()(i, j) = {i, j, n->get_value()};
   }
 
@@ -147,8 +151,10 @@ template <class base, class node, int num_neighbors>
 void
 marcher<base, node, num_neighbors>::set_node_fac_parent(int i, int j, int i_par, int j_par)
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(in_bounds(i_par, j_par));
+#endif
   operator()(i, j).set_fac_parent(&operator()(i_par, j_par));
 }
 
@@ -156,7 +162,9 @@ template <class base, class node, int num_neighbors>
 double
 marcher<base, node, num_neighbors>::get_value(int i, int j) const
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
+#endif
   return operator()(i, j).get_value();
 }
 
@@ -164,8 +172,10 @@ template <class base, class node, int num_neighbors>
 node &
 marcher<base, node, num_neighbors>::operator()(int i, int j)
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(_nodes != nullptr);
+#endif
   return _nodes[_width*i + j];
 }
 
@@ -173,8 +183,10 @@ template <class base, class node, int num_neighbors>
 node const &
 marcher<base, node, num_neighbors>::operator()(int i, int j) const
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(_nodes != nullptr);
+#endif
   return _nodes[_width*i + j];
 }
 
@@ -189,8 +201,10 @@ template <class base, class node, int num_neighbors>
 double
 marcher<base, node, num_neighbors>::get_speed(int i, int j) const
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(_s_cache != nullptr);
+#endif
   return _s_cache[_width*i + j];
 }
 

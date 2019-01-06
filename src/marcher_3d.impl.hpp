@@ -98,8 +98,10 @@ marcher_3d<base, node, num_neighbors>::~marcher_3d()
  */
 template <class base, class node, int num_neighbors>
 void marcher_3d<base, node, num_neighbors>::add_boundary_node(int i, int j, int k, double value) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(operator()(i, j, k).is_far());
+#endif
   visit_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
 }
 
@@ -141,8 +143,10 @@ void marcher_3d<base, node, num_neighbors>::add_boundary_nodes(node const * node
     i = n->get_i();
     j = n->get_j();
     k = n->get_k();
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
     assert(in_bounds(i, j, k));
     assert(operator()(i, j, k).is_far());
+#endif
     operator()(i, j, k) = {i, j, k, n->get_value()};
   }
 
@@ -162,28 +166,36 @@ template <class base, class node, int num_neighbors>
 void marcher_3d<base, node, num_neighbors>::set_node_fac_parent(
   int i, int j, int k, int i_par, int j_par, int k_par)
 {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(in_bounds(i_par, j_par, k_par));
+#endif
   operator()(i, j, k).set_fac_parent(&operator()(i_par, j_par, k_par));
 }
 
 template <class base, class node, int num_neighbors>
 double marcher_3d<base, node, num_neighbors>::get_value(int i, int j, int k) const {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
+#endif
   return operator()(i, j, k).get_value();
 }
 
 template <class base, class node, int num_neighbors>
 node & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int k) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_nodes != nullptr);
+#endif
   return _nodes[__linear_index(i, j, k)];
 }
 
 template <class base, class node, int num_neighbors>
 node const & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int k) const {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_nodes != nullptr);
+#endif
   return _nodes[__linear_index(i, j, k)];
 }
 
@@ -195,8 +207,10 @@ bool marcher_3d<base, node, num_neighbors>::in_bounds(int i, int j, int k) const
 
 template <class base, class node, int num_neighbors>
 double marcher_3d<base, node, num_neighbors>::get_speed(int i, int j, int k) const {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_s_cache != nullptr);
+#endif
   return _s_cache[__linear_index(i, j, k)];
 }
 

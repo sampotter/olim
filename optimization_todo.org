@@ -1,18 +1,18 @@
 * Optimization Todo
   1. [X] Fix the bugs
-  2. [ ] Add direct solve for non-bv
+  2. [X] Add direct solve for non-bv
   3. [ ] Convert to SOA
   4. [ ] Split fac and non-fac update functions
   5. [ ] Lag mults
      - [ ] Add initial lambda argument
      - [ ] Warm start using triangle update arglam
      - [ ] Check lagmults inside of tetra
-  6. [ ] Pass in precomputed stuff to tri and tetra
+  6. [ ] Pass in precomputed stuff to tetra
      - [ ] TODO at cost_funcs.hpp:233
-  7. [ ] Add command-line arguments to Python plotting scripts
+  7. [X] Add command-line arguments to Python plotting scripts
   8. [ ] Make plots and ensure that they agree with old results
   9. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
-     (close gap)
+     - currently pretty damn close... olim6_rhr is about 15% slower
   10. [ ] Remove STL headers
   11. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
@@ -26,3 +26,8 @@
   16. [ ] Global s_fac -> sf
   17. [ ] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
+  18. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+      actually does appear to take a significant amount of time...
+  19. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+      precomputed array of indices to valid neighbors
+  20. [ ] Replace pybind11 with Cython

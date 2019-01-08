@@ -1,33 +1,34 @@
 * Optimization Todo
   1. [X] Fix the bugs
   2. [X] Add direct solve for non-bv
-  3. [ ] Convert to SOA
-  4. [ ] Split fac and non-fac update functions
-  5. [ ] Lag mults
+  3. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6
+  4. [ ] Convert to SOA
+  5. [ ] Split fac and non-fac update functions
+  6. [ ] Lag mults
      - [ ] Add initial lambda argument
      - [ ] Warm start using triangle update arglam
      - [ ] Check lagmults inside of tetra
-  6. [ ] Pass in precomputed stuff to tetra
+  7. [ ] Pass in precomputed stuff to tetra
      - [ ] TODO at cost_funcs.hpp:233
-  7. [X] Add command-line arguments to Python plotting scripts
-  8. [ ] Make plots and ensure that they agree with old results
-  9. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
-     - currently pretty damn close... olim6_rhr is about 15% slower
-  10. [ ] Remove STL headers
-  11. [ ] Remove macros
+  8. [X] Add command-line arguments to Python plotting scripts
+  9. [ ] Make plots and ensure that they agree with old results
+  10. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+      - currently pretty damn close... olim6_rhr is about 15% slower
+  11. [ ] Remove STL headers
+  12. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  12. [ ] Speed up tests
+  13. [ ] Speed up tests
       - Try different test library?
         - cgreen seemed fine and was written in C
-  13. [ ] Try disabling exceptions
-  14. [ ] Replace malloc and news with "operator new" (minimum number
+  14. [ ] Try disabling exceptions
+  15. [ ] Replace malloc and news with "operator new" (minimum number
       of includes and no unnecessary calling of ctors via new)
-  15. [ ] Global p_fac -> pf
-  16. [ ] Global s_fac -> sf
-  17. [ ] Try making mp0's `eval' mp1's `eval' to see if that fixes
+  16. [ ] Global p_fac -> pf
+  17. [ ] Global s_fac -> sf
+  18. [ ] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
-  18. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+  19. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
       actually does appear to take a significant amount of time...
-  19. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+  20. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
       precomputed array of indices to valid neighbors
-  20. [ ] Replace pybind11 with Cython
+  21. [ ] Replace pybind11 with Cython

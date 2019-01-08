@@ -370,7 +370,7 @@ void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
 
   w.dPt_nu_fac_lam[0] = (w.l_lam*w.dPt_nu_lam[0] - g.dPt_pf[0])/w.l_fac_lam;
   w.dPt_nu_fac_lam[1] = (w.l_lam*w.dPt_nu_lam[1] - g.dPt_pf[1])/w.l_fac_lam;
-  if (!isinf(w.dPt_nu_fac_lam[0])) {
+  if (isinf(w.dPt_nu_fac_lam[0]) || isinf(w.dPt_nu_fac_lam[1])) {
     w.dPt_nu_fac_lam[0] = w.dPt_nu_fac_lam[1] = 0;
   }
 }
@@ -491,7 +491,7 @@ inline void hess(F0_fac_wkspc<2> const & w,
   d2f[2] = tmp*(g.dPt_dP[2] - w.dPt_nu_lam[1]*w.dPt_nu_lam[1]);
 
   tmp = w.sh_fac/w.l_fac_lam;
-  if (!isinf(tmp)) {
+  if (!isinf(tmp) && !isnan(tmp)) {
     d2f[0] += tmp*(g.dPt_dP[0] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[0]);
     d2f[1] += tmp*(g.dPt_dP[1] - w.dPt_nu_fac_lam[0]*w.dPt_nu_fac_lam[1]);
     d2f[2] += tmp*(g.dPt_dP[2] - w.dPt_nu_fac_lam[1]*w.dPt_nu_fac_lam[1]);

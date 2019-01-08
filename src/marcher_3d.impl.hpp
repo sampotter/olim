@@ -298,6 +298,9 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
     }
 #endif
     if (T < update_node->get_value()) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
+      assert(T >= 0);
+#endif
       update_node->set_value(T);
       adjust_heap_entry(update_node);
     }

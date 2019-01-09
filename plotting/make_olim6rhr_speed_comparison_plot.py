@@ -47,7 +47,7 @@ def toc():
 ################################################################################
 # gather timings
 
-Nmin, Nmax = 9, 301
+Nmin, Nmax = 11, 401
 N = np.arange(Nmin, Nmax, 2)
 
 ntrials = 3
@@ -84,9 +84,11 @@ Tb, To = np.array(Tb), np.array(To)
 
 # TODO: also plot To and Tb to show effect of cache spill?
 
-plt.figure()
-plt.semilogx(N, To/Tb)
-plt.savefig('olim6rhr_speed_comparison_plot.eps')
+np.savez('speed_comparison.npz', N=N, Tb=Tb, To=To)
+
+# plt.figure()
+# plt.semilogx(N, To/Tb)
+# plt.savefig('olim6rhr_speed_comparison_plot.eps')
 
 
 # N = [9, 11, 13, 15, 17, 21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 73, 81,

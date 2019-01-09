@@ -12,3 +12,4 @@ auto
 .juliahistory
 .DS_Store
 __pycache__
+*.npz

@@ -229,9 +229,14 @@ EIKONAL_PRIVATE:
 #if COLLECT_STATS
       node_stats.add_tetra_update(p0, p1, p2, info);
 #endif
-      skip_tri<a, b>() = 1;
-      skip_tri<b, c>() = 1;
-      skip_tri<a, c>() = 1;
+      // TODO: we're doing this because `direct_solve' solves the
+      // unconstrained problem, while `sqp_bary' solves the
+      // constrained problem
+      if (F == MP1) {
+        skip_tri<a, b>() = 1;
+        skip_tri<b, c>() = 1;
+        skip_tri<a, c>() = 1;
+      }
     }
   }
 

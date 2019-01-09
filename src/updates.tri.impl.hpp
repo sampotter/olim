@@ -65,9 +65,16 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     info.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
-    info.value = info.lambda[0] < 0 || 1 < info.lambda[0] ?
-      min(F0_line__(0), F0_line__(1)) :
-      u0 + info.lambda[0]*du + h*s__(info.lambda[0])*l__(info.lambda[0]);
+    if (info.lambda[0] < 0) {
+      info.value = F0_line__(0);
+      info.lambda[0] = 0;
+    } else if (info.lambda[0] > 1) {
+      info.value = F0_line__(1);
+      info.lambda[0] = 1;
+    } else {
+      info.value = u0 + info.lambda[0]*du +
+        h*s__(info.lambda[0])*l__(info.lambda[0]);
+    }
   }
 
   return info;
@@ -169,9 +176,16 @@ updates::tri<MP0, n>::operator()(
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     info.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
-    info.value = info.lambda[0] < 0 || 1 < info.lambda[0] ?
-      min(F0, F1) :
-      u0 + info.lambda[0]*du + h*s__(info.lambda[0])*l__(info.lambda[0]);
+    if (info.lambda[0] < 0) {
+      info.value = F0;
+      info.lambda[0] = 0;
+    } else if (info.lambda[0] > 1) {
+      info.value = F1;
+      info.lambda[0] = 1;
+    } else {
+      info.value = u0 + info.lambda[0]*du +
+        h*s__(info.lambda[0])*l__(info.lambda[0]);
+    }
   }
   return info;
 }
@@ -229,10 +243,17 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     info.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
-    info.value = info.lambda[0] < 0 || 1 < info.lambda[0] ?
-      min(F0_line__(0), F0_line__(1)) :
-      u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
+    if (info.lambda[0] < 0) {
+      info.value = F0_line__(0);
+      info.lambda[0] = 0;
+    } else if (info.lambda[0] > 1) {
+      info.value = F0_line__(1);
+      info.lambda[0] = 1;
+    } else {
+      info.value = u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
+    }
   }
+
   return info;
 }
 
@@ -339,10 +360,17 @@ updates::tri<RHR, n>::operator()(
     double const lhs = -b/a, rhs = sqrt(disc)/a;
     double const lam1 = lhs - rhs, lam2 = lhs + rhs;
     info.lambda[0] = check__(lam1) < check__(lam2) ? lam1 : lam2;
-    info.value = info.lambda[0] < 0 || 1 < info.lambda[0] ?
-      min(F0, F1) :
-      u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
+    if (info.lambda[0] < 0) {
+      info.value = F0;
+      info.lambda[0] = 0;
+    } else if (info.lambda[0] > 1) {
+      info.value = F1;
+      info.lambda[0] = 1;
+    } else {
+      info.value = u0 + info.lambda[0]*du + sh*l__(info.lambda[0]);
+    }
   }
+
   return info;
 }
 

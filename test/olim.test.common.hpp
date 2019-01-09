@@ -395,7 +395,8 @@ planes_are_correct(
   m3d.run();
 
   auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
-    -> testing::AssertionResult & {
+    -> testing::AssertionResult &
+  {
     return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
   };
 
@@ -427,17 +428,23 @@ result_is_symmetric(speed_func s = default_speed_func, int n = 51,
   m.add_boundary_node(n/2, n/2);
   m.run();
 
+  auto msg = [] (testing::AssertionResult & res, int i, int j)
+    -> testing::AssertionResult &
+  {
+    return res << ", (i = " << i << ", j = " << j << ")";
+  };
+
   for (int i = 0; i < n; ++i) {
     for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
       auto res = eq_w_rel_tol(m.get_value(i, j), m.get_value(i, j_), tol);
-      if (!res) return res;
+      if (!res) return msg(res, i, j);
     }
   }
 
   for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
     for (int j = 0; j < n; ++j) {
       auto res = eq_w_rel_tol(m.get_value(i, j), m.get_value(i_, j), tol);
-      if (!res) return res;
+      if (!res) return msg(res, i, j);
     }
   }
 
@@ -453,12 +460,18 @@ result_is_symmetric(speed_func_3d s = default_speed_func, int n = 21,
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
+  auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
+    -> testing::AssertionResult &
+  {
+    return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
+  };
+
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
         auto res = eq_w_rel_tol(
           m.get_value(i, j, k), m.get_value(i, j, k_), tol);
-        if (!res) return res;
+        if (!res) return msg(res, i, j, k);
       }
     }
   }
@@ -468,7 +481,7 @@ result_is_symmetric(speed_func_3d s = default_speed_func, int n = 21,
       for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
         auto res = eq_w_rel_tol(
           m.get_value(i, j, k), m.get_value(i, j_, k), tol);
-        if (!res) return res;
+        if (!res) return msg(res, i, j, k);
       }
     }
   }
@@ -478,7 +491,7 @@ result_is_symmetric(speed_func_3d s = default_speed_func, int n = 21,
       for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
         auto res = eq_w_rel_tol(
           m.get_value(i, j, k), m.get_value(i_, j, k), tol);
-        if (!res) return res;
+        if (!res) return msg(res, i, j, k);
       }
     }
   }

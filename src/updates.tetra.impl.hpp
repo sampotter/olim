@@ -61,30 +61,7 @@ updates::tetra<F, n>::operator()(
       &error);
     assert(!error);
   } else {
-    auto & w = func.w;
-    auto & qr = func.qr;
-
-    // Compute A = inv(R')*du/sh here.
-    double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
-    A[1] -= qr->r[1]*A[0]/qr->r[0];
-    A[1] /= qr->r[2];
-    A[0] /= qr->r[0];
-
-    double A_dot_A = dot<2>(A, A);
-    if (A_dot_A < 1) {
-      double lopt = sqrt(qr->numer/(1 - A_dot_A));
-
-      auto & lam = info.lambda;
-      lam[0] = qr->Qt_p0[0] + lopt*A[0];
-      lam[1] = qr->Qt_p0[1] + lopt*A[1];
-      lam[1] /= -qr->r[2];
-      lam[0] += qr->r[1]*lam[1];
-      lam[0] /= -qr->r[0];
-
-      if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
-        info.value = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
-      }
-    }
+    direct_solve<F, n, 2>(func.w, func.qr, info.lambda, info.value);
   }
 }
 
@@ -98,12 +75,6 @@ updates::tetra<F, n>::operator()(
     func, nullptr, info.lambda, &info.value, &error);
   assert(!error);
 }
-
-#define __r11 bitops::R<p0, p1, p2, 0>(bitops::dim<3> {})
-#define __r12 bitops::R<p0, p1, p2, 1>(bitops::dim<3> {})
-#define __r22 bitops::R<p0, p1, p2, 2>(bitops::dim<3> {})
-#define __numer bitops::exact_soln_numer<p0, p1, p2>(bitops::dim<3> {})
-#define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
 void
@@ -120,37 +91,9 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
       &error);
     assert(!error);
   } else {
-    auto & w = func.w;
-
-    // Compute A = inv(R')*du/sh here.
-    double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
-    A[1] -= __r12*A[0]/__r11;
-    A[1] /= __r22;
-    A[0] /= __r11;
-
-    double A_dot_A = dot<2>(A, A);
-    if (A_dot_A < 1) {
-      double lopt = sqrt(__numer/(1 - A_dot_A));
-
-      auto & lam = info.lambda;
-      lam[0] = __Qt_p0(0) + lopt*A[0];
-      lam[1] = __Qt_p0(1) + lopt*A[1];
-      lam[1] /= -__r22;
-      lam[0] += __r12*lam[1];
-      lam[0] /= -__r11;
-
-      if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
-        info.value = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
-      }
-    }
+    direct_solve<F, n, p0, p1, p2>(func.w, info.lambda, info.value);
   }
 }
-
-#undef __r11
-#undef __r12
-#undef __r22
-#undef __numer
-#undef __Qt_p0
 
 // TODO: we aren't actually using this overload yet...
 // template <cost_func F, int p0, int p1, int p2>

@@ -215,7 +215,7 @@ TEST (numopt, test_qpi_baryplex) {
     qpi_bary<2>(G, c, x0, x, &error);
     ASSERT_FALSE(error);
     ASSERT_NEAR(x[0], 0.0, eps<double>);
-    ASSERT_NEAR(x[1], 0.241906380552462, eps<double>);
+    ASSERT_NEAR(x[1], 0.241906380552462, 1e2*eps<double>);
   }
 }
 

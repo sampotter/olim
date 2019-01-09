@@ -584,7 +584,7 @@ struct cost_functor
   inline void hess(double * d2f) const {::hess(w, g, d2f);}
   F_wkspc<F, d> & w;
   geom_wkspc<d> & g;
-  qr_wkspc<n, d> * qr {nullptr};
+  qr_wkspc<n, d> const * qr {nullptr};
 };
 
 template <cost_func F, int n, int d>

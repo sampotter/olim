@@ -483,17 +483,13 @@ updates::info<2> do_tetra(
 
   cost_functor<F, 3, 2> func {w, g};
 
-  if (F != MP1) {
-    func.qr = new qr_wkspc<3, 2>();
-    func.qr->init(p0, p1, p2);
-  }
+  // This is only used if F != MP1
+  qr_wkspc<3, 2> qr;
+  qr.init(p0, p1, p2);
+  func.qr = &qr;
 
   updates::info<2> info;
   updates::tetra<F, 3>()(func, info);
-
-  if (F != MP1) {
-    delete func.qr;
-  }
 
   return info;
 }

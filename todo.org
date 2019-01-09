@@ -1,46 +1,50 @@
 * <2019-01-09 Wed>
-  - [ ] Check that plots are fixed
-  - [ ] Run larger plot job on work computer
+  - [X] Check that plots are fixed
+  - [X] Fix plotting on tessier (just run in ipython for now)
+  - [ ] Run larger plot job on tessier
   - [ ] Get stats working again
   - [ ] Use stats as baseline to see where we're at with skipping
+  - [ ] Run basic vs. olim6 on armitage & tessier
 
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to
      just delete the "update" classes and move everything into the
      olim & olim3d classes as member functions...
-  2. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
-  3. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+  2. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
+     computer with 64GB of memory
+  3. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
+  4. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
      actually does appear to take a significant amount of time...
-  4. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+  5. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
      precomputed array of indices to valid neighbors
-  5. [ ] Convert to SOA
-  6. [ ] Split fac and non-fac update functions
-  7. [ ] Re-enable skipping and see if we can get any speedup
-  8. [ ] Lag mults
+  6. [ ] Convert to SOA
+  7. [ ] Split fac and non-fac update functions
+  8. [ ] Re-enable skipping and see if we can get any speedup
+  9. [ ] Lag mults
      - [ ] Add initial lambda argument
      - [ ] Warm start using triangle update arglam
      - [ ] Check lagmults inside of tetra
-  9. [ ] Make plots and ensure that they agree with old results
-  10. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+  10. [ ] Make plots and ensure that they agree with old results
+  11. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
       - currently pretty damn close... olim6_rhr is about 15% slower
-  11. [ ] Remove STL headers
-  12. [ ] Remove macros
+  12. [ ] Remove STL headers
+  13. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  13. [ ] Speed up tests
+  14. [ ] Speed up tests
       - Try different test library?
         - cgreen seemed fine and was written in C
-  14. [ ] Try disabling exceptions
-  15. [ ] Replace `malloc' and `new's with "operator new" (minimum
+  15. [ ] Try disabling exceptions
+  16. [ ] Replace `malloc' and `new's with "operator new" (minimum
       number of includes and no unnecessary calling of ctors via new)
-  16. [ ] Global p_fac -> pf
-  17. [ ] Global s_fac -> sf
-  18. [ ] Replace pybind11 with Cython
-  19. [ ] Use templates to remove macros from updates.tri
-  20. [X] Fix the bugs
-  21. [X] Add direct solve for non-bv
-  22. [X] Correctly set lambda in tri_bv for one-point updates
-  23. [X] Add command-line arguments to Python plotting scripts
-  24. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
+  17. [ ] Global p_fac -> pf
+  18. [ ] Global s_fac -> sf
+  19. [ ] Replace pybind11 with Cython
+  20. [ ] Use templates to remove macros from updates.tri
+  21. [X] Fix the bugs
+  22. [X] Add direct solve for non-bv
+  23. [X] Correctly set lambda in tri_bv for one-point updates
+  24. [X] Add command-line arguments to Python plotting scripts
+  25. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
       - symmetry problem fixed by switching to direct solve! probably
         the reason this was happening was because we were minimizing a

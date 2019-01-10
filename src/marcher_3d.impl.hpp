@@ -12,7 +12,6 @@
 #define __dj(l) dj<3>[l]
 #define __dk(l) dk<3>[l]
 
-#define __linear_index(i, j, k) (_height*(_width*k + j) + i) // column-major
 #define __x(l) (h*l - x0)
 #define __y(l) (h*l - y0)
 #define __z(l) (h*l - z0)
@@ -58,7 +57,7 @@ marcher_3d<base, node, num_neighbors>::marcher_3d(
     for (int j = 0; j < width; ++j) {
       x = __x(j);
       for (int i = 0; i < height; ++i) {
-        ptr[__linear_index(i, j, k)] = s(x, __y(i), z);
+        ptr[linear_index(i, j, k)] = s(x, __y(i), z);
       }
     }
   }
@@ -187,7 +186,7 @@ node & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int k) {
   assert(in_bounds(i, j, k));
   assert(_nodes != nullptr);
 #endif
-  return _nodes[__linear_index(i, j, k)];
+  return _nodes[linear_index(i, j, k)];
 }
 
 template <class base, class node, int num_neighbors>
@@ -196,7 +195,7 @@ node const & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int
   assert(in_bounds(i, j, k));
   assert(_nodes != nullptr);
 #endif
-  return _nodes[__linear_index(i, j, k)];
+  return _nodes[linear_index(i, j, k)];
 }
 
 template <class base, class node, int num_neighbors>
@@ -211,7 +210,7 @@ double marcher_3d<base, node, num_neighbors>::get_speed(int i, int j, int k) con
   assert(in_bounds(i, j, k));
   assert(_s_cache != nullptr);
 #endif
-  return _s_cache[__linear_index(i, j, k)];
+  return _s_cache[linear_index(i, j, k)];
 }
 
 template <class base, class node, int num_neighbors>
@@ -331,7 +330,6 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
 #undef __dj
 #undef __dk
 
-#undef __linear_index
 #undef __x
 #undef __y
 #undef __z

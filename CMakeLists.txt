@@ -61,11 +61,6 @@ set (EIKONAL_SRC_FILES
   src/numopt.cpp
   src/speed_funcs.cpp)
 
-if (${COLLECT_STATS})
-  list (APPEND EIKONAL_SRC_FILES src/stats.cpp)
-  list (SORT EIKONAL_SRC_FILES)
-endif ()
-
 add_library (eikonal STATIC ${EIKONAL_SRC_FILES})
 
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")

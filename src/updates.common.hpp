@@ -40,6 +40,17 @@ struct info<2>
 #endif
 };
 
+#ifdef COLLECT_STATS
+template <int n>
+struct stats
+{
+  int num_visits {0};
+  int count[n];
+
+  stats() { for (int d = 0; d < n; ++d) count[d] = 0; }
+};
+#endif
+
 }
 
 #endif // __UPDATES_HPP__

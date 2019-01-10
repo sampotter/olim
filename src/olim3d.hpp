@@ -3,9 +3,6 @@
 
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
-#if COLLECT_STATS
-#    include "stats.hpp"
-#endif
 #include "updates.line.hpp"
 #include "updates.tetra.hpp"
 #include "updates.tri.hpp"
@@ -63,7 +60,7 @@ struct abstract_olim3d:
                   no_speed_func_t const &):
       marcher_3d_t {height, width, depth, h, no_speed_func_t {}}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]}
+      , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif
   { init(); }
 
@@ -73,7 +70,7 @@ struct abstract_olim3d:
                   double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
       marcher_3d_t {height, width, depth, h, speed, x0, y0, z0}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]}
+      , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif
   { init(); }
 
@@ -81,26 +78,23 @@ struct abstract_olim3d:
                   double const * s_cache):
       marcher_3d_t {height, width, depth, h, s_cache}
 #if COLLECT_STATS
-    , _node_stats {new olim3d_node_stats[height*width*depth]}
+      , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif
   { init(); }
 
   void init();
+  virtual void update_impl(node * n, node ** nb, int parent, double & T);
+
+  double s_hat, s[num_neighbors];
 
 #if COLLECT_STATS
   virtual ~abstract_olim3d() { delete[] _node_stats; }
   void dump_stats() const;
-  olim3d_node_stats & get_node_stats(int i, int j, int k);
-  olim3d_node_stats const & get_node_stats(int i, int j, int k) const;
-#endif
-
-  double s_hat, s[num_neighbors];
-
-EIKONAL_PRIVATE:
-  virtual void update_impl(node * n, node ** nb, int parent, double & T);
-
-#if COLLECT_STATS
-  olim3d_node_stats * _node_stats {nullptr};
+  updates::stats<3> * get_stats(int i, int j, int k) const {
+    return &_node_stats[this->linear_index(i, j, k)];
+  }
+  updates::stats<3> * _stats {nullptr};
+  updates::stats<3> * _node_stats {nullptr};
 #endif
 };
 
@@ -144,7 +138,7 @@ EIKONAL_PRIVATE:
         this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
       u = std::min(u, u_hat);
 #if COLLECT_STATS
-      node_stats.add_line_update(d);
+      ++this->_stats->count[0];
 #endif
     }
   }
@@ -165,7 +159,7 @@ EIKONAL_PRIVATE:
         this->get_h());
       u = std::min(u, info.value);
 #if COLLECT_STATS
-      node_stats.add_tri_update(p0, p1, info);
+      ++this->_stats->count[1];
 #endif
       skip_tri<a, b>() = 1;
     }
@@ -202,7 +196,7 @@ EIKONAL_PRIVATE:
         this->get_speed(i_fac, j_fac, k_fac));
       u = std::min(u, info.value);
 #if COLLECT_STATS
-#  error Not implemented yet!
+      ++this->_stats->count[1];
 #endif
       skip_tri<a, b>() = 1;
     }
@@ -227,7 +221,7 @@ EIKONAL_PRIVATE:
       }
       u = std::min(u, info.value);
 #if COLLECT_STATS
-      node_stats.add_tetra_update(p0, p1, p2, info);
+      ++this->_stats->count[2];
 #endif
       // TODO: we're doing this because `direct_solve' solves the
       // unconstrained problem, while `sqp_bary' solves the
@@ -274,7 +268,7 @@ EIKONAL_PRIVATE:
       }
       u = std::min(u, info.value);
 #if COLLECT_STATS
-#  error Not implemented yet!
+      ++this->_stats->count[2];
 #endif
       skip_tri<a, b>() = 1;
       skip_tri<b, c>() = 1;

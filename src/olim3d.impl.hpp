@@ -8,9 +8,6 @@
 #include <src/config.hpp>
 
 #include "offsets.hpp"
-#if COLLECT_STATS
-#  include "update_rules.utils.hpp"
-#endif
 
 namespace ind {
   // degree 1
@@ -80,15 +77,10 @@ void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
   for (int k = 0; k < this->get_depth(); ++k) {
     for (int j = 0; j < this->get_width(); ++j) {
       for (int i = 0; i < this->get_height(); ++i) {
-        auto const & stats = this->get_node_stats(i, j, k);
-        printf("%d, %d, %d: visits = %d, line = %d, tri = %d/%d, tetra = %d/%d\n",
-               i, j, k,
-               stats.num_visits(),
-               stats.num_line_updates(),
-               stats.num_tri_updates() - stats.num_degenerate_tri_updates(),
-               stats.num_tri_updates(),
-               stats.num_tetra_updates() - stats.num_degenerate_tetra_updates(),
-               stats.num_tetra_updates());
+        auto stats = this->get_stats(i, j, k);
+        printf("%d, %d, %d: visits = %d, line = %d, tri = %d, tetra = %d\n",
+               i, j, k, stats->num_visits, stats->count[0], stats->count[1],
+               stats->count[2]);
       }
     }
   }
@@ -101,8 +93,8 @@ void abstract_olim3d<base, node, num_neighbors>::update_impl(
 {
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
 #if COLLECT_STATS
-  node_stats = this->get_node_stats(i, j, k);
-  node_stats.inc_num_visits();
+  this->_stats = this->get_stats(i, j, k);
+  ++this->_stats->num_visits;
 #endif
 
   for (int l = 0; l < num_neighbors; ++l) {
@@ -411,7 +403,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
     this->get_h());
 #if COLLECT_STATS
-  node_stats.inc_line_updates(p0, 3);
+  ++this->_stats->count[0];
 #endif
 
   if (n->has_fac_parent()) {
@@ -446,7 +438,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
         p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
         this->s_hat, this->s[l0], this->s[l], this->get_h());
 #if COLLECT_STATS
-    node_stats.inc_tri_updates(p0, p1, 3, tmp.is_degenerate(), true);
+    ++this->_stats->count[1];
 #endif
     Tnew = tmp.value;
     if (Tnew < T1) {
@@ -507,7 +499,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
       }
     }
 #if COLLECT_STATS
-    node_stats.inc_tetra_updates(p0, p1, p2, 3, tmp.is_degenerate(), true);
+    ++this->_stats->count[2];
 #endif
     Tnew = info.value;
     if (Tnew < T2) {
@@ -527,29 +519,5 @@ coda:
 #undef P101
 #undef P110
 #undef P111
-
-#if COLLECT_STATS
-
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups, int num_neighbors>
-olim3d_node_stats &
-abstract_olim3d<
-  node, line_updates, tri_updates, tetra_updates, groups,
-  num_neighbors>::get_node_stats(int i, int j, int k)
-{
-  return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
-}
-
-template <class node, class line_updates, class tri_updates,
-          class tetra_updates, class groups, int num_neighbors>
-olim3d_node_stats const &
-abstract_olim3d<
-  node, line_updates, tri_updates, tetra_updates, groups,
-  num_neighbors>::get_node_stats(int i, int j, int k) const
-{
-  return _node_stats[this->get_height()*(this->get_width()*k + j) + i];
-}
-
-#endif // COLLECT_STATS
 
 #endif // __OLIM3D_IMPL_HPP__

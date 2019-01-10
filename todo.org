@@ -1,10 +1,35 @@
 * <2019-01-09 Wed>
   - [X] Check that plots are fixed
   - [X] Fix plotting on tessier (just run in ipython for now)
-  - [ ] Run larger plot job on tessier
-  - [ ] Get stats working again
-  - [ ] Use stats as baseline to see where we're at with skipping
-  - [ ] Run basic vs. olim6 on armitage & tessier
+  - [X] Get stats working again
+  - [X] Use stats as baseline to see where we're at with skipping
+  - [X] Run basic vs. olim6 on armitage & tessier
+
+* <2019-01-10 Thu>
+  - [ ] Add "skip" to update::info for correct stats
+  - [ ] Plot: compare mp0 and mp1 stats
+    + Argument:
+      - `direct_solve' -> triangle update skipping for top-down solver
+      - so, olim*_mp1 can do fewer triangle updates than olim*_mp0
+      - otoh, `sqp_bary' is slower, so there is no speed gain for
+        olimhu_mp1, since we do triangle updates first
+      - this is why the relative difference between olimhu_mp1 and
+        olimhu_mp0 is much greater: the direct solver is better
+        adapted for olimhu
+      - at the same time, triangle updates are much cheaper than
+        tetrahedron updates, so olim*_mp0 is still faster than
+        olim*_mp1
+  - [ ] Writeup: new skipping idea
+  - [ ] Writeup: "implementation stats"
+  - [ ] olim* direct solver tri skipping
+  - [ ] Collect direct solve stats:
+    - [ ] %(bad disc) vs. N
+    - [ ] %(u = c) vs. N
+    - [ ] %(lam in K_i) vs. N
+    - [ ] %(lam in complement) vs. N
+
+* <2019-01-11 Fri>
+  - [ ] Make sure all plots use figsize=(6.5, *) and font size = 8
 
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to
@@ -15,6 +40,9 @@
   3. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
   4. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
      actually does appear to take a significant amount of time...
+     - [ ] Add a "barrier" state and just set the boundary to
+       "barrier" to implement this without having to think too hard
+       about it
   5. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
      precomputed array of indices to valid neighbors
   6. [ ] Convert to SOA

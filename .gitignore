@@ -13,3 +13,4 @@ auto
 .DS_Store
 __pycache__
 *.npz
+*.bin

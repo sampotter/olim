@@ -85,6 +85,27 @@ void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
     }
   }
 }
+
+template <class base, class node, int num_neighbors>
+void abstract_olim3d<base, node, num_neighbors>::write_stats_bin(
+  const char * path) const
+{
+  FILE * f = fopen(path, "wb");
+  updates::stats<3> * stats = nullptr;
+  for (int k = 0; k < this->get_depth(); ++k) {
+    for (int j = 0; j < this->get_depth(); ++j) {
+      for (int i = 0; i < this->get_depth(); ++i) {
+        stats = get_stats(i, j, k);
+        fwrite(&i, sizeof i, 1, f);
+        fwrite(&j, sizeof j, 1, f);
+        fwrite(&k, sizeof k, 1, f);
+        fwrite(&stats->num_visits, sizeof stats->num_visits, 1, f);
+        fwrite(stats->count, sizeof stats->count[0], 3, f);
+      }
+    }
+  }
+  fclose(f);
+}
 #endif // COLLECT_STATS
 
 template <class base, class node, int num_neighbors>

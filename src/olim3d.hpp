@@ -90,6 +90,7 @@ struct abstract_olim3d:
 #if COLLECT_STATS
   virtual ~abstract_olim3d() { delete[] _node_stats; }
   void dump_stats() const;
+  void write_stats_bin(const char * path) const;
   updates::stats<3> * get_stats(int i, int j, int k) const {
     return &_node_stats[this->linear_index(i, j, k)];
   }

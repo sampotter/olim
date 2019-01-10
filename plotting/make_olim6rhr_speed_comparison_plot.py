@@ -48,7 +48,7 @@ def toc():
 # gather timings
 
 Nmin, Nmax = 11, 401
-N = np.arange(Nmin, Nmax, 2)
+N = np.arange(Nmin, Nmax, 5)
 
 ntrials = 3
 

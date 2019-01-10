@@ -78,6 +78,9 @@ for i, n in enumerate(N):
         o.run()
         to = min(to, toc())
 
+    Tb.append(Tb)
+    To.append(To)
+
     print('n = %d, tb = %g, to = %g, to/tb = %g' % (n, tb, to, to/tb))
 
 Tb, To = np.array(Tb), np.array(To)

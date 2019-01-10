@@ -47,8 +47,8 @@ def toc():
 ################################################################################
 # gather timings
 
-Nmin, Nmax = 11, 401
-N = np.arange(Nmin, Nmax, 5)
+Nmin, Nmax = 11, 301
+N = np.arange(Nmin, Nmax, 10)
 
 ntrials = 3
 
@@ -78,8 +78,8 @@ for i, n in enumerate(N):
         o.run()
         to = min(to, toc())
 
-    Tb.append(Tb)
-    To.append(To)
+    Tb.append(tb)
+    To.append(to)
 
     print('n = %d, tb = %g, to = %g, to/tb = %g' % (n, tb, to, to/tb))
 

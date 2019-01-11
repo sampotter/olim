@@ -11,8 +11,9 @@
 
 * <2019-01-11 Fri>
   - [X] Make sure all plots use figsize=(6.5, *) and font size = 8
-  - [ ] Script: extract task % from profile data
-  - [ ] Plot: task %
+  - [X] Script: extract task % from profile data
+  - [X] Plot: task %
+  - [ ] Combine and automate the previous two
   - [ ] olimhu skipping
   - [ ] Writeup: "implementation stats"
 

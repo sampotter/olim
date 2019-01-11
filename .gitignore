@@ -14,3 +14,5 @@ auto
 __pycache__
 *.npz
 *.bin
+cg.*
+annotate.txt

@@ -15,6 +15,9 @@ struct info<1>
   inline bool inbounds() const {
     return 0 <= lambda[0] && lambda[0] <= 1;
   }
+  inline bool finite_lambda() const {
+    return isfinite(lambda[0]);
+  }
   inline bool on_boundary() const {
     return lambda[0] < tol || 1 - lambda[0] < tol;
   }
@@ -31,6 +34,9 @@ struct info<2>
   double tol {1e1*eps<double>};
   inline bool inbounds() const {
     return 0 <= lambda[0] && 0 <= lambda[1] && lambda[0] + lambda[1] <= 1;
+  }
+  inline bool finite_lambda() const {
+    return isfinite(lambda[0]) && isfinite(lambda[1]);
   }
   inline bool on_boundary() const {
     return lambda[0] < tol || lambda[1] < tol || lambda[0] + lambda[1] > 1 - tol;

@@ -6,75 +6,72 @@
   - [X] Run basic vs. olim6 on armitage & tessier
 
 * <2019-01-10 Thu>
-  - [ ] olim* direct solver tri skipping
-  - [ ] Add "skip" to update::info for correct stats
-  - [ ] Plot: compare mp0 and mp1 stats
-    + Argument:
-      - `direct_solve' -> triangle update skipping for top-down solver
-      - so, olim*_mp1 can do fewer triangle updates than olim*_mp0
-      - otoh, `sqp_bary' is slower, so there is no speed gain for
-        olimhu_mp1, since we do triangle updates first
-      - this is why the relative difference between olimhu_mp1 and
-        olimhu_mp0 is much greater: the direct solver is better
-        adapted for olimhu
-      - at the same time, triangle updates are much cheaper than
-        tetrahedron updates, so olim*_mp0 is still faster than
-        olim*_mp1
-  - [ ] Collect direct solve stats:
-    - [ ] %(bad disc) vs. N
-    - [ ] %(u = c) vs. N
-    - [ ] %(lam in K_i) vs. N
-    - [ ] %(lam in complement) vs. N
-  - [ ] Writeup: new skipping idea
-  - [ ] Writeup: "implementation stats"
+  - [X] olim* direct solver tri skipping
+  - [X] Writeup: new skipping idea
 
 * <2019-01-11 Fri>
-  - [ ] Make sure all plots use figsize=(6.5, *) and font size = 8
+  - [X] Make sure all plots use figsize=(6.5, *) and font size = 8
   - [ ] Script: extract task % from profile data
   - [ ] Plot: task %
+  - [ ] olimhu skipping
+  - [ ] Writeup: "implementation stats"
 
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to
      just delete the "update" classes and move everything into the
      olim & olim3d classes as member functions...
-  2. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
+  2. [ ] Since triangle updates are so much cheaper than SQP updates,
+     a better approach to solving unconstrained optimization problems
+     might be to implement the following constrained algorithm:
+     1) Do each triangle update + lagmults & skipping
+     2) Do interior solve only if the above fails
+     3) Could try a regular old Newton iteration for the interior solve...
+     If we did this, we wouldn't need to do the fussy triangle
+     skipping when we use the direct solver: we would only use it for
+     the interior point case, since after solving the three triangle
+     updates, we would know definitively if the optimum is in the
+     interior
+  3. [ ] The octant optimization is worth doing: without it, we end up
+     wasting time accessing `inds' and checking if the indices are
+     equal to `parent'
+  4. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
      computer with 64GB of memory
-  3. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
-  4. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+  5. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
+  6. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
      actually does appear to take a significant amount of time...
      - [ ] Add a "barrier" state and just set the boundary to
        "barrier" to implement this without having to think too hard
        about it
-  5. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+  7. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
      precomputed array of indices to valid neighbors
-  6. [ ] Convert to SOA
-  7. [ ] Split fac and non-fac update functions
-  8. [ ] Re-enable skipping and see if we can get any speedup
-  9. [ ] Lag mults
-     - [ ] Add initial lambda argument
-     - [ ] Warm start using triangle update arglam
-     - [ ] Check lagmults inside of tetra
-  10. [ ] Make plots and ensure that they agree with old results
-  11. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+  8. [ ] Convert to SOA
+  9. [ ] Split fac and non-fac update functions
+  10. [ ] Re-enable skipping and see if we can get any speedup
+  11. [ ] Lag mults
+      - [ ] Add initial lambda argument
+      - [ ] Warm start using triangle update arglam
+      - [ ] Check lagmults inside of tetra
+  12. [ ] Make plots and ensure that they agree with old results
+  13. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
       - currently pretty damn close... olim6_rhr is about 15% slower
-  12. [ ] Remove STL headers
-  13. [ ] Remove macros
+  14. [ ] Remove STL headers
+  15. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  14. [ ] Speed up tests
+  16. [ ] Speed up tests
       - Try different test library?
         - cgreen seemed fine and was written in C
-  15. [ ] Try disabling exceptions
-  16. [ ] Replace `malloc' and `new's with "operator new" (minimum
+  17. [ ] Try disabling exceptions
+  18. [ ] Replace `malloc' and `new's with "operator new" (minimum
       number of includes and no unnecessary calling of ctors via new)
-  17. [ ] Global p_fac -> pf
-  18. [ ] Global s_fac -> sf
-  19. [ ] Replace pybind11 with Cython
-  20. [ ] Use templates to remove macros from updates.tri
-  21. [X] Fix the bugs
-  22. [X] Add direct solve for non-bv
-  23. [X] Correctly set lambda in tri_bv for one-point updates
-  24. [X] Add command-line arguments to Python plotting scripts
-  25. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
+  19. [ ] Global p_fac -> pf
+  20. [ ] Global s_fac -> sf
+  21. [ ] Replace pybind11 with Cython
+  22. [ ] Use templates to remove macros from updates.tri
+  23. [X] Fix the bugs
+  24. [X] Add direct solve for non-bv
+  25. [X] Correctly set lambda in tri_bv for one-point updates
+  26. [X] Add command-line arguments to Python plotting scripts
+  27. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
       - symmetry problem fixed by switching to direct solve! probably
         the reason this was happening was because we were minimizing a

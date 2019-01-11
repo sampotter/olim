@@ -1,44 +1,44 @@
+#include <basic_marcher.hpp>
 #include <basic_marcher_3d.hpp>
 #include <olim.hpp>
 #include <olim3d.hpp>
-#include <src/config.hpp>
+
+#include <iostream>
 #include <string>
 
-constexpr int n = 65;
+template <class marcher_3d>
+void run_marcher_3d(int n) {
+  double h = 2./(n - 1);
+  int i = n/2;
+  marcher_3d m {n, n, n, h, (speed_func_3d) default_speed_func, 1., 1., 1.};
+  m.add_boundary_node(i, i, i);
+  m.run();
+}
 
-int main() {
+int main(int argc, char * argv[]) {
+  if (argc != 3) {
+    std::cout << "usage: " << argv[0] << " marcher N" << std::endl;
+    std::exit(1);
+  }
 
-  int i0 = n/2;
-  double h = 2./(n-1);
+  std::string marcher_name {argv[1]};
+  int n = std::stoi(argv[2]);
 
-  double * S = new double[n*n*n];
-  for (int i = 0; i < n*n*n; ++i) S[i] = 1;
-  // double x, y, z;
-  // for (int i = 0; i < n; ++i) {
-  //   x = h*static_cast<double>(i) - 1;
-  //   for (int j = 0; j < n; ++j) {
-  //     y = h*static_cast<double>(j) - 1;
-  //     for (int k = 0; k < n; ++k) {
-  //       z = h*static_cast<double>(k) - 1;
-  //       S[n*(n*k + j) + i] = s2(x, y, z);
-  //     }
-  //   }
-  // }
-  
-  // olim18_mp1 o {n, n, n, h, S};
-  // olim26_mp0 o {n, n, n, h, S};
-  // olim3d_hu_mp0 o {n, n, n, h, S};
-  // basic_marcher_3d o {n, n, n, h, S};
-  olim6_rhr o {n, n, n, h, S};
+  if (marcher_name == "basic_marcher_3d") run_marcher_3d<basic_marcher_3d>(n);
 
-  // for (int i = 0; i < n; ++i) {
-  //   for (int j = 0; j < n; ++j) {
-  //     for (int k = 0; k < n; ++k) {
-  //       o.set_node_fac_parent(i, j, k, i0, i0, i0);
-  //     }
-  //   }
-  // }
+  if (marcher_name == "olim6_mp0") run_marcher_3d<olim6_mp0>(n);
+  if (marcher_name == "olim6_mp1") run_marcher_3d<olim6_mp1>(n);
+  if (marcher_name == "olim6_rhr") run_marcher_3d<olim6_rhr>(n);
 
-  o.add_boundary_node(i0, i0, i0);
-  o.run();
+  if (marcher_name == "olim18_mp0") run_marcher_3d<olim18_mp0>(n);
+  if (marcher_name == "olim18_mp1") run_marcher_3d<olim18_mp1>(n);
+  if (marcher_name == "olim18_rhr") run_marcher_3d<olim18_rhr>(n);
+
+  if (marcher_name == "olim26_mp0") run_marcher_3d<olim26_mp0>(n);
+  if (marcher_name == "olim26_mp1") run_marcher_3d<olim26_mp1>(n);
+  if (marcher_name == "olim26_rhr") run_marcher_3d<olim26_rhr>(n);
+
+  if (marcher_name == "olim3d_hu_mp0") run_marcher_3d<olim3d_hu_mp0>(n);
+  if (marcher_name == "olim3d_hu_mp1") run_marcher_3d<olim3d_hu_mp1>(n);
+  if (marcher_name == "olim3d_hu_rhr") run_marcher_3d<olim3d_hu_rhr>(n);
 }

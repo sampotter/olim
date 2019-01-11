@@ -214,22 +214,40 @@ EIKONAL_PRIVATE:
       set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
       cost_functor_bv<F, 3, p0, p1, p2> func {w};
       updates::tetra_bv<F, 3, p0, p1, p2>()(func, info);
-      if (F == MP0 && info.inbounds()) {
+      bool inbounds = info.inbounds();
+      if (F == MP0 && inbounds) {
         func.set_lambda(info.lambda);
         eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
       }
       u = std::min(u, info.value);
-#if COLLECT_STATS
-      ++this->_stats->count[2];
-#endif
-      // TODO: we're doing this because `direct_solve' solves the
-      // unconstrained problem, while `sqp_bary' solves the
-      // constrained problem
-      if (F == MP1) {
+      if (F == MP1 || inbounds) {
         skip_tri<a, b>() = 1;
         skip_tri<b, c>() = 1;
         skip_tri<a, c>() = 1;
+      } else if (info.finite_lambda()) { // (F == MP0 || F == RHR) && !inbounds
+        auto const & lam = info.lambda;
+        if (lam[0] < 0 && lam[1] < 0) {
+          skip_tri<b, c>() = 1;
+        } else if (lam[0] + lam[1] > 1) {
+          if (lam[0] > 0 && lam[1] > 0) {
+            skip_tri<a, b>() = 1;
+            skip_tri<a, c>() = 1;
+          } else if (lam[0] < 0) {
+            skip_tri<a, c>() = 1;
+          } else if (lam[1] < 0) {
+            skip_tri<a, b>() = 1;
+          }
+        } else if (lam[0] < 0) {
+          skip_tri<a, b>() = 1;
+          skip_tri<b, c>() = 1;
+        } else if (lam[1] < 0) {
+          skip_tri<b, c>() = 1;
+          skip_tri<a, c>() = 1;
+        }
       }
+#if COLLECT_STATS
+      ++this->_stats->count[2];
+#endif
     }
   }
 

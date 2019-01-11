@@ -29,7 +29,11 @@ import time
 from matplotlib import rc
 
 rc('text', usetex=True)
-rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+rc('font', **{
+    'family': 'serif',
+    'serif': ['Computer Modern'],
+    'size': 8
+})
 
 norm = np.linalg.norm
 
@@ -112,7 +116,7 @@ colors = ['#1f77b4', '#d62728']
 
 # time vs error
 
-fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(8, 7))
+fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
@@ -148,7 +152,7 @@ fig.show()
 
 # size vs error
 
-fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(8, 7))
+fig, axes = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')

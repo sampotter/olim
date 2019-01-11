@@ -29,7 +29,11 @@ import speedfuncs3d
 from matplotlib import rc
 
 rc('text', usetex=True)
-rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+rc('font', **{
+    'family': 'serif',
+    'serif': ['Computer Modern'],
+    'size': 8
+})
 
 norm = np.linalg.norm
 
@@ -132,7 +136,7 @@ for ind, n in enumerate(N_3d):
         EIfac_3d[ind, rfac_ind] = \
             norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
-fig, axes = plt.subplots(2, 2, sharey='row', figsize=(8, 4))
+fig, axes = plt.subplots(2, 2, sharey='row', figsize=(6.5, 3.25))
 
 print('2d plots')
 
@@ -196,5 +200,5 @@ ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
 # ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
 
 fig.tight_layout()
-fig.subplots_adjust(0.07, 0.1, 0.995, 0.9325)
+# fig.subplots_adjust(0.07, 0.1, 0.995, 0.9325)
 fig.savefig('factoring-error-example.eps')

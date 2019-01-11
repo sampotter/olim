@@ -30,7 +30,11 @@ from matplotlib.colors import LogNorm
 from numpy.linalg import norm
 
 plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
+plt.rc('font', **{
+    'family': 'serif',
+    'serif': ['Computer Modern'],
+    'size': 8
+})
 
 plt.style.use('bmh')
 
@@ -119,7 +123,7 @@ for Olim in common.marchers:
 
 # plotting
 fig, axes = plt.subplots(
-    2, 2, sharex=True, sharey=True, figsize=(8, 6))
+    2, 2, sharex=True, sharey=True, figsize=(6.5, 4))
 
 axes[0, 0].set_ylabel(r'Unfactored')
 axes[1, 0].set_ylabel(r'Factored')
@@ -266,7 +270,7 @@ cmap = [0, 1, 4, 3]
 linestyles = ['-', '--', ':']
 
 fig, axes = plt.subplots(
-    2, 2, sharex=True, sharey=True, figsize=(8, 6))
+    2, 2, sharex=True, sharey=True, figsize=(6.5, 4))
 
 axes[0, 0].set_ylabel(r'Unfactored')
 axes[1, 0].set_ylabel(r'Factored')

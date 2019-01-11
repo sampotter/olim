@@ -33,7 +33,11 @@ from cycler import cycler
 from matplotlib import rc
 
 rc('text', usetex=True)
-rc('font', **{'family': 'serif', 'serif': ['Computer Modern']})
+rc('font', **{
+    'family': 'serif',
+    'serif': ['Computer Modern'],
+    'size': 8
+})
 
 norm = np.linalg.norm
 
@@ -125,7 +129,7 @@ colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 # make plots for the first two slowness functions (these are very
 # cramped, so split them into two figures)
 
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(8, 8))
+fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
@@ -164,7 +168,7 @@ fig.show()
 
 # ... and the second two slowness functions
 
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(8, 8))
+fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
@@ -205,7 +209,7 @@ fig.show()
 
 # first two slowness functions...
 
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(8, 8))
+fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')
@@ -251,7 +255,7 @@ fig.show()
 
 # ... and the second two slowness functions
 
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(8, 8))
+fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
 
 axes[0, 0].set_title('Relative $\ell_2$ Error')
 axes[0, 1].set_title('Relative $\ell_\infty$ Error')

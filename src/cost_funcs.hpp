@@ -642,6 +642,9 @@ void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
     if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
       u = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
     }
+  } else {
+    // F is unbounded below (TODO: verify)
+    lam[0] = lam[1] = inf<double>;
   }
 }
 
@@ -669,9 +672,13 @@ void direct_solve(F_wkspc<F, 2> const & w, double * lam, double & u)
     lam[1] /= -__r22;
     lam[0] += __r12*lam[1];
     lam[0] /= -__r11;
+
     if (lam[0] >= 0 && lam[1] >= 0 && lam[0] + lam[1] <= 1) {
       u = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1] + w.sh_lam*lopt;
     }
+  } else {
+    // F is unbounded below (TODO: verify)
+    lam[0] = lam[1] = inf<double>;
   }
 }
 

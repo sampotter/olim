@@ -16,3 +16,4 @@ __pycache__
 *.bin
 cg.*
 annotate.txt
+callgrind.out.*

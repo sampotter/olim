@@ -616,8 +616,8 @@ inline void eval_mp1_fix(fac_wkspc<2> const & w,
   check(f);
 }
 
-template <cost_func F, int n, int d>
-void direct_solve(F_wkspc<F, d> const & w, qr_wkspc<n, d> const * qr,
+template <cost_func F, int n>
+void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
                   double * lam, double & u)
 {
   // TODO: use Theorem 3.7 instead of 3.6 to evaluate (should save

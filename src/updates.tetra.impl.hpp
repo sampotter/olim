@@ -59,7 +59,7 @@ updates::tetra<F, n>::operator()(
       &error);
     assert(!error);
   } else {
-    direct_solve<F, n, 2>(func.w, func.qr, info.lambda, info.value);
+    direct_solve<F, n>(func.w, func.qr, info.lambda, info.value);
   }
 }
 

@@ -121,9 +121,7 @@ struct olim3d_bv:
 EIKONAL_PRIVATE:
 
   inline void reset_tri_skip_list() {
-    for (int i = 0; i < 42*8; ++i) {
-      tri_skip_list[i] = 0;
-    }
+    memset(tri_skip_list, 0, sizeof(tri_skip_list));
   }
 
   template <int i, int j>

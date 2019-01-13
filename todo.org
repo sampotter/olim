@@ -17,6 +17,10 @@
   - [ ] olimhu skipping
   - [ ] Writeup: "implementation stats"
 
+* <2019-01-12 Sat>
+  - [X] Finish optimizing Lagrange multipliers
+  - [ ] Use MATLAB to generate some tests for `should_skip'
+
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to
      just delete the "update" classes and move everything into the
@@ -32,47 +36,56 @@
      the interior point case, since after solving the three triangle
      updates, we would know definitively if the optimum is in the
      interior
-  3. [ ] The octant optimization is worth doing: without it, we end up
+  3. [ ] Remove second argument from `sqp_bary': i.e., use only one
+     `x' argument which contains the initial iterate to begin and is
+     overwritten with the optimum at the end. When we do this, we can
+     also:
+     - [ ] Have `sqp_bary' return its error code in an enum
+     - [ ] Just take the updates::info<d> struct as a reference
+       instead of separate parameters
+  4. [ ] Don't actually need to store qr_wkspc in cost_functor...
+  5. [ ] The octant optimization is worth doing: without it, we end up
      wasting time accessing `inds' and checking if the indices are
      equal to `parent'
-  4. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
+  6. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
      computer with 64GB of memory
-  5. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
-  6. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+  7. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
+  8. [ ] Reduce line count in tests using generic lambdas...
+  9. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
      actually does appear to take a significant amount of time...
      - [ ] Add a "barrier" state and just set the boundary to
        "barrier" to implement this without having to think too hard
        about it
-  7. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
-     precomputed array of indices to valid neighbors
-  8. [ ] Convert to SOA
-  9. [ ] Split fac and non-fac update functions
-  10. [ ] Re-enable skipping and see if we can get any speedup
-  11. [ ] Lag mults
+  10. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+      precomputed array of indices to valid neighbors
+  11. [ ] Convert to SOA
+  12. [ ] Split fac and non-fac update functions
+  13. [ ] Re-enable skipping and see if we can get any speedup
+  14. [ ] Lag mults
       - [ ] Add initial lambda argument
       - [ ] Warm start using triangle update arglam
       - [ ] Check lagmults inside of tetra
-  12. [ ] Make plots and ensure that they agree with old results
-  13. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+  15. [ ] Make plots and ensure that they agree with old results
+  16. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
       - currently pretty damn close... olim6_rhr is about 15% slower
-  14. [ ] Remove STL headers
-  15. [ ] Remove macros
+  17. [ ] Remove STL headers
+  18. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  16. [ ] Speed up tests
+  19. [ ] Speed up tests
       - Try different test library?
         - cgreen seemed fine and was written in C
-  17. [ ] Try disabling exceptions
-  18. [ ] Replace `malloc' and `new's with "operator new" (minimum
+  20. [ ] Try disabling exceptions
+  21. [ ] Replace `malloc' and `new's with "operator new" (minimum
       number of includes and no unnecessary calling of ctors via new)
-  19. [ ] Global p_fac -> pf
-  20. [ ] Global s_fac -> sf
-  21. [ ] Replace pybind11 with Cython
-  22. [ ] Use templates to remove macros from updates.tri
-  23. [X] Fix the bugs
-  24. [X] Add direct solve for non-bv
-  25. [X] Correctly set lambda in tri_bv for one-point updates
-  26. [X] Add command-line arguments to Python plotting scripts
-  27. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
+  22. [ ] Global p_fac -> pf
+  23. [ ] Global s_fac -> sf
+  24. [ ] Replace pybind11 with Cython
+  25. [ ] Use templates to remove macros from updates.tri
+  26. [X] Fix the bugs
+  27. [X] Add direct solve for non-bv
+  28. [X] Correctly set lambda in tri_bv for one-point updates
+  29. [X] Add command-line arguments to Python plotting scripts
+  30. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
       - symmetry problem fixed by switching to direct solve! probably
         the reason this was happening was because we were minimizing a

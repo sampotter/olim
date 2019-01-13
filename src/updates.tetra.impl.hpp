@@ -18,7 +18,7 @@ namespace updates {
 
 template <cost_func F, int n>
 inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
-  if (!info.on_boundary()) {
+  if (info.in_interior()) {
     return false;
   }
 
@@ -83,7 +83,7 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
     bool error;
     sqp_bary<decltype(func), n, 2>()(
       func,
-      info.on_boundary() ? nullptr : info.lambda, // TODO: ???
+      info.inbounds() ? info.lambda : nullptr,
       info.lambda,
       &info.value,
       &error);

@@ -18,8 +18,8 @@ struct info<1>
   inline bool finite_lambda() const {
     return isfinite(lambda[0]);
   }
-  inline bool on_boundary() const {
-    return lambda[0] < tol || 1 - lambda[0] < tol;
+  inline bool in_interior() const {
+    return eps<double> <= lambda[0] && lambda[0] <= 1 - eps<double>;
   }
 #ifdef COLLECT_STATS
   bool hierarchical {false};
@@ -38,8 +38,9 @@ struct info<2>
   inline bool finite_lambda() const {
     return isfinite(lambda[0]) && isfinite(lambda[1]);
   }
-  inline bool on_boundary() const {
-    return lambda[0] < tol || lambda[1] < tol || lambda[0] + lambda[1] > 1 - tol;
+  inline bool in_interior() const {
+    return eps<double> <= lambda[0] && eps<double> <= lambda[1] &&
+      eps<double> <= 1 - lambda[0] - lambda[1];
   }
 #ifdef COLLECT_STATS
   bool hierarchical {false};

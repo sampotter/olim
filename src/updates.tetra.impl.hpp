@@ -44,11 +44,6 @@ void
 updates::tetra<F, n>::operator()(
   cost_functor<F, n, 2> & func, info<2> & info) const
 {
-  // TODO: turn this back on
-  // if (should_skip(func, info)) {
-  //   return;
-  // }
-
   if (F == MP1) {
     bool error;
     sqp_bary<decltype(func), n, 2>()(

@@ -1,16 +1,16 @@
-u0 = 1.9915638315627207;
-u1 = 1.4142135623730949;
-u2 = 2;
-s = 1;
-s0 = 1;
-s1 = 1;
-s2 = 1;
 h = 1;
+u0 = rand;
+u1 = u0 + h*rand;
+u2 = u0 + h*rand;
+s = rand;
+s0 = s + h*rand;
+s1 = s0 + h*rand;
+s2 = s0 + h*rand;
 sfac = h*rand;
 
-P = rand(3);
+% P = rand(3);
 % P = [1 1 1; 0 1 0; 0 0 1];
-% P = eye(3);
+P = eye(3);
 % P = eye(3) + h*h*rand(3);
 p0 = P(:, 1);
 p1 = P(:, 2);

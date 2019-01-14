@@ -405,8 +405,6 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 {
   using std::min;
 
-  int i = n->get_i(), j = n->get_j(), k = n->get_k();
-
   /**
    * Tnew: temporary variable used for updating T, the update value
    * T0, T1, T2: separate minimum values for degree 0/1/2 updates
@@ -431,9 +429,9 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     auto n_fac = static_cast<node *>(n->get_fac_parent());
     int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
     s_fac = this->get_speed(i_fac, j_fac, k_fac);
-    p_fac[0] = i_fac - i;
-    p_fac[1] = j_fac - j;
-    p_fac[2] = k_fac - k;
+    p_fac[0] = i_fac - n->get_i();
+    p_fac[1] = j_fac - n->get_j();
+    p_fac[2] = k_fac - n->get_k();
   }
 
   // Create a cache for the minimizing lambdas to use for skipping

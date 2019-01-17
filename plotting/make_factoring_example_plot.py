@@ -52,9 +52,7 @@ N_3d = 2**Npow_3d + 1
 rfacs = [0.05, 0.1, 0.15, 0.2]
 nrfac = len(rfacs)
 
-E2, E2fac = np.empty(len(N)), np.empty((len(N), nrfac))
 EI, EIfac = np.empty(len(N)), np.empty((len(N), nrfac))
-E2_3d, E2fac_3d = np.empty(len(N_3d)), np.empty((len(N_3d), nrfac))
 EI_3d, EIfac_3d = np.empty(len(N_3d)), np.empty((len(N_3d), nrfac))
 
 print('solving 2d problems')
@@ -74,7 +72,6 @@ for ind, n in enumerate(N):
     o.addBoundaryNode(i0, j0)
     o.run()
     U = np.array([[o.getValue(i, j) for i in range(n)] for j in range(n)])
-    E2[ind] = norm(u - U, 'fro')/norm(u, 'fro')
     EI[ind] = norm(u - U, np.inf)/norm(u, np.inf)
 
     # factored using constant radius disk
@@ -91,7 +88,6 @@ for ind, n in enumerate(N):
         ofac.addBoundaryNode(i0, j0)
         ofac.run()
         Ufac = np.array([[ofac.getValue(i, j) for j in range(n)] for i in range(n)])
-        E2fac[ind, rfac_ind] = norm(u - Ufac, 'fro')/norm(u, 'fro')
         EIfac[ind, rfac_ind] = norm(u - Ufac, np.inf)/norm(u, np.inf)
 
 print('- solving 3d problems')
@@ -113,7 +109,6 @@ for ind, n in enumerate(N_3d):
     U = np.array([[[o.getValue(i, j, k) for i in range(n)]
                    for j in range(n)]
                   for k in range(n)])
-    E2_3d[ind] = norm((u - U).flatten())/norm(u.flatten())
     EI_3d[ind] = norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
     # factored using constant radius disk
@@ -132,73 +127,38 @@ for ind, n in enumerate(N_3d):
         Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
                           for j in range(n)]
                          for k in range(n)])
-        E2fac_3d[ind, rfac_ind] = norm((u - Ufac).flatten())/norm(u.flatten())
         EIfac_3d[ind, rfac_ind] = \
             norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
-fig, axes = plt.subplots(2, 2, sharey='row', figsize=(6.5, 3.25))
+fig, axes = plt.subplots(1, 2, sharey='row', figsize=(6.5, 3))
 
-print('2d plots')
-
-ax = axes[0, 0]
-tol = 1e-15
-mask = E2 > tol
-ax.loglog(N[mask], E2[mask], '*--', label='Unfactored', linewidth=1)
-for j, r_fac in enumerate(rfacs):
-    mask = E2fac[:, j] > tol
-    ax.loglog(N[mask], E2fac[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac,
-              linewidth=1)
-ax.set_title('Relative $\ell_2$ Error')
-ax.set_xticks(N[::3])
-ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
-ax.set_ylabel('\\texttt{olim8rhr}')
-
-ax = axes[0, 1]
+ax = axes[0]
 tol = 1e-15
 mask = EI > tol
 ax.loglog(N[mask], EI[mask], '*--', label='Unfactored', linewidth=1)
 for j, r_fac in enumerate(rfacs):
     mask = EIfac[:, j] > tol
     ax.loglog(N[mask], EIfac[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac,
-              linewidth=1)
-ax.set_title('Relative $\ell_\infty$ Error')
+              label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
+ax.set_title(r'\texttt{olim8rhr}')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
-# ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
+# ax.legend()
 
-print('3d plots')
-
-ax = axes[1, 0]
-tol = 1e-15
-mask = E2_3d > tol
-ax.loglog(N_3d[mask], E2_3d[mask], '*--', label='Unfactored', linewidth=1)
-for j, r_fac in enumerate(rfacs):
-    mask = E2fac_3d[:, j] > tol
-    ax.loglog(N_3d[mask], E2fac_3d[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac,
-              linewidth=1)
-ax.set_xlabel('$N$')
-ax.set_xticks(N_3d[::2])
-ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
-ax.set_ylabel('\\texttt{olim26rhr}')
-ax.legend(prop={'size': 6})
-
-ax = axes[1, 1]
+ax = axes[1]
 tol = 1e-15
 mask = EI_3d > tol
 ax.loglog(N_3d[mask], EI_3d[mask], '*--', label='Unfactored', linewidth=1)
 for j, r_fac in enumerate(rfacs):
     mask = EIfac_3d[:, j] > tol
     ax.loglog(N_3d[mask], EIfac_3d[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac,
-              linewidth=1)
+              label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
+ax.set_title(r'\texttt{olim26rhr}')
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])
-# ax.legend(bbox_to_anchor=(1, 1), loc='upper left', prop={'size': 6})
+ax.legend()
 
 fig.tight_layout()
-# fig.subplots_adjust(0.07, 0.1, 0.995, 0.9325)
+
 fig.savefig('factoring-error-example.eps')

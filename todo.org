@@ -19,13 +19,35 @@
 
 * <2019-01-12 Sat>
   - [X] Finish optimizing Lagrange multipliers
-  - [ ] Use MATLAB to generate some tests for `should_skip'
+  - [X] Use MATLAB to generate some tests for `should_skip'
+
+* <2019-01-15 Tue>
+  - [ ] Collect statistics on heap use
+    - [ ] Number of swaps when inserting
+    - [ ] Number of swaps when removing
+    - [ ] Size of heap iteration-by-iteration
 
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to
      just delete the "update" classes and move everything into the
      olim & olim3d classes as member functions...
-  2. [ ] Since triangle updates are so much cheaper than SQP updates,
+  2. [ ] Optimize node_3d size:
+     - [ ] _fac_parent is a pointer, which has size 8... we could
+       replace this with a linear index into the grid
+     - [ ] decrease size of state to a char
+     - [ ] ijk are ints, should be able to shrink to int16_t's
+     - [ ] currently sizeof(node_3d) == 40 (although actual size of
+       elements is 36, it gets passed to fill out 5 words). After
+       changes, should be able to get:
+       - [ ] ijk = 6 bytes
+       - [ ] value = 4/8 bytes (float/double)
+       - [ ] state = 1 byte
+       - [ ] heap_pos = 2/4 bytes
+       - [ ] fac_parent = 4 bytes
+       total: somewhere between 16 and 24 bytes, depending on whether
+       we use SOA or not
+  3. [ ] Add T = template parameter for double/float
+  4. [ ] Since triangle updates are so much cheaper than SQP updates,
      a better approach to solving unconstrained optimization problems
      might be to implement the following constrained algorithm:
      1) Do each triangle update + lagmults & skipping
@@ -36,56 +58,56 @@
      the interior point case, since after solving the three triangle
      updates, we would know definitively if the optimum is in the
      interior
-  3. [ ] Remove second argument from `sqp_bary': i.e., use only one
+  5. [ ] Remove second argument from `sqp_bary': i.e., use only one
      `x' argument which contains the initial iterate to begin and is
      overwritten with the optimum at the end. When we do this, we can
      also:
      - [ ] Have `sqp_bary' return its error code in an enum
      - [ ] Just take the updates::info<d> struct as a reference
        instead of separate parameters
-  4. [ ] Don't actually need to store qr_wkspc in cost_functor...
-  5. [ ] The octant optimization is worth doing: without it, we end up
+  6. [ ] Don't actually need to store qr_wkspc in cost_functor...
+  7. [ ] The octant optimization is worth doing: without it, we end up
      wasting time accessing `inds' and checking if the indices are
      equal to `parent'
-  6. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
+  8. [ ] Optimize memory to the point that we can run 1025^3 jobs on a
      computer with 64GB of memory
-  7. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
-  8. [ ] Reduce line count in tests using generic lambdas...
-  9. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
-     actually does appear to take a significant amount of time...
-     - [ ] Add a "barrier" state and just set the boundary to
-       "barrier" to implement this without having to think too hard
-       about it
-  10. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
+  9. [ ] Use Theorem 3.7 to evaluate instead of Theorem 3.6?
+  10. [ ] Reduce line count in tests using generic lambdas...
+  11. [ ] Remove `in_bounds' check by using a (n+2)^3 grid---this
+      actually does appear to take a significant amount of time...
+      - [ ] Add a "barrier" state and just set the boundary to
+        "barrier" to implement this without having to think too hard
+        about it
+  12. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
       precomputed array of indices to valid neighbors
-  11. [ ] Convert to SOA
-  12. [ ] Split fac and non-fac update functions
-  13. [ ] Re-enable skipping and see if we can get any speedup
-  14. [ ] Lag mults
+  13. [ ] Convert to SOA
+  14. [ ] Split fac and non-fac update functions
+  15. [ ] Re-enable skipping and see if we can get any speedup
+  16. [ ] Lag mults
       - [ ] Add initial lambda argument
       - [ ] Warm start using triangle update arglam
       - [ ] Check lagmults inside of tetra
-  15. [ ] Make plots and ensure that they agree with old results
-  16. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
+  17. [ ] Make plots and ensure that they agree with old results
+  18. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
       - currently pretty damn close... olim6_rhr is about 15% slower
-  17. [ ] Remove STL headers
-  18. [ ] Remove macros
+  19. [ ] Remove STL headers
+  20. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  19. [ ] Speed up tests
+  21. [ ] Speed up tests
       - Try different test library?
         - cgreen seemed fine and was written in C
-  20. [ ] Try disabling exceptions
-  21. [ ] Replace `malloc' and `new's with "operator new" (minimum
+  22. [ ] Try disabling exceptions
+  23. [ ] Replace `malloc' and `new's with "operator new" (minimum
       number of includes and no unnecessary calling of ctors via new)
-  22. [ ] Global p_fac -> pf
-  23. [ ] Global s_fac -> sf
-  24. [ ] Replace pybind11 with Cython
-  25. [ ] Use templates to remove macros from updates.tri
-  26. [X] Fix the bugs
-  27. [X] Add direct solve for non-bv
-  28. [X] Correctly set lambda in tri_bv for one-point updates
-  29. [X] Add command-line arguments to Python plotting scripts
-  30. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
+  24. [ ] Global p_fac -> pf
+  25. [ ] Global s_fac -> sf
+  26. [ ] Replace pybind11 with Cython
+  27. [ ] Use templates to remove macros from updates.tri
+  28. [X] Fix the bugs
+  29. [X] Add direct solve for non-bv
+  30. [X] Correctly set lambda in tri_bv for one-point updates
+  31. [X] Add command-line arguments to Python plotting scripts
+  32. [X] Try making mp0's `eval' mp1's `eval' to see if that fixes
       the symmetry problem
       - symmetry problem fixed by switching to direct solve! probably
         the reason this was happening was because we were minimizing a

@@ -21,9 +21,6 @@ struct info<1>
   inline bool in_interior() const {
     return eps<double> <= lambda[0] && lambda[0] <= 1 - eps<double>;
   }
-#ifdef COLLECT_STATS
-  bool hierarchical {false};
-#endif
 };
 
 template <>
@@ -42,9 +39,6 @@ struct info<2>
     return eps<double> <= lambda[0] && eps<double> <= lambda[1] &&
       eps<double> <= 1 - lambda[0] - lambda[1];
   }
-#ifdef COLLECT_STATS
-  bool hierarchical {false};
-#endif
 };
 
 #ifdef COLLECT_STATS

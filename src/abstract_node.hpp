@@ -51,9 +51,6 @@ EIKONAL_PROTECTED:
   state _state {state::far};
   int _heap_pos {-1};
   abstract_node * _fac_parent;
-#if NODE_MONITORING
-  bool _monitor_node {false};
-#endif
 };
 
 inline

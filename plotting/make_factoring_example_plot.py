@@ -131,6 +131,7 @@ for ind, n in enumerate(N_3d):
             norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
 fig, axes = plt.subplots(1, 2, sharey='row', figsize=(6.5, 3))
+title_fontsize = 10
 
 ax = axes[0]
 tol = 1e-15
@@ -140,7 +141,9 @@ for j, r_fac in enumerate(rfacs):
     mask = EIfac[:, j] > tol
     ax.loglog(N[mask], EIfac[mask, j], '*--',
               label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
-ax.set_title(r'\texttt{olim8rhr}')
+ax.set_title(r'\texttt{olim8rhr}', fontsize=title_fontsize)
+ax.set_ylabel(r'Relative $\ell_\infty$ Error')
+ax.set_xlabel('$N$')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
 # ax.legend()
@@ -153,7 +156,7 @@ for j, r_fac in enumerate(rfacs):
     mask = EIfac_3d[:, j] > tol
     ax.loglog(N_3d[mask], EIfac_3d[mask, j], '*--',
               label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
-ax.set_title(r'\texttt{olim26rhr}')
+ax.set_title(r'\texttt{olim26rhr}', fontsize=title_fontsize)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow_3d[::2]])

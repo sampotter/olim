@@ -9,6 +9,10 @@ namespace updates {
 
 // TODO: maybe we can remove the struct and replace it with a function
 // and its specializations?
+//
+// TODO: there are no more specializations---we can definitely do
+// this. Also remove the impl file and just move everything in here at
+// the same time.
 
 // TODO: can probably also remove the cost_functor thing
 // entirely... Not sure about whether this is worth it or not

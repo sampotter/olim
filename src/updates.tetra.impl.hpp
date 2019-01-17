@@ -16,8 +16,13 @@
 
 namespace updates {
 
+// TODO: this should (probably) eventually become an olim3d_hu member
+// function, since that's the only class that uses it...
+// TODO: simplify interface using template template parameter...?
 template <cost_func F, int n>
 inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
+  // TODO: instead, `assert(info.on_boundary())' here, since if
+  // in_interior() is true, then this is false... so a bit of a waste!
   if (info.in_interior()) {
     return false;
   }

@@ -27,7 +27,6 @@ import numpy as np
 import pyeikonal as eik
 
 from matplotlib.colors import LogNorm
-from matplotlib.lines import Line2D
 from numpy.linalg import norm
 
 plt.rc('text', usetex=True)
@@ -190,18 +189,11 @@ for Olim in marchers_3d:
 ################################################################################
 # Plotting
 
-fig, axes = plt.subplots(2, 2, sharex='col', sharey='all', figsize=(6.5, 4))
+fig, axes = plt.subplots(1, 2, sharex='col', sharey='all', figsize=(6.5, 2.5))
 
-axes[0, 0].set_ylabel(r'Unfactored')
-axes[1, 0].set_ylabel(r'Factored')
+axes[0].set_ylabel(r'$\|u - U\|_\infty/\|u\|_\infty$')
 
-ax = axes[0, 0]
-for Olim in marchers_2d:
-    ax.loglog(N, E2[Olim], label=common.get_marcher_plot_name(Olim),
-              linewidth=1, marker='|', markersize=3.5)
-ax.minorticks_off()
-
-ax = axes[1, 0]
+ax = axes[0]
 for Olim in marchers_2d:
     ax.loglog(N, E2_fac[Olim], label=common.get_marcher_plot_name(Olim),
               linewidth=1, marker='|', markersize=3.5)
@@ -217,16 +209,7 @@ colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 cmap = [0, 1, 4, 3]
 linestyles = ['-', '--', ':']
 
-ax = axes[0, 1]
-it = 0
-for Olim in marchers_3d:
-    ax.loglog(N3D, E3[Olim], label=common3d.get_marcher_plot_name(Olim),
-              color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
-              linewidth=1, marker='|', markersize=3.5)
-    it += 1
-ax.minorticks_off()
-
-ax = axes[1, 1]
+ax = axes[1]
 it = 0
 for Olim in marchers_3d:
     ax.loglog(N3D, E3_fac[Olim], label=common3d.get_marcher_plot_name(Olim),
@@ -239,7 +222,7 @@ ax.set_xticks(2**N_pow_3d + 1)
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in N_pow_3d])
 ax.set_xlabel('$N$')
 
-ax.legend(loc='lower left', ncol=2, prop={'size': 8})
+ax.legend(loc='lower left', ncol=1, prop={'size': 8})
 
 fig.tight_layout()
 fig.show()

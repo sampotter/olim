@@ -26,6 +26,7 @@ import pyeikonal as eik
 import speedfuncs
 import speedfuncs3d
 
+from matplotlib.colors import LogNorm
 from matplotlib import rc
 
 rc('text', usetex=True)
@@ -130,32 +131,45 @@ for ind, n in enumerate(N_3d):
         EIfac_3d[ind, rfac_ind] = \
             norm((u - Ufac).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
+################################################################################
+# Plotting
+
+colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+cmap = [0, 1, 4, 3]
+
 fig, axes = plt.subplots(1, 2, sharey='row', figsize=(6.5, 3))
 title_fontsize = 10
+
+style = {
+    'marker': '|',
+    'markersize': 3.5,
+    'linewidth': 1,
+    'linestyle': '-'
+}
+
+axes[0].set_ylabel(r'$\|u - U\|_\infty/\|u\|_\infty$')
 
 ax = axes[0]
 tol = 1e-15
 mask = EI > tol
-ax.loglog(N[mask], EI[mask], '*--', label='Unfactored', linewidth=1)
+ax.loglog(N[mask], EI[mask], label='Unfactored', color='k', **style)
 for j, r_fac in enumerate(rfacs):
     mask = EIfac[:, j] > tol
-    ax.loglog(N[mask], EIfac[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
+    ax.loglog(N[mask], EIfac[mask, j], '-', color=colors[cmap[j]],
+              label='Disk ($r_{fac} = %g$)' % r_fac, **style)
 ax.set_title(r'\texttt{olim8rhr}', fontsize=title_fontsize)
-ax.set_ylabel(r'Relative $\ell_\infty$ Error')
 ax.set_xlabel('$N$')
 ax.set_xticks(N[::3])
 ax.set_xticklabels(['$2^{%d} + 1$' % p for p in Npow[::3]])
-# ax.legend()
 
 ax = axes[1]
 tol = 1e-15
 mask = EI_3d > tol
-ax.loglog(N_3d[mask], EI_3d[mask], '*--', label='Unfactored', linewidth=1)
+ax.loglog(N_3d[mask], EI_3d[mask], label='Unfactored', color='k', **style)
 for j, r_fac in enumerate(rfacs):
     mask = EIfac_3d[:, j] > tol
-    ax.loglog(N_3d[mask], EIfac_3d[mask, j], '*--',
-              label='Disk ($r_{fac} = %g$)' % r_fac, linewidth=1)
+    ax.loglog(N_3d[mask], EIfac_3d[mask, j], color=colors[cmap[j]],
+              label='Disk ($r_{fac} = %g$)' % r_fac, **style)
 ax.set_title(r'\texttt{olim26rhr}', fontsize=title_fontsize)
 ax.set_xlabel('$N$')
 ax.set_xticks(N_3d[::2])

@@ -136,7 +136,8 @@ fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 6))
 ax = axes.flatten()
 
 for i, slow in enumerate(Slows):
-    for ind, Olim in enumerate(Olims[:-1]):
+    for ind, Olim in enumerate(Olims):
+        print((i, ind, Olim))
         ax[i].loglog(
             T[slow, Olim], E[slow, Olim], marker=marker, markersize=3.5,
             color=colors[cmap[ind % 3]], linestyle=linestyles[ind//3],
@@ -146,6 +147,8 @@ for i, slow in enumerate(Slows):
             transform=ax[i].transAxes, horizontalalignment='center',
             verticalalignment='center')
 
+axes[0, 0].set_ylabel(r'$\|u - U\|_\infty/\|u\|_\infty$')
+axes[1, 0].set_ylabel(r'$\|u - U\|_\infty/\|u\|_\infty$')
 axes[-1, 0].set_xlabel('Time (s.)')    
 axes[-1, 1].set_xlabel('Time (s.)')    
 
@@ -153,7 +156,7 @@ handles, labels = axes[-1, -1].get_legend_handles_labels()
     
 fig.legend(handles, labels, loc='upper center', ncol=4)
 fig.tight_layout()
-fig.subplots_adjust(0.05, 0.055, 0.995, 0.935)
+fig.subplots_adjust(0.085, 0.055, 0.995, 0.935)
 fig.show()
 
 fig.savefig('time_vs_error_3d.eps')

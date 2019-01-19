@@ -59,14 +59,12 @@ Solns = {
 Olims = [eik.Olim6Mid0, eik.Olim6Mid1, eik.Olim6Rect,
          eik.Olim18Mid0, eik.Olim18Mid1, eik.Olim18Rect,
          eik.Olim26Mid0, eik.Olim26Mid1, eik.Olim26Rect,
-         eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect,
-         eik.BasicMarcher3D]
+         eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect]
 
 Slows_by_Olims = list(itertools.product(Slows, Olims))
 
 T = {(slow, Olim): np.empty(N.shape) for slow, Olim in Slows_by_Olims}
-E2 = {(slow, Olim): np.empty(N.shape) for slow, Olim in Slows_by_Olims}
-EI = {(slow, Olim): np.empty(N.shape) for slow, Olim in Slows_by_Olims}
+E = {(slow, Olim): np.empty(N.shape) for slow, Olim in Slows_by_Olims}
 
 ntrials = 2
 
@@ -115,45 +113,38 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     U = np.array([[[o.getValue(i, j, k) for k in range(n)]
                    for j in range(n)]
                   for i in range(n)])
-    E2[slow, Olim][ind] = norm((u - U).flatten())/norm(u.flatten())
-    EI[slow, Olim][ind] = norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
+    E[slow, Olim][ind] = \
+        norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
 
 # make plots
 
-marker = '*'
+marker = '|'
 linestyles = ['solid', 'dashed', 'dotted']
-colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
+# colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
+colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+cmap = [0, 1, 4, 3]
+# linestyles = ['-', '--', ':', '-.']
+linestyles = [':', '-.', '--', '-']
 
 # time vs error
 
 # make plots for the first two slowness functions (these are very
 # cramped, so split them into two figures)
 
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
+fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 6))
 
-axes[0, 0].set_title('Relative $\ell_2$ Error')
-axes[0, 1].set_title('Relative $\ell_\infty$ Error')
+ax = axes.flatten()
 
-for row, slow in enumerate(Slows[:2]):
+for i, slow in enumerate(Slows):
     for ind, Olim in enumerate(Olims[:-1]):
-        name = common3d.get_marcher_plot_name(Olim)
-        axes[row, 0].loglog(
-            T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
-                          transform=axes[row, 0].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-        axes[row, 1].loglog(
-            T[slow, Olim], EI[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
-                          transform=axes[row, 1].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-    Olim = Olims[-1]
-    axes[row, 0].loglog(T[slow, Olim], E2[slow, Olim], 'k-^', linewidth=1)
-    axes[row, 1].loglog(T[slow, Olim], EI[slow, Olim], 'k-^', linewidth=1)
+        ax[i].loglog(
+            T[slow, Olim], E[slow, Olim], marker=marker, markersize=3.5,
+            color=colors[cmap[ind % 3]], linestyle=linestyles[ind//3],
+            linewidth=1, label=common3d.get_marcher_plot_name(Olim))
+        ax[i].text(
+            0.95, 0.9, '$\\texttt{s%d}$' % (i + 1),
+            transform=ax[i].transAxes, horizontalalignment='center',
+            verticalalignment='center')
 
 axes[-1, 0].set_xlabel('Time (s.)')    
 axes[-1, 1].set_xlabel('Time (s.)')    
@@ -162,139 +153,7 @@ handles, labels = axes[-1, -1].get_legend_handles_labels()
     
 fig.legend(handles, labels, loc='upper center', ncol=4)
 fig.tight_layout()
-fig.subplots_adjust(0.05, 0.075, 0.995, 0.85)
-fig.savefig('time_vs_error_3d_part1.eps')
+fig.subplots_adjust(0.05, 0.055, 0.995, 0.935)
 fig.show()
 
-# ... and the second two slowness functions
-
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
-
-axes[0, 0].set_title('Relative $\ell_2$ Error')
-axes[0, 1].set_title('Relative $\ell_\infty$ Error')
-
-for row, slow in enumerate(Slows[2:]):
-    for ind, Olim in enumerate(Olims[:-1]):
-        name = common3d.get_marcher_plot_name(Olim)
-        axes[row, 0].loglog(
-            T[slow, Olim], E2[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 3),
-                          transform=axes[row, 0].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-        axes[row, 1].loglog(
-            T[slow, Olim], EI[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 3),
-                          transform=axes[row, 1].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-    Olim = Olims[-1]
-    axes[row, 0].loglog(T[slow, Olim], E2[slow, Olim], 'k-^', linewidth=1)
-    axes[row, 1].loglog(T[slow, Olim], EI[slow, Olim], 'k-^', linewidth=1)
-
-axes[-1, 0].set_xlabel('Time (s.)')    
-axes[-1, 1].set_xlabel('Time (s.)')    
-
-handles, labels = axes[-1, -1].get_legend_handles_labels()
-    
-fig.legend(handles, labels, loc='upper center', ncol=4)
-fig.tight_layout()
-fig.subplots_adjust(0.05, 0.075, 0.995, 0.85)
-fig.savefig('time_vs_error_3d_part2.eps')
-fig.show()
-
-# size vs error
-
-# first two slowness functions...
-
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
-
-axes[0, 0].set_title('Relative $\ell_2$ Error')
-axes[0, 1].set_title('Relative $\ell_\infty$ Error')
-
-for row, slow in enumerate(Slows[:2]):
-    for ind, Olim in enumerate(Olims[:-1]):
-        name = common3d.get_marcher_plot_name(Olim)
-        axes[row, 0].loglog(
-            N, E2[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
-                          transform=axes[row, 0].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-        axes[row, 1].loglog(
-            N, EI[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 1),
-                          transform=axes[row, 1].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-    Olim = Olims[-1]
-    axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
-    axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
-
-axes[-1, 0].set_xlabel('$N$')
-
-xticklabels = ['$2^{%d} + 1$' % p for p in Npows]
-axes[-1, 1].set_xlabel('$N$')    
-axes[-1, 1].set_xticks(N)
-axes[-1, 1].set_xticklabels(xticklabels)
-
-for row, col in itertools.product(range(2), range(2)):
-    axes[row, col].minorticks_off()
-
-handles, labels = axes[-1, -1].get_legend_handles_labels()
-    
-fig.legend(handles, labels, loc='upper center', ncol=4)
-fig.tight_layout()
-fig.subplots_adjust(0.05, 0.075, 0.995, 0.85)
-fig.savefig('size_vs_error_3d_part1.eps')
-fig.show()
-
-# ... and the second two slowness functions
-
-fig, axes = plt.subplots(2, 2, sharex=True, sharey='row', figsize=(6.5, 5.5))
-
-axes[0, 0].set_title('Relative $\ell_2$ Error')
-axes[0, 1].set_title('Relative $\ell_\infty$ Error')
-
-for row, slow in enumerate(Slows[2:]):
-    for ind, Olim in enumerate(Olims[:-1]):
-        name = common3d.get_marcher_plot_name(Olim)
-        axes[row, 0].loglog(
-            N, E2[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 0].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 3),
-                          transform=axes[row, 0].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-        axes[row, 1].loglog(
-            N, EI[slow, Olim], marker=marker, color=colors[ind//3],
-            linestyle=linestyles[ind % 3], linewidth=1, label=name)
-        axes[row, 1].text(0.95, 0.9, '$\\texttt{s%d}$' % (row + 3),
-                          transform=axes[row, 1].transAxes,
-                          horizontalalignment='center',
-                          verticalalignment='center')
-    Olim = Olims[-1]
-    axes[row, 0].loglog(N, E2[slow, Olim], 'k-^', linewidth=1)
-    axes[row, 1].loglog(N, EI[slow, Olim], 'k-^', linewidth=1)
-
-axes[-1, 0].set_xlabel('$N$')
-
-xticklabels = ['$2^{%d} + 1$' % p for p in Npows]
-axes[-1, 1].set_xlabel('$N$')    
-axes[-1, 1].set_xticks(N)
-axes[-1, 1].set_xticklabels(xticklabels)
-
-for row, col in itertools.product(range(2), range(2)):
-    axes[row, col].minorticks_off()
-
-handles, labels = axes[-1, -1].get_legend_handles_labels()
-    
-fig.legend(handles, labels, loc='upper center', ncol=4)
-fig.tight_layout()
-fig.subplots_adjust(0.05, 0.075, 0.995, 0.85)
-fig.savefig('size_vs_error_3d_part2.eps')
-fig.show()
+fig.savefig('time_vs_error_3d.eps')

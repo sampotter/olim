@@ -22,11 +22,12 @@ sys.path.insert(0, '../misc/py')
 
 import common
 import common3d
-import matplotlib.pyplot as plt; plt.ion()
+import matplotlib.pyplot as plt
 import numpy as np
 import pyeikonal as eik
 
 from matplotlib.colors import LogNorm
+from matplotlib.lines import Line2D
 from numpy.linalg import norm
 
 plt.rc('text', usetex=True)
@@ -49,6 +50,10 @@ vx, vy, vz = 5, 13, 20
 x_fac_1, y_fac_1, z_fac_1 = 0.0, 0.0, 0.0
 x_fac_2, y_fac_2, z_fac_2 = 0.8, 0.0, 0.0
 
+marchers_2d = [eik.Olim8Mid0,    eik.Olim8Mid1,    eik.Olim8Rect]
+marchers_3d = [eik.Olim26Mid0,   eik.Olim26Mid1,   eik.Olim26Rect,
+               eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect]
+
 ################################################################################
 # 2D
 
@@ -67,17 +72,14 @@ u_2 = make_u(x_fac_2, y_fac_2, vx, vy, s)
 
 u = lambda x, y: np.minimum(u_1(x, y), u_2(x, y))
 
-E = dict()
-E_fac = dict()
+E2 = dict()
+E2_fac = dict()
 
-for Olim in common.marchers:
-    if Olim == eik.BasicMarcher:
-        continue
-    
+for Olim in marchers_2d:
     print(common.get_marcher_name(Olim))
 
-    E[Olim] = {'l2': np.zeros(len(N)), 'inf': np.zeros(len(N))}
-    E_fac[Olim] = {'l2': np.zeros(len(N)), 'inf': np.zeros(len(N))}
+    E2[Olim] = np.zeros(len(N))
+    E2_fac[Olim] = np.zeros(len(N))
 
     for k, n in enumerate(N):
         print('- n = %d (%d/%d)' % (n, k + 1, len(N)))
@@ -113,78 +115,8 @@ for Olim in common.marchers:
         U_fac = np.array(
             [[m_fac.getValue(i, j) for j in range(n)] for i in range(n)])
 
-        E[Olim]['l2'][k] = norm(U - u_, 'fro')/norm(u_, 'fro')
-        E[Olim]['inf'][k] = \
-            norm((U - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
-
-        E_fac[Olim]['l2'][k] = norm(U_fac - u_, 'fro')/norm(u_, 'fro')
-        E_fac[Olim]['inf'][k] = \
-            norm((U_fac - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
-
-# plotting
-fig, axes = plt.subplots(
-    2, 2, sharex=True, sharey=True, figsize=(6.5, 4))
-
-axes[0, 0].set_ylabel(r'Unfactored')
-axes[1, 0].set_ylabel(r'Factored')
-axes[0, 0].set_title(r'Relative $\ell_2$ Error')
-axes[0, 1].set_title(r'Relative $\ell_\infty$ Error')
-
-ax = axes[0, 0]
-for Olim in common.marchers:
-    if Olim == eik.BasicMarcher:
-        continue
-    ax.loglog(
-        N, E[Olim]['l2'],
-        label=common.get_marcher_plot_name(Olim),
-        linewidth=1, marker='|', markersize=3.5)
-ax.minorticks_off()
-ax.set_xticks(N)
-ax.set_xticklabels(map(str, N))
-
-ax = axes[0, 1]
-for Olim in common.marchers:
-    if Olim == eik.BasicMarcher:
-        continue
-    ax.loglog(
-        N, E[Olim]['inf'],
-        label=common.get_marcher_plot_name(Olim),
-        linewidth=1, marker='|', markersize=3.5)
-ax.minorticks_off()
-ax.set_xticks(N)
-ax.set_xticklabels(map(str, N))
-
-ax = axes[1, 0]
-for Olim in common.marchers:
-    if Olim == eik.BasicMarcher:
-        continue
-    ax.loglog(
-        N, E_fac[Olim]['l2'],
-        label=common.get_marcher_plot_name(Olim),
-        linewidth=1, marker='|', markersize=3.5)
-ax.minorticks_off()
-ax.set_xticks(N)
-ax.set_xticklabels(map(str, N))
-ax.set_xlabel('$N$')
-
-ax = axes[1, 1]
-for Olim in common.marchers:
-    if Olim == eik.BasicMarcher:
-        continue
-    ax.loglog(
-        N, E_fac[Olim]['inf'],
-        label=common.get_marcher_plot_name(Olim),
-        linewidth=1, marker='|', markersize=3.5)
-ax.minorticks_off()
-ax.set_xticks(N)
-ax.set_xticklabels(map(str, N))
-ax.set_xlabel('$N$')
-
-ax.legend(loc='lower left', prop={'size': 9})
-
-fig.tight_layout()
-fig.show()
-fig.savefig('qv_plots_2d.eps')
+        E2[Olim][k] = norm((U - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+        E2_fac[Olim][k] = norm((U_fac - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
 
 ################################################################################
 # 3D
@@ -204,17 +136,14 @@ u3d_2 = make_u3d(x_fac_2, y_fac_2, z_fac_2, vx, vy, vz, s)
 
 u3d = lambda x, y, z: np.minimum(u3d_1(x, y, z), u3d_2(x, y, z))
 
-E = dict()
-E_fac = dict()
+E3 = dict()
+E3_fac = dict()
 
-for Olim in common3d.marchers:
-    if Olim == eik.BasicMarcher3D:
-        continue
-    
+for Olim in marchers_3d:
     print(common3d.get_marcher_name(Olim))
 
-    E[Olim] = {'l2': np.zeros(len(N3D)), 'inf': np.zeros(len(N3D))}
-    E_fac[Olim] = {'l2': np.zeros(len(N3D)), 'inf': np.zeros(len(N3D))}
+    E3[Olim] = np.zeros(len(N3D))
+    E3_fac[Olim] = np.zeros(len(N3D))
 
     for a, n in enumerate(N3D):
         print('- n = %d (%d/%d)' % (n, a + 1, len(N3D)))
@@ -255,91 +184,64 @@ for Olim in common3d.marchers:
                            for j in range(n)]
                           for i in range(n)])
 
-        E[Olim]['l2'][a] = norm((u_ - U).flatten())/norm(u_.flatten())
-        E[Olim]['inf'][a] = \
-            norm((u_ - U).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+        E3[Olim][a] = norm((u_ - U).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+        E3_fac[Olim][a] = norm((u_ - U_fac).flatten(), np.inf)/norm(u_.flatten(), np.inf)
 
-        E_fac[Olim]['l2'][a] = norm((u_ - U_fac).flatten())/norm(u_.flatten())
-        E_fac[Olim]['inf'][a] = \
-            norm((u_ - U_fac).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+################################################################################
+# Plotting
 
-# plotting
+fig, axes = plt.subplots(2, 2, sharex='col', sharey='all', figsize=(6.5, 4))
+
+axes[0, 0].set_ylabel(r'Unfactored')
+axes[1, 0].set_ylabel(r'Factored')
+
+ax = axes[0, 0]
+for Olim in marchers_2d:
+    ax.loglog(N, E2[Olim], label=common.get_marcher_plot_name(Olim),
+              linewidth=1, marker='|', markersize=3.5)
+ax.minorticks_off()
+
+ax = axes[1, 0]
+for Olim in marchers_2d:
+    ax.loglog(N, E2_fac[Olim], label=common.get_marcher_plot_name(Olim),
+              linewidth=1, marker='|', markersize=3.5)
+ax.minorticks_off()
+N_pow_2d = np.arange(args.min_2d_power, args.max_2d_power + 1, 3)
+ax.set_xticks(2**N_pow_2d + 1)
+ax.set_xticklabels(['$2^{%d} + 1$' % p for p in N_pow_2d])
+ax.set_xlabel('$N$')
+
+ax.legend(loc='lower left', prop={'size': 8})
 
 colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 cmap = [0, 1, 4, 3]
 linestyles = ['-', '--', ':']
 
-fig, axes = plt.subplots(
-    2, 2, sharex=True, sharey=True, figsize=(6.5, 4))
-
-axes[0, 0].set_ylabel(r'Unfactored')
-axes[1, 0].set_ylabel(r'Factored')
-axes[0, 0].set_title(r'Relative $\ell_2$ Error')
-axes[0, 1].set_title(r'Relative $\ell_\infty$ Error')
-
-ax = axes[0, 0]
-it = 0
-for Olim in common3d.marchers:
-    if Olim == eik.BasicMarcher3D:
-        continue
-    ax.loglog(
-        N3D, E[Olim]['l2'],
-        label=common3d.get_marcher_plot_name(Olim),
-        color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
-        linewidth=1, marker='|', markersize=3.5)
-    it += 1
-ax.minorticks_off()
-ax.set_xticks(N3D)
-ax.set_xticklabels(map(str, N3D))
-
 ax = axes[0, 1]
 it = 0
-for Olim in common3d.marchers:
-    if Olim == eik.BasicMarcher3D:
-        continue
-    ax.loglog(
-        N3D, E[Olim]['inf'],
-        label=common3d.get_marcher_plot_name(Olim),
-        color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
-        linewidth=1, marker='|', markersize=3.5)
+for Olim in marchers_3d:
+    ax.loglog(N3D, E3[Olim], label=common3d.get_marcher_plot_name(Olim),
+              color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
+              linewidth=1, marker='|', markersize=3.5)
     it += 1
 ax.minorticks_off()
-ax.set_xticks(N3D)
-ax.set_xticklabels(map(str, N3D))
-
-ax = axes[1, 0]
-it = 0 
-for Olim in common3d.marchers:
-    if Olim == eik.BasicMarcher3D:
-        continue
-    ax.loglog(
-        N3D, E_fac[Olim]['l2'],
-        label=common3d.get_marcher_plot_name(Olim),
-        color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
-        linewidth=1, marker='|', markersize=3.5)
-    it += 1
-ax.minorticks_off()
-ax.set_xticks(N3D)
-ax.set_xticklabels(map(str, N3D))
-ax.set_xlabel('$N$')
 
 ax = axes[1, 1]
 it = 0
-for Olim in common3d.marchers:
-    if Olim == eik.BasicMarcher3D:
-        continue
-    ax.loglog(
-        N3D, E_fac[Olim]['inf'],
-        label=common3d.get_marcher_plot_name(Olim),
-        color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
-        linewidth=1, marker='|', markersize=3.5)
+for Olim in marchers_3d:
+    ax.loglog(N3D, E3_fac[Olim], label=common3d.get_marcher_plot_name(Olim),
+              color=colors[cmap[it//3]], linestyle=linestyles[it % 3],
+              linewidth=1, marker='|', markersize=3.5)
     it += 1
 ax.minorticks_off()
-ax.set_xticks(N3D)
-ax.set_xticklabels(map(str, N3D))
-ax.legend(loc='lower left', ncol=2, prop={'size': 9})
+N_pow_3d = np.arange(args.min_3d_power, args.max_3d_power + 1, 3)
+ax.set_xticks(2**N_pow_3d + 1)
+ax.set_xticklabels(['$2^{%d} + 1$' % p for p in N_pow_3d])
 ax.set_xlabel('$N$')
+
+ax.legend(loc='lower left', ncol=2, prop={'size': 8})
 
 fig.tight_layout()
 fig.show()
-fig.savefig('qv_plots_3d.eps')
+
+fig.savefig('qv_plots.eps')

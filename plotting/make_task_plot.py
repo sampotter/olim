@@ -27,6 +27,7 @@ sys.path.insert(0, '../misc/py')
 
 import fileinput
 import itertools as it
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyeikonal as eik
@@ -147,7 +148,7 @@ def initialize_or_increment(df, col, row, val):
 def insert_into_data_frame(d, df, N):
     update_keys = {'update_crtp', 'update_impl', 'tetra', 'tri', 'tri_bv',
                    'operator', 'should_skip'}
-    heap_keys = {'adjust_heap_entry', 'insert_into_heap'}
+    heap_keys = {'adjust_heap_entry', 'insert_into_heap', 'swim', 'sink'}
     logic_keys = {'visit_neighbors_impl', 'run', 'unknown', 'insert',
                   'marcher_3d', 'init', 'init_crtp'}
     for k in d:

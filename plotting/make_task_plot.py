@@ -193,7 +193,7 @@ def plot_columns(ax, df, linestyle):
     ax.semilogx(N, df['heap'], color=colors[1], linestyle=linestyle, **style)
     ax.semilogx(N, df['logic'], color=colors[2], linestyle=linestyle, **style)
 
-fig, axes = plt.subplots(1, 3, figsize=(6.5, 3), sharex=True, sharey=True)
+fig, axes = plt.subplots(1, 3, figsize=(6.5, 2.5), sharex=True, sharey=True)
 
 ax = axes[0]
 plot_columns(ax, task_dfs[Olims[0]], '-')
@@ -219,7 +219,7 @@ ax.set_xticklabels(['$2^{%d} + 1$' % p for p in P[::2]])
 ax.set_xlabel('$N$')
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles[::3], [r'\texttt{olim26\_mp0', r'\texttt{olim26\_mp1}'])
+ax.legend(handles[::3], [r'\texttt{olim26\_mp0}', r'\texttt{olim26\_mp1}'])
 
 ax = axes[2]
 plot_columns(ax, task_dfs[Olims[4]], '-')
@@ -231,12 +231,12 @@ ax.set_xticklabels(['$2^{%d} + 1$' % p for p in P[::2]])
 ax.set_xlabel('$N$')
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles[::3], [r'\texttt{olimhu\_mp0', r'\texttt{olimhu\_mp1}'])
+ax.legend(handles[::3], [r'\texttt{olimhu\_mp0}', r'\texttt{olimhu\_mp1}'])
 
 fig.legend(handles[:3], labels[:3], ncol=3, loc='upper center')
 
 fig.tight_layout()
-fig.subplots_adjust(0.05, 0.11, 0.995, 0.92, 0.12, 0.20)
+fig.subplots_adjust(0.05, 0.13, 0.995, 0.92, 0.12, 0.20)
 fig.show()
 
 fig.savefig('tasks.eps')

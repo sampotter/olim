@@ -150,7 +150,8 @@ def insert_into_data_frame(d, df, N):
                    'operator', 'should_skip'}
     heap_keys = {'adjust_heap_entry', 'insert_into_heap', 'swim', 'sink'}
     logic_keys = {'visit_neighbors_impl', 'run', 'unknown', 'insert',
-                  'marcher_3d', 'init', 'init_crtp', '_Function_handler'}
+                  'marcher_3d', 'init', 'init_crtp', '_Function_handler',
+                  'conditional'}
     for k in d:
         if k in update_keys:
             initialize_or_increment(df, 'update', N, d[k])

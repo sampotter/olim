@@ -96,9 +96,10 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
         o = Olim(S, h)
         if not args.no_factoring:
+            fc = eik.FacCenter3d(i0, j0, k0, slow(0, 0, 0))
             for i, j, k in zip(I, J, K):
-                o.set_node_fac_parent(i, j, k, i0, j0, k0)
-        o.addBoundaryNode(i0, j0, k0)
+                o.set_node_fac_center(i, j, k, fc)
+        o.add_boundary_node(i0, j0, k0)
 
         t0 = time.perf_counter()
         o.run()
@@ -110,7 +111,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
     # get errors
 
-    U = np.array([[[o.getValue(i, j, k) for k in range(n)]
+    U = np.array([[[o.get_value(i, j, k) for k in range(n)]
                    for j in range(n)]
                   for i in range(n)])
     E[slow, Olim][ind] = \

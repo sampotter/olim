@@ -29,9 +29,10 @@ struct marcher: public abstract_marcher {
   virtual ~marcher();
 
   void add_boundary_node(int i, int j, double value = 0.0);
-  void add_boundary_node(double i, double j, double value = 0.0);
+  void add_boundary_node(double x, double y, double s, double value = 0.0);
   void add_boundary_nodes(node const * nodes, int num_nodes);
-  void set_node_fac_parent(int i, int j, int i_parent, int j_parent);
+  void add_boundary_nodes(node const * const * nodes, int num_nodes);
+  void set_node_fac_center(int i, int j, typename node::fac_center const * fc);
 
   node * get_node_pointer() const { return _nodes; }
   double get_speed(int i, int j) const;
@@ -45,6 +46,7 @@ struct marcher: public abstract_marcher {
 
 EIKONAL_PROTECTED:
   bool in_bounds(int i, int j) const;
+  bool in_bounds(double i, double j) const;
   bool is_valid(int i, int j) const;
   double get_h() const { return _h; }
   

@@ -70,9 +70,9 @@ for ind, n in enumerate(N):
     # unfactored
     
     o = Olim(s, h)
-    o.addBoundaryNode(i0, j0)
+    o.add_boundary_node(i0, j0)
     o.run()
-    U = np.array([[o.getValue(i, j) for i in range(n)] for j in range(n)])
+    U = np.array([[o.get_value(i, j) for i in range(n)] for j in range(n)])
     EI[ind] = norm(u - U, np.inf)/norm(u, np.inf)
 
     # factored using constant radius disk
@@ -84,11 +84,12 @@ for ind, n in enumerate(N):
         I, J = np.where(R < r_fac)
 
         ofac = Olim(s, h)
+        fc = eik.FacCenter(i0, j0, 1)
         for i, j in zip(I, J):
-            ofac.set_node_fac_parent(i, j, i0, j0)
-        ofac.addBoundaryNode(i0, j0)
+            ofac.set_node_fac_center(i, j, fc)
+        ofac.add_boundary_node(i0, j0)
         ofac.run()
-        Ufac = np.array([[ofac.getValue(i, j) for j in range(n)] for i in range(n)])
+        Ufac = np.array([[ofac.get_value(i, j) for j in range(n)] for i in range(n)])
         EIfac[ind, rfac_ind] = norm(u - Ufac, np.inf)/norm(u, np.inf)
 
 print('- solving 3d problems')
@@ -105,9 +106,9 @@ for ind, n in enumerate(N_3d):
     # unfactored
     
     o = Olim3d(s, h)
-    o.addBoundaryNode(i0, j0, k0)
+    o.add_boundary_node(i0, j0, k0)
     o.run()
-    U = np.array([[[o.getValue(i, j, k) for i in range(n)]
+    U = np.array([[[o.get_value(i, j, k) for i in range(n)]
                    for j in range(n)]
                   for k in range(n)])
     EI_3d[ind] = norm((u - U).flatten(), np.inf)/norm(u.flatten(), np.inf)
@@ -121,11 +122,12 @@ for ind, n in enumerate(N_3d):
         I, J, K = np.where(R < r_fac)
 
         ofac = Olim3d(s, h)
+        fc = eik.FacCenter3d(i0, j0, k0, 1)
         for i, j, k in zip(I, J, K):
-            ofac.set_node_fac_parent(i, j, k, i0, j0, k0)
-        ofac.addBoundaryNode(i0, j0, k0)
+            ofac.set_node_fac_center(i, j, k, fc)
+        ofac.add_boundary_node(i0, j0, k0)
         ofac.run()
-        Ufac = np.array([[[ofac.getValue(i, j, k) for i in range(n)]
+        Ufac = np.array([[[ofac.get_value(i, j, k) for i in range(n)]
                           for j in range(n)]
                          for k in range(n)])
         EIfac_3d[ind, rfac_ind] = \

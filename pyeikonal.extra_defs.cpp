@@ -12,6 +12,7 @@ py::enum_<state>(m, "State")
 // abstract_node base class here.
 
 py::class_<node>(m, "Node")
+  .def(py::init<int, int, double>())
   .def_property("value", &node::get_value, &node::set_value)
   .def_property("state", &node::get_state, &node::set_state)
   .def_property_readonly("i", &node::get_i)
@@ -26,4 +27,19 @@ py::class_<node_3d>(m, "Node3d")
 #if TRACK_PARENTS
   .def("get_parents", &node_3d::get_parents)
 #endif
+  ;
+
+py::class_<node::fac_center>(m, "FacCenter")
+  .def(py::init<double, double, double>())
+  .def_readwrite("i", &node::fac_center::i)
+  .def_readwrite("j", &node::fac_center::j)
+  .def_readwrite("s", &node::fac_center::s)
+  ;
+
+py::class_<node_3d::fac_center>(m, "FacCenter3d")
+  .def(py::init<double, double, double, double>())
+  .def_readwrite("i", &node_3d::fac_center::i)
+  .def_readwrite("j", &node_3d::fac_center::j)
+  .def_readwrite("k", &node_3d::fac_center::k)
+  .def_readwrite("s", &node_3d::fac_center::s)
   ;

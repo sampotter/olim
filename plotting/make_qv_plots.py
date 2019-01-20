@@ -57,6 +57,7 @@ marchers_3d = [eik.Olim26Mid0,   eik.Olim26Mid1,   eik.Olim26Rect,
 # 2D
 
 s = lambda x, y: 1/(2 + vx*x + vy*y)
+s_1, s_2 = s(x_fac_1, y_fac_1), s(x_fac_2, y_fac_2)
 
 def make_u(x_fac, y_fac, vx, vy, s):
     return lambda x, y: \
@@ -89,38 +90,35 @@ for Olim in marchers_2d:
         S = s(X, Y)
 
         h = 1/(n - 1)
-        i_1, j_1 = int(y_fac_1/h), int(x_fac_1/h)
-        i_2, j_2 = int(y_fac_2/h), int(x_fac_2/h)
-
-        m = Olim(S, h)
-        m.addBoundaryNode(i_1, j_1)
-        m.addBoundaryNode(i_2, j_2)
-        m.run()
-        U = np.array([[m.getValue(i, j) for j in range(n)] for i in range(n)])
+        i_1, j_1 = y_fac_1/h, x_fac_1/h
+        i_2, j_2 = y_fac_2/h, x_fac_2/h
 
         m_fac = Olim(S, h)
 
         R_1 = np.sqrt((x_fac_1 - X)**2 + (y_fac_1 - Y)**2)
+        fc_1 = eik.FacCenter(i_1, j_1, s_1)
         for i, j in zip(*np.where(R_1 <= R_fac)):
-            m_fac.set_node_fac_parent(i, j, i_1, j_1)
-        m_fac.addBoundaryNode(i_1, j_1)
+            m_fac.set_node_fac_center(i, j, fc_1)
+        m_fac.add_boundary_node(x_fac_1, y_fac_1, s_1)
 
         R_2 = np.sqrt((x_fac_2 - X)**2 + (y_fac_2 - Y)**2)
+        fc_2 = eik.FacCenter(i_2, j_2, s_2)
         for i, j in zip(*np.where(R_2 <= R_fac)):
-            m_fac.set_node_fac_parent(i, j, i_2, j_2)
-        m_fac.addBoundaryNode(i_2, j_2)
+            m_fac.set_node_fac_center(i, j, fc_2)
+        m_fac.add_boundary_node(x_fac_2, y_fac_2, s_2)
 
         m_fac.run()
         U_fac = np.array(
-            [[m_fac.getValue(i, j) for j in range(n)] for i in range(n)])
+            [[m_fac.get_value(i, j) for j in range(n)] for i in range(n)])
 
-        E2[Olim][k] = norm((U - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
-        E2_fac[Olim][k] = norm((U_fac - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+        E2_fac[Olim][k] = \
+            norm((U_fac - u_).flatten(), np.inf)/norm(u_.flatten(), np.inf)
 
 ################################################################################
 # 3D
 
 s3d = lambda x, y, z: 1/(2 + vx*x + vy*y + vz*z)
+s_1, s_2 = s3d(x_fac_1, y_fac_1, z_fac_1), s3d(x_fac_2, y_fac_2, z_fac_2)
 
 def make_u3d(x_fac, y_fac, z_fac, vx, vy, vz, s):
     return lambda x, y, z: \
@@ -153,38 +151,30 @@ for Olim in marchers_3d:
         S = s3d(X, Y, Z)
 
         h = 1/(n - 1)
-        i_1, j_1, k_1 = int(y_fac_1/h), int(x_fac_1/h), int(z_fac_1/h)
-        i_2, j_2, k_2 = int(y_fac_2/h), int(x_fac_2/h), int(z_fac_2/h)
-        # i_3, j_3, k_3 = int(y_fac_3/h), int(x_fac_3/h), int(z_fac_3/h)
-
-        m = Olim(S, h)
-        m.addBoundaryNode(i_1, j_1, k_1)
-        m.addBoundaryNode(i_2, j_2, k_2)
-        # m.addBoundaryNode(i_3, j_3, k_3)
-        m.run()
-        U = np.array([[[m.getValue(i, j, k) for k in range(n)]
-                       for j in range(n)]
-                      for i in range(n)])
+        i_1, j_1, k_1 = y_fac_1/h, x_fac_1/h, z_fac_1/h
+        i_2, j_2, k_2 = y_fac_2/h, x_fac_2/h, z_fac_2/h
 
         m_fac = Olim(S, h)
 
         R_1 = np.sqrt((x_fac_1 - X)**2 + (y_fac_1 - Y)**2 + (z_fac_1 - Z)**2)
+        fc_1 = eik.FacCenter3d(i_1, j_1, k_1, s_1)
         for i, j, k in zip(*np.where(R_1 <= R_fac)):
-            m_fac.set_node_fac_parent(i, j, k, i_1, j_1, k_1)
-        m_fac.addBoundaryNode(i_1, j_1, k_1)
+            m_fac.set_node_fac_center(i, j, k, fc_1)
+        m_fac.add_boundary_node(x_fac_1, y_fac_1, z_fac_1, s_1)
 
         R_2 = np.sqrt((x_fac_2 - X)**2 + (y_fac_2 - Y)**2 + (z_fac_2 - Z)**2)
+        fc_2 = eik.FacCenter3d(i_2, j_2, k_2, s_2)
         for i, j, k in zip(*np.where(R_2 <= R_fac)):
-            m_fac.set_node_fac_parent(i, j, k, i_2, j_2, k_2)
-        m_fac.addBoundaryNode(i_2, j_2, k_2)
+            m_fac.set_node_fac_center(i, j, k, fc_2)
+        m_fac.add_boundary_node(x_fac_2, y_fac_2, z_fac_2, s_2)
 
         m_fac.run()
-        U_fac = np.array([[[m_fac.getValue(i, j, k) for k in range(n)]
+        U_fac = np.array([[[m_fac.get_value(i, j, k) for k in range(n)]
                            for j in range(n)]
                           for i in range(n)])
 
-        E3[Olim][a] = norm((u_ - U).flatten(), np.inf)/norm(u_.flatten(), np.inf)
-        E3_fac[Olim][a] = norm((u_ - U_fac).flatten(), np.inf)/norm(u_.flatten(), np.inf)
+        E3_fac[Olim][a] = \
+            norm((u_ - U_fac).flatten(), np.inf)/norm(u_.flatten(), np.inf)
 
 ################################################################################
 # Plotting

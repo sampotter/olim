@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include "offsets.hpp"
+#include "updates.line.hpp"
 
 #define __di(l) di<3>[l]
 #define __dj(l) dj<3>[l]
@@ -91,85 +92,95 @@ marcher_3d<base, node, num_neighbors>::~marcher_3d()
   delete[] _s_cache;
 }
 
-/**
- * TODO: see comment about this function in marcher.impl.hpp (i.e. the
- * 2D version of this function).
- */
 template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::add_boundary_node(int i, int j, int k, double value) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+void marcher_3d<base, node, num_neighbors>::add_boundary_node(
+  int i, int j, int k, double value)
+{
+  assert(operator()(i, j, k).is_far() || operator()(i, j, k).is_valid());
+  if (operator()(i, j, k).is_valid()) return;
   assert(in_bounds(i, j, k));
-  assert(operator()(i, j, k).is_far());
-#endif
   visit_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
 }
 
+#define LINE(p0, u0, s, s0, h)                                  \
+  updates::line<base::F_>()(norm2<3>(p0), u0, s, s0, h)
+
 template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::add_boundary_node(double x, double y, double z,
-                                               double value) {
-  auto const dist = [x, y, z] (int i, int j, int k) -> double {
-    return sqrt((i - y)*(i - y) + (j - x)*(j - x) + (k - z)*(k - z));
+void
+marcher_3d<base, node, num_neighbors>::add_boundary_node(
+  double x, double y, double z, double s, double value)
+{
+  double h = get_h(), i = y/h, j = x/h, k = z/h, u0 = value, s0 = s;
+  assert(in_bounds(i, j, k));
+
+  // TODO: make this more general: see comment in marcher.impl.hpp for
+  // related function
+  int is[2] = {(int) floor(i), (int) floor(i) + 1};
+  int js[2] = {(int) floor(j), (int) floor(j) + 1};
+  int ks[2] = {(int) floor(k), (int) floor(k) + 1};
+
+  double ps[8][3] = {
+    {i - is[0], j - js[0], k - ks[0]},
+    {i - is[1], j - js[0], k - ks[0]},
+    {i - is[0], j - js[1], k - ks[0]},
+    {i - is[1], j - js[1], k - ks[0]},
+    {i - is[0], j - js[0], k - ks[1]},
+    {i - is[1], j - js[0], k - ks[1]},
+    {i - is[0], j - js[1], k - ks[1]},
+    {i - is[1], j - js[1], k - ks[1]},
   };
 
-  int i0 = floor(y), i1 = ceil(y);
-  int j0 = floor(x), j1 = ceil(x);
-  int k0 = floor(z), k1 = ceil(z);
+  for (int a = 0; a < 8; ++a) {
+    int b0 = a & 1, b1 = (a & 2) >> 1, b2 = (a & 4) >> 2;
+    int i_ = is[b0], j_ = js[b1], k_ = ks[b2];
+    assert(in_bounds(i_, j_, k_));
+    assert(operator()(i_, j_, k_).is_far());
+    double s_hat = get_speed(i_, j_, k_);
+    double u_hat = LINE(ps[a], u0, s_hat, s0, h);
+    insert_into_heap(
+      &(operator()(i_, j_, k_) = {i_, j_, k_, u_hat, state::trial}));
+  }
+}
 
-  node nodes[8] = {
-    {i0, j0, k0, value + dist(i0, j0, k0)},
-    {i0, j0, k1, value + dist(i0, j0, k1)},
-    {i0, j1, k0, value + dist(i0, j1, k0)},
-    {i1, j0, k0, value + dist(i1, j0, k0)},
-    {i0, j1, k1, value + dist(i0, j1, k1)},
-    {i1, j0, k1, value + dist(i1, j0, k1)},
-    {i1, j1, k0, value + dist(i1, j1, k0)},
-    {i1, j1, k1, value + dist(i1, j1, k1)}
-  };
+#undef LINE
 
-  add_boundary_nodes(nodes, 8);
+template <class base, class node, int num_neighbors>
+void
+marcher_3d<base, node, num_neighbors>::add_boundary_nodes(
+  node const * nodes, int num)
+{
+  auto tmp = static_cast<node const **>(malloc(sizeof(void *)*num));
+  for (int i = 0; i < num; ++i) {
+    tmp[i] = &nodes[i];
+  }
+  add_boundary_nodes(tmp, num);
+  free(tmp);
 }
 
 template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int num) {
-  node const * n;
-  int i, j, k;
-
-  /**
-   * Add nodes to min-heap.
-   */
+void
+marcher_3d<base, node, num_neighbors>::add_boundary_nodes(
+  node const* const* nodes, int num)
+{
   for (int l = 0; l < num; ++l) {
-    n = &nodes[l];
-    i = n->get_i();
-    j = n->get_j();
-    k = n->get_k();
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+    auto n = nodes[l];
+    int i = n->get_i(), j = n->get_j(), k = n->get_k();
     assert(in_bounds(i, j, k));
     assert(operator()(i, j, k).is_far());
-#endif
-    operator()(i, j, k) = {i, j, k, n->get_value()};
-  }
-
-  /**
-   * Stage nodes' neighbors.
-   */
-  for (int l = 0; l < num; ++l) {
-    n = &nodes[k];
-    i = n->get_i();
-    j = n->get_j();
-    k = n->get_k();
-    visit_neighbors(&operator()(i, j, k));
+    double u = n->get_value();
+    insert_into_heap(&(operator()(i, j, k) = {i, j, k, u, state::trial}));
   }
 }
 
 template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::set_node_fac_parent(
-  int i, int j, int k, int i_par, int j_par, int k_par)
+void marcher_3d<base, node, num_neighbors>::set_node_fac_center(
+  int i, int j, int k, typename node::fac_center const * fc)
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
-  assert(in_bounds(i_par, j_par, k_par));
+  assert(in_bounds(fc->i, fc->j, fc->k));
 #endif
-  operator()(i, j, k).set_fac_parent(&operator()(i_par, j_par, k_par));
+  operator()(i, j, k).set_fac_center(fc);
 }
 
 template <class base, class node, int num_neighbors>

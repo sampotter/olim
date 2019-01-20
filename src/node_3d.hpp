@@ -25,18 +25,33 @@ operator<<(std::ostream & o, index3_t const & index)
 }
 
 struct node_3d: public abstract_node {
+  struct fac_center {
+    fac_center(double i, double j, double k, double s):
+      i {i}, j {j}, k {k}, s {s} {}
+    double i, j, k, s;
+  };
+
   using abstract_node::abstract_node;
+
   node_3d() {}
-  node_3d(int i, int j, int k, double value = 0):
-    abstract_node {value, state::valid}, _i {i}, _j {j}, _k {k} {}
+  node_3d(int i, int j, int k, double value = 0, state s = state::valid):
+    abstract_node {value, s}, _i {i}, _j {j}, _k {k} {}
+
   inline int get_i() const { return _i; }
   inline void set_i(int i) { _i = i; }
   inline int get_j() const { return _j; }
   inline void set_j(int j) { _j = j; }
   inline int get_k() const { return _k; }
   inline void set_k(int k) { _k = k; }
+
+  inline bool is_factored() const { return _fac_center != nullptr; }
+  inline const fac_center * get_fac_center() const { return _fac_center; }
+  inline void set_fac_center(fac_center const * fc) { _fac_center = fc; }
+
 EIKONAL_PRIVATE:
   int _i {-1}, _j {-1}, _k {-1};
+  fac_center const * _fac_center {nullptr};
+
   friend std::string to_string(node_3d const & n);
 };
 

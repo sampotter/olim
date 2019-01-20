@@ -62,8 +62,8 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
-template <class base, class node, int num_neighbors>
-void abstract_olim3d<base, node, num_neighbors>::init()
+template <cost_func F, class base, class node, int num_neighbors>
+void abstract_olim3d<F, base, node, num_neighbors>::init()
 {
   static_cast<base *>(this)->init_crtp();
 }
@@ -108,8 +108,8 @@ void abstract_olim3d<base, node, num_neighbors>::write_stats_bin(
 }
 #endif // COLLECT_STATS
 
-template <class base, class node, int num_neighbors>
-void abstract_olim3d<base, node, num_neighbors>::update_impl(
+template <cost_func F, class base, class node, int num_neighbors>
+void abstract_olim3d<F, base, node, num_neighbors>::update_impl(
   node * n, node ** nb, int parent, double & T)
 {
   int i = n->get_i(), j = n->get_j(), k = n->get_k();
@@ -163,7 +163,7 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
    */
   reset_tri_skip_list();
 
-  if (n->has_fac_parent()) {
+  if (n->is_factored()) {
     /**
      * Tetrahedron updates:
      */
@@ -425,13 +425,12 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   ++this->_stats->count[0];
 #endif
 
-  if (n->has_fac_parent()) {
-    auto n_fac = static_cast<node *>(n->get_fac_parent());
-    int i_fac = n_fac->get_i(), j_fac = n_fac->get_j(), k_fac = n_fac->get_k();
-    s_fac = this->get_speed(i_fac, j_fac, k_fac);
-    p_fac[0] = i_fac - n->get_i();
-    p_fac[1] = j_fac - n->get_j();
-    p_fac[2] = k_fac - n->get_k();
+  if (n->is_factored()) {
+    auto fc = n->get_fac_center();
+    s_fac = fc->s;
+    p_fac[0] = fc->i - n->get_i();
+    p_fac[1] = fc->j - n->get_j();
+    p_fac[2] = fc->k - n->get_k();
   }
 
   // Create a cache for the minimizing lambdas to use for skipping
@@ -449,7 +448,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     get_p(l, p1);
 
     // Do the triangle update.
-    auto const tmp = n->has_fac_parent() ?
+    auto const tmp = n->is_factored() ?
       updates::tri<F, 3>()(
         p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
         this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
@@ -494,7 +493,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
       double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
         u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
-      if (n->has_fac_parent()) {
+      if (n->is_factored()) {
         geom_fac_wkspc<2> g;
         g.init<3>(p0, p1, p2, p_fac);
         F_fac_wkspc<F, 2> w;

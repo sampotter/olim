@@ -23,9 +23,8 @@ to_string(state const & s)
 }
 
 struct abstract_node {
-  abstract_node(): _fac_parent {nullptr} {}
-  abstract_node(double value, state s):
-    _value {value}, _state {s}, _fac_parent {nullptr} {}
+  abstract_node() {}
+  abstract_node(double value, state s): _value {value}, _state {s} {}
   inline double get_value() const { return _value; }
   inline void set_value(double value) { _value = value; }
   inline int get_heap_pos() const { return _heap_pos; }
@@ -38,19 +37,10 @@ struct abstract_node {
   inline void set_valid() { _state = state::valid; }
   inline void set_trial() { _state = state::trial; }
   inline void set_far() { _state = state::far; }
-  inline bool has_fac_parent() const { return _fac_parent != nullptr; }
-  inline abstract_node * get_fac_parent() const { return _fac_parent; }
-  inline void set_fac_parent(abstract_node * parent) { _fac_parent = parent; }
-#if NODE_MONITORING
-  inline void start_monitoring() { _monitor_node = true; }
-  inline void stop_monitoring() { _monitor_node = false; }
-  inline bool monitoring_node() const { return _monitor_node; }
-#endif
 EIKONAL_PROTECTED:
   double _value {std::numeric_limits<double>::infinity()};
   state _state {state::far};
   int _heap_pos {-1};
-  abstract_node * _fac_parent;
 };
 
 inline

@@ -25,14 +25,12 @@ olim<F, node, do_adj, do_diag>::update_impl(node * n, double & T)
     }
   }
 
-  if (n->has_fac_parent()) {
+  if (n->is_factored()) {
     // TODO: this is a rough draft quality implementation of additive
     // local factoring... this can definitely be optimized
 
-    auto n_fac = static_cast<node *>(n->get_fac_parent());
-    int i_fac = n_fac->get_i(), j_fac = n_fac->get_j();
-    double sf = this->get_speed(i_fac, j_fac);
-    double pf[2] = {(double) (i_fac - i_hat), (double) (j_fac - j_hat)};
+    auto fc = n->get_fac_center();
+    double sf = fc->s, pf[2] = {fc->i - i_hat, fc->j - j_hat};
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(a, T);

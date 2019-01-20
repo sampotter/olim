@@ -3,11 +3,15 @@
 
 #include "marcher_3d.hpp"
 #include "node_3d.hpp"
+#include "updates.line.hpp"
 
-struct basic_marcher_3d: public marcher_3d<basic_marcher_3d, node_3d, 6>
+struct basic_marcher_3d: public marcher_3d<basic_marcher_3d, node_3d, 6>,
+                         public updates::line<RHR>
 {
-  using marcher_3d::marcher_3d;
   static constexpr int num_neighbors = 6;
+  static constexpr cost_func F_ = RHR;
+
+  using marcher_3d::marcher_3d;
 
   double s_hat;
   node_3d * nb[num_neighbors];

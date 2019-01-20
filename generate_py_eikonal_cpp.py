@@ -54,20 +54,33 @@ marcher_template = Template('''
         return m(std::get<0>(index), std::get<1>(index));
     })
     .def(
-      "addBoundaryNode",
+      "add_boundary_node",
       py::overload_cast<int, int, double>(&${cpp_class_name}::add_boundary_node),
       "i"_a,
       "j"_a,
       "value"_a = 0.0)
     .def(
-      "set_node_fac_parent",
-      &${cpp_class_name}::set_node_fac_parent,
+       "add_boundary_node",
+       py::overload_cast<double, double, double, double>(
+         &${cpp_class_name}::add_boundary_node),
+       "i"_a,
+       "j"_a,
+       "s"_a,
+       "value"_a = 0.0)
+     .def("add_boundary_nodes", [&] (
+         ${cpp_class_name} & m,
+         std::vector<${cpp_class_name}::node_type const *> const & nodes)
+       {
+         m.add_boundary_nodes(nodes.data(), nodes.size());
+       })
+     .def(
+       "set_node_fac_center",
+       &${cpp_class_name}::set_node_fac_center,
       "i"_a,
       "j"_a,
-      "i_parent"_a,
-      "j_parent"_a)
-    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
-    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a)
+      "fc"_a)
+    .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
+    .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a)
     .def("get_height", &${cpp_class_name}::get_height)
     .def("get_width", &${cpp_class_name}::get_width);
 ''')
@@ -151,7 +164,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
         return m(std::get<0>(index), std::get<1>(index), std::get<2>(index));
     })
     .def(
-      "addBoundaryNode",
+      "add_boundary_node",
       py::overload_cast<int, int, int, double>(
         &${cpp_class_name}::add_boundary_node),
       "i"_a,
@@ -159,16 +172,23 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "k"_a,
       "value"_a = 0.0)
     .def(
-      "set_node_fac_parent",
-      &${cpp_class_name}::set_node_fac_parent,
+      "add_boundary_node",
+      py::overload_cast<double, double, double, double, double>(
+        &${cpp_class_name}::add_boundary_node),
       "i"_a,
       "j"_a,
       "k"_a,
-      "i_parent"_a,
-      "j_parent"_a,
-      "k_parent"_a)
-    .def("getSpeed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
-    .def("getValue", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
+      "s"_a,
+      "value"_a = 0.0)
+    .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
+    .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
+    .def(
+      "set_node_fac_center",
+      &${cpp_class_name}::set_node_fac_center,
+      "i"_a,
+      "j"_a,
+      "k"_a,
+      "fc"_a)
     .def("get_height", &${cpp_class_name}::get_height)
     .def("get_width", &${cpp_class_name}::get_width)
     .def("get_depth", &${cpp_class_name}::get_depth);
@@ -177,6 +197,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
 def build_src_txt(args):
     src_txt = '''
 #include <limits>
+#include <vector>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>

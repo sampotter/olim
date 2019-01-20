@@ -15,7 +15,10 @@ struct olim:
     node,
     do_diag ? 8 : 4>
 {
+  static constexpr cost_func F_ = F;
   static constexpr int num_neighbors = do_diag ? 8 : 4;
+
+  using node_t = node;
 
   using marcher<olim<F, node, do_adj, do_diag>, node, num_neighbors>::marcher;
   static_assert(do_adj || do_diag, "error");

@@ -6,6 +6,7 @@
 
 #include "common.hpp"
 #include "offsets.hpp"
+#include "updates.line.hpp"
 
 #define __di(k) di<2>[k]
 #define __dj(k) dj<2>[k]
@@ -91,71 +92,85 @@ marcher<base, node, num_neighbors>::add_boundary_node(int i, int j, double value
   visit_neighbors(&(operator()(i, j) = {i, j, value}));
 }
 
+#define LINE(p0, u0, s, s0, h)                          \
+  updates::line<base::F_>()(norm2<2>(p0), u0, s, s0, h)
+
 template <class base, class node, int num_neighbors>
 void
-marcher<base, node, num_neighbors>::add_boundary_node(double x, double y, double value)
+marcher<base, node, num_neighbors>::add_boundary_node(
+  double x, double y, double s, double value)
 {
-  auto const dist = [x, y] (int i, int j) -> double {
-    return sqrt((i - y)*(i - y) + (j - x)*(j - x));
+#if PRINT_UPDATES
+  printf("add_boundary_node(x = %g, y = %g, s = %g, value = %g)\n",
+         x, y, s, value);
+#endif
+  double h = get_h(), i = y/h, j = x/h, u0 = value, s0 = s;
+  assert(in_bounds(i, j));
+
+  // TODO: this isn't as general as it could be. We also want to
+  // handle cases where i or j are grid-aligned, in which case we need
+  // to process 6 nodes. If i and j are both grid aligned, then we
+  // should just call the integer add_boundary_node.
+  int is[2] = {(int) floor(i), (int) floor(i) + 1};
+  int js[2] = {(int) floor(j), (int) floor(j) + 1};
+
+  double P[4][2] = {
+    {i - is[0], j - js[0]},
+    {i - is[1], j - js[0]},
+    {i - is[0], j - js[1]},
+    {i - is[1], j - js[1]}
   };
 
-  int i0 = floor(y), i1 = ceil(y);
-  int j0 = floor(x), j1 = ceil(x);
+  for (int a = 0; a < 4; ++a) {
+    int b0 = a & 1, b1 = (a & 2) >> 1;
+    int i_ = is[b0], j_ = js[b1];
+    assert(in_bounds(i_, j_));
+    assert(operator()(i_, j_).is_far());
+    double s_hat = get_speed(i_, j_), u_hat = LINE(P[a], u0, s_hat, s0, h);
+    insert_into_heap(&(operator()(i_, j_) = {i_, j_, u_hat, state::trial}));
+  }
+}
 
-  node nodes[4] = {
-    {i0, j0, value + dist(i0, j0)},
-    {i0, j1, value + dist(i0, j1)},
-    {i1, j0, value + dist(i1, j0)},
-    {i1, j1, value + dist(i1, j1)}
-  };
+#undef LINE
 
-  add_boundary_nodes(nodes, 4);
+template <class base, class node, int num_neighbors>
+void
+marcher<base, node, num_neighbors>::add_boundary_nodes(
+  node const * nodes, int num)
+{
+  node const * const * tmp = malloc(sizeof(node const * const *)*num);
+  for (int i = 0; i < num; ++i) {
+    tmp[i] = &nodes[i];
+  }
+  add_boundary_nodes(tmp, num);
+  free(tmp);
 }
 
 template <class base, class node, int num_neighbors>
 void
-marcher<base, node, num_neighbors>::add_boundary_nodes(node const * nodes, int num)
+marcher<base, node, num_neighbors>::add_boundary_nodes(
+  node const * const * nodes, int num)
 {
-  node const * n;
-  int i, j;
-
-  /**
-   * First, add the sequence of nodes to the grid.
-   */
   for (int k = 0; k < num; ++k) {
-    n = &nodes[k];
-    i = n->get_i();
-    j = n->get_j();
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+    auto n = nodes[k];
+    int i = n->get_i(), j = n->get_j();
     assert(in_bounds(i, j));
     assert(operator()(i, j).is_far());
-#endif
-    operator()(i, j) = {i, j, n->get_value()};
-  }
-
-  /**
-   * Next, with the nodes added, update their neighbors---this is done
-   * in order to avoid breaking the heap property of the underlying
-   * min-heap. Batch adding of boundary nodes may also be more
-   * efficient for a large number of boundary nodes? (a guess)
-   */
-  for (int k = 0; k < num; ++k) {
-    n = &nodes[k];
-    i = n->get_i();
-    j = n->get_j();
-    visit_neighbors(&operator()(i, j));
+    double u = n->get_value();
+    insert_into_heap(&(operator()(i, j) = {i, j, u, state::trial}));
   }
 }
 
 template <class base, class node, int num_neighbors>
 void
-marcher<base, node, num_neighbors>::set_node_fac_parent(int i, int j, int i_par, int j_par)
+marcher<base, node, num_neighbors>::set_node_fac_center(
+  int i, int j, typename node::fac_center const * fc)
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
-  assert(in_bounds(i_par, j_par));
+  assert(in_bounds(fc->i, fc->j));
 #endif
-  operator()(i, j).set_fac_parent(&operator()(i_par, j_par));
+  operator()(i, j).set_fac_center(fc);
 }
 
 template <class base, class node, int num_neighbors>
@@ -195,6 +210,11 @@ bool
 marcher<base, node, num_neighbors>::in_bounds(int i, int j) const
 {
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
+}
+
+template <class base, class node, int num_neighbors>
+bool marcher<base, node, num_neighbors>::in_bounds(double i, double j) const {
+  return 0 <= i <= _height - 1 && 0 <= j <= _width - 1;
 }
 
 template <class base, class node, int num_neighbors>
@@ -310,10 +330,11 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
     }
   };
 
-  // This the main update loop. Each neighbor of n which isn't valid
-  // is now trial. For each neighboring trial node, use `set_nb'
-  // to grab its valid neighbors and use `update' to actually update
-  // the node's value and update its position in the heap.
+  // This is the main update loop. Each neighbor of n which isn't
+  // valid is now trial. For each neighboring trial node, use
+  // `set_child_nb' to grab its valid neighbors and use `update' to
+  // actually update the node's value and update its position in the
+  // heap.
   for (int k = 0; k < num_neighbors; ++k) {
     if (!valid[k]) {
       di_k = __di(k), dj_k = __dj(k);

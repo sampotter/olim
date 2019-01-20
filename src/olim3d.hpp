@@ -38,19 +38,22 @@ struct groups_t {
     (I || II || III || IV_b ? 18 : 6);
 };
 
-template <class base_olim3d, class node, int num_neighbors>
+template <cost_func F, class base_olim3d, class node, int num_neighbors>
 struct abstract_olim3d:
   public marcher_3d<
-    abstract_olim3d<base_olim3d, node, num_neighbors>,
+  abstract_olim3d<F, base_olim3d, node, num_neighbors>,
     node,
     num_neighbors>
 {
+  static constexpr cost_func F_ = F;
   static constexpr int num_nb = num_neighbors;
   static_assert(num_nb == 6 || num_nb == 18 || num_nb == 26,
                 "Number of neighbors must be 6, 18, or 26");
 
+  using node_t = node;
+
   using marcher_3d_t = marcher_3d<
-    abstract_olim3d<base_olim3d, node, num_neighbors>,
+    abstract_olim3d<F, base_olim3d, node, num_neighbors>,
     node,
     num_neighbors>;
 
@@ -101,12 +104,13 @@ struct abstract_olim3d:
 
 template <cost_func F, class node, class groups>
 struct olim3d_bv:
-  public abstract_olim3d<olim3d_bv<F, node, groups>, node, groups::num_neighbors>
+  public abstract_olim3d<
+    F, olim3d_bv<F, node, groups>, node, groups::num_neighbors>
 {
   static constexpr int num_neighbors = groups::num_neighbors;
-  
+
   using abstract_olim3d<
-    olim3d_bv<F, node, groups>, node, num_neighbors>::abstract_olim3d;
+    F, olim3d_bv<F, node, groups>, node, num_neighbors>::abstract_olim3d;
 
   void init_crtp() {}
 
@@ -171,16 +175,13 @@ EIKONAL_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) {
-      auto n_fac = static_cast<node *>(n->get_fac_parent());
-      int i_fac = n_fac->get_i();
-      int j_fac = n_fac->get_j();
-      int k_fac = n_fac->get_k();
+      auto fc = n->get_fac_center();
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       double p_fac[3] = {
-        (double) (i_fac - n->get_i()),
-        (double) (j_fac - n->get_j()),
-        (double) (k_fac - n->get_k())
+        (double) (fc->i - n->get_i()),
+        (double) (fc->j - n->get_j()),
+        (double) (fc->k - n->get_k())
       };
       auto info = updates::tri<F, 3>()(
         p0,
@@ -192,7 +193,7 @@ EIKONAL_PRIVATE:
         this->s[l1],
         this->get_h(),
         p_fac,
-        this->get_speed(i_fac, j_fac, k_fac));
+        fc->s);
       u = std::min(u, info.value);
 #if COLLECT_STATS
       ++this->_stats->count[1];
@@ -257,24 +258,20 @@ EIKONAL_PRIVATE:
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] && this->nb[l1] && this->nb[l2]) {
-      auto n_fac = static_cast<node *>(n->get_fac_parent());
-      int i_fac = n_fac->get_i();
-      int j_fac = n_fac->get_j();
-      int k_fac = n_fac->get_k();
+      auto fc = n->get_fac_center();
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       double p2[3] = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
       double p_fac[3] = {
-        (double) (i_fac - n->get_i()),
-        (double) (j_fac - n->get_j()),
-        (double) (k_fac - n->get_k())
+        fc->i - n->get_i(),
+        fc->j - n->get_j(),
+        fc->k - n->get_k()
       };
       geom_fac_wkspc<2> g;
       g.init<3>(p0, p1, p2, p_fac);
       double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
         u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
-        s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(),
-        s_fac = this->get_speed(i_fac, j_fac, k_fac);
+        s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;
       F_fac_wkspc<F, 2> w;
       set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
       cost_functor_fac<F, 3, 2> func {w, g};
@@ -317,7 +314,7 @@ enum LP_NORM {L1, L2, MAX};
 
 template <cost_func F, class node, int lp_norm, int d1, int d2>
 struct olim3d_hu:
-  public abstract_olim3d<olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>
+  public abstract_olim3d<F, olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>
 {
   static_assert(lp_norm == L1 || lp_norm == L2 || lp_norm == MAX,
                 "Bad choice of lp norm: must be L1, L2, or MAX");
@@ -325,7 +322,7 @@ struct olim3d_hu:
   static_assert(1 <= d2 && d2 <= 3, "d2 must satisfy 1 <= d2 <= 3");
 
   using abstract_olim3d<
-    olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>::abstract_olim3d;
+    F, olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>::abstract_olim3d;
 
   ~olim3d_hu() {
     delete[] valid_d1;

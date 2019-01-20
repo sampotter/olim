@@ -93,9 +93,9 @@ _marcher_plot_names = {
     eik.Olim26Mid0: '\\texttt{olim26\_mp0}',
     eik.Olim26Mid1: '\\texttt{olim26\_mp1}',
     eik.Olim26Rect: '\\texttt{olim26\_rhr}',
-    eik.Olim3dHuMid0: '\\texttt{olimhu\_mp0}',
-    eik.Olim3dHuMid1: '\\texttt{olimhu\_mp1}',
-    eik.Olim3dHuRect: '\\texttt{olimhu\_rhr}'
+    eik.Olim3dHuMid0: '\\texttt{olim3d\_mp0}',
+    eik.Olim3dHuMid1: '\\texttt{olim3d\_mp1}',
+    eik.Olim3dHuRect: '\\texttt{olim3d\_rhr}'
 }
 
 def get_marcher_plot_name(marcher):

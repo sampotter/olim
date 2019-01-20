@@ -231,7 +231,7 @@ ax.set_xticklabels(['$2^{%d} + 1$' % p for p in P[::2]])
 ax.set_xlabel('$N$')
 
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles[::3], [r'\texttt{olimhu\_mp0}', r'\texttt{olimhu\_mp1}'])
+ax.legend(handles[::3], [r'\texttt{olim3d\_mp0}', r'\texttt{olim3d\_mp1}'])
 
 fig.legend(handles[:3], labels[:3], ncol=3, loc='upper center')
 

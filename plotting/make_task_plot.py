@@ -148,7 +148,8 @@ def initialize_or_increment(df, col, row, val):
 def insert_into_data_frame(d, df, N):
     update_keys = {'update_crtp', 'update_impl', 'tetra', 'tri', 'tri_bv',
                    'operator', 'should_skip'}
-    heap_keys = {'adjust_heap_entry', 'insert_into_heap', 'swim', 'sink'}
+    heap_keys = {'adjust_heap_entry', 'insert_into_heap', 'swim',
+                 'sink', 'get_next_node'}
     logic_keys = {'visit_neighbors_impl', 'run', 'unknown', 'insert',
                   'marcher_3d', 'init', 'init_crtp', '_Function_handler',
                   'conditional', 'pair'}

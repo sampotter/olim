@@ -7,40 +7,40 @@ print(build_path)
 if build_path not in sys.path:
     sys.path.insert(0, build_path)
 
-import pyeikonal as eik
+import pyolim as olim
 import numpy as np
 import time
 
-marchers = [eik.BasicMarcher, eik.Olim4Mid0, eik.Olim4Mid1, eik.Olim4Rect,
-            eik.Olim8Mid0, eik.Olim8Mid1, eik.Olim8Rect]
+marchers = [olim.BasicMarcher, olim.Olim4Mid0, olim.Olim4Mid1, olim.Olim4Rect,
+            olim.Olim8Mid0, olim.Olim8Mid1, olim.Olim8Rect]
 
-olim4_marchers = [eik.Olim4Mid0, eik.Olim4Mid1, eik.Olim4Rect]
-olim8_marchers = [eik.Olim8Mid0, eik.Olim8Mid1, eik.Olim8Rect]
+olim4_marchers = [olim.Olim4Mid0, olim.Olim4Mid1, olim.Olim4Rect]
+olim8_marchers = [olim.Olim8Mid0, olim.Olim8Mid1, olim.Olim8Rect]
 
-mid0_marchers = [eik.Olim4Mid0, eik.Olim8Mid0]
-mid1_marchers = [eik.Olim4Mid1, eik.Olim8Mid1]
-rect_marchers = [eik.Olim4Rect, eik.Olim8Rect]
+mid0_marchers = [olim.Olim4Mid0, olim.Olim8Mid0]
+mid1_marchers = [olim.Olim4Mid1, olim.Olim8Mid1]
+rect_marchers = [olim.Olim4Rect, olim.Olim8Rect]
 
 _marcher_names = {
-    eik.BasicMarcher: 'basic',
-    eik.Olim4Mid0: 'olim4 mp0',
-    eik.Olim4Mid1: 'olim4 mp1',
-    eik.Olim4Rect: 'olim4 rhr',
-    eik.Olim8Mid0: 'olim8 mp0',
-    eik.Olim8Mid1: 'olim8 mp1',
-    eik.Olim8Rect: 'olim8 rhr'}
+    olim.BasicMarcher: 'basic',
+    olim.Olim4Mid0: 'olim4 mp0',
+    olim.Olim4Mid1: 'olim4 mp1',
+    olim.Olim4Rect: 'olim4 rhr',
+    olim.Olim8Mid0: 'olim8 mp0',
+    olim.Olim8Mid1: 'olim8 mp1',
+    olim.Olim8Rect: 'olim8 rhr'}
 
 def get_marcher_name(marcher):
     return _marcher_names[marcher]
 
 _marcher_plot_names = {
-    eik.BasicMarcher: '\\texttt{basic}',
-    eik.Olim4Mid0: '\\texttt{olim4\_mp0}',
-    eik.Olim4Mid1: '\\texttt{olim4\_mp1}',
-    eik.Olim4Rect: '\\texttt{olim4\_rhr}',
-    eik.Olim8Mid0: '\\texttt{olim8\_mp0}',
-    eik.Olim8Mid1: '\\texttt{olim8\_mp1}',
-    eik.Olim8Rect: '\\texttt{olim8\_rhr}'}
+    olim.BasicMarcher: '\\texttt{basic}',
+    olim.Olim4Mid0: '\\texttt{olim4\_mp0}',
+    olim.Olim4Mid1: '\\texttt{olim4\_mp1}',
+    olim.Olim4Rect: '\\texttt{olim4\_rhr}',
+    olim.Olim8Mid0: '\\texttt{olim8\_mp0}',
+    olim.Olim8Mid1: '\\texttt{olim8\_mp1}',
+    olim.Olim8Rect: '\\texttt{olim8\_rhr}'}
 
 def get_marcher_plot_name(marcher):
     return _marcher_plot_names[marcher]

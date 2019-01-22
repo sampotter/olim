@@ -25,7 +25,7 @@ sys.path.insert(0, '../misc/py')
 import itertools as it
 import matplotlib.pyplot as plt
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 import time
 
 from matplotlib import rc
@@ -65,14 +65,14 @@ for i, n in enumerate(N):
 
     for _ in range(ntrials):
 
-        o = eik.BasicMarcher3D(S, h)
+        o = olim.BasicMarcher3D(S, h)
         o.add_boundary_node(i0, i0, i0)
 
         tic()
         o.run()
         tb = min(tb, toc())
 
-        o = eik.Olim6Rect(S, h)
+        o = olim.Olim6Rect(S, h)
         o.add_boundary_node(i0, i0, i0)
 
         tic()

@@ -2,7 +2,7 @@ import sys; sys.path.insert(0, '../../build/Release')
 
 import matplotlib.pyplot as plt; plt.ion()
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 import speedfuncs
 
 from matplotlib.colors import LogNorm
@@ -15,7 +15,7 @@ n = N[-1]
 h = 2./(n-1)
 i0, j0 = int(n/2), int(n/2)
 rfac = 0.1
-Olim = eik.Olim8Rect
+Olim = olim.Olim8Rect
 s = speedfuncs.s1
 f = speedfuncs.f1
 

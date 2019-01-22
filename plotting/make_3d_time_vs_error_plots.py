@@ -25,7 +25,7 @@ import datetime
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 import speedfuncs3d
 import time
 
@@ -56,10 +56,10 @@ Solns = {
     speedfuncs3d.s3: speedfuncs3d.f3,
     speedfuncs3d.s4: speedfuncs3d.f4
 }
-Olims = [eik.Olim6Mid0, eik.Olim6Mid1, eik.Olim6Rect,
-         eik.Olim18Mid0, eik.Olim18Mid1, eik.Olim18Rect,
-         eik.Olim26Mid0, eik.Olim26Mid1, eik.Olim26Rect,
-         eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect]
+Olims = [olim.Olim6Mid0, olim.Olim6Mid1, olim.Olim6Rect,
+         olim.Olim18Mid0, olim.Olim18Mid1, olim.Olim18Rect,
+         olim.Olim26Mid0, olim.Olim26Mid1, olim.Olim26Rect,
+         olim.Olim3dHuMid0, olim.Olim3dHuMid1, olim.Olim3dHuRect]
 
 Slows_by_Olims = list(itertools.product(Slows, Olims))
 
@@ -96,7 +96,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
         o = Olim(S, h)
         if not args.no_factoring:
-            fc = eik.FacCenter3d(i0, j0, k0, slow(0, 0, 0))
+            fc = olim.FacCenter3d(i0, j0, k0, slow(0, 0, 0))
             for i, j, k in zip(I, J, K):
                 o.set_node_fac_center(i, j, k, fc)
         o.add_boundary_node(i0, j0, k0)

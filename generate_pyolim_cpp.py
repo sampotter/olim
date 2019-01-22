@@ -220,7 +220,7 @@ using namespace py::literals;
 using speed_function = std::function<double(double, double)>;
 using speed_function_3d = std::function<double(double, double, double)>;
 
-PYBIND11_MODULE(pyeikonal, m) {
+PYBIND11_MODULE(pyolim, m) {
   m.doc() = "Testing testing";
 '''
 
@@ -238,7 +238,7 @@ PYBIND11_MODULE(pyeikonal, m) {
         src_txt += '''  m.def("olim3d", &olim3d_group_spec, "TODO", "s_cache"_a, "h"_a, "marcher"_a, 
     "cost_func"_a, "bd_points"_a);'''
 
-    with open('pyeikonal.extra_defs.cpp') as f:
+    with open('pyolim_extra.cpp') as f:
         src_txt += f.read()
 
     return src_txt + '}'

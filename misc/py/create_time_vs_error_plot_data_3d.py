@@ -22,7 +22,7 @@ import sys
 if '../../build/Release' not in sys.path:
     sys.path.insert(0, '../../build/Release')
 
-import pyeikonal as eik
+import pyolim as olim
 import h5py
 import mpi4py.MPI
 import numpy as np

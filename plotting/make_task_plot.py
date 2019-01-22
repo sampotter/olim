@@ -30,7 +30,7 @@ import itertools as it
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import pyeikonal as eik
+import pyolim as olim
 import subprocess
 
 from matplotlib.lines import Line2D
@@ -122,8 +122,8 @@ def make_cg_annotation(Olim, name, n, path):
     with open(path, 'w') as f:
         subprocess.run(['callgrind_annotate', 'callgrind.out'], stdout=f)
 
-Olims = [eik.BasicMarcher3D, eik.Olim6Rect, eik.Olim26Mid0, eik.Olim26Mid1,
-         eik.Olim3dHuMid0, eik.Olim3dHuMid1]
+Olims = [olim.BasicMarcher3D, olim.Olim6Rect, olim.Olim26Mid0, olim.Olim26Mid1,
+         olim.Olim3dHuMid0, olim.Olim3dHuMid1]
 
 names = ['basic_marcher_3d', 'olim6_rhr', 'olim26_mp0', 'olim26_mp1',
          'olim3d_hu_mp0', 'olim3d_hu_mp1']

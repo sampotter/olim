@@ -22,7 +22,7 @@ sys.path.insert(0, '../misc/py')
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 import speedfuncs
 import speedfuncs3d
 
@@ -41,8 +41,8 @@ norm = np.linalg.norm
 plt.ion()
 plt.style.use('bmh')
 
-Olim = eik.Olim8Rect
-Olim3d = eik.Olim26Rect
+Olim = olim.Olim8Rect
+Olim3d = olim.Olim26Rect
 
 Npow = np.arange(args.min_2d_power, args.max_2d_power + 1)
 N = 2**Npow + 1
@@ -84,7 +84,7 @@ for ind, n in enumerate(N):
         I, J = np.where(R < r_fac)
 
         ofac = Olim(s, h)
-        fc = eik.FacCenter(i0, j0, 1)
+        fc = olim.FacCenter(i0, j0, 1)
         for i, j in zip(I, J):
             ofac.set_node_fac_center(i, j, fc)
         ofac.add_boundary_node(i0, j0)
@@ -122,7 +122,7 @@ for ind, n in enumerate(N_3d):
         I, J, K = np.where(R < r_fac)
 
         ofac = Olim3d(s, h)
-        fc = eik.FacCenter3d(i0, j0, k0, 1)
+        fc = olim.FacCenter3d(i0, j0, k0, 1)
         for i, j, k in zip(I, J, K):
             ofac.set_node_fac_center(i, j, k, fc)
         ofac.add_boundary_node(i0, j0, k0)

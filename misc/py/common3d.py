@@ -2,76 +2,76 @@ import sys
 if '../../build/Release' not in sys.path:
     sys.path.insert(0, '../../build/Release')
 
-import pyeikonal as eik
+import pyolim as olim
 import numpy as np
 import time
 
 marchers = [
-    eik.BasicMarcher3D,
-    eik.Olim6Mid0,
-    eik.Olim6Mid1,
-    eik.Olim6Rect,
-    eik.Olim18Mid0,
-    eik.Olim18Mid1,
-    eik.Olim18Rect,
-    eik.Olim26Mid0,
-    eik.Olim26Mid1,
-    eik.Olim26Rect,
-    eik.Olim3dHuMid0,
-    eik.Olim3dHuMid1,
-    eik.Olim3dHuRect
+    olim.BasicMarcher3D,
+    olim.Olim6Mid0,
+    olim.Olim6Mid1,
+    olim.Olim6Rect,
+    olim.Olim18Mid0,
+    olim.Olim18Mid1,
+    olim.Olim18Rect,
+    olim.Olim26Mid0,
+    olim.Olim26Mid1,
+    olim.Olim26Rect,
+    olim.Olim3dHuMid0,
+    olim.Olim3dHuMid1,
+    olim.Olim3dHuRect
 ]
 
 olim6_marchers = [
-    eik.Olim6Mid0,
-    eik.Olim6Mid1,
-    eik.Olim6Rect
+    olim.Olim6Mid0,
+    olim.Olim6Mid1,
+    olim.Olim6Rect
 ]
 
 olim18_marchers = [
-    eik.Olim18Mid0,
-    eik.Olim18Mid1,
-    eik.Olim18Rect
+    olim.Olim18Mid0,
+    olim.Olim18Mid1,
+    olim.Olim18Rect
 ]
 
 olim26_marchers = [
-    eik.Olim26Mid0,
-    eik.Olim26Mid1,
-    eik.Olim26Rect
+    olim.Olim26Mid0,
+    olim.Olim26Mid1,
+    olim.Olim26Rect
 ]
 
 mid0_marchers = [
-    eik.Olim6Mid0,
-    eik.Olim18Mid0,
-    eik.Olim26Mid0
+    olim.Olim6Mid0,
+    olim.Olim18Mid0,
+    olim.Olim26Mid0
 ]
 
 mid1_marchers = [
-    eik.Olim6Mid1,
-    eik.Olim18Mid1,
-    eik.Olim26Mid1
+    olim.Olim6Mid1,
+    olim.Olim18Mid1,
+    olim.Olim26Mid1
 ]
 
 rect_marchers = [
-    eik.Olim6Rect,
-    eik.Olim18Rect,
-    eik.Olim26Rect
+    olim.Olim6Rect,
+    olim.Olim18Rect,
+    olim.Olim26Rect
 ]
 
 _marcher_names = {
-    eik.BasicMarcher3D: 'basic 3d',
-    eik.Olim6Mid0: 'olim6 mp0',
-    eik.Olim6Mid1: 'olim6 mp1',
-    eik.Olim6Rect: 'olim6 rhr',
-    eik.Olim18Mid0: 'olim18 mp0',
-    eik.Olim18Mid1: 'olim18 mp1',
-    eik.Olim18Rect: 'olim18 rhr',
-    eik.Olim26Mid0: 'olim26 mp0',
-    eik.Olim26Mid1: 'olim26 mp1',
-    eik.Olim26Rect: 'olim26 rhr',
-    eik.Olim3dHuMid0: 'olim3d hu mp0',
-    eik.Olim3dHuMid1: 'olim3d hu mp1',
-    eik.Olim3dHuRect: 'olim3d hu rhr'
+    olim.BasicMarcher3D: 'basic 3d',
+    olim.Olim6Mid0: 'olim6 mp0',
+    olim.Olim6Mid1: 'olim6 mp1',
+    olim.Olim6Rect: 'olim6 rhr',
+    olim.Olim18Mid0: 'olim18 mp0',
+    olim.Olim18Mid1: 'olim18 mp1',
+    olim.Olim18Rect: 'olim18 rhr',
+    olim.Olim26Mid0: 'olim26 mp0',
+    olim.Olim26Mid1: 'olim26 mp1',
+    olim.Olim26Rect: 'olim26 rhr',
+    olim.Olim3dHuMid0: 'olim3d hu mp0',
+    olim.Olim3dHuMid1: 'olim3d hu mp1',
+    olim.Olim3dHuRect: 'olim3d hu rhr'
 }
 
 def get_marcher_name(marcher):
@@ -83,19 +83,19 @@ def get_marcher_by_name(name):
     return _marchers_by_name[name]
 
 _marcher_plot_names = {
-    eik.BasicMarcher3D: '\\texttt{basic\_3d}',
-    eik.Olim6Mid0: '\\texttt{olim6\_mp0}',
-    eik.Olim6Mid1: '\\texttt{olim6\_mp1}',
-    eik.Olim6Rect: '\\texttt{olim6\_rhr}',
-    eik.Olim18Mid0: '\\texttt{olim18\_mp0}',
-    eik.Olim18Mid1: '\\texttt{olim18\_mp1}',
-    eik.Olim18Rect: '\\texttt{olim18\_rhr}',
-    eik.Olim26Mid0: '\\texttt{olim26\_mp0}',
-    eik.Olim26Mid1: '\\texttt{olim26\_mp1}',
-    eik.Olim26Rect: '\\texttt{olim26\_rhr}',
-    eik.Olim3dHuMid0: '\\texttt{olim3d\_mp0}',
-    eik.Olim3dHuMid1: '\\texttt{olim3d\_mp1}',
-    eik.Olim3dHuRect: '\\texttt{olim3d\_rhr}'
+    olim.BasicMarcher3D: '\\texttt{basic\_3d}',
+    olim.Olim6Mid0: '\\texttt{olim6\_mp0}',
+    olim.Olim6Mid1: '\\texttt{olim6\_mp1}',
+    olim.Olim6Rect: '\\texttt{olim6\_rhr}',
+    olim.Olim18Mid0: '\\texttt{olim18\_mp0}',
+    olim.Olim18Mid1: '\\texttt{olim18\_mp1}',
+    olim.Olim18Rect: '\\texttt{olim18\_rhr}',
+    olim.Olim26Mid0: '\\texttt{olim26\_mp0}',
+    olim.Olim26Mid1: '\\texttt{olim26\_mp1}',
+    olim.Olim26Rect: '\\texttt{olim26\_rhr}',
+    olim.Olim3dHuMid0: '\\texttt{olim3d\_mp0}',
+    olim.Olim3dHuMid1: '\\texttt{olim3d\_mp1}',
+    olim.Olim3dHuRect: '\\texttt{olim3d\_rhr}'
 }
 
 def get_marcher_plot_name(marcher):

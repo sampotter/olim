@@ -3,7 +3,7 @@
 import sys
 sys.path.insert(0, '@CMAKE_CURRENT_SOURCE_DIR@/misc/py')
 
-import pyeikonal as eik
+import pyolim as olim
 import numpy as np
 import speedfuncs3d as sf3d
 import unittest
@@ -14,13 +14,13 @@ class TestPybind11Wrapper(unittest.TestCase):
     def test__marcher__dimensions(self):
         ni, nj = (2, 3)
         S = np.ones((ni, nj))
-        m = eik.Olim4Rect(S)
+        m = olim.Olim4Rect(S)
         self.assertEqual(m.get_height(), ni)
         self.assertEqual(m.get_width(), nj)
 
     def test__marcher__speed_func_orientation(self):
         S = np.array([[1.0, 2.0], [3.0, 4.0]])
-        m = eik.BasicMarcher(S, 1)
+        m = olim.BasicMarcher(S, 1)
         self.assertEqual(m.get_speed(0, 0), S[0, 0])
         self.assertEqual(m.get_speed(0, 1), S[0, 1])
         self.assertEqual(m.get_speed(1, 0), S[1, 0])
@@ -29,12 +29,12 @@ class TestPybind11Wrapper(unittest.TestCase):
     def test__marcher_3d__dimensions(self):
         ni, nj, nk = (2, 3, 4)
         S = np.ones((ni, nj, nk))
-        m = eik.Olim6Rect(S)
+        m = olim.Olim6Rect(S)
         self.assertEqual(m.get_height(), ni)
         self.assertEqual(m.get_width(), nj)
         self.assertEqual(m.get_depth(), nk)
 
-    def test__marhcer_3d__speed_func_orientation(self):
+    def test__marcher_3d__speed_func_orientation(self):
         h = 1
         diam = 2
         ni, nj, nk = (2, 3, 4)
@@ -46,7 +46,7 @@ class TestPybind11Wrapper(unittest.TestCase):
         lz = np.linspace(-zdiam, zdiam, nz)
         x, y, z = np.meshgrid(lx, ly, lz)
         S = sf3d.get_field(sf3d.s4, x, y, z)
-        m = eik.Olim6Rect(S, h)
+        m = olim.Olim6Rect(S, h)
         for i, j, k in prod(range(ni), range(nj), range(nk)):
             msg = 'i = %d, j = %d, k = %d' % (i, j, k)
             self.assertEqual(m.get_speed(i, j, k), S[i, j, k], msg=msg)

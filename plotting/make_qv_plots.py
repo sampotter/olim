@@ -24,7 +24,7 @@ import common
 import common3d
 import matplotlib.pyplot as plt
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 
 from matplotlib.colors import LogNorm
 from numpy.linalg import norm
@@ -49,9 +49,9 @@ vx, vy, vz = 5, 13, 20
 x_fac_1, y_fac_1, z_fac_1 = 0.0, 0.0, 0.0
 x_fac_2, y_fac_2, z_fac_2 = 0.8, 0.0, 0.0
 
-marchers_2d = [eik.Olim8Mid0,    eik.Olim8Mid1,    eik.Olim8Rect]
-marchers_3d = [eik.Olim26Mid0,   eik.Olim26Mid1,   eik.Olim26Rect,
-               eik.Olim3dHuMid0, eik.Olim3dHuMid1, eik.Olim3dHuRect]
+marchers_2d = [olim.Olim8Mid0,    olim.Olim8Mid1,    olim.Olim8Rect]
+marchers_3d = [olim.Olim26Mid0,   olim.Olim26Mid1,   olim.Olim26Rect,
+               olim.Olim3dHuMid0, olim.Olim3dHuMid1, olim.Olim3dHuRect]
 
 ################################################################################
 # 2D
@@ -96,13 +96,13 @@ for Olim in marchers_2d:
         m_fac = Olim(S, h)
 
         R_1 = np.sqrt((x_fac_1 - X)**2 + (y_fac_1 - Y)**2)
-        fc_1 = eik.FacCenter(i_1, j_1, s_1)
+        fc_1 = olim.FacCenter(i_1, j_1, s_1)
         for i, j in zip(*np.where(R_1 <= R_fac)):
             m_fac.set_node_fac_center(i, j, fc_1)
         m_fac.add_boundary_node(x_fac_1, y_fac_1, s_1)
 
         R_2 = np.sqrt((x_fac_2 - X)**2 + (y_fac_2 - Y)**2)
-        fc_2 = eik.FacCenter(i_2, j_2, s_2)
+        fc_2 = olim.FacCenter(i_2, j_2, s_2)
         for i, j in zip(*np.where(R_2 <= R_fac)):
             m_fac.set_node_fac_center(i, j, fc_2)
         m_fac.add_boundary_node(x_fac_2, y_fac_2, s_2)
@@ -157,13 +157,13 @@ for Olim in marchers_3d:
         m_fac = Olim(S, h)
 
         R_1 = np.sqrt((x_fac_1 - X)**2 + (y_fac_1 - Y)**2 + (z_fac_1 - Z)**2)
-        fc_1 = eik.FacCenter3d(i_1, j_1, k_1, s_1)
+        fc_1 = olim.FacCenter3d(i_1, j_1, k_1, s_1)
         for i, j, k in zip(*np.where(R_1 <= R_fac)):
             m_fac.set_node_fac_center(i, j, k, fc_1)
         m_fac.add_boundary_node(x_fac_1, y_fac_1, z_fac_1, s_1)
 
         R_2 = np.sqrt((x_fac_2 - X)**2 + (y_fac_2 - Y)**2 + (z_fac_2 - Z)**2)
-        fc_2 = eik.FacCenter3d(i_2, j_2, k_2, s_2)
+        fc_2 = olim.FacCenter3d(i_2, j_2, k_2, s_2)
         for i, j, k in zip(*np.where(R_2 <= R_fac)):
             m_fac.set_node_fac_center(i, j, k, fc_2)
         m_fac.add_boundary_node(x_fac_2, y_fac_2, z_fac_2, s_2)

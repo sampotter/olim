@@ -1,4 +1,4 @@
-project (fastmarching)
+project (olim)
 
 cmake_minimum_required (VERSION 3.9)
 
@@ -16,7 +16,7 @@ endif ()
 
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
-option (BUILD_PYTHON_BINDINGS "Build Python bindings to libeikonal." ON)
+option (BUILD_PYTHON_BINDINGS "Build Python bindings to libolim." ON)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 option (BUILD_TIMINGS "Build the timings executable." OFF)
 option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
@@ -30,9 +30,9 @@ include (gtest.cmake)
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra -Werror -std=c++1z")
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DEIKONAL_DEBUG")
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DOLIM_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
-  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DEIKONAL_DEBUG -DRELWITHDEBINFO")
+  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DOLIM_DEBUG -DRELWITHDEBINFO")
 set (CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
@@ -43,17 +43,13 @@ else ()
     "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 endif ()
 
-CMAKE_DEPENDENT_OPTION (COMPILE_ALL_3D_MARCHERS
-  "Compile all 256 3D marchers (this takes a while!)" OFF
-  "BUILD_PYTHON_BINDINGS" ON)
-
 if (LINK_PROFILE)
   find_package (Gperftools REQUIRED)
 endif ()
 
 configure_file (src/config.hpp.in src/config.hpp)
 
-set (EIKONAL_SRC_FILES
+set (OLIM_SRC_FILES
   src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
@@ -61,16 +57,16 @@ set (EIKONAL_SRC_FILES
   src/numopt.cpp
   src/speed_funcs.cpp)
 
-add_library (eikonal STATIC ${EIKONAL_SRC_FILES})
+add_library (olim STATIC ${OLIM_SRC_FILES})
 
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   if (IPO_RESULT)
-    set_target_properties (eikonal PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_target_properties (olim PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif ()
 endif ()
-target_include_directories (eikonal PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories (olim PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 if (LINK_PROFILE)
-  target_link_libraries (eikonal ${GPERFTOOLS_PROFILER})
+  target_link_libraries (olim ${GPERFTOOLS_PROFILER})
 endif ()
 
 # This executable is just for convenience. If you want to write a
@@ -79,13 +75,13 @@ endif ()
 if (BUILD_SCRATCH)
   add_executable (scratch misc/cpp/scratch.cpp)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (scratch eikonal)
+  target_link_libraries (scratch olim)
 endif ()
 
 if (BUILD_TIMINGS)
   add_executable (timings misc/cpp/timings.cpp)
   target_include_directories (timings PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (timings eikonal)
+  target_link_libraries (timings olim)
 endif ()
 
 if (BUILD_GEN_PLOT_DATA)
@@ -97,17 +93,17 @@ if (BUILD_GEN_PLOT_DATA)
   add_executable (gen_plot_data_2d misc/cpp/gen_plot_data_2d.cpp)
   target_include_directories (gen_plot_data_2d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_2d eikonal)
+  target_link_libraries (gen_plot_data_2d olim)
 
   add_executable (gen_plot_data_3d misc/cpp/gen_plot_data_3d.cpp)
   target_include_directories (gen_plot_data_3d
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_3d eikonal)
+  target_link_libraries (gen_plot_data_3d olim)
 
   add_executable (gen_qv_plot_data misc/cpp/gen_qv_plot_data.cpp)
   target_include_directories (gen_qv_plot_data
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_qv_plot_data eikonal)
+  target_link_libraries (gen_qv_plot_data olim)
 endif ()
 
 if (BUILD_GEN_STATS)
@@ -118,63 +114,31 @@ if (BUILD_GEN_STATS)
   add_executable (gen_stats misc/cpp/gen_stats.cpp)
   target_include_directories (gen_stats
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_stats eikonal)
+  target_link_libraries (gen_stats olim)
 endif ()
 
 if (${BUILD_PYTHON_BINDINGS})
   # We use a Python script to generate our interface file to reduce
   # the amount of boilerplate we need to maintain manually.
-  set (GENERATE_PY_EIKONAL_CPP_SCRIPT generate_py_eikonal_cpp.py)
-  set (GENERATED_PY_EIKONAL_CPP_PATH
-	${CMAKE_CURRENT_BINARY_DIR}/src/py.eikonal.cpp)
-  if (${COMPILE_ALL_3D_MARCHERS})
-    set (GENERATE_PY_EIKONAL_COMMAND
-	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} --all_olim3d >
-      ${GENERATED_PY_EIKONAL_CPP_PATH})
-  else ()
-    set (GENERATE_PY_EIKONAL_COMMAND
-	  ./${GENERATE_PY_EIKONAL_CPP_SCRIPT} > ${GENERATED_PY_EIKONAL_CPP_PATH})
-  endif ()
+  set (GENERATE_PYOLIM_CPP_SCRIPT generate_pyolim_cpp.py)
+  set (GENERATED_PYOLIM_CPP_PATH
+	${CMAKE_CURRENT_BINARY_DIR}/src/pyolim.cpp)
+  set (GENERATE_PYOLIM_COMMAND
+	./${GENERATE_PYOLIM_CPP_SCRIPT} > ${GENERATED_PYOLIM_CPP_PATH})
 
   add_custom_command (
-	OUTPUT src/py.eikonal.cpp
+	OUTPUT src/pyolim.cpp
 	COMMAND ${CMAKE_COMMAND} -E copy
-	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_EIKONAL_CPP_SCRIPT}
-      ${GENERATE_PY_EIKONAL_CPP_SCRIPT}
+	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PYOLIM_CPP_SCRIPT}
+      ${GENERATE_PYOLIM_CPP_SCRIPT}
     COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_SOURCE_DIR}/pyeikonal.extra_defs.cpp
-      pyeikonal.extra_defs.cpp
-	COMMAND ${GENERATE_PY_EIKONAL_COMMAND}
-	DEPENDS ${GENERATE_PY_EIKONAL_CPP_SCRIPT} ${EIKONAL_SRC_FILES})
-
-  # Again, use a Python script to generate a wrapper function which
-  # lets us call any 3D OLIM, specified by its tetrahedra groups
-  # (i.e. marcher number).
-  #
-  # TODO: since it seems likely that we'll be doing some code
-  # generation in the future, we should probably make these two little
-  # snippets into a function.
-  if (${COMPILE_ALL_3D_MARCHERS})
-    set (GENERATE_PY_OLIM3D_CPP_SCRIPT generate_py_olim3d_wrapper.py)
-    set (GENERATED_PY_OLIM3D_HPP_PATH
-      ${CMAKE_CURRENT_BINARY_DIR}/src/py.olim3d.hpp)
-    set (GENERATED_PY_OLIM3D_CPP_PATH
-      ${CMAKE_CURRENT_BINARY_DIR}/src/py.olim3d.cpp)
-    set (GENERATE_PY_OLIM3D_COMMAND
-      ./generate_py_olim3d_wrapper.py ${GENERATED_PY_OLIM3D_HPP_PATH}
-        ${GENERATED_PY_OLIM3D_CPP_PATH})
-    add_custom_command (
-      OUTPUT src/py.olim3d.cpp
-      COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PY_OLIM3D_CPP_SCRIPT}
-        ${GENERATE_PY_OLIM3D_CPP_SCRIPT}
-      COMMAND ${GENERATE_PY_OLIM3D_COMMAND}
-      DEPENDS ${GENERATE_PY_OLIM3D_CPP_SCRIPT} ${EIKONAL_SRC_FILES})
-  endif ()
+      ${CMAKE_CURRENT_SOURCE_DIR}/pyolim_extra.cpp pyolim_extra.cpp
+	COMMAND ${GENERATE_PYOLIM_COMMAND}
+	DEPENDS ${GENERATE_PYOLIM_CPP_SCRIPT} ${OLIM_SRC_FILES})
 
   # We probably aren't doing this the best way---as it is, we end up
-  # recompiling all of EIKONAL_SRC_FILES to do this. Ideally, we want to
-  # statically link the eikonal target into this module.
+  # recompiling all of OLIM_SRC_FILES to do this. Ideally, we want to
+  # statically link the olim target into this module.
   find_package (pybind11 QUIET)
   if (NOT ${pybind11_FOUND})
 	message (STATUS "Couldn't find system pybind11 install")
@@ -185,16 +149,9 @@ if (${BUILD_PYTHON_BINDINGS})
       add_subdirectory (external/pybind11)
 	endif ()
   endif ()
-  if (${COMPILE_ALL_3D_MARCHERS})
-    pybind11_add_module (eikonal MODULE
-      ${GENERATED_PY_EIKONAL_CPP_PATH}
-      ${GENERATED_PY_OLIM3D_CPP_PATH})
-  else ()
-    pybind11_add_module (pyeikonal MODULE ${GENERATED_PY_EIKONAL_CPP_PATH})
-  endif ()
-
-  target_link_libraries (pyeikonal PRIVATE eikonal)
-  target_include_directories (pyeikonal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  pybind11_add_module (pyolim MODULE ${GENERATED_PYOLIM_CPP_PATH})
+  target_link_libraries (pyolim PRIVATE olim)
+  target_include_directories (pyolim PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endif ()
 
 # We don't use any of these test targets when we're building our
@@ -234,7 +191,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	updates.tri)
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
-	target_link_libraries (${test}.test eikonal gtest ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries (${test}.test olim gtest ${CMAKE_THREAD_LIBS_INIT})
 	target_include_directories (
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     gtest_discover_tests (${test}.test)
@@ -243,7 +200,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   # Now, add our Python tests.
   if (BUILD_PYTHON_BINDINGS)
     set (python_tests
-      py_eikonal)
+      pyolim)
     foreach (test ${python_tests})
       configure_file (
         ${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.test

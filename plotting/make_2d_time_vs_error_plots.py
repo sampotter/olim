@@ -22,7 +22,7 @@ import common
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import pyeikonal as eik
+import pyolim as olim
 import speedfuncs
 import time
 
@@ -53,8 +53,8 @@ Solns = {
     speedfuncs.s3: speedfuncs.f3,
     speedfuncs.s4: speedfuncs.f4
 }
-Olims = [eik.Olim4Mid0, eik.Olim4Mid1, eik.Olim4Rect,
-         eik.Olim8Mid0, eik.Olim8Mid1, eik.Olim8Rect]
+Olims = [olim.Olim4Mid0, olim.Olim4Mid1, olim.Olim4Rect,
+         olim.Olim8Mid0, olim.Olim8Mid1, olim.Olim8Rect]
 
 Slows_by_Olims = list(itertools.product(Slows, Olims))
 
@@ -92,7 +92,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
 
         o = Olim(S, h)
         if use_local_factoring:
-            fc = eik.FacCenter(i0, j0, slow(0, 0))
+            fc = olim.FacCenter(i0, j0, slow(0, 0))
             for i, j in zip(I, J):
                 o.set_node_fac_center(i, j, fc)
         o.add_boundary_node(i0, j0)

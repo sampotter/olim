@@ -47,8 +47,9 @@ def toc():
 ################################################################################
 # gather timings
 
-Nmin, Nmax = 11, 301
-N = np.arange(Nmin, Nmax + 1, 10)
+N = np.concatenate([
+    np.logspace(3, 6, 12, base=2, dtype=int, endpoint=False),
+    np.logspace(6, 9, 10, base=2, dtype=int)])
 
 ntrials = 3
 
@@ -65,14 +66,14 @@ for i, n in enumerate(N):
     for _ in range(ntrials):
 
         o = eik.BasicMarcher3D(S, h)
-        o.addBoundaryNode(i0, i0, i0)
+        o.add_boundary_node(i0, i0, i0)
 
         tic()
         o.run()
         tb = min(tb, toc())
 
         o = eik.Olim6Rect(S, h)
-        o.addBoundaryNode(i0, i0, i0)
+        o.add_boundary_node(i0, i0, i0)
 
         tic()
         o.run()

@@ -51,8 +51,6 @@ N = np.concatenate([
     np.logspace(3, 6, 12, base=2, dtype=int, endpoint=False),
     np.logspace(6, 9, 10, base=2, dtype=int)])
 
-ntrials = 3
-
 Tb, To = [], []
 
 for i, n in enumerate(N):
@@ -62,6 +60,8 @@ for i, n in enumerate(N):
     S = np.ones((n, n, n))
 
     tb, to = np.inf, np.inf
+
+    ntrials = 10 if n < 120 else 3
 
     for _ in range(ntrials):
 

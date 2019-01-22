@@ -1,0 +1,10 @@
+* Miscellaneous C++ files
+
+  This directory contains a few miscellaneous C++ files. One file,
+  ~scratch.cpp~, is just a convenience scratch file. If
+  ~-DBUILD_SCRATCH=ON~ is passed to CMake, then it will be built, and
+  can be used for quickly testing ideas out.
+
+  The other file, ~gen_stats.cpp~, is used by one of the plotting
+  scripts to generate and write the statistics collected when
+  ~-DCOLLECT_STATS=ON~ is passed to CMake.

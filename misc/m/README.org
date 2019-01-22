@@ -1,0 +1,6 @@
+* Test MATLAB scripts
+
+  This directory contains a bunch of miscellaneous MATLAB scripts have
+  been used (and are being used) to prototype and debug during
+  development. At some point they may become better documented, but
+  for now any user of this library can safely ignore them.

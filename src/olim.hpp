@@ -20,7 +20,7 @@ struct olim: public marcher<olim<F, do_adj, do_diag>, do_diag ? 8 : 4>
   int nb[num_nb];
 
 OLIM_PRIVATE:
-  virtual void update_impl(int lin_hat, double & T);
+  virtual void update_impl(int lin_hat, double & U);
 
   template <int d>
   inline void line(int i, double & u) {

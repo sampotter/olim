@@ -7,28 +7,28 @@
 
 #include "common.hpp"
 
-void basic_marcher::update_impl(int lin, double & T) {
+void basic_marcher::update_impl(int lin, double & U) {
   (void) lin;
 
   double sh = this->s_hat*this->get_h();
 
-  double T1 = fmin(
+  double U1 = fmin(
     nb[0] != -1 ? _U[nb[0]] : inf<double>,
     nb[2] != -1 ? _U[nb[2]] : inf<double>);
 
-  double T2 = fmin(
+  double U2 = fmin(
     nb[1] != -1 ? _U[nb[1]] : inf<double>,
     nb[3] != -1 ? _U[nb[3]] : inf<double>);
 
-  bool T1_inf = isinf(T1), T2_inf = isinf(T2);
+  bool U1_inf = isinf(U1), U2_inf = isinf(U2);
 
-  if (!T1_inf && !T2_inf) {
-    double diff = T1 - T2, disc = 2*sh*sh - diff*diff;
-    T = disc > 0 ? fmin(T, (T1 + T2 + sqrt(disc))/2) : T;
-  } else if (T1_inf) {
-    T = fmin(T, T2 + sh);
-  } else if (T2_inf) {
-    T = fmin(T, T1 + sh);
+  if (!U1_inf && !U2_inf) {
+    double diff = U1 - U2, disc = 2*sh*sh - diff*diff;
+    U = disc > 0 ? fmin(U, (U1 + U2 + sqrt(disc))/2) : U;
+  } else if (U1_inf) {
+    U = fmin(U, U2 + sh);
+  } else if (U2_inf) {
+    U = fmin(U, U1 + sh);
   } else {
     assert(false);
   }

@@ -285,14 +285,14 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
 
   auto & s_hat = static_cast<base *>(this)->s_hat;
   auto const update = [&] (int lin_hat, int parent) {
-    auto T = inf<double>;
+    auto U = inf<double>;
     s_hat = _s_cache[lin_hat];
-    update_impl(lin_hat, child_nb, parent, T);
-    if (T < _U[lin_hat]) {
+    update_impl(lin_hat, child_nb, parent, U);
+    if (U < _U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-      assert(T >= 0);
+      assert(U >= 0);
 #endif
-      _U[lin_hat] = T;
+      _U[lin_hat] = U;
       _heap.update(lin_hat);
     }
   };

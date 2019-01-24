@@ -302,14 +302,14 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // filled appropriately. Upon updating, this sets the value of n and
   // adjusts its position in the heap.
   auto const update = [&] (int lin_hat) {
-    auto T = inf<double>;
+    auto U = inf<double>;
     static_cast<base *>(this)->s_hat = _s_cache[lin_hat];
-    update_impl(lin_hat, T);
-    if (T < _U[lin_hat]) {
+    update_impl(lin_hat, U);
+    if (U < _U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-      assert(T >= 0);
+      assert(U >= 0);
 #endif
-      _U[lin_hat] = T;
+      _U[lin_hat] = U;
       _heap.update(lin_hat);
     }
   };

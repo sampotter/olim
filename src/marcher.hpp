@@ -84,7 +84,7 @@ OLIM_PROTECTED:
   double get_h() const { return _h; }
   
   void visit_neighbors(int lin);
-  virtual void update_impl(int lin, double & T) = 0;
+  virtual void update_impl(int lin, double & U) = 0;
 
   int valid_nb[8];
 

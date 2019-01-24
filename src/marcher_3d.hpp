@@ -90,7 +90,7 @@ OLIM_PROTECTED:
   double get_h() const { return _h; }
 
   void visit_neighbors(int lin_center);
-  virtual void update_impl(int lin, int * nb, int parent, double & T) = 0;
+  virtual void update_impl(int lin, int * nb, int parent, double & U) = 0;
 
   struct proxy
   {

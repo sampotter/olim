@@ -78,7 +78,7 @@ struct abstract_olim3d:
   { init(); }
 
   void init();
-  virtual void update_impl(int lin_hat, int * nb, int parent, double & T);
+  virtual void update_impl(int lin_hat, int * nb, int parent, double & U);
 
   double s_hat, s[num_nb];
 
@@ -110,7 +110,7 @@ struct olim3d_bv:
   int const * inds;
   bool tri_skip_list[42*8]; // TODO: compress
 
-  void update_crtp(double & T);
+  void update_crtp(double & U);
 
 OLIM_PRIVATE:
 
@@ -358,7 +358,7 @@ struct olim3d_hu: public abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>
     return coplanar[linear_index(l0, l1, l2)];
   }
 
-  void update_crtp(double & T);
+  void update_crtp(double & U);
 };
 
 using olim3d_hu_rhr = olim3d_hu<RHR, L1, 1, 2>;

@@ -16,7 +16,7 @@ struct basic_marcher: public marcher<basic_marcher, 4>,
   int nb[num_nb];
 
 OLIM_PRIVATE:
-  virtual void update_impl(int lin, double & T);
+  virtual void update_impl(int lin, double & U);
 };
 
 #endif // __BASIC_MARCHER_HPP__

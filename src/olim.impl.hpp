@@ -15,7 +15,7 @@
 
 template <cost_func F, bool do_adj, bool do_diag>
 void
-olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & T)
+olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 {
   int i_hat = this->get_i(lin_hat);
   int j_hat = this->get_j(lin_hat);
@@ -34,27 +34,27 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & T)
     double sf = fc->s, pf[2] = {fc->i - i_hat, fc->j - j_hat};
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
-      line<1>(a, T);
-      tri_fac(a, b, pf, sf, T);
+      line<1>(a, U);
+      tri_fac(a, b, pf, sf, U);
     }
     if (do_diag) {
       for (int a = 4, b = 0, c = 1; a < 8; ++a, c = (++b + 1) % 4) {
-        line<2>(a, T);
-        tri_fac(a, b, pf, sf, T);
-        tri_fac(a, c, pf, sf, T);
+        line<2>(a, U);
+        tri_fac(a, b, pf, sf, U);
+        tri_fac(a, c, pf, sf, U);
       }
     }
   }
   else {
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
-      line<1>(a, T);
-      tri<P01, P10>(a, b, T);
+      line<1>(a, U);
+      tri<P01, P10>(a, b, U);
     }
     if (do_diag) {
       for (int a = 4, b = 0, c = 1; a < 8; ++a, c = (++b + 1) % 4) {
-        line<2>(a, T);
-        tri<P11, P01>(a, b, T);
-        tri<P11, P10>(a, c, T);
+        line<2>(a, U);
+        tri<P11, P01>(a, b, U);
+        tri<P11, P10>(a, c, U);
       }
     }
   }

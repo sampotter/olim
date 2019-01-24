@@ -13,19 +13,19 @@
   - [X] Make sure all plots use figsize=(6.5, *) and font size = 8
   - [X] Script: extract task % from profile data
   - [X] Plot: task %
-  - [ ] Combine and automate the previous two
+  - [X] Combine and automate the previous two
   - [ ] olimhu skipping
-  - [ ] Writeup: "implementation stats"
+  - [X] Writeup: "implementation stats"
 
 * <2019-01-12 Sat>
   - [X] Finish optimizing Lagrange multipliers
   - [X] Use MATLAB to generate some tests for `should_skip'
 
-* <2019-01-15 Tue>
-  - [ ] Collect statistics on heap use
-    - [ ] Number of swaps when inserting
-    - [ ] Number of swaps when removing
-    - [ ] Size of heap iteration-by-iteration
+* <2019-01-22 Tue>
+  - [ ] SoA task
+  - [ ] See if we can remove add_boundary_nodes...
+  - [ ] Remove get_i/j/k
+  - [ ] 
 
 * Optimization Todo
   1. [ ] Getting to the point where probably the simplest thing is to

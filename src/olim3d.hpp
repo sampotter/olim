@@ -2,7 +2,6 @@
 #define __OLIM3D_HPP__
 
 #include "marcher_3d.hpp"
-#include "node_3d.hpp"
 #include "updates.line.hpp"
 #include "updates.tetra.hpp"
 #include "updates.tri.hpp"
@@ -34,28 +33,22 @@ struct groups_t {
   static constexpr bool do_tri13_updates = V;
   static constexpr bool do_tri22_updates = I || II || III || IV_b || VI_b;
   static constexpr bool do_tri23_updates = V || VI_b;
-  static constexpr int num_neighbors = V || VI_a || VI_b ? 26 :
+  static constexpr int num_nb = V || VI_a || VI_b ? 26 :
     (I || II || III || IV_b ? 18 : 6);
 };
 
-template <cost_func F, class base_olim3d, class node, int num_neighbors>
+template <cost_func F, class base_olim3d, int num_nb>
 struct abstract_olim3d:
-  public marcher_3d<
-  abstract_olim3d<F, base_olim3d, node, num_neighbors>,
-    node,
-    num_neighbors>
+  public marcher_3d<abstract_olim3d<F, base_olim3d, num_nb>, num_nb>
 {
   static constexpr cost_func F_ = F;
-  static constexpr int num_nb = num_neighbors;
+  // static constexpr int num_nb_ = num_nb;
+
   static_assert(num_nb == 6 || num_nb == 18 || num_nb == 26,
                 "Number of neighbors must be 6, 18, or 26");
 
-  using node_t = node;
-
   using marcher_3d_t = marcher_3d<
-    abstract_olim3d<F, base_olim3d, node, num_neighbors>,
-    node,
-    num_neighbors>;
+    abstract_olim3d<F, base_olim3d, num_nb>, num_nb>;
 
   abstract_olim3d() { init(); }
 
@@ -86,9 +79,9 @@ struct abstract_olim3d:
   { init(); }
 
   void init();
-  virtual void update_impl(node * n, node ** nb, int parent, double & T);
+  virtual void update_impl(int lin_hat, int * nb, int parent, double & T);
 
-  double s_hat, s[num_neighbors];
+  double s_hat, s[num_nb];
 
 #if COLLECT_STATS
   virtual ~abstract_olim3d() { delete[] _node_stats; }
@@ -102,27 +95,25 @@ struct abstract_olim3d:
 #endif
 };
 
-template <cost_func F, class node, class groups>
+template <cost_func F, class groups>
 struct olim3d_bv:
-  public abstract_olim3d<
-    F, olim3d_bv<F, node, groups>, node, groups::num_neighbors>
+  public abstract_olim3d<F, olim3d_bv<F, groups>, groups::num_nb>
 {
-  static constexpr int num_neighbors = groups::num_neighbors;
+  static constexpr int num_nb = groups::num_nb;
 
-  using abstract_olim3d<
-    F, olim3d_bv<F, node, groups>, node, num_neighbors>::abstract_olim3d;
+  using abstract_olim3d<F, olim3d_bv<F, groups>, num_nb>::abstract_olim3d;
 
   void init_crtp() {}
 
-  node * n;
-  node ** nb;
+  int lin_hat;
+  int * nb;
   int parent, octant;
   int const * inds;
   bool tri_skip_list[42*8]; // TODO: compress
 
   void update_crtp(double & T);
 
-EIKONAL_PRIVATE:
+OLIM_PRIVATE:
 
   inline void reset_tri_skip_list() {
     memset(tri_skip_list, 0, sizeof(tri_skip_list));
@@ -136,9 +127,11 @@ EIKONAL_PRIVATE:
 
   template <int d>
   inline void line(int i, double & u) {
-    if (this->nb[i]) {
+    if (this->nb[i] != -1) {
+      // auto u_hat = updates::line_bv<F, d>()(
+      //   this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
       auto u_hat = updates::line_bv<F, d>()(
-        this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
+        this->_U[this->nb[i]], this->s_hat, this->s[i], this->get_h());
       u = std::min(u, u_hat);
 #if COLLECT_STATS
       ++this->_stats->count[0];
@@ -152,10 +145,17 @@ EIKONAL_PRIVATE:
       return;
     }
     int l0 = inds[a], l1 = inds[b];
-    if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) {
+    if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
+      // auto info = updates::tri_bv<F, 3, p0, p1>()(
+      //   this->nb[l0]->get_value(),
+      //   this->nb[l1]->get_value(),
+      //   this->s_hat,
+      //   this->s[l0],
+      //   this->s[l1],
+      //   this->get_h());
       auto info = updates::tri_bv<F, 3, p0, p1>()(
-        this->nb[l0]->get_value(),
-        this->nb[l1]->get_value(),
+        this->_U[this->nb[l0]],
+        this->_U[this->nb[l1]],
         this->s_hat,
         this->s[l0],
         this->s[l1],
@@ -174,20 +174,21 @@ EIKONAL_PRIVATE:
       return;
     }
     int l0 = inds[a], l1 = inds[b];
-    if ((l0 == parent || l1 == parent) && nb[l0] && nb[l1]) {
-      auto fc = n->get_fac_center();
+    if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
+      // auto fc = n->get_fac_center();
+      auto fc = this->_lin2fac[lin_hat];
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       double p_fac[3] = {
-        (double) (fc->i - n->get_i()),
-        (double) (fc->j - n->get_j()),
-        (double) (fc->k - n->get_k())
+        fc->i - this->get_i(lin_hat),
+        fc->j - this->get_j(lin_hat),
+        fc->k - this->get_k(lin_hat)
       };
       auto info = updates::tri<F, 3>()(
         p0,
         p1,
-        this->nb[l0]->get_value(),
-        this->nb[l1]->get_value(),
+        this->_U[this->nb[l0]],
+        this->_U[this->nb[l1]],
         this->s_hat,
         this->s[l0],
         this->s[l1],
@@ -206,10 +207,13 @@ EIKONAL_PRIVATE:
   inline void tetra(double & u) {
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
-        this->nb[l0] && this->nb[l1] && this->nb[l2]) {
+        this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
       updates::info<2> info;
-      double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-        u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
+      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
+      double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
+        u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
       F_wkspc<F, 2> w;
       set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
@@ -257,20 +261,24 @@ EIKONAL_PRIVATE:
   inline void tetra_fac(double & u) {
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
-        this->nb[l0] && this->nb[l1] && this->nb[l2]) {
-      auto fc = n->get_fac_center();
+        this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
+      // auto fc = n->get_fac_center();
+      auto fc = this->_lin2fac[lin_hat];
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       double p2[3] = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
       double p_fac[3] = {
-        fc->i - n->get_i(),
-        fc->j - n->get_j(),
-        fc->k - n->get_k()
+        fc->i - this->get_i(lin_hat),
+        fc->j - this->get_j(lin_hat),
+        fc->k - this->get_k(lin_hat)
       };
       geom_fac_wkspc<2> g;
       g.init<3>(p0, p1, p2, p_fac);
-      double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-        u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
+      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;
+      double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
+        u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;
       F_fac_wkspc<F, 2> w;
       set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
@@ -291,9 +299,9 @@ EIKONAL_PRIVATE:
   }
 };
 
-template <class groups> using olim3d_mp0 = olim3d_bv<MP0, node_3d, groups>;
-template <class groups> using olim3d_mp1 = olim3d_bv<MP1, node_3d, groups>;
-template <class groups> using olim3d_rhr = olim3d_bv<RHR, node_3d, groups>;
+template <class groups> using olim3d_mp0 = olim3d_bv<MP0, groups>;
+template <class groups> using olim3d_mp1 = olim3d_bv<MP1, groups>;
+template <class groups> using olim3d_rhr = olim3d_bv<RHR, groups>;
 
 using olim6_groups = groups_t<0, 0, 0, 1, 0, 0, 0, 0>;
 using olim6_mp0 = olim3d_mp0<olim6_groups>;
@@ -312,17 +320,15 @@ using olim26_rhr = olim3d_rhr<olim26_groups>;
 
 enum LP_NORM {L1, L2, MAX};
 
-template <cost_func F, class node, int lp_norm, int d1, int d2>
-struct olim3d_hu:
-  public abstract_olim3d<F, olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>
+template <cost_func F, int lp_norm, int d1, int d2>
+struct olim3d_hu: public abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>
 {
   static_assert(lp_norm == L1 || lp_norm == L2 || lp_norm == MAX,
                 "Bad choice of lp norm: must be L1, L2, or MAX");
   static_assert(1 <= d1 && d1 <= 3, "d1 must satisfy 1 <= d1 <= 3");
   static_assert(1 <= d2 && d2 <= 3, "d2 must satisfy 1 <= d2 <= 3");
 
-  using abstract_olim3d<
-    F, olim3d_hu<F, node, lp_norm, d1, d2>, node, 26>::abstract_olim3d;
+  using abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>::abstract_olim3d;
 
   ~olim3d_hu() {
     delete[] valid_d1;
@@ -334,8 +340,8 @@ struct olim3d_hu:
 
   void init_crtp();
 
-  node * n;
-  node ** nb;
+  int lin_hat;
+  int * nb;
   int parent;
   bool * valid_d1, * valid_d2, * coplanar;
   geom_wkspc<2> * geom_wkspcs;
@@ -373,9 +379,9 @@ struct olim3d_hu:
   void update_crtp(double & T);
 };
 
-using olim3d_hu_rhr = olim3d_hu<RHR, node_3d, L1, 1, 2>;
-using olim3d_hu_mp0 = olim3d_hu<MP0, node_3d, L1, 1, 2>;
-using olim3d_hu_mp1 = olim3d_hu<MP1, node_3d, L1, 1, 2>;
+using olim3d_hu_rhr = olim3d_hu<RHR, L1, 1, 2>;
+using olim3d_hu_mp0 = olim3d_hu<MP0, L1, 1, 2>;
+using olim3d_hu_mp1 = olim3d_hu<MP1, L1, 1, 2>;
 
 #include "olim3d.impl.hpp"
 

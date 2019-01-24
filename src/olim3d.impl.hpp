@@ -62,15 +62,15 @@ constexpr int oct2inds[8][7] = {
 #define P110 6
 #define P111 7
 
-template <cost_func F, class base, class node, int num_neighbors>
-void abstract_olim3d<F, base, node, num_neighbors>::init()
+template <cost_func F, class base, int num_nb>
+void abstract_olim3d<F, base, num_nb>::init()
 {
   static_cast<base *>(this)->init_crtp();
 }
 
 #if COLLECT_STATS
-template <class base, class node, int num_neighbors>
-void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
+template <class base, int num_nb>
+void abstract_olim3d<base, num_nb>::dump_stats() const
 {
   printf("depth = %d, width = %d, height = %d\n", this->get_depth(),
          this->get_width(), this->get_height());
@@ -86,8 +86,8 @@ void abstract_olim3d<base, node, num_neighbors>::dump_stats() const
   }
 }
 
-template <class base, class node, int num_neighbors>
-void abstract_olim3d<base, node, num_neighbors>::write_stats_bin(
+template <class base, int num_nb>
+void abstract_olim3d<base, num_nb>::write_stats_bin(
   const char * path) const
 {
   FILE * f = fopen(path, "wb");
@@ -108,34 +108,38 @@ void abstract_olim3d<base, node, num_neighbors>::write_stats_bin(
 }
 #endif // COLLECT_STATS
 
-template <cost_func F, class base, class node, int num_neighbors>
-void abstract_olim3d<F, base, node, num_neighbors>::update_impl(
-  node * n, node ** nb, int parent, double & T)
+template <cost_func F, class base, int num_nb>
+void
+abstract_olim3d<F, base, num_nb>::update_impl(
+  int lin_hat, int * nb, int parent, double & T)
 {
-  int i = n->get_i(), j = n->get_j(), k = n->get_k();
+  int i = this->get_i(lin_hat);
+  int j = this->get_j(lin_hat);
+  int k = this->get_k(lin_hat);
+
 #if COLLECT_STATS
   this->_stats = this->get_stats(i, j, k);
   ++this->_stats->num_visits;
 #endif
 
-  for (int l = 0; l < num_neighbors; ++l) {
-    if (nb[l]) {
+  for (int l = 0; l < num_nb; ++l) {
+    if (nb[l] != -1) {
       this->s[l] = this->get_speed(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
     }
   }
 
-  static_cast<base *>(this)->n = n;
+  static_cast<base *>(this)->lin_hat = lin_hat;
   static_cast<base *>(this)->nb = nb;
   static_cast<base *>(this)->parent = parent;
   static_cast<base *>(this)->update_crtp(T);
 }
 
-template <cost_func F, class node, class groups>
-void olim3d_bv<F, node, groups>::update_crtp(double & T)
+template <cost_func F, class groups>
+void olim3d_bv<F, groups>::update_crtp(double & T)
 {
   using std::min;
 
-  assert(parent <= groups::num_neighbors);
+  assert(parent <= groups::num_nb);
 
   // Do line update corresponding to parent node.
   //
@@ -145,9 +149,9 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
     double Tnew = inf<double>;
     if (parent < 6) {
       line<1>(parent, Tnew);
-    } else if (groups::num_neighbors > 6 && parent < 18) {
+    } else if (groups::num_nb > 6 && parent < 18) {
       line<2>(parent, Tnew);
-    } else if (groups::num_neighbors > 18) {
+    } else if (groups::num_nb > 18) {
       line<3>(parent, Tnew);
     }
     assert(!isinf(Tnew));
@@ -163,7 +167,7 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
    */
   reset_tri_skip_list();
 
-  if (n->is_factored()) {
+  if (this->is_factored(lin_hat)) {
     /**
      * Tetrahedron updates:
      */
@@ -343,8 +347,8 @@ void olim3d_bv<F, node, groups>::update_crtp(double & T)
   }
 }
 
-template <cost_func F, class node, int lp_norm, int d1, int d2>
-void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
+template <cost_func F, int lp_norm, int d1, int d2>
+void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
 {
   // TODO: only allocate once
   valid_d1 = new bool[26*26];
@@ -400,8 +404,8 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::init_crtp()
   }
 }
 
-template <cost_func F, class node, int lp_norm, int d1, int d2>
-void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
+template <cost_func F, int lp_norm, int d1, int d2>
+void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & T)
 {
   using std::min;
 
@@ -418,19 +422,23 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   get_p(l0, p0);
 
   // TODO: see comment above about one-point updates
+  // T0 = updates::line<F>()(
+  //   get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
+  //   this->get_h());
   T0 = updates::line<F>()(
-    get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
+    get_p_norm(l0), this->_U[this->nb[l0]], this->s_hat, this->s[l0],
     this->get_h());
 #if COLLECT_STATS
   ++this->_stats->count[0];
 #endif
 
-  if (n->is_factored()) {
-    auto fc = n->get_fac_center();
+  if (this->is_factored(lin_hat)) {
+    // auto fc = n->get_fac_center();
+    auto fc = this->_lin2fac[lin_hat];
     s_fac = fc->s;
-    p_fac[0] = fc->i - n->get_i();
-    p_fac[1] = fc->j - n->get_j();
-    p_fac[2] = fc->k - n->get_k();
+    p_fac[0] = fc->i - this->get_i(lin_hat);
+    p_fac[1] = fc->j - this->get_j(lin_hat);
+    p_fac[2] = fc->k - this->get_k(lin_hat);
   }
 
   // Create a cache for the minimizing lambdas to use for skipping
@@ -441,19 +449,25 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
 
   // Find the minimal triangle update containing l0.
   for (int l = 0; l < 26; ++l) {
-    if (l == l0 || !nb[l] || !is_valid_d1(l0, l)) {
+    if (l == l0 || nb[l] == -1 || !is_valid_d1(l0, l)) {
       continue;
     }
 
     get_p(l, p1);
 
     // Do the triangle update.
-    auto const tmp = n->is_factored() ?
+    auto const tmp = this->is_factored(lin_hat) ?
+      // updates::tri<F, 3>()(
+      //   p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+      //   this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
+      // updates::tri<F, 3>()(
+      //   p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+      //   this->s_hat, this->s[l0], this->s[l], this->get_h());
       updates::tri<F, 3>()(
-        p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+        p0, p1, this->_U[this->nb[l0]], this->_U[this->nb[l]],
         this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
       updates::tri<F, 3>()(
-        p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
+        p0, p1, this->_U[this->nb[l0]], this->_U[this->nb[l]],
         this->s_hat, this->s[l0], this->s[l], this->get_h());
 #if COLLECT_STATS
     ++this->_stats->count[1];
@@ -478,7 +492,7 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
   // Do the tetrahedron updates such that p2 is sufficiently near p0
   // and p1.
   for (int l2 = 0; l2 < 26; ++l2) {
-    if (l0 == l2 || l1 == l2 || !nb[l2] ||
+    if (l0 == l2 || l1 == l2 || nb[l2] == -1 ||
         !is_valid_d2(l0, l2) || !is_valid_d2(l1, l2) ||
         is_coplanar(l0, l1, l2)) {
       continue;
@@ -490,10 +504,13 @@ void olim3d_hu<F, node, lp_norm, d1, d2>::update_crtp(double & T)
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
     {
-      double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-        u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
+      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
+      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
+      double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
+        u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
-      if (n->is_factored()) {
+      if (this->is_factored(lin_hat)) {
         geom_fac_wkspc<2> g;
         g.init<3>(p0, p1, p2, p_fac);
         F_fac_wkspc<F, 2> w;

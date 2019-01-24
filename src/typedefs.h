@@ -1,6 +1,8 @@
 #ifndef __TYPEDEFS_H__
 #define __TYPEDEFS_H__
 
+enum class state: char {valid, trial, far};
+
 enum marcher_type {
   BASIC,
   OLIM4_MP0,

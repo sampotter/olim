@@ -552,13 +552,20 @@ plane_boundaries_are_correct() {
   double h = 1;
   olim3d_t m {n, n, n, h, (speed_func_3d) default_speed_func, 0, 0, 0};
 
-  typename olim3d_t::node_type nodes[4];
-  for (int i = 0, k = 0; i < 2; ++i) {
+  int is[4], js[4], ks[4] = {0, 0, 0, 0};
+  double Us[4];
+
+  // typename olim3d_t::node_type nodes[4];
+  int k = 0;
+  for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      nodes[k++] = typename olim3d_t::node_type {i, j, 0};
+      // nodes[k++] = typename olim3d_t::node_type {i, j, 0};
+      is[k] = i;
+      js[k] = j;
+      Us[k++] = 0;
     }
   }
-  m.add_boundary_nodes(nodes, 4);
+  m.add_boundary_nodes(is, js, ks, Us, 4);
 
   m.run();
   for (int i = 0; i < 2; ++i) {
@@ -732,11 +739,11 @@ solution_is_exact_in_factored_square(
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
-  typename olim::node_t::fac_center fc {(double) i0, (double) j0, 1.0};
+  typename olim::fac_src_t src {(double) i0, (double) j0, 1.0};
   olim o {n, n, h, (speed_func) default_speed_func, 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      o.set_node_fac_center(i, j, &fc);
+      o.set_fac_src(i, j, &src);
     }
   }
   o.add_boundary_node(i0, j0);
@@ -764,13 +771,13 @@ solution_is_exact_in_factored_square(
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2, k0 = n/2;
-  typename olim::node_t::fac_center fc {
-    (double) i0, (double) j0, (double) k0, 1.0};
+
+  typename olim::fac_src_t src {(double) i0, (double) j0, (double) k0, 1.0};
   olim o {n, n, n, h, (speed_func_3d) default_speed_func, 1., 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        o.set_node_fac_center(i, j, k, &fc);
+        o.set_fac_src(i, j, k, &src);
       }
     }
   }

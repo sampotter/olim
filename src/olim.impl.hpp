@@ -13,23 +13,25 @@
 #define P10 2
 #define P11 3
 
-template <cost_func F, class node, bool do_adj, bool do_diag>
+template <cost_func F, bool do_adj, bool do_diag>
 void
-olim<F, node, do_adj, do_diag>::update_impl(node * n, double & T)
+olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & T)
 {
-  int i_hat = n->get_i(), j_hat = n->get_j();
+  // int i_hat = n->get_i(), j_hat = n->get_j();
+  int i_hat = this->get_i(lin_hat);
+  int j_hat = this->get_j(lin_hat);
 
-  for (int k = 0; k < num_neighbors; ++k) {
-    if (this->nb[k]) {
+  for (int k = 0; k < num_nb; ++k) {
+    if (this->nb[k] != -1) {
       s[k] = this->get_speed(i_hat + __di(k), j_hat + __dj(k));
     }
   }
 
-  if (n->is_factored()) {
+  if (this->is_factored(lin_hat)) {
     // TODO: this is a rough draft quality implementation of additive
     // local factoring... this can definitely be optimized
 
-    auto fc = n->get_fac_center();
+    auto fc = this->_lin2fac[lin_hat];
     double sf = fc->s, pf[2] = {fc->i - i_hat, fc->j - j_hat};
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {

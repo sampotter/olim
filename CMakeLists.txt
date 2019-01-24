@@ -50,7 +50,6 @@ endif ()
 configure_file (src/config.hpp.in src/config.hpp)
 
 set (OLIM_SRC_FILES
-  src/abstract_marcher.cpp
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/cost_funcs.cpp

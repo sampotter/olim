@@ -19,12 +19,12 @@ constexpr T eps = std::numeric_limits<T>::epsilon();
 template <class T>
 constexpr T inf = std::numeric_limits<T>::infinity();
 
-#ifdef EIKONAL_DEBUG
-#  define EIKONAL_PROTECTED public
-#  define EIKONAL_PRIVATE public
+#ifdef OLIM_DEBUG
+#  define OLIM_PROTECTED public
+#  define OLIM_PRIVATE public
 #else
-#  define EIKONAL_PROTECTED protected
-#  define EIKONAL_PRIVATE private
+#  define OLIM_PROTECTED protected
+#  define OLIM_PRIVATE private
 #endif
 
 #endif // __COMMON_DEFS_HPP__

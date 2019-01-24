@@ -4,7 +4,6 @@
 #include <src/config.hpp>
 
 #include <assert.h>
-#include <math.h>
 
 #include "offsets.hpp"
 #include "updates.line.hpp"
@@ -17,19 +16,18 @@
 #define __y(l) (h*l - y0)
 #define __z(l) (h*l - z0)
 
-static inline size_t get_initial_heap_size(int width, int height, int depth) {
-  return static_cast<size_t>(fmax(8.0, log(width*height*depth)));
-}
+template <class base, int num_nb>
+marcher_3d<base, num_nb>::marcher_3d() {}
 
-template <class base, class node, int num_neighbors>
-marcher_3d<base, node, num_neighbors>::marcher_3d() {}
-
-template <class base, class node, int num_neighbors>
-marcher_3d<base, node, num_neighbors>::marcher_3d(int height, int width, int depth, double h,
-                                   no_speed_func_t const &):
-  abstract_marcher {get_initial_heap_size(width, height, depth)},
-  _nodes {new node[width*height*depth]},
-  _s_cache {new double[width*height*depth]},
+template <class base, int num_nb>
+marcher_3d<base, num_nb>::marcher_3d(int height, int width, int depth, double h,
+                                     no_speed_func_t const &):
+  _size {width*height*depth},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width},
@@ -38,19 +36,24 @@ marcher_3d<base, node, num_neighbors>::marcher_3d(int height, int width, int dep
   init();
 }
 
-template <class base, class node, int num_neighbors>
-marcher_3d<base, node, num_neighbors>::marcher_3d(
+template <class base, int num_nb>
+marcher_3d<base, num_nb>::marcher_3d(
   int height, int width, int depth, double h,
   std::function<double(double, double, double)> s,
   double x0, double y0, double z0):
-  abstract_marcher {get_initial_heap_size(width, height, depth)},
-  _nodes {new node[width*height*depth]},
-  _s_cache {new double[width*height*depth]},
+  _size {width*height*depth},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width},
   _depth {depth}
 {
+  init();
+
   // Grab a writable pointer to cache the speed function values.
   double x, z, * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < depth; ++k) {
@@ -62,52 +65,87 @@ marcher_3d<base, node, num_neighbors>::marcher_3d(
       }
     }
   }
-
-  init();
 }
 
-template <class base, class node, int num_neighbors>
-marcher_3d<base, node, num_neighbors>::marcher_3d(int height, int width, int depth, double h,
-                                   double const * s_cache):
-  abstract_marcher {get_initial_heap_size(width, height, depth)},
-  _nodes {new node[width*height*depth]},
-  _s_cache {new double[width*height*depth]},
+template <class base, int num_nb>
+marcher_3d<base, num_nb>::marcher_3d(int height, int width, int depth, double h,
+                                     double const * s_cache):
+  _size {width*height*depth},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width},
   _depth {depth}
 {
-  memcpy((void *) _s_cache, (void *) s_cache,
-         sizeof(double)*height*width*depth);
   init();
+
+  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width*depth);
 }
 
-template <class base, class node, int num_neighbors>
-marcher_3d<base, node, num_neighbors>::~marcher_3d()
+template <class base, int num_nb>
+marcher_3d<base, num_nb>::~marcher_3d()
 {
-  assert(_nodes != nullptr);
-  delete[] _nodes;
-
-  assert(_s_cache != nullptr);
+  delete[] _U;
   delete[] _s_cache;
+  delete[] _state;
+  delete[] _heap_pos;
 }
 
-template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::add_boundary_node(
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::init()
+{
+  for (int i = 0; i < _size; ++i) {
+    _U[i] = inf<double>;
+  }
+
+  for (int i = 0; i < _size; ++i) {
+    _state[i] = state::far;
+  }
+}
+
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::run()
+{
+  while (!_heap.empty()) {
+    int lin = _heap.front();
+    _heap.pop_front();
+    _state[lin] = state::valid;
+    visit_neighbors(lin);
+  }  
+}
+
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::add_boundary_node(
   int i, int j, int k, double value)
 {
-  assert(operator()(i, j, k).is_far() || operator()(i, j, k).is_valid());
-  if (operator()(i, j, k).is_valid()) return;
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
-  visit_neighbors(&(operator()(i, j, k) = {i, j, k, value}));
+#endif
+  int lin = linear_index(i, j, k);
+  _U[lin] = value;
+  _state[lin] = state::trial;
+  _heap.insert(lin);
+}
+
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::add_boundary_nodes(
+  int const * i, int const * j, int const * k, double const * U, int num)
+{
+  for (int l = 0; l < num; ++l) {
+    add_boundary_node(i[l], j[l], k[l], U[l]);
+  }
 }
 
 #define LINE(p0, u0, s, s0, h)                                  \
   updates::line<base::F_>()(norm2<3>(p0), u0, s, s0, h)
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 void
-marcher_3d<base, node, num_neighbors>::add_boundary_node(
+marcher_3d<base, num_nb>::add_boundary_node(
   double x, double y, double z, double s, double value)
 {
   double h = get_h(), i = y/h, j = x/h, k = z/h, u0 = value, s0 = s;
@@ -133,90 +171,50 @@ marcher_3d<base, node, num_neighbors>::add_boundary_node(
   for (int a = 0; a < 8; ++a) {
     int b0 = a & 1, b1 = (a & 2) >> 1, b2 = (a & 4) >> 2;
     int i_ = is[b0], j_ = js[b1], k_ = ks[b2];
+
     assert(in_bounds(i_, j_, k_));
-    assert(operator()(i_, j_, k_).is_far());
-    double s_hat = get_speed(i_, j_, k_);
-    double u_hat = LINE(ps[a], u0, s_hat, s0, h);
-    insert_into_heap(
-      &(operator()(i_, j_, k_) = {i_, j_, k_, u_hat, state::trial}));
+    // double s_hat = get_speed(i_, j_, k_);
+    // double u_hat = LINE(ps[a], u0, s_hat, s0, h);
+    // insert_into_heap(
+    //   &(operator()(i_, j_, k_) = {i_, j_, k_, u_hat, state::trial}));
+
+    int lin = linear_index(i_, j_, k_);
+    _U[lin] = LINE(ps[a], u0, _s_cache[lin], s0, h);
+    _state[lin] = state::trial;
+    _heap.insert(lin);
   }
 }
 
 #undef LINE
 
-template <class base, class node, int num_neighbors>
-void
-marcher_3d<base, node, num_neighbors>::add_boundary_nodes(
-  node const * nodes, int num)
-{
-  auto tmp = static_cast<node const **>(malloc(sizeof(void *)*num));
-  for (int i = 0; i < num; ++i) {
-    tmp[i] = &nodes[i];
-  }
-  add_boundary_nodes(tmp, num);
-  free(tmp);
-}
-
-template <class base, class node, int num_neighbors>
-void
-marcher_3d<base, node, num_neighbors>::add_boundary_nodes(
-  node const* const* nodes, int num)
-{
-  for (int l = 0; l < num; ++l) {
-    auto n = nodes[l];
-    int i = n->get_i(), j = n->get_j(), k = n->get_k();
-    assert(in_bounds(i, j, k));
-    assert(operator()(i, j, k).is_far());
-    double u = n->get_value();
-    insert_into_heap(&(operator()(i, j, k) = {i, j, k, u, state::trial}));
-  }
-}
-
-template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::set_node_fac_center(
-  int i, int j, int k, typename node::fac_center const * fc)
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const * fc)
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(in_bounds(fc->i, fc->j, fc->k));
 #endif
-  operator()(i, j, k).set_fac_center(fc);
+  // operator()(i, j, k).set_fac_center(fc);
+  _lin2fac[linear_index(i, j, k)] = fc;
 }
 
-template <class base, class node, int num_neighbors>
-double marcher_3d<base, node, num_neighbors>::get_value(int i, int j, int k) const {
+template <class base, int num_nb>
+double marcher_3d<base, num_nb>::get_value(int i, int j, int k) const {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
 #endif
-  return operator()(i, j, k).get_value();
+  // return operator()(i, j, k).get_value();
+  return _U[linear_index(i, j, k)];
 }
 
-template <class base, class node, int num_neighbors>
-node & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int k) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j, k));
-  assert(_nodes != nullptr);
-#endif
-  return _nodes[linear_index(i, j, k)];
-}
-
-template <class base, class node, int num_neighbors>
-node const & marcher_3d<base, node, num_neighbors>::operator()(int i, int j, int k) const {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j, k));
-  assert(_nodes != nullptr);
-#endif
-  return _nodes[linear_index(i, j, k)];
-}
-
-template <class base, class node, int num_neighbors>
-bool marcher_3d<base, node, num_neighbors>::in_bounds(int i, int j, int k) const {
+template <class base, int num_nb>
+bool marcher_3d<base, num_nb>::in_bounds(int i, int j, int k) const {
   return (unsigned) i < (unsigned) _height &&
     (unsigned) j < (unsigned) _width && (unsigned) k < (unsigned) _depth;
 }
 
-template <class base, class node, int num_neighbors>
-double marcher_3d<base, node, num_neighbors>::get_speed(int i, int j, int k) const {
+template <class base, int num_nb>
+double marcher_3d<base, num_nb>::get_speed(int i, int j, int k) const {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_s_cache != nullptr);
@@ -224,62 +222,70 @@ double marcher_3d<base, node, num_neighbors>::get_speed(int i, int j, int k) con
   return _s_cache[linear_index(i, j, k)];
 }
 
-template <class base, class node, int num_neighbors>
-bool marcher_3d<base, node, num_neighbors>::is_valid(int i, int j, int k) const {
-  return in_bounds(i, j, k) && operator()(i, j, k).is_valid();
-}
-
-template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::init() {
-  for (int i = 0; i < _height; ++i) {
-    for (int j = 0; j < _width; ++j) {
-      for (int k = 0; k < _depth; ++k) {
-        operator()(i, j, k).set_i(i);
-        operator()(i, j, k).set_j(j);
-        operator()(i, j, k).set_k(k);
-      }
-    }
-  }
+// TODO: we want to delete this---right now, it's a bit muddled, since
+// it should probably be called `is_inbounds_and_valid'... but we want
+// to get rid of `in_bounds', anyway, so once we do that, this
+// function will just be deleted
+template <class base, int num_nb>
+bool marcher_3d<base, num_nb>::is_valid(int i, int j, int k) const {
+  // return in_bounds(i, j, k) && operator()(i, j, k).is_valid();
+  return in_bounds(i, j, k) && _state[linear_index(i, k, k)] == state::valid;
 }
 
 #define __maxabs3(x, y, z) \
   std::max(std::abs(x), std::max(std::abs(y), std::abs(z)))
 
-template <class base, class node, int num_neighbors>
-void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n) {
-  int i = static_cast<node *>(n)->get_i();
-  int j = static_cast<node *>(n)->get_j();
-  int k = static_cast<node *>(n)->get_k();
+template <class base, int num_nb>
+void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
+  // int i = static_cast<node *>(n)->get_i();
+  // int j = static_cast<node *>(n)->get_j();
+  // int k = static_cast<node *>(n)->get_k();
+
+  int const i = get_i(lin_center);
+  int const j = get_j(lin_center);
+  int const k = get_k(lin_center);
 
   // See comments in marcher.impl.hpp; the visit_neighbors_impl there
   // is done analogously to this one.
 
-  int a, b, c;
+  int a, b, c, lin;
 
   // Stage neighbors.
-  for (int l = 0; l < num_neighbors; ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (in_bounds(a, b, c) && operator()(a, b, c).is_far()) {
-      operator()(a, b, c).set_trial();
-      insert_into_heap(&operator()(a, b, c));
+  for (int l = 0; l < num_nb; ++l) {
+    a = i + __di(l), b = j + __dj(l), c = k + __dk(l),
+      lin = linear_index(a, b, c);
+    // if (in_bounds(a, b, c) && operator()(a, b, c).is_far()) {
+    if (in_bounds(a, b, c) && _state[lin] == state::far) {
+      // operator()(a, b, c).set_trial();
+      // insert_into_heap(&operator()(a, b, c));
+      _state[lin] = state::trial;
+      _heap.insert(lin);
     }
   }
 
   // Get valid neighbors.
-  node * valid_nb[26], * child_nb[num_neighbors];
-  memset(valid_nb, 0x0, 26*sizeof(abstract_node *));
+  int valid_nb[26], child_nb[num_nb];
   for (int l = 0; l < 26; ++l) {
+    valid_nb[l] = -1;
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
-    if (in_bounds(a, b, c) && operator()(a, b, c).is_valid()) {
-      valid_nb[l] = &this->operator()(a, b, c);
+    lin = linear_index(a, b, c);
+    // if (in_bounds(a, b, c) && operator()(a, b, c).is_valid()) {
+    if (in_bounds(a, b, c) && _state[lin] == state::valid) {
+      // valid_nb[l] = &this->operator()(a, b, c);
+      valid_nb[l] = lin;
     }
   }
 
   int di_l, dj_l, dk_l;
   auto const set_child_nb = [&] (int parent) {
-    memset(child_nb, 0x0, num_neighbors*sizeof(abstract_node *));
-    child_nb[parent] = static_cast<node *>(n);
-    for (int m = 0; m < num_neighbors; ++m) {
+    // memset(child_nb, 0x0, num_nb*sizeof(abstract_node *));
+    // child_nb[parent] = static_cast<node *>(n);
+    // memset(child_nb, 0x0, num_nb*sizeof(int));
+    for (int m = 0; m < num_nb; ++m) {
+      child_nb[m] = -1;
+    }
+    child_nb[parent] = lin_center;
+    for (int m = 0; m < num_nb; ++m) {
       if (m == parent) {
         continue;
       }
@@ -297,22 +303,22 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
   };
 
   auto & s_hat = static_cast<base *>(this)->s_hat;
-  auto const update = [&] (int i, int j, int k, int parent) {
+  auto const update = [&] (int lin_hat, int parent) {
     auto T = inf<double>;
-    node * update_node = &operator()(i, j, k);
-    s_hat = this->get_speed(i, j, k);
-    update_impl(update_node, child_nb, parent, T);
-#if NODE_MONITORING
-    if (update_node->monitoring_node()) {
-      std::cout << *update_node << std::endl;
-    }
-#endif
-    if (T < update_node->get_value()) {
+    // node * update_node = &operator()(i, j, k);
+    // s_hat = this->get_speed(i, j, k);
+    s_hat = _s_cache[lin_hat];
+    // update_impl(update_node, child_nb, parent, T);
+    update_impl(lin_hat, child_nb, parent, T);
+    // if (T < update_node->get_value()) {
+    if (T < _U[lin_hat]) {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
       assert(T >= 0);
 #endif
-      update_node->set_value(T);
-      adjust_heap_entry(update_node);
+      // update_node->set_value(T);
+      // adjust_heap_entry(update_node);
+      _U[lin_hat] = T;
+      _heap.update(lin_hat);
     }
   };
 
@@ -323,14 +329,14 @@ void marcher_3d<base, node, num_neighbors>::visit_neighbors_impl(abstract_node *
     else return 42 - 2*(l/2) + (l % 2);
   };
 
-  for (int l = 0; l < num_neighbors; ++l) {
-    if (!valid_nb[l]) {
+  for (int l = 0; l < num_nb; ++l) {
+    if (valid_nb[l] == -1) {
       di_l = __di(l), dj_l = __dj(l), dk_l = __dk(l);
       a = i + di_l, b = j + dj_l, c = k + dk_l;
       if (!in_bounds(a, b, c)) continue;
       int parent = get_parent(l);
       set_child_nb(parent);
-      update(a, b, c, parent);
+      update(linear_index(a, b, c), parent);
     }
   }
 }

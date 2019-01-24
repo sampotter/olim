@@ -2,22 +2,21 @@
 #define __BASIC_MARCHER_HPP__
 
 #include "marcher.hpp"
-#include "node.hpp"
 #include "updates.line.hpp"
 
-struct basic_marcher: public marcher<basic_marcher, node, 4>,
+struct basic_marcher: public marcher<basic_marcher, 4>,
                       public updates::line<RHR>
 {
   static constexpr cost_func F_ = RHR;
-  static constexpr int num_neighbors = 4;
+  static constexpr int num_nb = 4;
 
-  using marcher<basic_marcher, node, num_neighbors>::marcher;
+  using marcher<basic_marcher, num_nb>::marcher;
 
   double s_hat;
-  node * nb[num_neighbors];
+  int nb[num_nb];
 
-EIKONAL_PRIVATE:
-  virtual void update_impl(node * n, double & T);
+OLIM_PRIVATE:
+  virtual void update_impl(int lin, double & T);
 };
 
 #endif // __BASIC_MARCHER_HPP__

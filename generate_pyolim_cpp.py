@@ -48,11 +48,6 @@ marcher_template = Template('''
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
-    .def("step", &${cpp_class_name}::step)
-    .def("__getitem__", [] (${cpp_class_name} const & m,
-                            std::tuple<int, int> index) {
-        return m(std::get<0>(index), std::get<1>(index));
-    })
     .def(
       "add_boundary_node",
       py::overload_cast<int, int, double>(&${cpp_class_name}::add_boundary_node),
@@ -60,25 +55,20 @@ marcher_template = Template('''
       "j"_a,
       "value"_a = 0.0)
     .def(
-       "add_boundary_node",
-       py::overload_cast<double, double, double, double>(
-         &${cpp_class_name}::add_boundary_node),
-       "i"_a,
-       "j"_a,
-       "s"_a,
-       "value"_a = 0.0)
-     .def("add_boundary_nodes", [&] (
-         ${cpp_class_name} & m,
-         std::vector<${cpp_class_name}::node_type const *> const & nodes)
-       {
-         m.add_boundary_nodes(nodes.data(), nodes.size());
-       })
-     .def(
-       "set_node_fac_center",
-       &${cpp_class_name}::set_node_fac_center,
+      "add_boundary_node",
+      py::overload_cast<double, double, double, double>(
+        &${cpp_class_name}::add_boundary_node),
       "i"_a,
       "j"_a,
-      "fc"_a)
+      "s"_a,
+      "value"_a = 0.0)
+    .def("add_boundary_nodes", [&] (
+        ${cpp_class_name} & m,
+        std::vector<std::tuple<int, int, double>> const & nodes)
+      {
+        m.add_boundary_nodes(nodes.data(), nodes.size());
+      })
+    .def("set_fac_src", &${cpp_class_name}::set_fac_src, "i"_a, "j"_a, "fc"_a)
     .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
     .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a)
     .def("get_height", &${cpp_class_name}::get_height)
@@ -102,27 +92,7 @@ marchers3d = {
 
 # TODO: see comment above for `marcher_template' variable.
 marcher3d_template = Template('''
-py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
-    .def_buffer([] (${cpp_class_name} & m_) -> py::buffer_info {
-        auto const format =
-          py::format_descriptor<${cpp_class_name}::float_type>::format();
-        return {
-          m_.get_node_pointer(),
-          sizeof(${cpp_class_name}::float_type),
-          format,
-          ${cpp_class_name}::ndim,
-          { // i, j, k
-            m_.get_height(),
-            m_.get_width(),
-            m_.get_depth(),
-          },
-          { // i, j, k
-            sizeof(${cpp_class_name}::node_type),
-            sizeof(${cpp_class_name}::node_type)*m_.get_width(),
-            sizeof(${cpp_class_name}::node_type)*m_.get_width()*m_.get_height(),
-          }
-        };
-      })
+py::class_<${cpp_class_name}>(m, "${py_class_name}")
     .def(
       py::init([] (py::array_t<double, py::array::f_style | py::array::forcecast> arr, double h) {
         py::buffer_info info = arr.request();
@@ -158,11 +128,6 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "s_cache"_a,
       "h"_a = 1.0)
     .def("run", &${cpp_class_name}::run)
-    .def("step", &${cpp_class_name}::step)
-    .def("__getitem__", [] (${cpp_class_name} const & m,
-                            std::tuple<int, int, int> index) {
-        return m(std::get<0>(index), std::get<1>(index), std::get<2>(index));
-    })
     .def(
       "add_boundary_node",
       py::overload_cast<int, int, int, double>(
@@ -182,13 +147,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}", py::buffer_protocol())
       "value"_a = 0.0)
     .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
     .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
-    .def(
-      "set_node_fac_center",
-      &${cpp_class_name}::set_node_fac_center,
-      "i"_a,
-      "j"_a,
-      "k"_a,
-      "fc"_a)
+    .def("set_fac_src", &${cpp_class_name}::set_fac_src, "i"_a, "j"_a, "k"_a, "fc"_a)
     .def("get_height", &${cpp_class_name}::get_height)
     .def("get_width", &${cpp_class_name}::get_width)
     .def("get_depth", &${cpp_class_name}::get_depth);

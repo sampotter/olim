@@ -11,16 +11,19 @@
 #define __di(k) di<2>[k]
 #define __dj(k) dj<2>[k]
 
-static inline size_t get_initial_heap_size(int width, int height) {
-  return static_cast<size_t>(fmax(8.0, log(width*height)));
-}
+// TODO: really need an external memory constructor that will let us
+// use external memory somewhere for _s_cache and _U so we don't have
+// to double up on these...
 
-template <class base, class node, int num_neighbors>
-marcher<base, node, num_neighbors>::marcher(
+template <class base, int num_nb>
+marcher<base, num_nb>::marcher(
   int height, int width, double h, no_speed_func_t const &):
-  abstract_marcher {get_initial_heap_size(width, height)},
-  _nodes {new node[width*height]},
-  _s_cache {new double[width*height]},
+  _size {width*height},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width}
@@ -28,76 +31,122 @@ marcher<base, node, num_neighbors>::marcher(
   init();
 }
 
-template <class base, class node, int num_neighbors>
-marcher<base, node, num_neighbors>::marcher(
+template <class base, int num_nb>
+marcher<base, num_nb>::marcher(
   int height, int width, double h, double const * s_cache):
-  abstract_marcher {get_initial_heap_size(width, height)},
-  _nodes {new node[width*height]},
-  _s_cache {new double[width*height]},
+  _size {width*height},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width}
 {
-  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width);
   init();
+
+  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width);
 }
 
-template <class base, class node, int num_neighbors>
-marcher<base, node, num_neighbors>::marcher(
+template <class base, int num_nb>
+marcher<base, num_nb>::marcher(
   int height, int width, double h,
   std::function<double(double, double)> s, double x0, double y0):
-  abstract_marcher {get_initial_heap_size(width, height)},
-  _nodes {new node[width*height]},
-  _s_cache {new double[width*height]},
+  _size {width*height},
+  _heap {{this}, initial_heap_capacity(_size)},
+  _U {new double[_size]},
+  _s_cache {new double[_size]},
+  _state {new state[_size]},
+  _heap_pos {new int[_size]},
   _h {h},
   _height {height},
   _width {width}
 {
+  init();
+
   double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < height; ++i) {
     for (int j = 0; j < width; ++j) {
-      ptr[i*width + j] = s(h*j - x0, h*i - y0);
+      ptr[linear_index(i, j)] = s(h*j - x0, h*i - y0);
     }
   }
-  init();
 }
 
-template <class base, class node, int num_neighbors>
-marcher<base, node, num_neighbors>::~marcher()
+template <class base, int num_nb>
+marcher<base, num_nb>::~marcher()
 {
-  assert(_nodes != nullptr);
-  delete[] _nodes;
-
-  assert(_s_cache != nullptr);
+  delete[] _U;
   delete[] _s_cache;
+  delete[] _state;
+  delete[] _heap_pos;
 }
 
-/**
- * TODO: this function is a little broken right now. If we remove the
- * "is_far" assertion and allow the user to add boundary nodes
- * wherever, then it's possible to invalidate the heap property in the
- * underlying min-heap. One way to get this to happen is to add a
- * boundary node and then add another boundary node which is adjacent
- * to the node just added. This should be fixed, since there is a
- * correct way to enable this behavior.
- */
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
+void marcher<base, num_nb>::init()
+{
+  for (int i = 0; i < _size; ++i) {
+    _U[i] = inf<double>;
+  }
+
+  for (int i = 0; i < _size; ++i) {
+    _state[i] = state::far;
+  }
+}
+
+template <class base, int num_nb>
+void marcher<base, num_nb>::run()
+{
+  while (!_heap.empty()) {
+    int lin = _heap.front();
+    _heap.pop_front();
+    _state[lin] = state::valid;
+    visit_neighbors(lin);
+  }  
+}
+
+template <class base, int num_nb>
 void
-marcher<base, node, num_neighbors>::add_boundary_node(int i, int j, double value)
+marcher<base, num_nb>::add_boundary_node(int i, int j, double value)
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
-  assert(operator()(i, j).is_far());
 #endif
-  visit_neighbors(&(operator()(i, j) = {i, j, value}));
+  int lin = linear_index(i, j);
+  _U[lin] = value;
+  _state[lin] = state::trial;
+  _heap.insert(lin);
+}
+
+template <class base, int num_nb>
+void
+marcher<base, num_nb>::add_boundary_nodes(
+  int const * i, int const * j, double const * U, int num)
+{
+  for (int k = 0; k < num; ++k) {
+    add_boundary_node(i[k], j[k], U[k]);
+  }
+}
+
+template <class base, int num_nb>
+void
+marcher<base, num_nb>::add_boundary_nodes(
+  std::tuple<int, int, double> const * nodes, int num)
+{
+  for (int k = 0; k < num; ++k) {
+    add_boundary_node(
+      std::get<0>(nodes[k]),
+      std::get<1>(nodes[k]),
+      std::get<2>(nodes[k]));
+  }
 }
 
 #define LINE(p0, u0, s, s0, h)                          \
   updates::line<base::F_>()(norm2<2>(p0), u0, s, s0, h)
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 void
-marcher<base, node, num_neighbors>::add_boundary_node(
+marcher<base, num_nb>::add_boundary_node(
   double x, double y, double s, double value)
 {
 #if PRINT_UPDATES
@@ -124,102 +173,58 @@ marcher<base, node, num_neighbors>::add_boundary_node(
   for (int a = 0; a < 4; ++a) {
     int b0 = a & 1, b1 = (a & 2) >> 1;
     int i_ = is[b0], j_ = js[b1];
+
     assert(in_bounds(i_, j_));
-    assert(operator()(i_, j_).is_far());
-    double s_hat = get_speed(i_, j_), u_hat = LINE(P[a], u0, s_hat, s0, h);
-    insert_into_heap(&(operator()(i_, j_) = {i_, j_, u_hat, state::trial}));
+    // double s_hat = get_speed(i_, j_), u_hat = LINE(P[a], u0, s_hat, s0, h);
+    // insert_into_heap(&(operator()(i_, j_) = {i_, j_, u_hat, state::trial}));
+
+    int lin = linear_index(i_, j_);
+    _U[lin] = LINE(P[a], u0, _s_cache[lin], s0, h);
+    _state[lin] = state::trial;
+    _heap.insert(lin);
   }
 }
 
 #undef LINE
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 void
-marcher<base, node, num_neighbors>::add_boundary_nodes(
-  node const * nodes, int num)
-{
-  node const * const * tmp = malloc(sizeof(node const * const *)*num);
-  for (int i = 0; i < num; ++i) {
-    tmp[i] = &nodes[i];
-  }
-  add_boundary_nodes(tmp, num);
-  free(tmp);
-}
-
-template <class base, class node, int num_neighbors>
-void
-marcher<base, node, num_neighbors>::add_boundary_nodes(
-  node const * const * nodes, int num)
-{
-  for (int k = 0; k < num; ++k) {
-    auto n = nodes[k];
-    int i = n->get_i(), j = n->get_j();
-    assert(in_bounds(i, j));
-    assert(operator()(i, j).is_far());
-    double u = n->get_value();
-    insert_into_heap(&(operator()(i, j) = {i, j, u, state::trial}));
-  }
-}
-
-template <class base, class node, int num_neighbors>
-void
-marcher<base, node, num_neighbors>::set_node_fac_center(
-  int i, int j, typename node::fac_center const * fc)
+marcher<base, num_nb>::set_fac_src(int i, int j, fac_src const * fc)
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(in_bounds(fc->i, fc->j));
 #endif
-  operator()(i, j).set_fac_center(fc);
+  // operator()(i, j).set_fac_center(fc);
+  _lin2fac[linear_index(i, j)] = fc;
 }
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 double
-marcher<base, node, num_neighbors>::get_value(int i, int j) const
+marcher<base, num_nb>::get_value(int i, int j) const
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
 #endif
-  return operator()(i, j).get_value();
+  // return operator()(i, j).get_value();
+  return _U[linear_index(i, j)];
 }
 
-template <class base, class node, int num_neighbors>
-node &
-marcher<base, node, num_neighbors>::operator()(int i, int j)
-{
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
-  assert(_nodes != nullptr);
-#endif
-  return _nodes[_width*i + j];
-}
-
-template <class base, class node, int num_neighbors>
-node const &
-marcher<base, node, num_neighbors>::operator()(int i, int j) const
-{
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
-  assert(_nodes != nullptr);
-#endif
-  return _nodes[_width*i + j];
-}
-
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 bool
-marcher<base, node, num_neighbors>::in_bounds(int i, int j) const
+marcher<base, num_nb>::in_bounds(int i, int j) const
 {
   return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
 }
 
-template <class base, class node, int num_neighbors>
-bool marcher<base, node, num_neighbors>::in_bounds(double i, double j) const {
+template <class base, int num_nb>
+bool marcher<base, num_nb>::in_bounds(double i, double j) const {
   return 0 <= i <= _height - 1 && 0 <= j <= _width - 1;
 }
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 double
-marcher<base, node, num_neighbors>::get_speed(int i, int j) const
+marcher<base, num_nb>::get_speed(int i, int j) const
 {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
@@ -228,56 +233,55 @@ marcher<base, node, num_neighbors>::get_speed(int i, int j) const
   return _s_cache[_width*i + j];
 }
 
-template <class base, class node, int num_neighbors>
+// TODO: we want to delete this---right now, it's a bit muddled, since
+// it should probably be called `is_inbounds_and_valid'... but we want
+// to get rid of `in_bounds', anyway, so once we do that, this
+// function will just be deleted
+template <class base, int num_nb>
 bool
-marcher<base, node, num_neighbors>::is_valid(int i, int j) const
+marcher<base, num_nb>::is_valid(int i, int j) const
 {
-  return in_bounds(i, j) && operator()(i, j).is_valid();
+  // return in_bounds(i, j) && operator()(i, j).is_valid();
+  return in_bounds(i, j) && _state[linear_index(i, j)] == state::valid;
 }
 
-template <class base, class node, int num_neighbors>
+template <class base, int num_nb>
 void
-marcher<base, node, num_neighbors>::init()
+marcher<base, num_nb>::visit_neighbors(int lin_center)
 {
-  /**
-   * Set the indices associated with each node in the grid.
-   */
-  for (int i = 0; i < _height; ++i) {
-    for (int j = 0; j < _width; ++j) {
-      operator()(i, j).set_i(i);
-      operator()(i, j).set_j(j);
-    }
-  }
-}
+  // int i = static_cast<node *>(n)->get_i();
+  // int j = static_cast<node *>(n)->get_j();
 
-template <class base, class node, int num_neighbors>
-void
-marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
-{
-  int i = static_cast<node *>(n)->get_i();
-  int j = static_cast<node *>(n)->get_j();
+  int const i = get_i(lin_center);
+  int const j = get_j(lin_center);
 
   // These are temporary indices used below, analogous to i and j,
   // respectively.
-  int a, b;
+  int a, b, lin;
 
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
-  for (int k = 0; k < num_neighbors; ++k) {
-    a = i + __di(k), b = j + __dj(k);
-    if (in_bounds(a, b) && operator()(a, b).is_far()) {
-      operator()(a, b).set_trial();
-      insert_into_heap(&operator()(a, b));
+  for (int k = 0; k < num_nb; ++k) {
+    a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
+    // if (in_bounds(a, b) && operator()(a, b).is_far()) {
+    if (in_bounds(a, b) && _state[lin] == state::far) {
+      // operator()(a, b).set_trial();
+      // insert_into_heap(&operator()(a, b));
+      _state[lin] = state::trial;
+      _heap.insert(lin);
     }
   }
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  memset(valid, 0x0, 8*sizeof(abstract_node *));
+  // memset(valid, 0x0, 8*sizeof(int));
   for (int k = 0; k < 8; ++k) {
-    a = i + __di(k), b = j + __dj(k);
-    if (in_bounds(a, b) && operator()(a, b).is_valid()) {
-      valid[k] = &this->operator()(a, b);
+    valid_nb[k] = -1;
+    a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
+    // if (in_bounds(a, b) && operator()(a, b).is_valid()) {
+    if (in_bounds(a, b) && _state[lin] == state::valid) {
+      // valid[k] = &this->operator()(a, b);
+      valid_nb[k] = lin;
     }
   }
 
@@ -286,11 +290,17 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
   // - parent is the radial index of (i, j) expressed in the same
   //   index space as l
   int di_k, dj_k;
-  node ** nb = static_cast<base *>(this)->nb;
+  // node ** nb = static_cast<base *>(this)->nb;
+  int * nb = static_cast<base *>(this)->nb;
   auto const set_nb = [&] (int parent) {
-    memset(nb, 0x0, num_neighbors*sizeof(abstract_node *));
-    nb[parent] = static_cast<node *>(n);
-    for (int l = 0; l < num_neighbors; ++l) {
+    // memset(nb, 0x0, num_nb*sizeof(abstract_node *));
+    // nb[parent] = static_cast<node *>(n);
+    // memset(nb, 0x0, num_nb*sizeof(int));
+    for (int l = 0; l < num_nb; ++l) {
+      nb[l] = -1;
+    }
+    nb[parent] = lin_center;
+    for (int l = 0; l < num_nb; ++l) {
       if (l == parent) {
         continue;
       }
@@ -301,7 +311,7 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
       }
       if (in_bounds(i + di_kl, j + dj_kl)) {
         int m = d2l(di_kl, dj_kl);
-        nb[l] = valid[m];
+        nb[l] = valid_nb[m];
       }
     }
   };
@@ -309,20 +319,28 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
   // Update the node at (i, j). Before calling, `nb' needs to be
   // filled appropriately. Upon updating, this sets the value of n and
   // adjusts its position in the heap.
-  auto const update = [&] (int i, int j) {
+  auto const update = [&] (int lin_hat) {
     auto T = inf<double>;
-    node * update_node = &operator()(i, j);
-    static_cast<base *>(this)->s_hat = this->get_speed(i, j);
-    update_impl(update_node, T);
-    if (T < update_node->get_value()) {
-      update_node->set_value(T);
-      adjust_heap_entry(update_node);
+    // node * update_node = &operator()(i, j);
+    // static_cast<base *>(this)->s_hat = this->get_speed(i, j);
+    static_cast<base *>(this)->s_hat = _s_cache[lin_hat];
+    // update_impl(update_node, T);
+    update_impl(lin_hat, T);
+    // if (T < update_node->get_value()) {
+    if (T < _U[lin_hat]) {
+#if EIKONAL_DEBUG && !RELWITHDEBINFO
+      assert(T >= 0);
+#endif
+      // update_node->set_value(T);
+      // adjust_heap_entry(update_node);
+      _U[lin_hat] = T;
+      _heap.update(lin_hat);
     }
   };
 
   // Get the parent index of a radial index `k'.
   auto const get_parent = [] (int k) {
-    if (num_neighbors == 4) {
+    if (num_nb == 4) {
       return (k + 2) % 4;
     } else {
       if (k < 4) return (k + 2) % 4;
@@ -332,17 +350,17 @@ marcher<base, node, num_neighbors>::visit_neighbors_impl(abstract_node * n)
 
   // This is the main update loop. Each neighbor of n which isn't
   // valid is now trial. For each neighboring trial node, use
-  // `set_child_nb' to grab its valid neighbors and use `update' to
+  // `set_nb' to grab its valid neighbors and use `update' to
   // actually update the node's value and update its position in the
   // heap.
-  for (int k = 0; k < num_neighbors; ++k) {
-    if (!valid[k]) {
+  for (int k = 0; k < num_nb; ++k) {
+    if (valid_nb[k] == -1) {
       di_k = __di(k), dj_k = __dj(k);
       a = i + di_k, b = j + dj_k;
       if (!in_bounds(a, b)) continue;
       int parent = get_parent(k);
       set_nb(parent);
-      update(a, b);
+      update(linear_index(a, b));
     }
   }
 }

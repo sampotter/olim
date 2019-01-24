@@ -42,7 +42,6 @@ struct abstract_olim3d:
   public marcher_3d<abstract_olim3d<F, base_olim3d, num_nb>, num_nb>
 {
   static constexpr cost_func F_ = F;
-  // static constexpr int num_nb_ = num_nb;
 
   static_assert(num_nb == 6 || num_nb == 18 || num_nb == 26,
                 "Number of neighbors must be 6, 18, or 26");
@@ -128,8 +127,6 @@ OLIM_PRIVATE:
   template <int d>
   inline void line(int i, double & u) {
     if (this->nb[i] != -1) {
-      // auto u_hat = updates::line_bv<F, d>()(
-      //   this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h());
       auto u_hat = updates::line_bv<F, d>()(
         this->_U[this->nb[i]], this->s_hat, this->s[i], this->get_h());
       u = std::min(u, u_hat);
@@ -146,13 +143,6 @@ OLIM_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
-      // auto info = updates::tri_bv<F, 3, p0, p1>()(
-      //   this->nb[l0]->get_value(),
-      //   this->nb[l1]->get_value(),
-      //   this->s_hat,
-      //   this->s[l0],
-      //   this->s[l1],
-      //   this->get_h());
       auto info = updates::tri_bv<F, 3, p0, p1>()(
         this->_U[this->nb[l0]],
         this->_U[this->nb[l1]],
@@ -175,7 +165,6 @@ OLIM_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
-      // auto fc = n->get_fac_center();
       auto fc = this->_lin2fac[lin_hat];
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
@@ -209,9 +198,6 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
       updates::info<2> info;
-      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
-      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
         u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
@@ -262,7 +248,6 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
-      // auto fc = n->get_fac_center();
       auto fc = this->_lin2fac[lin_hat];
       double p0[3] = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       double p1[3] = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
@@ -274,9 +259,6 @@ OLIM_PRIVATE:
       };
       geom_fac_wkspc<2> g;
       g.init<3>(p0, p1, p2, p_fac);
-      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
-      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
         u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;

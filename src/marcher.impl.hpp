@@ -175,8 +175,6 @@ marcher<base, num_nb>::add_boundary_node(
     int i_ = is[b0], j_ = js[b1];
 
     assert(in_bounds(i_, j_));
-    // double s_hat = get_speed(i_, j_), u_hat = LINE(P[a], u0, s_hat, s0, h);
-    // insert_into_heap(&(operator()(i_, j_) = {i_, j_, u_hat, state::trial}));
 
     int lin = linear_index(i_, j_);
     _U[lin] = LINE(P[a], u0, _s_cache[lin], s0, h);
@@ -195,7 +193,6 @@ marcher<base, num_nb>::set_fac_src(int i, int j, fac_src const * fc)
   assert(in_bounds(i, j));
   assert(in_bounds(fc->i, fc->j));
 #endif
-  // operator()(i, j).set_fac_center(fc);
   _lin2fac[linear_index(i, j)] = fc;
 }
 
@@ -206,7 +203,6 @@ marcher<base, num_nb>::get_value(int i, int j) const
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
 #endif
-  // return operator()(i, j).get_value();
   return _U[linear_index(i, j)];
 }
 
@@ -241,7 +237,6 @@ template <class base, int num_nb>
 bool
 marcher<base, num_nb>::is_valid(int i, int j) const
 {
-  // return in_bounds(i, j) && operator()(i, j).is_valid();
   return in_bounds(i, j) && _state[linear_index(i, j)] == state::valid;
 }
 
@@ -249,9 +244,6 @@ template <class base, int num_nb>
 void
 marcher<base, num_nb>::visit_neighbors(int lin_center)
 {
-  // int i = static_cast<node *>(n)->get_i();
-  // int j = static_cast<node *>(n)->get_j();
-
   int const i = get_i(lin_center);
   int const j = get_j(lin_center);
 
@@ -263,10 +255,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // trial and insert them into the heap.
   for (int k = 0; k < num_nb; ++k) {
     a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
-    // if (in_bounds(a, b) && operator()(a, b).is_far()) {
     if (in_bounds(a, b) && _state[lin] == state::far) {
-      // operator()(a, b).set_trial();
-      // insert_into_heap(&operator()(a, b));
       _state[lin] = state::trial;
       _heap.insert(lin);
     }
@@ -274,13 +263,10 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  // memset(valid, 0x0, 8*sizeof(int));
   for (int k = 0; k < 8; ++k) {
     valid_nb[k] = -1;
     a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
-    // if (in_bounds(a, b) && operator()(a, b).is_valid()) {
     if (in_bounds(a, b) && _state[lin] == state::valid) {
-      // valid[k] = &this->operator()(a, b);
       valid_nb[k] = lin;
     }
   }
@@ -290,12 +276,8 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // - parent is the radial index of (i, j) expressed in the same
   //   index space as l
   int di_k, dj_k;
-  // node ** nb = static_cast<base *>(this)->nb;
   int * nb = static_cast<base *>(this)->nb;
   auto const set_nb = [&] (int parent) {
-    // memset(nb, 0x0, num_nb*sizeof(abstract_node *));
-    // nb[parent] = static_cast<node *>(n);
-    // memset(nb, 0x0, num_nb*sizeof(int));
     for (int l = 0; l < num_nb; ++l) {
       nb[l] = -1;
     }
@@ -321,18 +303,12 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // adjusts its position in the heap.
   auto const update = [&] (int lin_hat) {
     auto T = inf<double>;
-    // node * update_node = &operator()(i, j);
-    // static_cast<base *>(this)->s_hat = this->get_speed(i, j);
     static_cast<base *>(this)->s_hat = _s_cache[lin_hat];
-    // update_impl(update_node, T);
     update_impl(lin_hat, T);
-    // if (T < update_node->get_value()) {
     if (T < _U[lin_hat]) {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
       assert(T >= 0);
 #endif
-      // update_node->set_value(T);
-      // adjust_heap_entry(update_node);
       _U[lin_hat] = T;
       _heap.update(lin_hat);
     }

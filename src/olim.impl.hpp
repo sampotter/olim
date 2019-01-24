@@ -17,7 +17,6 @@ template <cost_func F, bool do_adj, bool do_diag>
 void
 olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & T)
 {
-  // int i_hat = n->get_i(), j_hat = n->get_j();
   int i_hat = this->get_i(lin_hat);
   int j_hat = this->get_j(lin_hat);
 

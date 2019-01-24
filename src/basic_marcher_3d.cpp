@@ -21,8 +21,6 @@ void basic_marcher_3d::update_impl(int lin_hat, int * nb, int parent, double & T
   (void) lin_hat;
   (void) parent;
 
-  // int i = n->get_i(), j = n->get_j(), k = n->get_k();
-
   double sh = get_h()*s_hat, sh_sq = sh*sh;
   double T1 = 0, T2 = 0, T3 = 0, disc = 0;
 

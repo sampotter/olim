@@ -4,22 +4,6 @@
 #include <assert.h>
 #include <math.h>
 
-// TODO: remove me
-#include <utility>
-
-template <int dim>
-inline bool equal(double const * p, double const * q);
-
-template <>
-inline bool equal<2>(double const * p, double const * q) {
-  return p[0] == q[0] && p[1] == q[1];
-}
-
-template <>
-inline bool equal<3>(double const * p, double const * q) {
-  return p[0] == q[0] && p[1] == q[1] && p[2] && q[2];
-}
-
 template <int dim>
 inline void sub(double const * p, double const * q, double * r);
 

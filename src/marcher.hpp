@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "heap.hpp"
-#include "speed_funcs.hpp"
+#include "slow.hpp"
 #include "typedefs.h"
 
 struct fac_src
@@ -30,11 +30,10 @@ struct marcher
   static constexpr int ndim = 2;
   // static constexpr int num_neighbors = base::num_neighbors;
 
-  marcher(int height, int width, double h, no_speed_func_t const &);
+  marcher(int height, int width, double h, no_slow_t const &);
   marcher(int height, int width, double h, double const * s_cache);
   marcher(int height, int width, double h = 1,
-          std::function<double(double, double)> speed =
-            static_cast<speed_func>(default_speed_func),
+          std::function<double(double, double)> s = static_cast<slow2>(s0),
           double x0 = 0.0, double y0 = 0.0);
   virtual ~marcher();
 
@@ -50,7 +49,7 @@ struct marcher
 
   void set_fac_src(int i, int j, fac_src const * src);
 
-  double get_speed(int i, int j) const;
+  double get_s(int i, int j) const;
   double get_value(int i, int j) const;
 
   int get_height() const { return _height; }

@@ -20,7 +20,7 @@ TEST (basic_marcher, correct_corners_in_limit) {
 }
 
 TEST (basic_marcher, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim>((speed_func) default_speed_func));
-  ASSERT_TRUE(result_is_symmetric<olim>((speed_func) s1));
+  ASSERT_TRUE(result_is_symmetric<olim>((slow2) s0));
+  ASSERT_TRUE(result_is_symmetric<olim>((slow2) s1));
 }
 

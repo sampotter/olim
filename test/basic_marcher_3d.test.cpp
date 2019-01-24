@@ -15,17 +15,17 @@ TEST (basic_marcher_3d, octants_are_correct) {
 }
 
 TEST (basic_marcher_3d, planes_are_correct) {
-  for (auto i = 0ull; i < std::size(speed_funcs_3d); ++i) {
-    auto s = speed_funcs[i];
-    auto s3d = speed_funcs_3d[i];
+  for (auto i = 0ull; i < std::size(slow3s); ++i) {
+    auto s = slow2s[i];
+    auto s3d = slow3s[i];
     auto res = planes_are_correct<olim, olim3d_t>(s, s3d);
     ASSERT_TRUE(res);
   }
 }
 
 TEST (basic_marcher_3d, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>((speed_func_3d) default_speed_func));
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>((speed_func_3d) s1, 21, 1e-10));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>((slow3) s0));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>((slow3) s1, 21, 1e-10));
 }
 
 TEST (basic_marcher_3d, two_by_two_by_three_cells_are_correct) {

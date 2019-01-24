@@ -22,7 +22,7 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 
   for (int k = 0; k < num_nb; ++k) {
     if (this->nb[k] != -1) {
-      s[k] = this->get_speed(i_hat + __di(k), j_hat + __dj(k));
+      s[k] = this->get_s(i_hat + __di(k), j_hat + __dj(k));
     }
   }
 

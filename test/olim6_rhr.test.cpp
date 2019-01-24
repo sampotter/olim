@@ -10,7 +10,7 @@ using olim_t = olim4_rhr;
 using olim3d_t = olim6_rhr;
 
 testing::AssertionResult
-agrees_with_basic_marcher_3d(speed_func_3d s) {
+agrees_with_basic_marcher_3d(slow3 s) {
   int n = 11;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
@@ -44,22 +44,22 @@ TEST (MARCHER, octants_are_correct) {
 }
 
 TEST (MARCHER, planes_are_correct) {
-  auto res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  auto res = planes_are_correct<olim_t, olim3d_t>(slow2s[0], slow3s[0]);
   ASSERT_TRUE(res);
 
-  res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[1], speed_funcs_3d[1], 9);
+  res = planes_are_correct<olim_t, olim3d_t>(slow2s[1], slow3s[1], 9);
   ASSERT_TRUE(res);
 }
 
 TEST (MARCHER, result_is_symmetric) {
   for (int i = 0; i < 2; ++i) {
-    ASSERT_TRUE(result_is_symmetric<olim3d_t>(speed_funcs_3d[i]));
+    ASSERT_TRUE(result_is_symmetric<olim3d_t>(slow3s[i]));
   }
 }
 
 TEST (MARCHER, agrees_with_basic_marcher_3d) {
   for (int i = 0; i < 2; ++i) {
-    ASSERT_TRUE(agrees_with_basic_marcher_3d(speed_funcs_3d[i]));
+    ASSERT_TRUE(agrees_with_basic_marcher_3d(slow3s[i]));
   }
 }
 

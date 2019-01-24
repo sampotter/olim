@@ -16,13 +16,13 @@ TEST (MARCHER, octants_are_correct) {
 }
 
 TEST (MARCHER, planes_are_correct) {
-  auto res = planes_are_correct<olim_t, olim3d_t>(speed_funcs[0], speed_funcs_3d[0]);
+  auto res = planes_are_correct<olim_t, olim3d_t>(slow2s[0], slow3s[0]);
   ASSERT_TRUE(res);
 }
 
 TEST (MARCHER, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>(speed_funcs_3d[0]));
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>(speed_funcs_3d[1]));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(slow3s[0]));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(slow3s[1]));
 }
 
 TEST (MARCHER, two_by_two_by_three_cells_are_correct) {

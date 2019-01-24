@@ -54,7 +54,7 @@ set (OLIM_SRC_FILES
   src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
   src/numopt.cpp
-  src/speed_funcs.cpp)
+  src/slow.cpp)
 
 add_library (olim STATIC ${OLIM_SRC_FILES})
 

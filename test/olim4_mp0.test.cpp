@@ -21,12 +21,12 @@ TEST (olim4_mp0, correct_corners_in_limit) {
 }
 
 TEST (olim4_mp0, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) default_speed_func));
-  ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) s1));
+  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s0));
+  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s1));
 }
 
 TEST (olim4_rhr, agrees_with_basic_marcher) {
-  auto res = olims_agree<olim_t, basic_marcher>((speed_func) default_speed_func);
+  auto res = olims_agree<olim_t, basic_marcher>((slow2) s0);
   ASSERT_TRUE(res);
 }
 

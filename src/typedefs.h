@@ -23,7 +23,7 @@ enum marcher_type {
   SOLIM4_MP0
 };
 
-typedef double(* speed_func)(double, double);
-typedef double(* speed_func_3d)(double, double, double);
+typedef double(* slow2)(double, double);
+typedef double(* slow3)(double, double, double);
 
 #endif // __TYPEDEFS_H__

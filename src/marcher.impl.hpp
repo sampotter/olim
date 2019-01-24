@@ -17,7 +17,7 @@
 
 template <class base, int num_nb>
 marcher<base, num_nb>::marcher(
-  int height, int width, double h, no_speed_func_t const &):
+  int height, int width, double h, no_slow_t const &):
   _size {width*height},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
@@ -220,7 +220,7 @@ bool marcher<base, num_nb>::in_bounds(double i, double j) const {
 
 template <class base, int num_nb>
 double
-marcher<base, num_nb>::get_speed(int i, int j) const
+marcher<base, num_nb>::get_s(int i, int j) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));

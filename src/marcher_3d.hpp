@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "heap.hpp"
-#include "speed_funcs.hpp"
+#include "slow.hpp"
 #include "typedefs.h"
 
 struct fac_src_3d
@@ -30,10 +30,9 @@ struct marcher_3d
 
   marcher_3d();
   marcher_3d(int height, int width, int depth, double h,
-             no_speed_func_t const &);
+             no_slow_t const &);
   marcher_3d(int height, int width, int depth, double h = 1,
-             std::function<double(double, double, double)> speed =
-             static_cast<speed_func_3d>(default_speed_func),
+             std::function<double(double, double, double)> s = static_cast<slow3>(s0),
              double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
   marcher_3d(int height, int width, int depth, double h,
              double const * s_cache);
@@ -52,7 +51,7 @@ struct marcher_3d
 
   void set_fac_src(int i, int j, int k, fac_src_3d const * src);
 
-  double get_speed(int i, int j, int k) const;
+  double get_s(int i, int j, int k) const;
   double get_value(int i, int j, int k) const;
 
   int get_height() const { return _height; }

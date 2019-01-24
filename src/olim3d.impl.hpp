@@ -124,7 +124,7 @@ abstract_olim3d<F, base, num_nb>::update_impl(
 
   for (int l = 0; l < num_nb; ++l) {
     if (nb[l] != -1) {
-      this->s[l] = this->get_speed(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
+      this->s[l] = this->get_s(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
     }
   }
 

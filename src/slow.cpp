@@ -1,8 +1,6 @@
-#include "speed_funcs.hpp"
+#include "slow.hpp"
 
 #include <math.h>
-
-#include "common.hpp"
 
 static double r(double x, double y) {
   return sqrt(x*x + y*y);
@@ -12,24 +10,24 @@ static double r(double x, double y, double z) {
   return sqrt(x*x + y*y + z*z);
 }
 
-double default_speed_func(double x, double y) {
+double s0(double x, double y) {
   (void) x;
   (void) y;
   return 1.0;
 }
 
-double default_speed_func(double x, double y, double z) {
+double s0(double x, double y, double z) {
   (void) x;
   (void) y;
   (void) z;
   return 1.0;
 }
 
-double default_speed_func_soln(double x, double y) {
+double f0(double x, double y) {
   return r(x, y);
 }
 
-double default_speed_func_soln(double x, double y, double z) {
+double f0(double x, double y, double z) {
   return r(x, y, z);
 }
 

@@ -21,7 +21,7 @@ marcher_3d<base, num_nb>::marcher_3d() {}
 
 template <class base, int num_nb>
 marcher_3d<base, num_nb>::marcher_3d(int height, int width, int depth, double h,
-                                     no_speed_func_t const &):
+                                     no_slow_t const &):
   _size {width*height*depth},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
@@ -54,7 +54,7 @@ marcher_3d<base, num_nb>::marcher_3d(
 {
   init();
 
-  // Grab a writable pointer to cache the speed function values.
+  // Grab a writable pointer to cache the values of `s'.
   double x, z, * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < depth; ++k) {
     z = __z(k);
@@ -208,7 +208,7 @@ bool marcher_3d<base, num_nb>::in_bounds(int i, int j, int k) const {
 }
 
 template <class base, int num_nb>
-double marcher_3d<base, num_nb>::get_speed(int i, int j, int k) const {
+double marcher_3d<base, num_nb>::get_s(int i, int j, int k) const {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_s_cache != nullptr);

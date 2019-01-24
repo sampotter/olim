@@ -20,8 +20,8 @@ TEST (olim8_mp0, correct_corners_in_limit) {
 }
 
 TEST (olim8_mp0, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) default_speed_func));
-  ASSERT_TRUE(result_is_symmetric<olim_t>((speed_func) s1));
+  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s0));
+  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s1));
 }
 
 TEST (olim8_mp0, solution_is_exact_in_factored_region) {

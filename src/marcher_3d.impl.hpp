@@ -173,10 +173,6 @@ marcher_3d<base, num_nb>::add_boundary_node(
     int i_ = is[b0], j_ = js[b1], k_ = ks[b2];
 
     assert(in_bounds(i_, j_, k_));
-    // double s_hat = get_speed(i_, j_, k_);
-    // double u_hat = LINE(ps[a], u0, s_hat, s0, h);
-    // insert_into_heap(
-    //   &(operator()(i_, j_, k_) = {i_, j_, k_, u_hat, state::trial}));
 
     int lin = linear_index(i_, j_, k_);
     _U[lin] = LINE(ps[a], u0, _s_cache[lin], s0, h);
@@ -194,7 +190,6 @@ void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const
   assert(in_bounds(i, j, k));
   assert(in_bounds(fc->i, fc->j, fc->k));
 #endif
-  // operator()(i, j, k).set_fac_center(fc);
   _lin2fac[linear_index(i, j, k)] = fc;
 }
 
@@ -203,7 +198,6 @@ double marcher_3d<base, num_nb>::get_value(int i, int j, int k) const {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
 #endif
-  // return operator()(i, j, k).get_value();
   return _U[linear_index(i, j, k)];
 }
 
@@ -228,7 +222,6 @@ double marcher_3d<base, num_nb>::get_speed(int i, int j, int k) const {
 // function will just be deleted
 template <class base, int num_nb>
 bool marcher_3d<base, num_nb>::is_valid(int i, int j, int k) const {
-  // return in_bounds(i, j, k) && operator()(i, j, k).is_valid();
   return in_bounds(i, j, k) && _state[linear_index(i, k, k)] == state::valid;
 }
 
@@ -237,10 +230,6 @@ bool marcher_3d<base, num_nb>::is_valid(int i, int j, int k) const {
 
 template <class base, int num_nb>
 void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
-  // int i = static_cast<node *>(n)->get_i();
-  // int j = static_cast<node *>(n)->get_j();
-  // int k = static_cast<node *>(n)->get_k();
-
   int const i = get_i(lin_center);
   int const j = get_j(lin_center);
   int const k = get_k(lin_center);
@@ -254,10 +243,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   for (int l = 0; l < num_nb; ++l) {
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l),
       lin = linear_index(a, b, c);
-    // if (in_bounds(a, b, c) && operator()(a, b, c).is_far()) {
     if (in_bounds(a, b, c) && _state[lin] == state::far) {
-      // operator()(a, b, c).set_trial();
-      // insert_into_heap(&operator()(a, b, c));
       _state[lin] = state::trial;
       _heap.insert(lin);
     }
@@ -269,18 +255,13 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
     valid_nb[l] = -1;
     a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
     lin = linear_index(a, b, c);
-    // if (in_bounds(a, b, c) && operator()(a, b, c).is_valid()) {
     if (in_bounds(a, b, c) && _state[lin] == state::valid) {
-      // valid_nb[l] = &this->operator()(a, b, c);
       valid_nb[l] = lin;
     }
   }
 
   int di_l, dj_l, dk_l;
   auto const set_child_nb = [&] (int parent) {
-    // memset(child_nb, 0x0, num_nb*sizeof(abstract_node *));
-    // child_nb[parent] = static_cast<node *>(n);
-    // memset(child_nb, 0x0, num_nb*sizeof(int));
     for (int m = 0; m < num_nb; ++m) {
       child_nb[m] = -1;
     }
@@ -305,18 +286,12 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   auto & s_hat = static_cast<base *>(this)->s_hat;
   auto const update = [&] (int lin_hat, int parent) {
     auto T = inf<double>;
-    // node * update_node = &operator()(i, j, k);
-    // s_hat = this->get_speed(i, j, k);
     s_hat = _s_cache[lin_hat];
-    // update_impl(update_node, child_nb, parent, T);
     update_impl(lin_hat, child_nb, parent, T);
-    // if (T < update_node->get_value()) {
     if (T < _U[lin_hat]) {
 #if EIKONAL_DEBUG && !RELWITHDEBINFO
       assert(T >= 0);
 #endif
-      // update_node->set_value(T);
-      // adjust_heap_entry(update_node);
       _U[lin_hat] = T;
       _heap.update(lin_hat);
     }

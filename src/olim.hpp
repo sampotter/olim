@@ -25,8 +25,6 @@ OLIM_PRIVATE:
   template <int d>
   inline void line(int i, double & u) {
     if (this->nb[i] != -1) {
-      // u = std::min(u, updates::line_bv<F, d>()(
-      //   this->nb[i]->get_value(), this->s_hat, this->s[i], this->get_h()));
       u = std::min(u, updates::line_bv<F, d>()(
         this->_U[this->nb[i]], this->s_hat, this->s[i], this->get_h()));
     }
@@ -35,13 +33,6 @@ OLIM_PRIVATE:
   template <int p0, int p1>
   inline void tri(int i, int j, double & u) {
     if (this->nb[i] != -1 && this->nb[j] != -1) {
-      // u = std::min(u, updates::tri_bv<F, 2, p0, p1>()(
-      //   this->nb[i]->get_value(), // u0
-      //   this->nb[j]->get_value(), // u1
-      //   this->s_hat,              // s
-      //   this->s[i],               // s0
-      //   this->s[j],               // s1
-      //   this->get_h()).value);    // h
       u = std::min(u, updates::tri_bv<F, 2, p0, p1>()(
         this->_U[this->nb[i]], // u0
         this->_U[this->nb[j]], // u1
@@ -56,9 +47,6 @@ OLIM_PRIVATE:
     if (this->nb[i] != -1 && this->nb[j] != -1) {
       double p0[2] = {(double) di<2>[i], (double) dj<2>[i]};
       double p1[2] = {(double) di<2>[j], (double) dj<2>[j]};
-      // u = std::min(u, updates::tri<F, 2>()(
-      //   p0, p1, this->nb[i]->get_value(), this->nb[j]->get_value(),
-      //   this->s_hat, this->s[i], this->s[j], this->get_h(), pf, sf).value);
       u = std::min(u, updates::tri<F, 2>()(
         p0, p1, this->_U[this->nb[i]], this->_U[this->nb[j]],
         this->s_hat, this->s[i], this->s[j], this->get_h(), pf, sf).value);

@@ -422,9 +422,6 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & T)
   get_p(l0, p0);
 
   // TODO: see comment above about one-point updates
-  // T0 = updates::line<F>()(
-  //   get_p_norm(l0), this->nb[l0]->get_value(), this->s_hat, this->s[l0],
-  //   this->get_h());
   T0 = updates::line<F>()(
     get_p_norm(l0), this->_U[this->nb[l0]], this->s_hat, this->s[l0],
     this->get_h());
@@ -433,7 +430,6 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & T)
 #endif
 
   if (this->is_factored(lin_hat)) {
-    // auto fc = n->get_fac_center();
     auto fc = this->_lin2fac[lin_hat];
     s_fac = fc->s;
     p_fac[0] = fc->i - this->get_i(lin_hat);
@@ -457,12 +453,6 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & T)
 
     // Do the triangle update.
     auto const tmp = this->is_factored(lin_hat) ?
-      // updates::tri<F, 3>()(
-      //   p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
-      //   this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
-      // updates::tri<F, 3>()(
-      //   p0, p1, this->nb[l0]->get_value(), this->nb[l]->get_value(),
-      //   this->s_hat, this->s[l0], this->s[l], this->get_h());
       updates::tri<F, 3>()(
         p0, p1, this->_U[this->nb[l0]], this->_U[this->nb[l]],
         this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
@@ -504,9 +494,6 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & T)
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
     {
-      // double u0 = this->nb[l0]->get_value(), u1 = this->nb[l1]->get_value(),
-      //   u2 = this->nb[l2]->get_value(), s = this->s_hat, s0 = this->s[l0],
-      //   s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
         u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();

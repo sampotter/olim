@@ -4,7 +4,7 @@
 #include <src/config.hpp>
 
 #include "common.hpp"
-#include "vecmath.hpp"
+#include "vec.hpp"
 
 #define __di(k) di<2>[k]
 #define __dj(k) dj<2>[k]

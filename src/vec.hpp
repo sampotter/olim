@@ -1,5 +1,5 @@
-#ifndef __UPDATE_RULES_UTILS_HPP__
-#define __UPDATE_RULES_UTILS_HPP__
+#ifndef __VEC_HPP__
+#define __VEC_HPP__
 
 #include <assert.h>
 #include <math.h>
@@ -170,4 +170,4 @@ constexpr int dot(int p, int q) {
   return nbits[p & q];
 }
 
-#endif // __UPDATE_RULES_UTILS_HPP__
+#endif // __VEC_HPP__

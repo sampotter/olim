@@ -7,7 +7,7 @@
 #include "common.hpp"
 #include "cost_funcs.hpp"
 #include "updates.common.hpp"
-#include "vecmath.hpp"
+#include "vec.hpp"
 
 // TODO: this is a bit of a mess right now---we would like to collapse
 // the implementations like we've done for line and tetra, but that

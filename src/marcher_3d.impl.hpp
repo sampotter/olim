@@ -122,7 +122,7 @@ template <class base, int num_nb>
 void marcher_3d<base, num_nb>::add_boundary_node(
   int i, int j, int k, double value)
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
 #endif
   int lin = linear_index(i, j, k);
@@ -186,7 +186,7 @@ marcher_3d<base, num_nb>::add_boundary_node(
 template <class base, int num_nb>
 void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const * fc)
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(in_bounds(fc->i, fc->j, fc->k));
 #endif
@@ -195,7 +195,7 @@ void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const
 
 template <class base, int num_nb>
 double marcher_3d<base, num_nb>::get_value(int i, int j, int k) const {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
 #endif
   return _U[linear_index(i, j, k)];
@@ -209,7 +209,7 @@ bool marcher_3d<base, num_nb>::in_bounds(int i, int j, int k) const {
 
 template <class base, int num_nb>
 double marcher_3d<base, num_nb>::get_speed(int i, int j, int k) const {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
   assert(_s_cache != nullptr);
 #endif
@@ -289,7 +289,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
     s_hat = _s_cache[lin_hat];
     update_impl(lin_hat, child_nb, parent, T);
     if (T < _U[lin_hat]) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
       assert(T >= 0);
 #endif
       _U[lin_hat] = T;

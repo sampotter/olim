@@ -109,7 +109,7 @@ template <class base, int num_nb>
 void
 marcher<base, num_nb>::add_boundary_node(int i, int j, double value)
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
 #endif
   int lin = linear_index(i, j);
@@ -189,7 +189,7 @@ template <class base, int num_nb>
 void
 marcher<base, num_nb>::set_fac_src(int i, int j, fac_src const * fc)
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(in_bounds(fc->i, fc->j));
 #endif
@@ -200,7 +200,7 @@ template <class base, int num_nb>
 double
 marcher<base, num_nb>::get_value(int i, int j) const
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
 #endif
   return _U[linear_index(i, j)];
@@ -222,7 +222,7 @@ template <class base, int num_nb>
 double
 marcher<base, num_nb>::get_speed(int i, int j) const
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
   assert(_s_cache != nullptr);
 #endif
@@ -306,7 +306,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
     static_cast<base *>(this)->s_hat = _s_cache[lin_hat];
     update_impl(lin_hat, T);
     if (T < _U[lin_hat]) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
       assert(T >= 0);
 #endif
       _U[lin_hat] = T;

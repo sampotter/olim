@@ -25,7 +25,7 @@ template <int d> inline void check_lambda(double const * lam);
 
 template <>
 inline void check_lambda<2>(double const * lam) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(lam[0] >= -eps<double>);
   assert(lam[1] >= -eps<double>);
   assert(lam[0] + lam[1] <= 1 + eps<double>);
@@ -35,7 +35,7 @@ inline void check_lambda<2>(double const * lam) {
 }
 
 inline void check(double x) {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(!isinf(x));
   assert(!isnan(x));
 #else
@@ -164,7 +164,7 @@ using F_fac_wkspc = std::conditional_t<
 inline void check_args(double u0, double u1, double u2, double s,
                        double s0, double s1, double s2, double h)
 {
-#if EIKONAL_DEBUG && !RELWITHDEBINFO
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(u0 >= 0);
   assert(u1 >= 0);
   assert(u2 >= 0);

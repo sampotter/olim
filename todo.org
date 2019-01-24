@@ -25,34 +25,35 @@
   1. [X] SoA task
 
 * General refactoring
-  1. [ ] Remove all instances of EIKONAL and replace with OLIM
+  1. [X] Remove all instances of EIKONAL and replace with OLIM
   2. [ ] Collapse marcher and marcher_3d into one class
   3. [ ] Some renaming
      - [ ] olim -> olim2
      - [ ] olim3d -> olim3
      - [ ] basic_marcher -> fmm2
      - [ ] basic_marcher_3d -> fmm3
-  4. [ ] T -> U everwhere
-  5. [ ] Add T = template parameter for double/float
-  6. [ ] Distinguish between indices
+  4. [ ] speed -> slowness
+  5. [ ] T -> U everwhere
+  6. [ ] Add T = template parameter for double/float
+  7. [ ] Distinguish between indices
      - [ ] Add a `handle' type to distinguish the location of a node
        in the grid
      - [ ] Add a neighborhood index type to distinguish the location
        of a node in a neighborhood
-  7. [ ] Remove second argument from `sqp_bary': i.e., use only one
+  8. [ ] Remove second argument from `sqp_bary': i.e., use only one
      `x' argument which contains the initial iterate to begin and is
      overwritten with the optimum at the end. When we do this, we can
      also:
      - [ ] Have `sqp_bary' return its error code in an enum
      - [ ] Just take the updates::info<d> struct as a reference
        instead of separate parameters
-  8. [ ] Don't actually need to store qr_wkspc in cost_functor...
-  9. [ ] Reduce line count in tests using generic lambdas...
-  10. [ ] Remove STL headers
-  11. [ ] Remove macros
+  9. [ ] Don't actually need to store qr_wkspc in cost_functor...
+  10. [ ] Reduce line count in tests using generic lambdas...
+  11. [ ] Remove STL headers
+  12. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  12. [ ] Global p_fac -> pf
-  13. [ ] Global s_fac -> sf
+  13. [ ] Global p_fac -> pf
+  14. [ ] Global s_fac -> sf
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up

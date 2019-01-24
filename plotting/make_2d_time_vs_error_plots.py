@@ -23,7 +23,7 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pyolim as olim
-import speedfuncs
+import slow2
 import time
 
 from matplotlib import rc
@@ -46,12 +46,12 @@ N = 2**Npows + 1
 use_local_factoring = True
 r_fac = 0.1
 
-Slows = [speedfuncs.s1, speedfuncs.s2, speedfuncs.s3, speedfuncs.s4]
+Slows = [slow2.s1, slow2.s2, slow2.s3, slow2.s4]
 Solns = {
-    speedfuncs.s1: speedfuncs.f1,
-    speedfuncs.s2: speedfuncs.f2,
-    speedfuncs.s3: speedfuncs.f3,
-    speedfuncs.s4: speedfuncs.f4
+    slow2.s1: slow2.f1,
+    slow2.s2: slow2.f2,
+    slow2.s3: slow2.f3,
+    slow2.s4: slow2.f4
 }
 Olims = [olim.Olim4Mid0, olim.Olim4Mid1, olim.Olim4Rect,
          olim.Olim8Mid0, olim.Olim8Mid1, olim.Olim8Rect]
@@ -67,7 +67,7 @@ ntrials = 2
 current_slow, current_Olim, current_n = None, None, None
 for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     if slow != current_slow:
-        print(speedfuncs.get_slowness_func_name(slow))
+        print(slow2.get_slowness_func_name(slow))
         current_slow = slow
     if Olim != current_Olim:
         print('* %s' % str(Olim))
@@ -84,7 +84,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     x, y = np.meshgrid(L, L)
     R = np.sqrt(x**2 + y**2)
     I, J = np.where(R < r_fac)
-    u, S = speedfuncs.get_fields(Solns[slow], slow, x, y)
+    u, S = slow2.get_fields(Solns[slow], slow, x, y)
 
     t = np.inf
 

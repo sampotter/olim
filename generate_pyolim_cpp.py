@@ -38,7 +38,7 @@ marcher_template = Template('''
         }
         int height = static_cast<int>(info.shape[0]); // height
         int width = static_cast<int>(info.shape[1]); // width
-        auto m_ptr = new ${cpp_class_name} {height, width, h, no_speed_func};
+        auto m_ptr = new ${cpp_class_name} {height, width, h, no_slow};
         memcpy(
           (double *) m_ptr->get_s_cache_data(),
           info.ptr,
@@ -69,7 +69,7 @@ marcher_template = Template('''
         m.add_boundary_nodes(nodes.data(), nodes.size());
       })
     .def("set_fac_src", &${cpp_class_name}::set_fac_src, "i"_a, "j"_a, "fc"_a)
-    .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a)
+    .def("get_s", &${cpp_class_name}::get_s, "i"_a, "j"_a)
     .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a)
     .def("get_height", &${cpp_class_name}::get_height)
     .def("get_width", &${cpp_class_name}::get_width);
@@ -118,7 +118,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}")
         int width = static_cast<int>(info.shape[1]); // width
         int depth = static_cast<int>(info.shape[2]); // depth
 
-        auto m_ptr = new ${cpp_class_name} {height, width, depth, h, no_speed_func};
+        auto m_ptr = new ${cpp_class_name} {height, width, depth, h, no_slow};
         memcpy(
           (double *) m_ptr->get_s_cache_data(),
           info.ptr,
@@ -145,7 +145,7 @@ py::class_<${cpp_class_name}>(m, "${py_class_name}")
       "k"_a,
       "s"_a,
       "value"_a = 0.0)
-    .def("get_speed", &${cpp_class_name}::get_speed, "i"_a, "j"_a, "k"_a)
+    .def("get_s", &${cpp_class_name}::get_s, "i"_a, "j"_a, "k"_a)
     .def("get_value", &${cpp_class_name}::get_value, "i"_a, "j"_a, "k"_a)
     .def("set_fac_src", &${cpp_class_name}::set_fac_src, "i"_a, "j"_a, "k"_a, "fc"_a)
     .def("get_height", &${cpp_class_name}::get_height)
@@ -175,9 +175,6 @@ def build_src_txt(args):
     src_txt += '''
 namespace py = pybind11;
 using namespace py::literals;
-
-using speed_function = std::function<double(double, double)>;
-using speed_function_3d = std::function<double(double, double, double)>;
 
 PYBIND11_MODULE(pyolim, m) {
   m.doc() = "Testing testing";

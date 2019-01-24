@@ -23,8 +23,8 @@ sys.path.insert(0, '../misc/py')
 import matplotlib.pyplot as plt
 import numpy as np
 import pyolim as olim
-import speedfuncs
-import speedfuncs3d
+import slow2
+import slow3
 
 from matplotlib.colors import LogNorm
 from matplotlib import rc
@@ -65,7 +65,7 @@ for ind, n in enumerate(N):
     l = np.linspace(-1, 1, n)
     x, y = np.meshgrid(l, l)
 
-    u, s = speedfuncs.get_fields(speedfuncs.f0, speedfuncs.s0, x, y)
+    u, s = slow2.get_fields(slow2.f0, slow2.s0, x, y)
 
     # unfactored
     
@@ -101,7 +101,7 @@ for ind, n in enumerate(N_3d):
     l = np.linspace(-1, 1, n)
     x, y, z = np.meshgrid(l, l, l)
 
-    u, s = speedfuncs3d.get_fields(speedfuncs3d.f0, speedfuncs3d.s0, x, y, z)
+    u, s = slow3.get_fields(slow3.f0, slow3.s0, x, y, z)
 
     # unfactored
     

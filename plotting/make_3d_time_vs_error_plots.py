@@ -26,7 +26,7 @@ import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pyolim as olim
-import speedfuncs3d
+import slow3
 import time
 
 from cycler import cycler
@@ -49,12 +49,12 @@ N = 2**Npows + 1
 
 r_fac = 0.1
 
-Slows = [speedfuncs3d.s1, speedfuncs3d.s2, speedfuncs3d.s3, speedfuncs3d.s4]
+Slows = [slow3.s1, slow3.s2, slow3.s3, slow3.s4]
 Solns = {
-    speedfuncs3d.s1: speedfuncs3d.f1,
-    speedfuncs3d.s2: speedfuncs3d.f2,
-    speedfuncs3d.s3: speedfuncs3d.f3,
-    speedfuncs3d.s4: speedfuncs3d.f4
+    slow3.s1: slow3.f1,
+    slow3.s2: slow3.f2,
+    slow3.s3: slow3.f3,
+    slow3.s4: slow3.f4
 }
 Olims = [olim.Olim6Mid0, olim.Olim6Mid1, olim.Olim6Rect,
          olim.Olim18Mid0, olim.Olim18Mid1, olim.Olim18Rect,
@@ -71,7 +71,7 @@ ntrials = 2
 current_slow, current_Olim, current_n = None, None, None
 for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     if slow != current_slow:
-        print(speedfuncs3d.get_slowness_func_name(slow))
+        print(slow3.get_slowness_func_name(slow))
         current_slow = slow
     if Olim != current_Olim:
         print('* %s' % str(Olim))
@@ -88,7 +88,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
     x, y, z = np.meshgrid(L, L, L)
     R = np.sqrt(x**2 + y**2 + z**2)
     I, J, K = np.where(R < r_fac)
-    u, S = speedfuncs3d.get_fields(Solns[slow], slow, x, y, z)
+    u, S = slow3.get_fields(Solns[slow], slow, x, y, z)
 
     t = np.inf
 

@@ -32,9 +32,9 @@
      - [ ] olim3d -> olim3
      - [ ] basic_marcher -> fmm2
      - [ ] basic_marcher_3d -> fmm3
-  4. [ ] speed -> slowness
+  4. [X] speed -> slowness
   5. [ ] get_value -> get_U
-  6. [ ] T -> U everwhere
+  6. [X] T -> U everwhere
   7. [ ] Add T = template parameter for double/float
   8. [ ] Distinguish between indices
      - [ ] Add a `handle' type to distinguish the location of a node

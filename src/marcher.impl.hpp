@@ -142,7 +142,7 @@ marcher<base, num_nb>::add_boundary_nodes(
 }
 
 #define LINE(p0, u0, s, s0, h)                          \
-  updates::line<base::F_>()(norm2<2>(p0), u0, s, s0, h)
+  updates::line<base::F_>()(p0.norm2(), u0, s, s0, h)
 
 template <class base, int num_nb>
 void
@@ -163,7 +163,7 @@ marcher<base, num_nb>::add_boundary_node(
   int is[2] = {(int) floor(i), (int) floor(i) + 1};
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
 
-  double P[4][2] = {
+  vec<double, 2> P[4] = {
     {i - is[0], j - js[0]},
     {i - is[1], j - js[0]},
     {i - is[0], j - js[1]},

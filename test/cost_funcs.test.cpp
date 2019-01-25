@@ -13,9 +13,9 @@
 
 TEST (cost_funcs, geom_wkspc_init_works) {
   {
-    double p0[3] = {3, 1, 3};
-    double p1[3] = {3, 2, 3};
-    double p2[3] = {1, 2, 3};
+    vec<double, 3> p0 = {3, 1, 3};
+    vec<double, 3> p1 = {3, 2, 3};
+    vec<double, 3> p2 = {1, 2, 3};
     geom_wkspc<2> g;
     g.init<3>(p0, p1, p2);
     ASSERT_EQ(g.p0t_p0, 19);
@@ -26,9 +26,9 @@ TEST (cost_funcs, geom_wkspc_init_works) {
     ASSERT_EQ(g.dPt_dP[2], 5);
   }
   {
-    double p0[3] = {1, 0, 1};
-    double p1[3] = {-1, 1, -1};
-    double p2[3] = {0, 1, 2};
+    vec<double, 3> p0 = {1, 0, 1};
+    vec<double, 3> p1 = {-1, 1, -1};
+    vec<double, 3> p2 = {0, 1, 2};
     geom_wkspc<2> g;
     g.init<3>(p0, p1, p2);
     ASSERT_EQ(g.p0t_p0, 2);
@@ -42,10 +42,10 @@ TEST (cost_funcs, geom_wkspc_init_works) {
 
 TEST (cost_funcs, geom_fac_wkspc_init_works) {
   {
-    double p0[3] = {-1, -1, 0};
-    double p1[3] = {0, 0, 1};
-    double p2[3] = {-1, 0, 2};
-    double pf[3] = {-5, 7, -6};
+    vec<double, 3> p0 = {-1, -1, 0};
+    vec<double, 3> p1 = {0, 0, 1};
+    vec<double, 3> p2 = {-1, 0, 2};
+    vec<double, 3> pf = {-5, 7, -6};
     geom_fac_wkspc<2> g;
     g.init<3>(p0, p1, p2, pf);
     ASSERT_EQ(g.p0t_p0, 2);
@@ -65,7 +65,7 @@ TEST (cost_funcs, geom_fac_wkspc_init_works) {
 }
 
 TEST (cost_funcs, qr_wkspc_init_works) {
-  double p0[3], p1[3], p2[3];
+  vec<double, 3> p0, p1, p2;
 
   p0[0] = 0.531333906565674;
   p0[1] = 0.325145681820560;
@@ -93,7 +93,10 @@ TEST (cost_funcs, qr_wkspc_init_works) {
 }
 
 TEST (cost_funcs, rhr_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f;
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2;
+  double d2f[3];
   {
     u0 = 0.8147236863931789;
     u1 = 0.9057919370756192;
@@ -122,7 +125,7 @@ TEST (cost_funcs, rhr_works) {
     eval(w, f);
     grad(w, df);
     hess(w, g, d2f);
-    ASSERT_NEAR(f, 1.689762490331113, 5e-16);
+    ASSERT_NEAR(f, 1.689762490331113, 7e-16);
     ASSERT_NEAR(df[0], -0.4282612531697417, 2e-15);
     ASSERT_NEAR(df[1], -2.608936019769593, 2e-15);
     ASSERT_NEAR(d2f[0], 1.549985998542815, 2e-15);
@@ -167,7 +170,10 @@ TEST (cost_funcs, rhr_works) {
 }
 
 TEST (cost_funcs, mp0_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f;
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2;
+  double d2f[3];
   {
     u0 = 0.2510838579760311;
     u1 = 0.6160446761466392;
@@ -241,7 +247,10 @@ TEST (cost_funcs, mp0_works) {
 }
 
 TEST (cost_funcs, mp1_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], p0[3], p1[3], p2[3], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f;
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2;
+  double d2f[3];
   {
     u0 = 0.2077422927330285;
     u1 = 0.3012463302794907;
@@ -315,7 +324,9 @@ TEST (cost_funcs, mp1_works) {
 }
 
 TEST (cost_funcs, rhr111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f;
+  vec<double, 2> lam, df;
+  double d2f[3];
   {
     u0 = 0.6554778901775566;
     u1 = 0.1711866878115618;
@@ -367,7 +378,8 @@ TEST (cost_funcs, rhr111_works) {
 }
 
 TEST (cost_funcs, rhr_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df; 
   {
     u0 = 0.6160446761466392;
     u1 = 0.4732888489027293;
@@ -395,7 +407,8 @@ TEST (cost_funcs, rhr_123_works) {
 }
 
 TEST (cost_funcs, rhr_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df;
   {
     u0 = 0.3804458469753567;
     u1 = 0.5678216407252211;
@@ -423,7 +436,8 @@ TEST (cost_funcs, rhr_222_works) {
 }
 
 TEST (cost_funcs, mp0_111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> df, lam;
   {
     u0 = 0.1492940055590575;
     u1 = 0.2575082541237365;
@@ -451,7 +465,8 @@ TEST (cost_funcs, mp0_111_works) {
 }
 
 TEST (cost_funcs, mp0_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df;
   {
     u0 = 0.7093648308580726;
     u1 = 0.7546866819823609;
@@ -479,7 +494,8 @@ TEST (cost_funcs, mp0_123_works) {
 }
 
 TEST (cost_funcs, mp0_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df;
   {
     u0 = 0.5852677509797773;
     u1 = 0.223811939491137;
@@ -507,7 +523,8 @@ TEST (cost_funcs, mp0_222_works) {
 }
 
 TEST (cost_funcs, mp1_111_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df;
   {
     u0 = 0.0119020695012414;
     u1 = 0.3371226443988815;
@@ -535,7 +552,8 @@ TEST (cost_funcs, mp1_111_works) {
 }
 
 TEST (cost_funcs, mp1_123_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> df, lam;
   {
     u0 = 0.6892145031400078;
     u1 = 0.7481515928237095;
@@ -563,7 +581,8 @@ TEST (cost_funcs, mp1_123_works) {
 }
 
 TEST (cost_funcs, mp1_222_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, lam[2], f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
+  vec<double, 2> lam, df;
   {
     u0 = 0.07817552875318368;
     u1 = 0.4426782697754463;
@@ -591,8 +610,9 @@ TEST (cost_funcs, mp1_222_works) {
 }
 
 TEST (cost_funcs, rhr_fac_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, sf, lam[2], p0[3], p1[3], p2[3], pf[3],
-    f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, sf, f, d2f[3];
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2, pf;
   {
     u0 = 0.5078582846611182;
     u1 = 0.08551579709004398;
@@ -635,8 +655,9 @@ TEST (cost_funcs, rhr_fac_works) {
 }
 
 TEST (cost_funcs, mp0_fac_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, sf, lam[2], p0[3], p1[3], p2[3], pf[3],
-    f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, sf, f, d2f[3];
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2, pf;
   {
     u0 = 0.8175470920792863;
     u1 = 0.7224395923668423;
@@ -679,8 +700,9 @@ TEST (cost_funcs, mp0_fac_works) {
 }
 
 TEST (cost_funcs, mp1_fac_works) {
-  double u0, u1, u2, h, s, s0, s1, s2, sf, lam[2], p0[3], p1[3], p2[3], pf[3],
-    f, df[2], d2f[3];
+  double u0, u1, u2, h, s, s0, s1, s2, sf, f, d2f[3];
+  vec<double, 2> lam, df;
+  vec<double, 3> p0, p1, p2, pf;
   {
     u0 = 0.2919840799617149;
     u1 = 0.4316511702487202;
@@ -723,7 +745,8 @@ TEST (cost_funcs, mp1_fac_works) {
 }
 
 TEST (cost_funcs, lagmults_works) {
-  double lam[2], df[2], d2f[3], mu[2];
+  vec<double, 2> lam, df, mu;
+  double d2f[3];
   int k;
   {
     lam[0] = 0;
@@ -747,8 +770,8 @@ TEST (cost_funcs, lagmults_works) {
     d2f[1] = 0.1228102378128416;
     d2f[2] = 0.07735909113042493;
     lagmults<2>(lam, df, d2f, mu, &k);
-    ASSERT_NEAR(mu[0], 0.7925863067377636, 5e-16);
-    ASSERT_NEAR(mu[1], 0.164879019209037, 2.22045e-16);
+    ASSERT_NEAR(mu[0], 0.7925863067377636, 2e-15);
+    ASSERT_NEAR(mu[1], 0.164879019209037, 2e-15);
     ASSERT_EQ(k, 2);
   }
   {
@@ -760,7 +783,7 @@ TEST (cost_funcs, lagmults_works) {
     d2f[1] = 0.381482197265534;
     d2f[2] = 0.3713788127600577;
     lagmults<2>(lam, df, d2f, mu, &k);
-    ASSERT_NEAR(mu[0], -0.1006163021286448, 2.22045e-16);
+    ASSERT_NEAR(mu[0], -0.1006163021286448, 3e-16);
     ASSERT_NEAR(mu[1], 1.113500741486764, 2.22045e-16);
     ASSERT_EQ(k, 2);
   }

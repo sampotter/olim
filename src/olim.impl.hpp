@@ -31,7 +31,8 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
     // local factoring... this can definitely be optimized
 
     auto fc = this->_lin2fac[lin_hat];
-    double sf = fc->s, pf[2] = {fc->i - i_hat, fc->j - j_hat};
+    double sf = fc->s;
+    vec<double, 2> pf = {fc->i - i_hat, fc->j - j_hat};
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(a, U);

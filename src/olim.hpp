@@ -43,10 +43,10 @@ OLIM_PRIVATE:
     }
   }
 
-  inline void tri_fac(int i, int j, double const * pf, double sf, double & u) {
+  inline void tri_fac(int i, int j, vec<double, 2> const & pf, double sf, double & u) {
     if (this->nb[i] != -1 && this->nb[j] != -1) {
-      double p0[2] = {(double) di<2>[i], (double) dj<2>[i]};
-      double p1[2] = {(double) di<2>[j], (double) dj<2>[j]};
+      vec<double, 2> p0 = {(double) di<2>[i], (double) dj<2>[i]};
+      vec<double, 2> p1 = {(double) di<2>[j], (double) dj<2>[j]};
       u = std::min(u, updates::tri<F, 2>()(
         p0, p1, this->_U[this->nb[i]], this->_U[this->nb[j]],
         this->s_hat, this->s[i], this->s[j], this->get_h(), pf, sf).value);

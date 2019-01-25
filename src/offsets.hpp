@@ -1,6 +1,8 @@
 #ifndef __OFFSETS_HPP__
 #define __OFFSETS_HPP__
 
+#include "vec.hpp"
+
 #ifndef __clang__
 #    pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
@@ -34,5 +36,9 @@ inline int d2l(int di, int dj, int dk) {
 #ifndef __clang__
 #    pragma GCC diagnostic pop
 #endif
+
+inline vec<double, 3> get_p(int l) {
+  return {(double) di<3>[l], (double) dj<3>[l], (double) dk<3>[l]};
+}
 
 #endif // __OFFSETS_HPP__

@@ -18,19 +18,19 @@ inline double compute_lambda_min_symmetric<2>(double const * A) {
 template <class cost_functor, line_search L>
 void
 sqp_bary<cost_functor, 3, 2, L>::operator()(
-  cost_functor & func, double const * xinit, double * x, double * f,
-  bool * error, double tol, int niters)
+  cost_functor & func, vec<double, 2> const & xinit,
+  vec<double, 2> & x, double * f, bool * error, double tol, int niters)
 {
   if (error) *error = false;
 
   int k = 0;
-  double x0[2], x1[2], f0, f1, lambda_min;
-  double d2f[3], df[2], h[2], c[2], alpha;
+  double f0, f1, lambda_min;
+  double d2f[3], alpha;
+  vec<double, 2> x0, x1, df, h, c;
   bool qpi_error;
   hybrid_status status;
 
-  x1[0] = xinit ? xinit[0] : 1./3;
-  x1[1] = xinit ? xinit[1] : 1./3;
+  x1 = xinit;
 
   func.set_lambda(x1);
   func.eval(f1);
@@ -58,13 +58,13 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
     assert(!qpi_error);
 
     // Compute descent step: h = x1 - x0 = x_{n+1} - x_{n}
-    sub<2>(x1, x0, h);
+    h = x1 - x0;
 
     if (L == line_search::BACKTRACK) {
       alpha = 1;
-      double lhs, rhs = f1 + 1e-4*alpha*dot<2>(df, h);
+      double lhs, rhs = f1 + 1e-4*alpha*(df*h);
     repeat:
-      axpy<2>(alpha, h, x0, x1);
+      x1 = x0 + alpha*h;
       func.set_lambda(x1);
       func.eval(lhs);
       if (alpha > tol && lhs > rhs) {
@@ -76,18 +76,18 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
       // alpha st 0 <= alpha <= 1. We do this by finding the zero of
       // df(x0 + alpha*h)'*alpha over the same interval.
       auto const step = [&] (double alpha) {
-                          axpy<2>(alpha, h, x0, x1);
-                          func.set_lambda(x1);
-                          func.grad(df);
-                          return dot<2>(df, h);
-                        };
+        x1 = x0 + alpha*h;
+        func.set_lambda(x1);
+        func.grad(df);
+        return df*h;
+      };
       std::tie(alpha, status) = hybrid(step, 0., 1., tol);
       if (status == hybrid_status::DEGENERATE) {
         alpha = 1;
       }
     }
 
-    axpy<2>(alpha, h, x0, x1);
+    x1 = x0 + alpha*h;
     f0 = f1;
     func.set_lambda(x1);
     func.eval(f1);
@@ -108,10 +108,7 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
     }
   }
 
-  if (x != nullptr) {
-    x[0] = x1[0];
-    x[1] = x1[1];
-  }
+  x = x1;
 
   if (f != nullptr) {
     *f = f1;

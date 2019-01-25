@@ -1,142 +1,145 @@
 #ifndef __VEC_HPP__
 #define __VEC_HPP__
 
+#include <algorithm>
+#include <initializer_list>
+
 #include <assert.h>
 #include <math.h>
 
-template <int dim>
-inline void sub(double const * p, double const * q, double * r);
+template <class T, int n>
+struct vec
+{
+  vec() {}
 
-template <>
-inline void sub<2>(double const * p, double const * q, double * r) {
-  r[0] = p[0] - q[0];
-  r[1] = p[1] - q[1];
+  vec(std::initializer_list<T> ts) {
+    std::copy(ts.begin(), ts.end(), _data);
+  }
+
+  inline T & operator[](int i) {
+    return _data[i];
+  }
+
+  inline T const & operator[](int i) const {
+    return _data[i];
+  }
+
+  inline vec<T, n> & operator*=(T const & t) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] *= t;
+    }
+    return *this;
+  }
+
+  friend vec<T, n> operator*(vec<T, n> x, T const & t) {
+    x *= t;
+    return x;
+  }
+
+  friend vec<T, n> operator*(T const & t, vec<T, n> x) {
+    x *= t;
+    return x;
+  }
+
+  inline vec<T, n> & operator/=(T const & t) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] /= t;
+    }
+    return *this;
+  }
+
+  friend vec<T, n> operator/(vec<T, n> x, T const & t) {
+    x /= t;
+    return x;
+  }
+
+  friend vec<T, n> operator/(T const & t, vec<T, n> x) {
+    x /= t;
+    return x;
+  }
+
+  friend T operator*(vec<T, n> const & x, vec<T, n> const & y) {
+    T t {0};
+    for (int i = 0; i < n; ++i) {
+      t += x[i]*y[i];
+    }
+    return t;
+  }
+
+  inline vec<T, n> & operator+=(vec<T, n> const & x) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] += x[i];
+    }
+    return *this;
+  }
+
+  friend vec<T, n> operator+(vec<T, n> x, vec<T, n> const & y) {
+    x += y;
+    return x;
+  }
+
+  inline vec<T, n> & operator-=(vec<T, n> const & x) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] -= x[i];
+    }
+    return *this;
+  }
+
+  friend vec<T, n> operator-(vec<T, n> x, vec<T, n> const & y) {
+    x -= y;
+    return x;
+  }
+
+  inline T norm1() const {
+    T t {0};
+    for (int i = 0; i < n; ++i) {
+      t += std::abs(_data[i]);
+    }
+    return t;
+  }
+
+  inline T norm2sq() const {
+    T t {0};
+    for (int i = 0; i < n; ++i) {
+      t += _data[i]*_data[i];
+    }
+    return t;
+  }
+
+  inline T norm2() const {
+    return sqrt(norm2sq());
+  }
+
+  inline T normi() const {
+    T t {0};
+    for (int i = 0; i < n; ++i) {
+      t = std::max(t, std::abs(_data[i]));
+    }
+    return t;
+  }
+
+OLIM_PRIVATE:
+  T _data[n];
+};
+
+template <class T, int n>
+T dist1(vec<T, n> const & u, vec<T, n> const & v) {
+  return (u - v).norm1();
 }
 
-template <>
-inline void sub<3>(double const * p, double const * q, double * r) {
-  r[0] = p[0] - q[0];
-  r[1] = p[1] - q[1];
-  r[2] = p[2] - q[2];
+template <class T, int n>
+T dist2(vec<T, n> const & u, vec<T, n> const & v) {
+  return (u - v).norm2();
 }
 
-template <int dim>
-void axpy(double alpha, double const * x, double const * y, double * z);
-
-template <>
-inline void
-axpy<2>(double alpha, double const * x, double const * y, double * z) {
-  z[0] = alpha*x[0] + y[0];
-  z[1] = alpha*x[1] + y[1];
+template <class T, int n>
+T dist2sq(vec<T, n> const & u, vec<T, n> const & v) {
+  return (u - v).norm2sq();
 }
 
-template <>
-inline void
-axpy<3>(double alpha, double const * x, double const * y, double * z) {
-  z[0] = alpha*x[0] + y[0];
-  z[1] = alpha*x[1] + y[1];
-  z[2] = alpha*x[2] + y[2];
-}
-
-template <int dim>
-double dot(double const * x, double const * y);
-
-template <>
-inline double dot<2>(double const * x, double const * y) {
-  return x[0]*y[0] + x[1]*y[1];
-}
-
-template <>
-inline double dot<3>(double const * x, double const * y) {
-  return x[0]*y[0] + x[1]*y[1] + x[2]*y[2];
-}
-
-template <int dim>
-void scal_inplace(double alpha, double * x);
-
-template <>
-inline void
-scal_inplace<2>(double alpha, double * x) {
-  x[0] *= alpha;
-  x[1] *= alpha;
-}
-
-template <>
-inline void
-scal_inplace<3>(double alpha, double * x) {
-  x[0] *= alpha;
-  x[1] *= alpha;
-  x[2] *= alpha;
-}
-
-template <int dim>
-double dist1(double const * p, double const * q);
-
-template <>
-inline double dist1<3>(double const * p, double const * q) {
-  return
-    fabs(q[0] - p[0]) +
-    fabs(q[1] - p[1]) +
-    fabs(q[2] - p[2]);
-}
-
-template <int dim>
-double dist2(double const * p, double const * q);
-
-template <>
-inline double dist2<2>(double const * p, double const * q) {
-  return sqrt(
-    (q[0] - p[0])*(q[0] - p[0]) +
-    (q[1] - p[1])*(q[1] - p[1]));
-}
-
-template <>
-inline double dist2<3>(double const * p, double const * q) {
-  return sqrt(
-    (q[0] - p[0])*(q[0] - p[0]) +
-    (q[1] - p[1])*(q[1] - p[1]) +
-    (q[2] - p[2])*(q[2] - p[2]));
-}
-
-template <int dim>
-double dist2sq(double const * p, double const * q);
-
-template <>
-inline double dist2sq<2>(double const * p, double const * q) {
-  return (q[0] - p[0])*(q[0] - p[0]) + (q[1] - p[1])*(q[1] - p[1]);
-}
-
-template <>
-inline double dist2sq<3>(double const * p, double const * q) {
-  return
-    (q[0] - p[0])*(q[0] - p[0]) +
-    (q[1] - p[1])*(q[1] - p[1]) +
-    (q[2] - p[2])*(q[2] - p[2]);
-}
-
-template <int dim>
-double distmax(double const * p, double const * q);
-
-template <>
-inline double distmax<3>(double const * p, double const * q) {
-  return fmax(
-    fabs(q[0] - p[0]),
-    fmax(
-      fabs(q[1] - p[1]),
-      fabs(q[2] - p[2])));
-}
-
-template <int dim>
-double norm2(double const * p);
-
-template <>
-inline double norm2<2>(double const * p) {
-  return sqrt(p[0]*p[0] + p[1]*p[1]);
-}
-
-template <>
-inline double norm2<3>(double const * p) {
-  return sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]);
+template <class T, int n>
+T disti(vec<T, n> const & u, vec<T, n> const & v) {
+  return (u - v).normi();
 }
 
 /**

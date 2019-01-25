@@ -85,31 +85,30 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<MP0, n>::operator()(
-  double const * p0, double const * p1,
+  vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
-  double const * p_fac, double s_fac) const
+  vec<double, n> const & p_fac, double s_fac) const
 {
   assert(s >= 0);
   assert(s0 >= 0);
   assert(s1 >= 0);
 
   double sh = ((s + (s0 + s1)/2)/2)*h, shfac = s_fac*h;
-  double lfac0 = dist2<n>(p0, p_fac);
-  double lfac1 = dist2<n>(p1, p_fac);
+  double lfac0 = dist2(p0, p_fac);
+  double lfac1 = dist2(p1, p_fac);
   double T0 = shfac*lfac0, T1 = shfac*lfac1;
   double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double dp[n];
-  sub<n>(p1, p0, dp);
+  vec<double, n> dp = p1 - p0;
 
-  double nu[n], nufac[n];
+  vec<double, n> nu, nufac;
 
   auto const grad = [&] (double lam) {
-    axpy<n>(lam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
-    scal_inplace<n>(1./norm2<n>(nu), nu);
-    scal_inplace<n>(1./norm2<n>(nufac), nufac);
-    return dtau + shfac*dot<n>(dp, nufac) + sh*dot<n>(dp, nu);
+    nu = p0 + lam*dp;
+    nufac = nu - p_fac;
+    nu /= nu.norm2();
+    nufac /= nufac.norm2();
+    return dtau + shfac*(dp*nufac) + sh*(dp*nu);
   };
 
   double arglam;
@@ -118,17 +117,16 @@ updates::tri<MP0, n>::operator()(
 
   info<1> info;
   if (status == hybrid_status::DEGENERATE) {
-    double F0 = tau0 + T0 + sh*norm2<n>(p0);
-    double F1 = tau1 + T1 + sh*norm2<n>(p1);
+    double F0 = tau0 + T0 + sh*p0.norm2();
+    double F1 = tau1 + T1 + sh*p1.norm2();
     info.lambda[0] = F0 < F1 ? 0 : 1;
     info.value = std::min(F0, F1);
   }
   else {
     info.lambda[0] = arglam;
-    axpy<n>(arglam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
-    info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
-      sh*norm2<n>(nu);
+    nu = p0 + arglam*dp;
+    nufac = nu - p_fac;
+    info.value = tau0 + arglam*dtau + shfac*nufac.norm2() + sh*nu.norm2();
   }
   return info;
 }
@@ -136,7 +134,7 @@ updates::tri<MP0, n>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<MP0, n>::operator()(
-  double const * p0, double const * p1, double u0, double u1,
+  vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
 {
   using std::min;
@@ -145,11 +143,11 @@ updates::tri<MP0, n>::operator()(
   assert(s0 >= 0);
   assert(s1 >= 0);
 
-  double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
-  sub<n>(p1, p0, dp);
-  dp_dot_dp = dot<n>(dp, dp);
-  dp_dot_p0 = dot<n>(dp, p0);
-  p0_dot_p0 = dot<n>(p0, p0);
+  double dp_dot_dp, dp_dot_p0, p0_dot_p0;
+  vec<double, n> dp = p1 - p0;
+  dp_dot_dp = dp*dp;
+  dp_dot_p0 = dp*p0;
+  p0_dot_p0 = p0*p0;
 
   double const du = u1 - u0;
   double const stheta = (s + (s0 + s1)/2)/2;
@@ -160,8 +158,8 @@ updates::tri<MP0, n>::operator()(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0*dp_dot_p0;
   double const disc = b*b - a*c;
 
-  double const F0 = u0 + h*(s + s0)*norm2<n>(p0)/2;
-  double const F1 = u1 + h*(s + s1)*norm2<n>(p1)/2;
+  double const F0 = u0 + h*(s + s0)*p0.norm2()/2;
+  double const F1 = u1 + h*(s + s1)*p1.norm2()/2;
 
   info<1> info;
   if (disc < 0 || a == 0) {
@@ -263,9 +261,9 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<RHR, n>::operator()(
-  double const * p0, double const * p1,
+  vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
-  double const * p_fac, double s_fac) const
+  vec<double, n> const & p_fac, double s_fac) const
 {
   assert(s >= 0);
   assert(s0 >= 0);
@@ -275,22 +273,21 @@ updates::tri<RHR, n>::operator()(
   (void) s1;
 
   double sh = s*h, shfac = s_fac*h;
-  double lfac0 = dist2<n>(p0, p_fac);
-  double lfac1 = dist2<n>(p1, p_fac);
+  double lfac0 = dist2(p0, p_fac);
+  double lfac1 = dist2(p1, p_fac);
   double T0 = shfac*lfac0, T1 = shfac*lfac1;
   double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double dp[n];
-  sub<n>(p1, p0, dp);
+  vec<double, n> dp = p1 - p0;
 
-  double nu[n], nufac[n];
+  vec<double, n> nu, nufac;
 
   auto const grad = [&] (double lam) {
-    axpy<n>(lam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
-    scal_inplace<n>(1./norm2<n>(nu), nu);
-    scal_inplace<n>(1./norm2<n>(nufac), nufac);
-    return dtau + shfac*dot<n>(dp, nufac) + sh*dot<n>(dp, nu);
+    nu = p0 + lam*dp;
+    nufac = nu - p_fac;
+    nu /= nu.norm2();
+    nufac /= nufac.norm2();
+    return dtau + shfac*(dp*nufac) + sh*(dp*nu);
   };
 
   double arglam;
@@ -299,17 +296,16 @@ updates::tri<RHR, n>::operator()(
 
   info<1> info;
   if (status == hybrid_status::DEGENERATE) {
-    double F0 = tau0 + T0 + sh*norm2<n>(p0);
-    double F1 = tau1 + T1 + sh*norm2<n>(p1);
+    double F0 = tau0 + T0 + sh*p0.norm2();
+    double F1 = tau1 + T1 + sh*p1.norm2();
     info.lambda[0] = F0 < F1 ? 0 : 1;
     info.value = std::min(F0, F1);
   }
   else {
     info.lambda[0] = arglam;
-    axpy<n>(arglam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
-    info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
-      sh*norm2<n>(nu);
+    nu = p0 + arglam*dp;
+    nufac = nu - p_fac;
+    info.value = tau0 + dtau*arglam + shfac*nufac.norm2() + sh*nu.norm2();
   }
   return info;
 }
@@ -317,7 +313,7 @@ updates::tri<RHR, n>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<RHR, n>::operator()(
-  double const * p0, double const * p1,
+  vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   (void) s0;
@@ -329,11 +325,11 @@ updates::tri<RHR, n>::operator()(
   assert(s0 >= 0);
   assert(s1 >= 0);
 
-  double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
-  sub<n>(p1, p0, dp);
-  dp_dot_dp = dot<n>(dp, dp);
-  dp_dot_p0 = dot<n>(dp, p0);
-  p0_dot_p0 = dot<n>(p0, p0);
+  double dp_dot_dp, dp_dot_p0, p0_dot_p0;
+  vec<double, n> dp = p1 - p0;
+  dp_dot_dp = dp*dp;
+  dp_dot_p0 = dp*p0;
+  p0_dot_p0 = p0*p0;
 
   double const du = u1 - u0;
   double const sh = s*h;
@@ -344,8 +340,8 @@ updates::tri<RHR, n>::operator()(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0*dp_dot_p0;
   double const disc = b*b - a*c;
 
-  double const F0 = u0 + sh*norm2<n>(p0);
-  double const F1 = u1 + sh*norm2<n>(p1);
+  double const F0 = u0 + sh*p0.norm2();
+  double const F1 = u1 + sh*p1.norm2();
 
   info<1> info;
   if (disc < 0 || a == 0) {
@@ -438,9 +434,9 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<MP1, n>::operator()(
-  double const * p0, double const * p1,
+  vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
-  double const * p_fac, double s_fac) const
+  vec<double, n> const & p_fac, double s_fac) const
 {
   assert(s >= 0);
   assert(s0 >= 0);
@@ -448,24 +444,23 @@ updates::tri<MP1, n>::operator()(
 
   double shfac = s_fac*h;
   double ds = s1 - s0;
-  double T0 = shfac*dist2<n>(p0, p_fac);
-  double T1 = shfac*dist2<n>(p1, p_fac);
+  double T0 = shfac*dist2(p0, p_fac);
+  double T1 = shfac*dist2(p1, p_fac);
   double tau0 = u0 - T0, tau1 = u1 - T1, dtau = tau1 - tau0;
 
-  double dp[n], nu[n], nufac[n];
-  sub<n>(p1, p0, dp);
+  vec<double, n> dp, nu, nufac;
+  dp = p1 - p0;
 
   double s_lam, l_lam;
 
   auto const grad = [&] (double lam) {
-    axpy<n>(lam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
-    l_lam = norm2<n>(nu);
-    scal_inplace<n>(1./l_lam, nu);
-    scal_inplace<n>(1./norm2<n>(nufac), nufac);
+    nu = p0 + lam*dp;
+    nufac = nu - p_fac;
+    l_lam = nu.norm2();
+    nu /= l_lam;
+    nufac /= nufac.norm2();
     s_lam = (s + s0 + ds*lam)/2;
-    return dtau + shfac*dot<n>(dp, nufac) +
-      h*(s_lam*dot<n>(dp, nu) + l_lam*ds/2);
+    return dtau + shfac*(dp*nufac) + h*(s_lam*(dp*nu) + l_lam*ds/2);
   };
 
   double arglam;
@@ -474,18 +469,17 @@ updates::tri<MP1, n>::operator()(
 
   info<1> info;
   if (status == hybrid_status::DEGENERATE) {
-    double F0 = tau0 + T0 + (s + s0)*h*norm2<n>(p0)/2;
-    double F1 = tau1 + T1 + (s + s1)*h*norm2<n>(p1)/2;
+    double F0 = tau0 + T0 + (s + s0)*h*p0.norm2()/2;
+    double F1 = tau1 + T1 + (s + s1)*h*p1.norm2()/2;
     info.lambda[0] = F0 < F1 ? 0 : 1;
     info.value = std::min(F0, F1);
   }
   else {
     info.lambda[0] = arglam;
-    axpy<n>(arglam, dp, p0, nu);
-    sub<n>(nu, p_fac, nufac);
+    nu = p0 + arglam*dp;
+    nufac = nu - p_fac;
     s_lam = (s + s0 + ds*arglam)/2;
-    info.value = tau0 + dtau*arglam + shfac*norm2<n>(nufac) +
-      s_lam*h*norm2<n>(nu);
+    info.value = tau0 + dtau*arglam + shfac*nufac.norm2() + s_lam*h*nu.norm2();
   }
   return info;
 }
@@ -493,18 +487,18 @@ updates::tri<MP1, n>::operator()(
 template <int n>
 updates::info<1>
 updates::tri<MP1, n>::operator()(
-  double const * p0, double const * p1, double u0, double u1,
+  vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
 {
   assert(s >= 0);
   assert(s0 >= 0);
   assert(s1 >= 0);
 
-  double dp[n], dp_dot_dp, dp_dot_p0, p0_dot_p0;
-  sub<n>(p1, p0, dp);
-  dp_dot_dp = dot<n>(dp, dp);
-  dp_dot_p0 = dot<n>(dp, p0);
-  p0_dot_p0 = dot<n>(p0, p0);
+  double dp_dot_dp, dp_dot_p0, p0_dot_p0;
+  vec<double, n> dp = p1 - p0;
+  dp_dot_dp = dp*dp;
+  dp_dot_p0 = dp*p0;
+  p0_dot_p0 = p0*p0;
 
   constexpr double c1 = 1e-4;
 

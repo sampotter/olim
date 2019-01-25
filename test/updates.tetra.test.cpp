@@ -471,7 +471,9 @@ void tetra111_mp0_is_symmetric_with_nonconstant_slowness() {
 
 template <cost_func F>
 updates::info<2> do_tetra(
-  double const * p0, double const * p1, double const * p2,
+  vec<double, 3> const & p0,
+  vec<double, 3> const & p1,
+  vec<double, 3> const & p2,
   double u0, double u1, double u2, double s,
   double s0, double s1, double s2, double h)
 {
@@ -516,7 +518,8 @@ void tetra122_is_symmetric_with_nonconstant_slowness() {
     ASSERT_EQ(Uhat012, Uhat021);
   }
   {
-    double p0[3], p1[3], p2[3], U0, U1, U2, s, s0, s1, s2, h, Uhat1, Uhat2;
+    vec<double, 3> p0, p1, p2;
+    double U0, U1, U2, s, s0, s1, s2, h, Uhat1, Uhat2;
 
     p0[0] = 0;
     p0[1] = 1;
@@ -567,7 +570,8 @@ TEST (updates_tetra, tetra122_is_symmetric_with_nonconstant_slowness) {
 }
 
 TEST (updates_tetra, tetra123_works) {
-  double p0[3], p1[3], p2[3], u0, u1, u2, s, s0, s1, s2, h;
+  vec<double, 3> p0, p1, p2;
+  double u0, u1, u2, s, s0, s1, s2, h;
   {
     p0[0] = 1;
     p0[1] = 0;
@@ -595,10 +599,12 @@ TEST (updates_tetra, tetra123_works) {
 
 template <cost_func F>
 updates::info<2>
-do_tetra(double const * p0, double const * p1, double const * p2,
+do_tetra(vec<double, 3> const & p0,
+         vec<double, 3> const & p1,
+         vec<double, 3> const & p2,
          double u0, double u1, double u2, double s,
          double s0, double s1, double s2, double h,
-         double const * p_fac, double s_fac)
+         vec<double, 3> const & p_fac, double s_fac)
 {
   geom_fac_wkspc<2> g;
   g.init<3>(p0, p1, p2, p_fac);
@@ -616,13 +622,12 @@ do_tetra(double const * p0, double const * p1, double const * p2,
 
 template <cost_func F>
 testing::AssertionResult basic_factoring_works(double tol = eps<double>) {
-  double u0, u1, u2, s, s0, s1, s2, h, p0[3], p1[3], p2[3], p_fac[3], s_fac;
+  double u0, u1, u2, s, s0, s1, s2, h, s_fac;
+  vec<double, 3> p0, p1, p2, p_fac; 
   u0 = u1 = u2 = sqrt2;
   h = 1;
   s = s0 = s1 = s2 = s_fac = 1;
 
-  // p_hat = (1, 1, 1), p0 = (1, 1, 0), p1 = (1, 0, 1),
-  // p1 = (0, 1, 1), p_fac = (0, 0, 0)
   p0[0] = p1[1] = p2[2] = -1;
   p0[1] = p1[2] = p2[0] = 0;
   p0[2] = p1[0] = p2[1] = 0;
@@ -660,7 +665,8 @@ TEST (updates_tetra, basic_factoring_test) {
 }
 
 TEST (updates_tetra, should_skip_works) {
-  double p0[3], p1[3], p2[3], u0, u1, u2, s, s0, s1, s2, h;
+  vec<double, 3> p0, p1, p2;
+  double u0, u1, u2, s, s0, s1, s2, h;
   updates::info<2> info;
   bool skip;
 

@@ -3,8 +3,8 @@
 #include <assert.h>
 
 template <>
-void lagmults<2>(double const * lam, double const * df, double const * d2f,
-                 double * mu, int * k_ptr)
+void lagmults<2>(vec<double, 2> const & lam, vec<double, 2> const & df,
+                 double const * d2f, vec<double, 2> & mu, int * k_ptr)
 {
   check_lambda<2>(lam);
 

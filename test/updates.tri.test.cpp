@@ -212,7 +212,8 @@ TEST (updates_tri, mp1_tri22_works) {
 }
 
 TEST (updates_tri, rhr_basic_factoring_test) {
-  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
 
@@ -232,7 +233,8 @@ TEST (updates_tri, rhr_basic_factoring_test) {
 }
 
 TEST (updates_tri, mp0_basic_factoring_test) {
-  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
 
@@ -252,7 +254,8 @@ TEST (updates_tri, mp0_basic_factoring_test) {
 }
 
 TEST (updates_tri, mp1_basic_factoring_test) {
-  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
 
@@ -272,7 +275,8 @@ TEST (updates_tri, mp1_basic_factoring_test) {
 }
 
 TEST (updates_tri, factored_mp0_with_constant_slowness_works) {
-  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
 
@@ -287,7 +291,8 @@ TEST (updates_tri, factored_mp0_with_constant_slowness_works) {
 }
 
 TEST (updates_tri, factored_mp1_with_constant_slowness_works) {
-  double u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   u0 = u1 = s = s0 = s1 = h = s_fac = 1;
 
@@ -303,7 +308,8 @@ TEST (updates_tri, factored_mp1_with_constant_slowness_works) {
 }
 
 TEST (updates_tri, factored_rhr_with_constant_slowness_works) {
-  double u, u_fac, u0, u1, s, s0, s1, h, p0[2], p1[2], p_fac[2], s_fac;
+  double u, u_fac, u0, u1, s, s0, s1, h, s_fac;
+  vec<double, 2> p0, p1, p_fac;
 
   {
     u0 = u1 = s = s0 = s1 = h = s_fac = 1;
@@ -322,8 +328,8 @@ TEST (updates_tri, factored_rhr_with_constant_slowness_works) {
 
 TEST (updates_tri, rhr_non_bv_tri_update_works) {
   {
-    double p0[3] = {0, -1, 0};
-    double p1[3] = {-1, -1, 0};
+    vec<double, 2> p0 = {0, -1};
+    vec<double, 2> p1 = {-1, -1};
     double U0 = 1, U1 = 0, s = 1, s0 = 1, s1 = 1, h = 1;
     double u0 = tri12<RHR>(U0, U1, s, s0, s1, h).value;
     double u1 = tri<RHR, 2>()(p0, p1, U0, U1, s, s0, s1, h).value;

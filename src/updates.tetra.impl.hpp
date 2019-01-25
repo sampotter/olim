@@ -29,11 +29,12 @@ inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
 
   func.set_lambda(info.lambda);
 
-  double df[2], d2f[3];
+  vec<double, 2> df;
+  double d2f[3];
   func.grad(df);
   func.hess(d2f);
 
-  double mu[2];
+  vec<double, 2> mu;
   int k;
   lagmults<2>(info.lambda, df, d2f, mu, &k);
 
@@ -53,7 +54,7 @@ updates::tetra<F, n>::operator()(
     bool error;
     sqp_bary<decltype(func), n, 2>()(
       func,
-      nullptr, // TODO: warm start
+      info.lambda,
       info.lambda,
       &info.value,
       &error);
@@ -70,7 +71,7 @@ updates::tetra<F, n>::operator()(
 {
   bool error;
   sqp_bary<decltype(func), n, 2, line_search::BACKTRACK>()(
-    func, nullptr, info.lambda, &info.value, &error);
+    func, info.lambda, info.lambda, &info.value, &error);
   assert(!error);
 }
 
@@ -83,7 +84,7 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
     bool error;
     sqp_bary<decltype(func), n, 2>()(
       func,
-      info.inbounds() ? info.lambda : nullptr,
+      info.lambda,
       info.lambda,
       &info.value,
       &error);

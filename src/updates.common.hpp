@@ -10,7 +10,7 @@ template <>
 struct info<1>
 {
   double value {inf<double>};
-  double lambda[1] = {0.5};
+  vec<double, 1> lambda = {0.5};
   double tol {1e1*eps<double>};
   inline bool inbounds() const {
     return 0 <= lambda[0] && lambda[0] <= 1;
@@ -27,7 +27,7 @@ template <>
 struct info<2>
 {
   double value {inf<double>};
-  double lambda[2] = {1./3, 1./3};
+  vec<double, 2> lambda = {1./3, 1./3};
   double tol {1e1*eps<double>};
   inline bool inbounds() const {
     return 0 <= lambda[0] && 0 <= lambda[1] && lambda[0] + lambda[1] <= 1;

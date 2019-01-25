@@ -21,10 +21,11 @@ constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;
 }
 
-template <int d> inline void check_lambda(double const * lam);
+template <int d>
+inline void check_lambda(vec<double, d> const & lam);
 
 template <>
-inline void check_lambda<2>(double const * lam) {
+inline void check_lambda<2>(vec<double, 2> const & lam) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(lam[0] >= -eps<double>);
   assert(lam[1] >= -eps<double>);
@@ -44,57 +45,60 @@ inline void check(double x) {
 }
 
 template <int d>
-void lagmults(double const * lam, double const * df, double const * d2f,
-              double * mu, int * k);
+void lagmults(vec<double, d> const & lam, vec<double, d> const & df,
+              double const * d2f, vec<double, d> & mu, int * k);
 
 template <int n, int d> struct qr_wkspc {};
 
-template <> struct qr_wkspc<3, 2> {
-  double q1[3];
-  double q2[3];
+template <> struct qr_wkspc<3, 2>
+{
+  vec<double, 3> q1, q2;
   double r[3];
-  double Qt_p0[2];
+  vec<double, 2> Qt_p0;
   double numer;
 
-  void init(double const * p0, double const * p1, double const * p2) {
+  void init(vec<double, 3> const & p0,
+            vec<double, 3> const & p1,
+            vec<double, 3> const & p2) {
     // Compute 3x2 reduced QR decomposition of [p1 - p0, p2 - p0].
-    sub<3>(p1, p0, q1);
-    r[0] = norm2<3>(q1);
-    scal_inplace<3>(1/r[0], q1);
-    sub<3>(p2, p0, q2);
-    r[1] = dot<3>(q2, q1);
-    axpy<3>(-r[1], q1, q2, q2);
-    r[2] = norm2<3>(q2);
-    scal_inplace<3>(1/r[2], q2);
+    q1 = p1 - p0;
+    r[0] = q1.norm2();
+    q1 /= r[0];
+    q2 = p2 - p0;
+    r[1] = q2*q1;
+    q2 -= r[1]*q1;
+    r[2] = q2.norm2();
+    q2 /= r[2];
 
     // Compute entries of Q'*p0:
-    Qt_p0[0] = dot<3>(q1, p0);
-    Qt_p0[1] = dot<3>(q2, p0);
+    Qt_p0[0] = q1*p0;
+    Qt_p0[1] = q2*p0;
 
     // Compute the numerator in the square root for the exact
     // solution (TODO: add reference to equation in paper).
-    numer = dot<3>(p0, p0) - dot<2>(Qt_p0, Qt_p0);
+    numer = p0.norm2sq() - Qt_p0.norm2sq();
   }
 };
 
 template <int d> struct geom_wkspc {};
 
 template <>
-struct geom_wkspc<2> {
+struct geom_wkspc<2>
+{
   double p0t_p0, dPt_p0[2], dPt_dP[sym_mat_size(2)];
 
   template <int n>
-  void init(double const * p0, double const * p1, double const * p2) {
-    double dp1[n], dp2[n];
-    sub<n>(p1, p0, dp1);
-    sub<n>(p2, p0, dp2);
+  void init(vec<double, n> const & p0,
+            vec<double, n> const & p1,
+            vec<double, n> const & p2) {
+    vec<double, n> dp1 = p1 - p0, dp2 = p2 - p0;
 
-    p0t_p0 = dot<n>(p0, p0);
-    dPt_p0[0] = dot<n>(dp1, p0);
-    dPt_p0[1] = dot<n>(dp2, p0);
-    dPt_dP[0] = dot<n>(dp1, dp1);
-    dPt_dP[1] = dot<n>(dp1, dp2);
-    dPt_dP[2] = dot<n>(dp2, dp2);
+    p0t_p0 = p0*p0;
+    dPt_p0[0] = dp1*p0;
+    dPt_p0[1] = dp2*p0;
+    dPt_dP[0] = dp1*dp1;
+    dPt_dP[1] = dp1*dp2;
+    dPt_dP[2] = dp2*dp2;
   }
 };
 
@@ -105,26 +109,26 @@ struct geom_fac_wkspc<2>: geom_wkspc<2> {
   double pft_pf, dPt_pf[2], pft_p0, L0, dL[2];
 
   template <int n>
-  void init(double const * p0, double const * p1, double const * p2,
-            double const * pf) {
-    double dp1[n], dp2[n];
-    sub<n>(p1, p0, dp1);
-    sub<n>(p2, p0, dp2);
+  void init(vec<double, n> const & p0,
+            vec<double, n> const & p1,
+            vec<double, n> const & p2,
+            vec<double, n> const & pf) {
+    vec<double, n> dp1 = p1 - p0, dp2 = p2 - p0;
 
-    this->p0t_p0 = dot<n>(p0, p0);
-    this->dPt_p0[0] = dot<n>(dp1, p0);
-    this->dPt_p0[1] = dot<n>(dp2, p0);
-    this->dPt_dP[0] = dot<n>(dp1, dp1);
-    this->dPt_dP[1] = dot<n>(dp1, dp2);
-    this->dPt_dP[2] = dot<n>(dp2, dp2);
+    this->p0t_p0 = p0*p0;
+    this->dPt_p0[0] = dp1*p0;
+    this->dPt_p0[1] = dp2*p0;
+    this->dPt_dP[0] = dp1*dp1;
+    this->dPt_dP[1] = dp1*dp2;
+    this->dPt_dP[2] = dp2*dp2;
 
-    pft_pf = dot<n>(pf, pf);
-    dPt_pf[0] = dot<n>(dp1, pf);
-    dPt_pf[1] = dot<n>(dp2, pf);
-    pft_p0 = dot<n>(pf, p0);
-    L0 = dist2<n>(pf, p0);
-    dL[0] = dist2<n>(pf, p1) - L0;
-    dL[1] = dist2<n>(pf, p2) - L0;
+    pft_pf = pf*pf;
+    dPt_pf[0] = dp1*pf;
+    dPt_pf[1] = dp2*pf;
+    pft_p0 = pf*p0;
+    L0 = dist2(pf, p0);
+    dL[0] = dist2(pf, p1) - L0;
+    dL[1] = dist2(pf, p2) - L0;
   }
 };
 
@@ -135,7 +139,9 @@ struct base_wkspc {
 
 template <int d>
 struct F0_wkspc: base_wkspc<d> {
-  double u0, du[d], u_lam;
+  double u0;
+  vec<double, d> du;
+  double u_lam;
 };
 
 template <int d>
@@ -253,14 +259,14 @@ void set_args(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
   w.theta_h_ds[1] = h*(s2 - s0)/2;
 }
 
-inline void set_lambda_common(F0_wkspc<2> & w, double const * lam)
+inline void set_lambda_common(F0_wkspc<2> & w, vec<double, 2> const & lam)
 {
   check_lambda<2>(lam);
 
-  w.u_lam = w.u0 + w.du[0]*lam[0] + w.du[1]*lam[1];
+  w.u_lam = w.u0 + w.du*lam;
 }
 
-inline void set_lambda_common(F1_wkspc<2> & w, double const * lam)
+inline void set_lambda_common(F1_wkspc<2> & w, vec<double, 2> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -274,7 +280,7 @@ inline void set_lambda_common(F1_wkspc<2> & w, double const * lam)
 #define __dPt_dP(i) dPt_dP<p0, p1, p2, i>(dim_t {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
-void set_lambda(F_wkspc<F, 2> & w, double const * lam)
+void set_lambda(F_wkspc<F, 2> & w, vec<double, 2> const & lam)
 {
   using namespace bitops;
   using dim_t = dim<n>;
@@ -305,7 +311,7 @@ void set_lambda(F_wkspc<F, 2> & w, double const * lam)
 #undef __dPt_dP
 
 template <cost_func F>
-void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, double const * lam)
+void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, vec<double, 2> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -330,7 +336,7 @@ void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, double const * lam)
 
 template <cost_func F>
 void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
-                double const * lam)
+                vec<double, 2> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -377,7 +383,7 @@ void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
 
 template <cost_func F>
 void set_lambda(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
-                double const * lam)
+                vec<double, 2> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -401,7 +407,7 @@ void eval(fac_wkspc<d> const & w, double & f)
   check(f);
 }
 
-inline void grad(F0_wkspc<2> const & w, double * df)
+inline void grad(F0_wkspc<2> const & w, vec<double, 2> & df)
 {
   df[0] = w.du[0] + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.du[1] + w.sh_lam*w.dPt_nu_lam[1];
@@ -410,7 +416,7 @@ inline void grad(F0_wkspc<2> const & w, double * df)
   check(df[1]);
 }
 
-inline void grad(F0_fac_wkspc<2> const & w, double * df)
+inline void grad(F0_fac_wkspc<2> const & w, vec<double, 2> & df)
 {
   df[0] = w.dtau[0] + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.dtau[1] + w.sh_lam*w.dPt_nu_lam[1];
@@ -424,7 +430,7 @@ inline void grad(F0_fac_wkspc<2> const & w, double * df)
   check(df[1]);
 }
 
-inline void grad(F1_wkspc<2> const & w, double * df)
+inline void grad(F1_wkspc<2> const & w, vec<double, 2> & df)
 {
   df[0] = w.du[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.du[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
@@ -433,7 +439,7 @@ inline void grad(F1_wkspc<2> const & w, double * df)
   check(df[1]);
 }
 
-inline void grad(F1_fac_wkspc<2> const & w, double * df)
+inline void grad(F1_fac_wkspc<2> const & w, vec<double, 2> & df)
 {
   df[0] = w.dtau[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.dtau[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
@@ -567,9 +573,9 @@ template <cost_func F, int n, int p0, int p1, int p2>
 struct cost_functor_bv<F, n, p0, p1, p2>
 {
   cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
-  inline void set_lambda(double const * lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
+  inline void set_lambda(vec<double, 2> const & lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
   inline void eval(double & f) const {::eval(w, f);}
-  inline void grad(double * df) const {::grad(w, df);}
+  inline void grad(vec<double, 2> & df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess<n, p0, p1, p2>(w, d2f);}
   F_wkspc<F, 2> & w;
 };
@@ -578,9 +584,9 @@ template <cost_func F, int n, int d>
 struct cost_functor
 {
   cost_functor(F_wkspc<F, d> & w, geom_wkspc<d> & g): w {w}, g {g} {}
-  inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam);}
+  inline void set_lambda(vec<double, d> const & lam) {::set_lambda<F>(w, g, lam);}
   inline void eval(double & f) const {::eval(w, f);}
-  inline void grad(double * df) const  {::grad(w, df);}
+  inline void grad(vec<double, d> & df) const  {::grad(w, df);}
   inline void hess(double * d2f) const {::hess(w, g, d2f);}
   F_wkspc<F, d> & w;
   geom_wkspc<d> & g;
@@ -591,25 +597,25 @@ template <cost_func F, int n, int d>
 struct cost_functor_fac
 {
   cost_functor_fac(F_fac_wkspc<F, d> & w, geom_fac_wkspc<d> & g): w {w}, g {g} {}
-  inline void set_lambda(double const * lam) {::set_lambda<F>(w, g, lam); }
+  inline void set_lambda(vec<double, d> const & lam) {::set_lambda<F>(w, g, lam); }
   inline void eval(double & f) const {::eval(w, f);}
-  inline void grad(double * df) const {::grad(w, df);}
+  inline void grad(vec<double, d> & df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess(w, g, d2f);}
   F_fac_wkspc<F, d> & w;
   geom_fac_wkspc<d> & g;
 };
 
 inline void eval_mp1_fix(F0_wkspc<2> const & w,
-                  double s, double s0, double s1, double s2, double h,
-                  double const * lam, double & f)
+                         double s, double s0, double s1, double s2, double h,
+                         vec<double, 2> const & lam, double & f)
 {
   f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
   check(f);
 }
 
 inline void eval_mp1_fix(fac_wkspc<2> const & w,
-                  double s, double s0, double s1, double s2, double h,
-                  double const * lam, double & f)
+                         double s, double s0, double s1, double s2, double h,
+                         vec<double, 2> const & lam, double & f)
 {
   f = w.tau_lam + w.sh_fac*w.l_fac_lam +
     h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
@@ -618,20 +624,20 @@ inline void eval_mp1_fix(fac_wkspc<2> const & w,
 
 template <cost_func F, int n>
 void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
-                  double * lam, double & u)
+                  vec<double, 2> & lam, double & u)
 {
   // TODO: use Theorem 3.7 instead of 3.6 to evaluate (should save
   // some flops.
 
   // Compute A = inv(R')*du/sh.
-  double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
+  vec<double, 2> A = w.du/w.sh_lam;
   A[1] -= qr->r[1]*A[0]/qr->r[0];
   A[1] /= qr->r[2];
   A[0] /= qr->r[0];
 
-  double A_dot_A = dot<2>(A, A);
-  if (A_dot_A < 1) {
-    double lopt = sqrt(qr->numer/(1 - A_dot_A));
+  double A_sq = A.norm2sq();
+  if (A_sq < 1) {
+    double lopt = sqrt(qr->numer/(1 - A_sq));
 
     lam[0] = qr->Qt_p0[0] + lopt*A[0];
     lam[1] = qr->Qt_p0[1] + lopt*A[1];
@@ -655,17 +661,17 @@ void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
 #define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
-void direct_solve(F_wkspc<F, 2> const & w, double * lam, double & u)
+void direct_solve(F_wkspc<F, 2> const & w, vec<double, 2> & lam, double & u)
 {
   // Compute A = inv(R')*du/sh here.
-  double A[2] = {w.du[0]/w.sh_lam, w.du[1]/w.sh_lam};
+  vec<double, 2> A = w.du/w.sh_lam;
   A[1] -= __r12*A[0]/__r11;
   A[1] /= __r22;
   A[0] /= __r11;
 
-  double A_dot_A = dot<2>(A, A);
-  if (A_dot_A < 1) {
-    double lopt = sqrt(__numer/(1 - A_dot_A));
+  double A_sq = A.norm2sq();
+  if (A_sq < 1) {
+    double lopt = sqrt(__numer/(1 - A_sq));
 
     lam[0] = __Qt_p0(0) + lopt*A[0];
     lam[1] = __Qt_p0(1) + lopt*A[1];

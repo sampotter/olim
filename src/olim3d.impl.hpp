@@ -360,14 +360,14 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
   static constexpr double tol = eps<double>;
 
   auto const is_valid = [&] (int l0, int l1, int d) -> bool {
-    get_p(l0, p0);
-    get_p(l1, p1);
+    p0 = get_p(l0);
+    p1 = get_p(l1);
     if (lp_norm == L1) {
-      return dist1<3>(p0, p1) <= d + tol;
+      return dist1(p0, p1) <= d + tol;
     } else if (lp_norm == L2) {
-      return dist2sq<3>(p0, p1) <= d + tol;
+      return dist2sq(p0, p1) <= d + tol;
     } else {
-      return distmax<3>(p0, p1) <= d + tol;
+      return disti(p0, p1) <= d + tol;
     }
   };
 
@@ -387,14 +387,14 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
   // three points are coplanar.
   double p0_x_p1[3];
   for (int l0 = 0; l0 < 26; ++l0) {
-    get_p(l0, p0);
+    p0 = get_p(l0);
     for (int l1 = 0; l1 < 26; ++l1) {
-      get_p(l1, p1);
+      p1 = get_p(l1);
       p0_x_p1[0] = p0[1]*p1[2] - p0[2]*p1[1];
       p0_x_p1[1] = p0[2]*p1[0] - p0[0]*p1[2];
       p0_x_p1[2] = p0[0]*p1[1] - p0[1]*p1[0];
       for (int l2 = 0; l2 < 26; ++l2) {
-        get_p(l2, p2);
+        p2 = get_p(l2);
         is_coplanar(l0, l1, l2) = fabs(
           p0_x_p1[0]*p2[0] + p0_x_p1[1]*p2[1] + p0_x_p1[2]*p2[2]) < 1e1*tol;
         geom_wkspcs[linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
@@ -419,7 +419,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
   int l0 = parent, l1 = -1;
   double s_fac = inf<double>; // Silence warning
 
-  get_p(l0, p0);
+  p0 = get_p(l0);
 
   // TODO: see comment above about one-point updates
   U0 = updates::line<F>()(
@@ -449,7 +449,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
       continue;
     }
 
-    get_p(l, p1);
+    p1 = get_p(l);
 
     // Do the triangle update.
     auto const tmp = this->is_factored(lin_hat) ?
@@ -476,7 +476,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
     assert(isinf(U1));
     goto coda;
   } else {
-    get_p(l1, p1);
+    p1 = get_p(l1);
   }
 
   // Do the tetrahedron updates such that p2 is sufficiently near p0
@@ -488,7 +488,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
       continue;
     }
 
-    get_p(l2, p2);
+    p2 = get_p(l2);
 
     updates::info<2> info;
     info.lambda[0] = arglam[l1];

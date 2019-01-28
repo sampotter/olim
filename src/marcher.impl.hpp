@@ -138,9 +138,6 @@ marcher<base, num_nb>::add_boundary_nodes(
   }
 }
 
-#define LINE(p0, u0, s, s0, h)                          \
-  updates::line<base::F_>()(p0.norm2(), u0, s, s0, h)
-
 template <class base, int num_nb>
 void
 marcher<base, num_nb>::add_boundary_node(
@@ -174,13 +171,11 @@ marcher<base, num_nb>::add_boundary_node(
     assert(in_bounds(i_, j_));
 
     int lin = linear_index(i_, j_);
-    _U[lin] = LINE(P[a], u0, _s_cache[lin], s0, h);
+    _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
 }
-
-#undef LINE
 
 template <class base, int num_nb>
 void

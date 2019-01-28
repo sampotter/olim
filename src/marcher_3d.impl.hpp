@@ -132,9 +132,6 @@ void marcher_3d<base, num_nb>::add_boundary_nodes(
   }
 }
 
-#define LINE(p0, u0, s, s0, h)                                  \
-  updates::line<base::F_>()(p0.norm2(), u0, s, s0, h)
-
 template <class base, int num_nb>
 void
 marcher_3d<base, num_nb>::add_boundary_node(
@@ -149,7 +146,7 @@ marcher_3d<base, num_nb>::add_boundary_node(
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
   int ks[2] = {(int) floor(k), (int) floor(k) + 1};
 
-  vec<double, 3> ps[8] = {
+  vec<double, 3> P[8] = {
     {i - is[0], j - js[0], k - ks[0]},
     {i - is[1], j - js[0], k - ks[0]},
     {i - is[0], j - js[1], k - ks[0]},
@@ -167,13 +164,11 @@ marcher_3d<base, num_nb>::add_boundary_node(
     assert(in_bounds(i_, j_, k_));
 
     int lin = linear_index(i_, j_, k_);
-    _U[lin] = LINE(ps[a], u0, _s_cache[lin], s0, h);
+    _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
 }
-
-#undef LINE
 
 template <class base, int num_nb>
 void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const * fc)
@@ -216,9 +211,6 @@ template <class base, int num_nb>
 bool marcher_3d<base, num_nb>::is_valid(int i, int j, int k) const {
   return in_bounds(i, j, k) && _state[linear_index(i, k, k)] == state::valid;
 }
-
-#define __maxabs3(x, y, z) \
-  std::max(std::abs(x), std::max(std::abs(y), std::abs(z)))
 
 template <class base, int num_nb>
 void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
@@ -307,7 +299,5 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
     }
   }
 }
-
-#undef __maxabs3
 
 #endif // __MARCHER_3D_IMPL_HPP__

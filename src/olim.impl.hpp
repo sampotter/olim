@@ -6,9 +6,6 @@
 #include "common.hpp"
 #include "vec.hpp"
 
-#define __di(k) di<2>[k]
-#define __dj(k) dj<2>[k]
-
 #define P01 1
 #define P10 2
 #define P11 3
@@ -22,7 +19,7 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 
   for (int k = 0; k < num_nb; ++k) {
     if (this->nb[k] != -1) {
-      s[k] = this->get_s(i_hat + __di(k), j_hat + __dj(k));
+      s[k] = this->get_s(i_hat + di<2>[k], j_hat + dj<2>[k]);
     }
   }
 
@@ -61,17 +58,8 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
   }
 }
 
-#undef __di
-#undef __dj
-
 #undef P01
 #undef P10
 #undef P11
-#undef LINE
-#undef DO_LINE
-#undef TRI
-#undef DO_TRI
-#undef TRI_FAC
-#undef DO_TRI_FAC
 
 #endif // __OLIM_IMPL_HPP__

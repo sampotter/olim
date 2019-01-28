@@ -28,6 +28,8 @@
   1. [X] Remove all instances of EIKONAL and replace with OLIM
   2. [X] Add vector class
   3. [ ] Rewrite as much as possible in terms of vector class
+     - [ ] Add a `range' iterator to simplify loops and make them
+       coordinate-free
   4. [ ] Simplify updates.tri.hpp... It's way more complicated than it
      needs to be... 330 lines where it should be around 100-150
   5. [ ] Collapse marcher and marcher_3d into one class

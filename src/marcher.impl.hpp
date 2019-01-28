@@ -8,9 +8,6 @@
 #include "offsets.hpp"
 #include "updates.line.hpp"
 
-#define __di(k) di<2>[k]
-#define __dj(k) dj<2>[k]
-
 // TODO: really need an external memory constructor that will let us
 // use external memory somewhere for _s_cache and _U so we don't have
 // to double up on these...
@@ -254,7 +251,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int k = 0; k < num_nb; ++k) {
-    a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
+    a = i + di<2>[k], b = j + dj<2>[k], lin = linear_index(a, b);
     if (in_bounds(a, b) && _state[lin] == state::far) {
       _state[lin] = state::trial;
       _heap.insert(lin);
@@ -265,7 +262,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // (i.e. the unit max norm ball).
   for (int k = 0; k < 8; ++k) {
     valid_nb[k] = -1;
-    a = i + __di(k), b = j + __dj(k), lin = linear_index(a, b);
+    a = i + di<2>[k], b = j + dj<2>[k], lin = linear_index(a, b);
     if (in_bounds(a, b) && _state[lin] == state::valid) {
       valid_nb[k] = lin;
     }
@@ -287,8 +284,8 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
         continue;
       }
       int di_kl, dj_kl;
-      if (std::abs(di_kl = di_k + __di(l)) > 1 ||
-          std::abs(dj_kl = dj_k + __dj(l)) > 1) {
+      if (std::abs(di_kl = di_k + di<2>[l]) > 1 ||
+          std::abs(dj_kl = dj_k + dj<2>[l]) > 1) {
         continue;
       }
       if (in_bounds(i + di_kl, j + dj_kl)) {
@@ -331,7 +328,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // heap.
   for (int k = 0; k < num_nb; ++k) {
     if (valid_nb[k] == -1) {
-      di_k = __di(k), dj_k = __dj(k);
+      di_k = di<2>[k], dj_k = dj<2>[k];
       a = i + di_k, b = j + dj_k;
       if (!in_bounds(a, b)) continue;
       int parent = get_parent(k);
@@ -340,8 +337,5 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
     }
   }
 }
-
-#undef __di
-#undef __dj
 
 #endif // __MARCHER_IMPL_HPP_HPP__

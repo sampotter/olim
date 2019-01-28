@@ -8,14 +8,6 @@
 #include "offsets.hpp"
 #include "updates.line.hpp"
 
-#define __di(l) di<3>[l]
-#define __dj(l) dj<3>[l]
-#define __dk(l) dk<3>[l]
-
-#define __x(l) (h*l - x0)
-#define __y(l) (h*l - y0)
-#define __z(l) (h*l - z0)
-
 template <class base, int num_nb>
 marcher_3d<base, num_nb>::marcher_3d() {}
 
@@ -57,11 +49,11 @@ marcher_3d<base, num_nb>::marcher_3d(
   // Grab a writable pointer to cache the values of `s'.
   double x, z, * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < depth; ++k) {
-    z = __z(k);
+    z = h*k - z0;
     for (int j = 0; j < width; ++j) {
-      x = __x(j);
+      x = h*j - x0;
       for (int i = 0; i < height; ++i) {
-        ptr[linear_index(i, j, k)] = s(x, __y(i), z);
+        ptr[linear_index(i, j, k)] = s(x, h*i - y0, z);
       }
     }
   }
@@ -241,7 +233,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
 
   // Stage neighbors.
   for (int l = 0; l < num_nb; ++l) {
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l),
+    a = i + di<3>[l], b = j + dj<3>[l], c = k + dk<3>[l],
       lin = linear_index(a, b, c);
     if (in_bounds(a, b, c) && _state[lin] == state::far) {
       _state[lin] = state::trial;
@@ -253,7 +245,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   int valid_nb[26], child_nb[num_nb];
   for (int l = 0; l < 26; ++l) {
     valid_nb[l] = -1;
-    a = i + __di(l), b = j + __dj(l), c = k + __dk(l);
+    a = i + di<3>[l], b = j + dj<3>[l], c = k + dk<3>[l];
     lin = linear_index(a, b, c);
     if (in_bounds(a, b, c) && _state[lin] == state::valid) {
       valid_nb[l] = lin;
@@ -271,9 +263,9 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
         continue;
       }
       int di_lm, dj_lm, dk_lm;
-      if (std::abs(di_lm = di_l + __di(m)) > 1 ||
-          std::abs(dj_lm = dj_l + __dj(m)) > 1 ||
-          std::abs(dk_lm = dk_l + __dk(m)) > 1) {
+      if (std::abs(di_lm = di_l + di<3>[m]) > 1 ||
+          std::abs(dj_lm = dj_l + dj<3>[m]) > 1 ||
+          std::abs(dk_lm = dk_l + dk<3>[m]) > 1) {
         continue;
       }
       if (in_bounds(i + di_lm, j + dj_lm, k + dk_lm)) {
@@ -306,7 +298,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
 
   for (int l = 0; l < num_nb; ++l) {
     if (valid_nb[l] == -1) {
-      di_l = __di(l), dj_l = __dj(l), dk_l = __dk(l);
+      di_l = di<3>[l], dj_l = dj<3>[l], dk_l = dk<3>[l];
       a = i + di_l, b = j + dj_l, c = k + dk_l;
       if (!in_bounds(a, b, c)) continue;
       int parent = get_parent(l);
@@ -317,13 +309,5 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
 }
 
 #undef __maxabs3
-
-#undef __di
-#undef __dj
-#undef __dk
-
-#undef __x
-#undef __y
-#undef __z
 
 #endif // __MARCHER_3D_IMPL_HPP__

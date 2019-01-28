@@ -177,7 +177,6 @@ marcher<base, num_nb>::set_fac_src(int i, int j, fac_src const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j));
-  assert(in_bounds(fc->i, fc->j));
 #endif
   _lin2fac[linear_index(i, j)] = fc;
 }

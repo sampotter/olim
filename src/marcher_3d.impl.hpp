@@ -165,7 +165,6 @@ void marcher_3d<base, num_nb>::set_fac_src(int i, int j, int k, fac_src_3d const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(i, j, k));
-  assert(in_bounds(fc->i, fc->j, fc->k));
 #endif
   _lin2fac[linear_index(i, j, k)] = fc;
 }

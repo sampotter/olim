@@ -373,10 +373,7 @@ octants_are_correct(double diag2val, double diag3val) {
 
 template <class olim, class olim3d_t>
 testing::AssertionResult
-planes_are_correct(
-  slow2 s = (slow2) s0,
-  slow3 s3d = (slow3) s0,
-  int n = 51)
+planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
 {
   assert(n % 2 == 1);
 
@@ -421,8 +418,7 @@ planes_are_correct(
 
 template <class olim>
 testing::AssertionResult
-result_is_symmetric(slow2 s = s0, int n = 51,
-                    double tol = 1e-13) {
+result_is_symmetric(slow2 s = s0, int n = 51, double tol = 1e-13) {
   double h = 2.0/(n - 1);
   olim m {{n, n}, h, s, 1, 1};
   m.add_boundary_node(n/2, n/2);
@@ -453,8 +449,7 @@ result_is_symmetric(slow2 s = s0, int n = 51,
 
 template <class olim3d_t>
 testing::AssertionResult
-result_is_symmetric(slow3 s = s0, int n = 21,
-                    double tol = 1e-13) {
+result_is_symmetric(slow3 s = s0, int n = 21, double tol = 1e-13) {
   double h = 2.0/(n - 1);
   olim3d_t m {{n, n, n}, h, s, 1, 1, 1};
   m.add_boundary_node(n/2, n/2, n/2);

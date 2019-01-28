@@ -54,14 +54,6 @@ constexpr int oct2inds[8][7] = {
   {ind::U, ind::UN, ind::N, ind::NW, ind::W, ind::UW, ind::UNW}
 };
 
-#define P001 1
-#define P010 2
-#define P011 3
-#define P100 4
-#define P101 5
-#define P110 6
-#define P111 7
-
 template <cost_func F, class base, int num_nb>
 void abstract_olim3d<F, base, num_nb>::init()
 {
@@ -264,49 +256,49 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::group_I) {
-        tetra<1, 2, 3, P011, P010, P110>(U);
-        tetra<3, 4, 5, P110, P100, P101>(U);
-        tetra<5, 0, 1, P101, P001, P011>(U);
+        tetra<1, 2, 3, 0b011, 0b010, 0b110>(U);
+        tetra<3, 4, 5, 0b110, 0b100, 0b101>(U);
+        tetra<5, 0, 1, 0b101, 0b001, 0b011>(U);
       }
       if (groups::group_II) {
-        tetra<0, 1, 3, P001, P011, P110>(U);
-        tetra<1, 2, 4, P011, P010, P100>(U);
-        tetra<2, 3, 5, P010, P110, P101>(U);
-        tetra<3, 4, 0, P110, P100, P001>(U);
-        tetra<4, 5, 1, P100, P101, P011>(U);
-        tetra<5, 0, 2, P101, P001, P010>(U);
+        tetra<0, 1, 3, 0b001, 0b011, 0b110>(U);
+        tetra<1, 2, 4, 0b011, 0b010, 0b100>(U);
+        tetra<2, 3, 5, 0b010, 0b110, 0b101>(U);
+        tetra<3, 4, 0, 0b110, 0b100, 0b001>(U);
+        tetra<4, 5, 1, 0b100, 0b101, 0b011>(U);
+        tetra<5, 0, 2, 0b101, 0b001, 0b010>(U);
       }
       if (groups::group_III) {
-        tetra<0, 1, 4, P001, P011, P100>(U);
-        tetra<1, 2, 5, P011, P010, P101>(U);
-        tetra<2, 3, 0, P010, P110, P001>(U);
-        tetra<3, 4, 1, P110, P100, P011>(U);
-        tetra<4, 5, 2, P100, P101, P010>(U);
-        tetra<5, 0, 3, P101, P001, P110>(U);
+        tetra<0, 1, 4, 0b001, 0b011, 0b100>(U);
+        tetra<1, 2, 5, 0b011, 0b010, 0b101>(U);
+        tetra<2, 3, 0, 0b010, 0b110, 0b001>(U);
+        tetra<3, 4, 1, 0b110, 0b100, 0b011>(U);
+        tetra<4, 5, 2, 0b100, 0b101, 0b010>(U);
+        tetra<5, 0, 3, 0b101, 0b001, 0b110>(U);
       }
       if (groups::group_IV_a) {
-        tetra<0, 2, 4, P001, P010, P100>(U);
+        tetra<0, 2, 4, 0b001, 0b010, 0b100>(U);
       }
       if (groups::group_IV_b) {
-        tetra<1, 3, 5, P011, P110, P101>(U);
+        tetra<1, 3, 5, 0b011, 0b110, 0b101>(U);
       }
       if (groups::group_V) {
-        tetra<0, 1, 6, P001, P011, P111>(U);
-        tetra<1, 2, 6, P011, P010, P111>(U);
-        tetra<2, 3, 6, P010, P110, P111>(U);
-        tetra<3, 4, 6, P110, P100, P111>(U);
-        tetra<4, 5, 6, P100, P101, P111>(U);
-        tetra<5, 0, 6, P101, P001, P111>(U);
+        tetra<0, 1, 6, 0b001, 0b011, 0b111>(U);
+        tetra<1, 2, 6, 0b011, 0b010, 0b111>(U);
+        tetra<2, 3, 6, 0b010, 0b110, 0b111>(U);
+        tetra<3, 4, 6, 0b110, 0b100, 0b111>(U);
+        tetra<4, 5, 6, 0b100, 0b101, 0b111>(U);
+        tetra<5, 0, 6, 0b101, 0b001, 0b111>(U);
       }
       if (groups::group_VI_a) {
-        tetra<0, 2, 6, P001, P010, P111>(U);
-        tetra<2, 4, 6, P010, P100, P111>(U);
-        tetra<4, 0, 6, P100, P001, P111>(U);
+        tetra<0, 2, 6, 0b001, 0b010, 0b111>(U);
+        tetra<2, 4, 6, 0b010, 0b100, 0b111>(U);
+        tetra<4, 0, 6, 0b100, 0b001, 0b111>(U);
       }
       if (groups::group_VI_b) {
-        tetra<1, 3, 6, P011, P110, P111>(U);
-        tetra<3, 5, 6, P110, P101, P111>(U);
-        tetra<5, 1, 6, P101, P011, P111>(U);
+        tetra<1, 3, 6, 0b011, 0b110, 0b111>(U);
+        tetra<3, 5, 6, 0b110, 0b101, 0b111>(U);
+        tetra<5, 1, 6, 0b101, 0b011, 0b111>(U);
       }
     }
 
@@ -316,32 +308,32 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::do_tri11_updates) {
-        tri<0, 2, P001, P010>(U);
-        tri<2, 4, P010, P100>(U);
-        tri<4, 0, P100, P001>(U);
+        tri<0, 2, 0b001, 0b010>(U);
+        tri<2, 4, 0b010, 0b100>(U);
+        tri<4, 0, 0b100, 0b001>(U);
       }
       if (groups::do_tri12_updates) {
-        tri<0, 1, P001, P011>(U);
-        tri<2, 1, P010, P011>(U);
-        tri<2, 3, P010, P110>(U);
-        tri<4, 3, P100, P110>(U);
-        tri<4, 5, P100, P101>(U);
-        tri<0, 5, P001, P101>(U);
+        tri<0, 1, 0b001, 0b011>(U);
+        tri<2, 1, 0b010, 0b011>(U);
+        tri<2, 3, 0b010, 0b110>(U);
+        tri<4, 3, 0b100, 0b110>(U);
+        tri<4, 5, 0b100, 0b101>(U);
+        tri<0, 5, 0b001, 0b101>(U);
       }
       if (groups::do_tri13_updates) {
-        tri<0, 6, P001, P111>(U);
-        tri<2, 6, P010, P111>(U);
-        tri<4, 6, P100, P111>(U);
+        tri<0, 6, 0b001, 0b111>(U);
+        tri<2, 6, 0b010, 0b111>(U);
+        tri<4, 6, 0b100, 0b111>(U);
       }
       if (groups::do_tri22_updates) {
-        tri<1, 3, P011, P110>(U);
-        tri<3, 5, P110, P101>(U);
-        tri<5, 1, P101, P011>(U);
+        tri<1, 3, 0b011, 0b110>(U);
+        tri<3, 5, 0b110, 0b101>(U);
+        tri<5, 1, 0b101, 0b011>(U);
       }
       if (groups::do_tri23_updates) {
-        tri<1, 6, P011, P111>(U);
-        tri<3, 6, P110, P111>(U);
-        tri<5, 6, P101, P111>(U);
+        tri<1, 6, 0b011, 0b111>(U);
+        tri<3, 6, 0b110, 0b111>(U);
+        tri<5, 6, 0b101, 0b111>(U);
       }
     }
   }
@@ -529,17 +521,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
     }
   }
 
-  // Set U to be the minimum of U0, U1, and U2.
 coda:
   U = min(U0, min(U1, U2));
 }
-
-#undef P001
-#undef P010
-#undef P011
-#undef P100
-#undef P101
-#undef P110
-#undef P111
 
 #endif // __OLIM3D_IMPL_HPP__

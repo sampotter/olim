@@ -6,10 +6,6 @@
 #include "common.hpp"
 #include "vec.hpp"
 
-#define P01 1
-#define P10 2
-#define P11 3
-
 template <cost_func F, bool do_adj, bool do_diag>
 void
 olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
@@ -46,20 +42,16 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
   else {
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(a, U);
-      tri<P01, P10>(a, b, U);
+      tri<0b01, 0b10>(a, b, U);
     }
     if (do_diag) {
       for (int a = 4, b = 0, c = 1; a < 8; ++a, c = (++b + 1) % 4) {
         line<2>(a, U);
-        tri<P11, P01>(a, b, U);
-        tri<P11, P10>(a, c, U);
+        tri<0b11, 0b01>(a, b, U);
+        tri<0b11, 0b10>(a, c, U);
       }
     }
   }
 }
-
-#undef P01
-#undef P10
-#undef P11
 
 #endif // __OLIM_IMPL_HPP__

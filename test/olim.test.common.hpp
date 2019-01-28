@@ -11,6 +11,7 @@
 #include "common.hpp"
 #include "slow.hpp"
 #include "typedefs.h"
+#include "vec.hpp"
 
 testing::AssertionResult
 eq_w_rel_tol(double x, double y, double tol = 1e-13) {
@@ -113,71 +114,71 @@ quadrants_are_correct(
    * Tests for quadrants in the x-y plane:
    */
   {
-    olim3d_t m {{n, n, 1}, h, (slow3) s0, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, {0, 0, 0}};
+    m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 0.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 1, 0), diag_value);
+    res = eq_w_rel_tol(m.get_value({1, 1, 0}), diag_value);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, n, 1}, h, (slow3) s0, 1, 0, 0};
-    m.add_boundary_node(0, 1, 0);
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, {1, 0, 0}};
+    m.add_boundary_node({0, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 0.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), diag_value);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, n, 1}, h, (slow3) s0, 0, 1, 0};
-    m.add_boundary_node(1, 0, 0);
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, {0, 1, 0}};
+    m.add_boundary_node({1, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), diag_value);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 0.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, n, 1}, h, (slow3) s0, 1, 1, 0};
-    m.add_boundary_node(1, 1, 0);
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, {1, 1, 0}};
+    m.add_boundary_node({1, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), diag_value);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 1, 0), 0.0);
+    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 0.0);
     if (!res) return res;
   }
 
@@ -185,71 +186,71 @@ quadrants_are_correct(
    * Tests for quadrants in the x-z plane:
    */
   {
-    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, {0, 0, 0}};
+    m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 0.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 1), diag_value);
+    res = eq_w_rel_tol(m.get_value({1, 0, 1}), diag_value);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 1, 0};
-    m.add_boundary_node(1, 0, 0);
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, {0, 1, 0}};
+    m.add_boundary_node({1, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), diag_value);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 0.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 0, 1};
-    m.add_boundary_node(0, 0, 1);
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, {0, 0, 1}};
+    m.add_boundary_node({0, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 0.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), diag_value);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 1, 1};
-    m.add_boundary_node(1, 0, 1);
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, {0, 1, 1}};
+    m.add_boundary_node({1, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), diag_value);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(1, 0, 1), 0.0);
+    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 0.0);
     if (!res) return res;
   }
 
@@ -257,71 +258,71 @@ quadrants_are_correct(
    * Tests for quadrants in the y-z plane:
    */
   {
-    olim3d_t m {{1, n, n}, h, (slow3) s0, 0, 0, 0};
-    m.add_boundary_node(0, 0, 0);
+    olim3d_t m {{1, n, n}, h, (slow3) s0, {0, 0, 0}};
+    m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 0.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 1), diag_value);
+    res = eq_w_rel_tol(m.get_value({0, 1, 1}), diag_value);
     if (!res) return res;
   }
   {
-    olim3d_t m {{1, n, n}, h, (slow3) s0, 1, 0, 0};
-    m.add_boundary_node(0, 1, 0);
+    olim3d_t m {{1, n, n}, h, (slow3) s0, {1, 0, 0}};
+    m.add_boundary_node({0, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), diag_value);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 0.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{1, n, n}, h, (slow3) s0, 0, 0, 1};
-    m.add_boundary_node(0, 0, 1);
+    olim3d_t m {{1, n, n}, h, (slow3) s0, {0, 0, 1}};
+    m.add_boundary_node({0, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), 1.0);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 0.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), diag_value);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 1.0);
     if (!res) return res;
   }
   {
-    olim3d_t m {{1, n, n}, h, (slow3) s0, 1, 0, 1};
-    m.add_boundary_node(0, 1, 1);
+    olim3d_t m {{1, n, n}, h, (slow3) s0, {1, 0, 1}};
+    m.add_boundary_node({0, 1, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(0, 0, 0), diag_value);
+    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 0, 1), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 0), 1.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(0, 1, 1), 0.0);
+    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 0.0);
     if (!res) return res;
   }
 
@@ -337,32 +338,32 @@ octants_are_correct(double diag2val, double diag3val) {
     for (int j = 0; j < 2; ++j) {
       for (int k = 0; k < 2; ++k) {
         double x0 = j, y0 = i, z0 = k;
-        olim3d_t m {{n, n, n}, h, (slow3) s0, x0, y0, z0};
-        m.add_boundary_node(i, j, k);
+        olim3d_t m {{n, n, n}, h, (slow3) s0, {x0, y0, z0}};
+        m.add_boundary_node({i, j, k});
         m.run();
 
-        auto res = eq_w_rel_tol(m.get_value(i, j, k), 0.0);
+        auto res = eq_w_rel_tol(m.get_value({i, j, k}), 0.0);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value((i + 1) % 2, j, k), 1.0);
+        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, k}), 1.0);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value(i, (j + 1) % 2, k), 1.0);
+        res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, k}), 1.0);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value(i, j, (k + 1) % 2), 1.0);
+        res = eq_w_rel_tol(m.get_value({i, j, (k + 1) % 2}), 1.0);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value((i + 1) % 2, (j + 1) % 2, k), diag2val);
+        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, k}), diag2val);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value((i + 1) % 2, j, (k + 1) % 2), diag2val);
+        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, (k + 1) % 2}), diag2val);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value(i, (j + 1) % 2, (k + 1) % 2), diag2val);
+        res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, (k + 1) % 2}), diag2val);
         if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value((i + 1) % 2, (j + 1) % 2, (k + 1) % 2),diag3val);
+        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, (k + 1) % 2}), diag3val);
         if (!res) return res;
       }
     }
@@ -387,8 +388,8 @@ planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
   m.add_boundary_node({n/2, n/2});
   m.run();
   
-  olim3d_t m3d {{n, n, n}, h, s3d, 1, 1, 1};
-  m3d.add_boundary_node(n/2, n/2, n/2);
+  olim3d_t m3d {{n, n, n}, h, s3d, {1, 1, 1}};
+  m3d.add_boundary_node({n/2, n/2, n/2});
   m3d.run();
 
   auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
@@ -402,13 +403,13 @@ planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
     for (int j = 0; j < n; ++j) {
       double U = m.get_value({i, j});
 
-      auto res = eq_w_rel_tol(U, m3d.get_value(i, j, n/2));
+      auto res = eq_w_rel_tol(U, m3d.get_value({i, j, n/2}));
       if (!res) return msg(res, i, j, n/2);
 
-      res = eq_w_rel_tol(U, m3d.get_value(i, n/2, j));
+      res = eq_w_rel_tol(U, m3d.get_value({i, n/2, j}));
       if (!res) return msg(res, i, n/2, j);
 
-      res = eq_w_rel_tol(U, m3d.get_value(n/2, i, j));
+      res = eq_w_rel_tol(U, m3d.get_value({n/2, i, j}));
       if (!res) return msg(res, n/2, i, j);
     }
   }
@@ -451,8 +452,8 @@ template <class olim3d_t>
 testing::AssertionResult
 result_is_symmetric(slow3 s = s0, int n = 21, double tol = 1e-13) {
   double h = 2.0/(n - 1);
-  olim3d_t m {{n, n, n}, h, s, 1, 1, 1};
-  m.add_boundary_node(n/2, n/2, n/2);
+  olim3d_t m {{n, n, n}, h, s, {1, 1, 1}};
+  m.add_boundary_node({n/2, n/2, n/2});
   m.run();
 
   auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
@@ -465,7 +466,7 @@ result_is_symmetric(slow3 s = s0, int n = 21, double tol = 1e-13) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
         auto res = eq_w_rel_tol(
-          m.get_value(i, j, k), m.get_value(i, j, k_), tol);
+          m.get_value({i, j, k}), m.get_value({i, j, k_}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -475,7 +476,7 @@ result_is_symmetric(slow3 s = s0, int n = 21, double tol = 1e-13) {
     for (int k = 0; k < n; ++k) {
       for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
         auto res = eq_w_rel_tol(
-          m.get_value(i, j, k), m.get_value(i, j_, k), tol);
+          m.get_value({i, j, k}), m.get_value({i, j_, k}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -485,7 +486,7 @@ result_is_symmetric(slow3 s = s0, int n = 21, double tol = 1e-13) {
     for (int k = 0; k < n; ++k) {
       for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
         auto res = eq_w_rel_tol(
-          m.get_value(i, j, k), m.get_value(i_, j, k), tol);
+          m.get_value({i, j, k}), m.get_value({i_, j, k}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -499,8 +500,8 @@ testing::AssertionResult
 two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
-  olim3d_t m_gt {{3, 2, 2}, 1, (slow3) s0, 0, 0, 0};
-  m_gt.add_boundary_node(0, 0, 0);
+  olim3d_t m_gt {{3, 2, 2}, 1, (slow3) s0, {0, 0, 0}};
+  m_gt.add_boundary_node({0, 0, 0});
   m_gt.run();
 
   for (int dim = 0, imax, jmax, kmax; dim < 3; ++dim) {
@@ -514,8 +515,8 @@ two_by_two_by_three_cells_are_correct() {
       int k0 = (kmax - 1)*((corner & 4) >> 2);
 
       double x0 = j0, y0 = i0, z0 = k0;
-      olim3d_t m {{imax, jmax, kmax}, 1, (slow3) s0, x0, y0, z0};
-      m.add_boundary_node(i0, j0, k0);
+      olim3d_t m {{imax, jmax, kmax}, 1, (slow3) s0, {x0, y0, z0}};
+      m.add_boundary_node({i0, j0, k0});
       m.run();
 
       int da = i0 == 0 ? 1 : -1;
@@ -527,8 +528,7 @@ two_by_two_by_three_cells_are_correct() {
             a_ = imax == 3 ? a : jmax == 3 ? b : c;
             b_ = imax == 3 ? b : jmax == 3 ? c : a;
             c_ = imax == 3 ? c : jmax == 3 ? a : b;
-            auto res = eq_w_rel_tol(
-              m.get_value(i, j, k), m_gt.get_value(a_, b_, c_));
+            auto res = eq_w_rel_tol(m.get_value({i, j, k}), m_gt.get_value({a_, b_, c_}));
             if (!res) return res;
           }
         }
@@ -544,9 +544,9 @@ testing::AssertionResult
 plane_boundaries_are_correct() {
   int n = 2;
   double h = 1;
-  olim3d_t m {{n, n, n}, h, (slow3) s0, 0, 0, 0};
+  olim3d_t m {{n, n, n}, h, (slow3) s0, {0, 0, 0}};
 
-  int is[4], js[4], ks[4] = {0, 0, 0, 0};
+  vec3<int> inds[4];
   double Us[4];
 
   // typename olim3d_t::node_type nodes[4];
@@ -554,17 +554,16 @@ plane_boundaries_are_correct() {
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
       // nodes[k++] = typename olim3d_t::node_type {i, j, 0};
-      is[k] = i;
-      js[k] = j;
+      inds[k] = {i, j, 0};
       Us[k++] = 0;
     }
   }
-  m.add_boundary_nodes(is, js, ks, Us, 4);
+  m.add_boundary_nodes(inds, Us, 4);
 
   m.run();
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      auto res = eq_w_rel_tol(m.get_value(i, j, 1), 1.0);
+      auto res = eq_w_rel_tol(m.get_value({i, j, 1}), 1.0);
       if (!res) return res;
     }
   }
@@ -766,25 +765,25 @@ solution_is_exact_in_factored_square(
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2, k0 = n/2;
 
-  typename olim::fac_src_t src {(double) i0, (double) j0, (double) k0, 1.0};
-  olim o {{n, n, n}, h, (slow3) s0, 1., 1., 1.};
+  typename olim::fac_src_t src {{(double) i0, (double) j0, (double) k0}, 1.0};
+  olim o {{n, n, n}, h, (slow3) s0, {1., 1., 1.}};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        o.set_fac_src(i, j, k, &src);
+        o.set_fac_src({i, j, k}, &src);
       }
     }
   }
-  o.add_boundary_node(i0, j0, k0);
+  o.add_boundary_node({i0, j0, k0});
   o.run();
   for (int i = 0; i < n; ++i) {
-    double y = h*i - 1;
+    double x = h*i - 1;
     for (int j = 0; j < n; ++j) {
-      double x = h*j - 1;
+      double y = h*j - 1;
       for (int k = 0; k < n; ++k) {
         double z = h*k - 1;
         double u = std::sqrt(x*x + y*y + z*z);
-        double U = o.get_value(i, j, k);
+        double U = o.get_value({i, j, k});
         if (fabs(u - U) > tol*fabs(u) + tol) {
           return testing::AssertionFailure()
             << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)

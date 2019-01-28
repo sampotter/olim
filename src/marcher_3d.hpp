@@ -11,10 +11,10 @@
 
 struct fac_src_3d
 {
-  fac_src_3d(double i, double j, double k, double s):
-    i {i}, j {j}, k {k}, s {s} {}
+  fac_src_3d(vec3<double> coords, double s): coords {coords}, s {s} {}
 
-  double i, j, k, s;
+  vec3<double> coords;
+  double s;
 };
 
 template <class base, int num_nb>
@@ -32,7 +32,7 @@ struct marcher_3d
   marcher_3d(vec3<int> dims, double h, no_slow_t const &);
   marcher_3d(vec3<int> dims, double h = 1,
              std::function<double(double, double, double)> s = static_cast<slow3>(s0),
-             double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
+             vec3<double> origin = vec3<double>::zero());
   marcher_3d(vec3<int> dims, double h, double const * s_cache);
   virtual ~marcher_3d();
 
@@ -40,41 +40,30 @@ struct marcher_3d
 
   void run();
 
-  void add_boundary_node(int i, int j, int k, double value = 0.0);
-  void add_boundary_nodes(int const * i, int const * j, int const * k,
-                          double const * U, int num);
+  void add_boundary_node(vec3<int> inds, double value = 0.0);
+  void add_boundary_nodes(vec3<int> const * inds, double const * U, int num);
+  void add_boundary_node(vec3<double> coords, double s, double value = 0.0);
 
-  void add_boundary_node(
-    double x, double y, double z, double s, double value = 0.0);
+  void set_fac_src(vec3<int> inds, fac_src_3d const * src);
 
-  void set_fac_src(int i, int j, int k, fac_src_3d const * src);
-
-  double get_s(int i, int j, int k) const;
-  double get_value(int i, int j, int k) const;
+  double get_s(vec3<int> inds) const;
+  double get_value(vec3<int> inds) const;
 
   inline double const * get_s_cache_data() const {
     return _s_cache;
   }
 
 OLIM_PROTECTED:
-  inline int linear_index(int i, int j, int k) const {
-    return _dims[0]*(_dims[1]*k + j) + i; // column-major
+  inline int linear_index(vec3<int> inds) const {
+    return inds[0] + _dims[0]*(inds[1] + _dims[1]*inds[2]);
   }
 
-  inline int get_i(int lin) const {
-    return lin % _dims[0];
+  inline vec3<int> get_inds(int lin) const {
+    return {lin % _dims[0], lin/_dims[0] % _dims[1], lin/(_dims[0]*_dims[1])};
   }
 
-  inline int get_j(int lin) const {
-    return lin/_dims[0] % _dims[1];
-  }
-
-  inline int get_k(int lin) const {
-    return lin/(_dims[0]*_dims[1]);
-  }
-
-  bool in_bounds(int i, int j, int k) const;
-  bool is_valid(int i, int j, int k) const;
+  bool in_bounds(vec3<int> inds) const;
+  bool is_valid(vec3<int> inds) const;
 
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();

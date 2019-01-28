@@ -53,23 +53,23 @@ struct abstract_olim3d:
   abstract_olim3d(vec3<int> dims, double h, no_slow_t const &):
     marcher_3d_t {dims, h, no_slow_t {}}
 #if COLLECT_STATS
-      , _node_stats {new updates::stats<3>[height*width*depth]}
+    , _node_stats {new updates::stats<3>[dims.product()]}
 #endif
   { init(); }
 
   abstract_olim3d(vec3<int> dims, double h = 1,
                   std::function<double(double, double, double)> s = static_cast<slow3>(s0),
-                  double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
-      marcher_3d_t {dims, h, s, x0, y0, z0}
+                  vec3<double> origin = vec3<double>::zero()):
+      marcher_3d_t {dims, h, s, origin}
 #if COLLECT_STATS
-      , _node_stats {new updates::stats<3>[height*width*depth]}
+      , _node_stats {new updates::stats<3>[dims.product()]}
 #endif
   { init(); }
 
   abstract_olim3d(vec3<int> dims, double h, double const * s_cache):
       marcher_3d_t {dims, h, s_cache}
 #if COLLECT_STATS
-      , _node_stats {new updates::stats<3>[height*width*depth]}
+      , _node_stats {new updates::stats<3>[dims.product()]}
 #endif
   { init(); }
 
@@ -164,11 +164,7 @@ OLIM_PRIVATE:
       auto fc = this->_lin2fac[lin_hat];
       vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
-      vec3<double> p_fac = {
-        fc->i - this->get_i(lin_hat),
-        fc->j - this->get_j(lin_hat),
-        fc->k - this->get_k(lin_hat)
-      };
+      vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
       auto info = updates::tri<F, 3>()(
         p0,
         p1,
@@ -248,11 +244,7 @@ OLIM_PRIVATE:
       vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
       vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       vec3<double> p2 = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
-      vec3<double> p_fac = {
-        fc->i - this->get_i(lin_hat),
-        fc->j - this->get_j(lin_hat),
-        fc->k - this->get_k(lin_hat)
-      };
+      vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
       geom_fac_wkspc<2> g;
       g.init<3>(p0, p1, p2, p_fac);
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],

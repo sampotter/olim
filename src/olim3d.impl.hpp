@@ -104,18 +104,16 @@ void
 abstract_olim3d<F, base, num_nb>::update_impl(
   int lin_hat, int * nb, int parent, double & U)
 {
-  int i = this->get_i(lin_hat);
-  int j = this->get_j(lin_hat);
-  int k = this->get_k(lin_hat);
+  vec3<int> inds = this->get_inds(lin_hat);
 
 #if COLLECT_STATS
   this->_stats = this->get_stats(i, j, k);
   ++this->_stats->num_visits;
 #endif
 
-  for (int l = 0; l < num_nb; ++l) {
-    if (nb[l] != -1) {
-      this->s[l] = this->get_s(i + di<3>[l], j + dj<3>[l], k + dk<3>[l]);
+  for (int i = 0; i < num_nb; ++i) {
+    if (nb[i] != -1) {
+      this->s[i] = this->get_s(inds + get_offset<3>(i));
     }
   }
 
@@ -423,9 +421,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
   if (this->is_factored(lin_hat)) {
     auto fc = this->_lin2fac[lin_hat];
     s_fac = fc->s;
-    p_fac[0] = fc->i - this->get_i(lin_hat);
-    p_fac[1] = fc->j - this->get_j(lin_hat);
-    p_fac[2] = fc->k - this->get_k(lin_hat);
+    p_fac = fc->coords - this->get_inds(lin_hat);
   }
 
   // Create a cache for the minimizing lambdas to use for skipping

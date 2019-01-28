@@ -27,35 +27,37 @@
 * General refactoring
   1. [X] Remove all instances of EIKONAL and replace with OLIM
   2. [X] Add vector class
-  3. [ ] Collapse marcher and marcher_3d into one class
-  4. [ ] Some renaming
+  3. [ ] Simplify updates.tri.hpp... It's way more complicated than it
+     needs to be... 330 lines where it should be around 100-150
+  4. [ ] Collapse marcher and marcher_3d into one class
+  5. [ ] Some renaming
      - [ ] olim -> olim2
      - [ ] olim3d -> olim3
      - [ ] basic_marcher -> fmm2
      - [ ] basic_marcher_3d -> fmm3
-  5. [X] speed -> slowness
-  6. [ ] get_value -> get_U
-  7. [X] T -> U everwhere
-  8. [ ] Add T = template parameter for double/float
-  9. [ ] Distinguish between indices
-     - [ ] Add a `handle' type to distinguish the location of a node
-       in the grid
-     - [ ] Add a neighborhood index type to distinguish the location
-       of a node in a neighborhood
-  10. [ ] Remove second argument from `sqp_bary': i.e., use only one
+  6. [X] speed -> slowness
+  7. [ ] get_value -> get_U
+  8. [X] T -> U everwhere
+  9. [ ] Add T = template parameter for double/float
+  10. [ ] Distinguish between indices
+      - [ ] Add a `handle' type to distinguish the location of a node
+        in the grid
+      - [ ] Add a neighborhood index type to distinguish the location
+        of a node in a neighborhood
+  11. [ ] Remove second argument from `sqp_bary': i.e., use only one
       `x' argument which contains the initial iterate to begin and is
       overwritten with the optimum at the end. When we do this, we can
       also:
       - [ ] Have `sqp_bary' return its error code in an enum
       - [ ] Just take the updates::info<d> struct as a reference
         instead of separate parameters
-  11. [ ] Don't actually need to store qr_wkspc in cost_functor...
-  12. [ ] Reduce line count in tests using generic lambdas...
-  13. [ ] Remove STL headers
-  14. [ ] Remove macros
+  12. [ ] Don't actually need to store qr_wkspc in cost_functor...
+  13. [ ] Reduce line count in tests using generic lambdas...
+  14. [ ] Remove STL headers
+  15. [ ] Remove macros
       - [ ] P*** macros -> b'***' literals
-  15. [ ] Global p_fac -> pf
-  16. [ ] Global s_fac -> sf
+  16. [ ] Global p_fac -> pf
+  17. [ ] Global s_fac -> sf
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up

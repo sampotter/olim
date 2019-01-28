@@ -1,5 +1,4 @@
-#ifndef __UPDATE_RULES_LINE_UPDATES_HPP__
-#define __UPDATE_RULES_LINE_UPDATES_HPP__
+#pragma once
 
 #include "cost_funcs.hpp"
 
@@ -20,5 +19,3 @@ struct line {
 };
 
 }
-
-#endif // __UPDATE_RULES_LINE_UPDATES_HPP__

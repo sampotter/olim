@@ -1,5 +1,4 @@
-#ifndef __MARCHER_3D_HPP__
-#define __MARCHER_3D_HPP__
+#pragma once
 
 // TODO: try to remove this
 #include <functional>
@@ -132,5 +131,3 @@ OLIM_PROTECTED:
 };
 
 #include "marcher_3d.impl.hpp"
-
-#endif // __MARCHER_3D_HPP__

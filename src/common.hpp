@@ -1,5 +1,4 @@
-#ifndef __COMMON_DEFS_HPP__
-#define __COMMON_DEFS_HPP__
+#pragma once
 
 // TODO: try to remove these
 #include <limits>
@@ -26,5 +25,3 @@ constexpr T inf = std::numeric_limits<T>::infinity();
 #  define OLIM_PROTECTED protected
 #  define OLIM_PRIVATE private
 #endif
-
-#endif // __COMMON_DEFS_HPP__

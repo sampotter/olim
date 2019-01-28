@@ -1,5 +1,4 @@
-#ifndef __SLOW_HPP__
-#define __SLOW_HPP__
+#pragma once
 
 #include <array>
 
@@ -54,5 +53,3 @@ static std::array<double (*)(double, double, double), 3> soln3s {{
 #ifndef __clang__
 #    pragma GCC diagnostic pop
 #endif
-
-#endif // __SLOW_HPP__

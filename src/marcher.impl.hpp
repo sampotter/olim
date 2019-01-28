@@ -1,5 +1,4 @@
-#ifndef __MARCHER_IMPL_HPP_HPP__
-#define __MARCHER_IMPL_HPP_HPP__
+#pragma once
 
 #include <assert.h>
 #include <math.h>
@@ -332,5 +331,3 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
     }
   }
 }
-
-#endif // __MARCHER_IMPL_HPP_HPP__

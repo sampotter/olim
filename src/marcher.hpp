@@ -1,5 +1,4 @@
-#ifndef __MARCHER_HPP__
-#define __MARCHER_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -126,5 +125,3 @@ OLIM_PROTECTED:
 };
 
 #include "marcher.impl.hpp"
-
-#endif // __MARCHER_HPP__

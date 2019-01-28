@@ -1,5 +1,4 @@
-#ifndef __UPDATES_TRI_HPP__
-#define __UPDATES_TRI_HPP__
+#pragma once
 
 // TODO: remove me
 #include <type_traits>
@@ -82,5 +81,3 @@ struct tri_bv<RHR, n, p0, p1>
 }
 
 #include "updates.tri.impl.hpp"
-
-#endif // __UPDATES_TRI_HPP__

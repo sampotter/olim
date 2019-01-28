@@ -1,5 +1,4 @@
-#ifndef __VEC_HPP__
-#define __VEC_HPP__
+#pragma once
 
 #include <algorithm>
 #include <initializer_list>
@@ -156,5 +155,3 @@ constexpr int dot(int p, int q) {
   assert(0 <= q && q < 8);
   return nbits[p & q];
 }
-
-#endif // __VEC_HPP__

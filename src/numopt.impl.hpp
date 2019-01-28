@@ -1,5 +1,4 @@
-#ifndef __NUMOPT_IMPL_HPP__
-#define __NUMOPT_IMPL_HPP__
+#pragma once
 
 #include <math.h>
 
@@ -116,5 +115,3 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
 }
 
 #undef __compute_lambda_min
-
-#endif // __NUMOPT_IMPL_HPP__

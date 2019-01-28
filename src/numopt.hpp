@@ -1,5 +1,4 @@
-#ifndef __NUMOPT_HPP__
-#define __NUMOPT_HPP__
+#pragma once
 
 /**
  * Numerical optimization functions
@@ -31,5 +30,3 @@ struct sqp_bary<cost_functor, 3, 2, L> {
 };
 
 #include "numopt.impl.hpp"
-
-#endif // __NUMOPT_HPP__

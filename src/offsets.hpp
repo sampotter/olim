@@ -1,5 +1,4 @@
-#ifndef __OFFSETS_HPP__
-#define __OFFSETS_HPP__
+#pragma once
 
 #include "vec.hpp"
 
@@ -40,5 +39,3 @@ inline int d2l(int di, int dj, int dk) {
 inline vec<double, 3> get_p(int l) {
   return {(double) di<3>[l], (double) dj<3>[l], (double) dk<3>[l]};
 }
-
-#endif // __OFFSETS_HPP__

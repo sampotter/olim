@@ -1,5 +1,4 @@
-#ifndef __HYBRID_IMPL_HPP__
-#define __HYBRID_IMPL_HPP__
+#pragma once
 
 #include <assert.h>
 
@@ -81,5 +80,3 @@ hybrid(F const & f, T a, T b, T tol)
   // of the two in this case.
   return {(b + c)/2, hybrid_status::OK};
 }
-
-#endif // __HYBRID_IMPL_HPP__

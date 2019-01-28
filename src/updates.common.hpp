@@ -1,5 +1,4 @@
-#ifndef __UPDATES_HPP__
-#define __UPDATES_HPP__
+#pragma once
 
 namespace updates {
 
@@ -54,4 +53,3 @@ struct stats
 
 }
 
-#endif // __UPDATES_HPP__

@@ -1,5 +1,4 @@
-#ifndef __OLIM3D_IMPL_HPP__
-#define __OLIM3D_IMPL_HPP__
+#pragma once
 
 #if COLLECT_STATS
 #    include <cstdio>
@@ -524,5 +523,3 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
 coda:
   U = min(U0, min(U1, U2));
 }
-
-#endif // __OLIM3D_IMPL_HPP__

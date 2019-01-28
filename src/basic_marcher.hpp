@@ -1,5 +1,4 @@
-#ifndef __BASIC_MARCHER_HPP__
-#define __BASIC_MARCHER_HPP__
+#pragma once
 
 #include "marcher.hpp"
 #include "updates.line.hpp"
@@ -18,5 +17,3 @@ struct basic_marcher: public marcher<basic_marcher, 4>,
 OLIM_PRIVATE:
   virtual void update_impl(int lin, double & U);
 };
-
-#endif // __BASIC_MARCHER_HPP__

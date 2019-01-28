@@ -1,5 +1,4 @@
-#ifndef __OLIM_IMPL_HPP__
-#define __OLIM_IMPL_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -53,5 +52,3 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
     }
   }
 }
-
-#endif // __OLIM_IMPL_HPP__

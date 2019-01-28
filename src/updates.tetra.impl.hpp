@@ -1,5 +1,4 @@
-#ifndef __UPDATES_TETRA_IMPL_HPP__
-#define __UPDATES_TETRA_IMPL_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -99,5 +98,3 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 // updates::info<2>
 // updates::tetra_bv<F, p0, p1, p2>::operator()(F_fac_wkspc<F, 2> & fw) const
 // { ... }
-
-#endif // __UPDATES_TETRA_IMPL_HPP__

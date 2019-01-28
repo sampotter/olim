@@ -1,5 +1,4 @@
-#ifndef __OLIM3D_HPP__
-#define __OLIM3D_HPP__
+#pragma once
 
 #include "marcher_3d.hpp"
 #include "updates.line.hpp"
@@ -359,5 +358,3 @@ using olim3d_hu_mp0 = olim3d_hu<MP0, L1, 1, 2>;
 using olim3d_hu_mp1 = olim3d_hu<MP1, L1, 1, 2>;
 
 #include "olim3d.impl.hpp"
-
-#endif // __OLIM3D_HPP__

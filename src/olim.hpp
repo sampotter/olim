@@ -1,5 +1,4 @@
-#ifndef __OLIM_HPP__
-#define __OLIM_HPP__
+#pragma once
 
 #include <type_traits>
 
@@ -63,5 +62,3 @@ using olim8_mp1 = olim<MP1, true, true>;
 using olim8_rhr = olim<RHR, true, true>;
 
 #include "olim.impl.hpp"
-
-#endif // __OLIM_HPP__

@@ -1,5 +1,4 @@
-#ifndef __HEAP_HPP__
-#define __HEAP_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -218,5 +217,3 @@ bool heap<elt, proxy>::has_heap_prop_impl(int pos) const {
     (static_cast<size_t>(r) < size() ? val <= this->value(r) &&
      has_heap_prop_impl(r) : true);
 }
-
-#endif // __HEAP_HPP__

@@ -1,5 +1,4 @@
-#ifndef __COST_FUNCS_HPP__
-#define __COST_FUNCS_HPP__
+#pragma once
 
 #include <assert.h>
 #include <math.h>
@@ -693,5 +692,3 @@ void direct_solve(F_wkspc<F, 2> const & w, vec<double, 2> & lam, double & u)
 #undef __r22
 #undef __numer
 #undef __Qt_p0
-
-#endif // __COST_FUNCS_HPP__

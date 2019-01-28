@@ -1,5 +1,4 @@
-#ifndef __UPDATES_TETRA_HPP__
-#define __UPDATES_TETRA_HPP__
+#pragma once
 
 #include "cost_funcs.hpp"
 #include "updates.common.hpp"
@@ -36,5 +35,3 @@ struct tetra_bv
 }
 
 #include "updates.tetra.impl.hpp"
-
-#endif // __UPDATES_TETRA_HPP__

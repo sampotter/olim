@@ -1,5 +1,4 @@
-#ifndef __MARCHER_3D_IMPL_HPP__
-#define __MARCHER_3D_IMPL_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -299,5 +298,3 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
     }
   }
 }
-
-#endif // __MARCHER_3D_IMPL_HPP__

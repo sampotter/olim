@@ -1,5 +1,4 @@
-#ifndef __BITOPS_HPP__
-#define __BITOPS_HPP__
+#pragma once
 
 #include <math.h>
 
@@ -106,5 +105,3 @@ constexpr double exact_soln_numer(dim<3> n)
 #undef __Qt_p0
 
 }
-
-#endif // __BITOPS_HPP__

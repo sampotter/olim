@@ -1,5 +1,4 @@
-#ifndef __UPDATES_TRI_IMPL_HPP__
-#define __UPDATES_TRI_IMPL_HPP__
+#pragma once
 
 #include <src/config.hpp>
 
@@ -585,5 +584,3 @@ updates::tri<MP1, n>::operator()(
 #undef F1__
 #undef dF1__
 #undef d2F1__
-
-#endif // __UPDATES_TRI_IMPL_HPP__

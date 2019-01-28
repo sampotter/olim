@@ -1,5 +1,4 @@
-#ifndef __TYPEDEFS_H__
-#define __TYPEDEFS_H__
+#pragma once
 
 enum class state: char {valid, trial, far};
 
@@ -25,5 +24,3 @@ enum marcher_type {
 
 typedef double(* slow2)(double, double);
 typedef double(* slow3)(double, double, double);
-
-#endif // __TYPEDEFS_H__

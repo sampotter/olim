@@ -1,5 +1,4 @@
-#ifndef __OFFSETS_IMPL_HPP__
-#define __OFFSETS_IMPL_HPP__
+#pragma once
 
 // neighbor order: N, E, S, W, NE, SE, SW, NW (ordered first by
 // degree, then clockwise)
@@ -29,5 +28,3 @@ template <> int dk<3>[] = {
 };
 
 }
-
-#endif // __OFFSETS_IMPL_HPP__

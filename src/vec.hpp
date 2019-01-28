@@ -15,6 +15,15 @@ struct vec
     std::copy(ts.begin(), ts.end(), _data);
   }
 
+  template <class S>
+  inline operator vec<S, n>() const {
+    vec<S, n> x;
+    for (int i = 0; i < n; ++i) {
+      x[i] = static_cast<S>(_data[i]);
+    }
+    return x;
+  }
+
   inline T & operator[](int i) {
     return _data[i];
   }
@@ -117,6 +126,14 @@ struct vec
     return t;
   }
 
+  inline vec<T, n> floor() const {
+    vec<T, n> x;
+    for (int i = 0; i < n; ++i) {
+      x[i] = std::floor(_data[i]);
+    }
+    return x;
+  }
+
   inline T product() const {
     T t {1};
     for (int i = 0; i < n; ++i) {
@@ -128,6 +145,15 @@ struct vec
 OLIM_PRIVATE:
   T _data[n];
 };
+
+template <class S, class T, int n>
+auto operator-(vec<S, n> const & x, vec<T, n> const & y) {
+  vec<decltype(x[0] - y[0]), n> z;
+  for (int i = 0; i < n; ++i) {
+    z[i] = x[i] - y[i];
+  }
+  return z;
+}
 
 template <class T, int n>
 T dist1(vec<T, n> const & u, vec<T, n> const & v) {

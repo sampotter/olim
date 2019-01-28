@@ -32,18 +32,18 @@ template <class olim>
 testing::AssertionResult
 trivial_case_works() {
   olim m {{1, 1}};
-  m.add_boundary_node(0, 0);
+  m.add_boundary_node({0, 0});
   m.run();
-  return eq_w_rel_tol(m.get_value(0, 0), 0.0);
+  return eq_w_rel_tol(m.get_value({0, 0}), 0.0);
 }
 
 template <class olim>
 testing::AssertionResult
 adjacent_update_works() {
   olim m {{2, 1}, 0.5};
-  m.add_boundary_node(0, 0);
+  m.add_boundary_node({0, 0});
   m.run();
-  return eq_w_rel_tol(m.get_value(1, 0), 0.5);
+  return eq_w_rel_tol(m.get_value({1, 0}), 0.5);
 }
 
 template <class olim>
@@ -51,19 +51,19 @@ testing::AssertionResult
 correct_corners_in_limit(int n, double tol) {
   double h = 2./(n - 1);
   olim m {{n, n}, h, (slow2) s0, 1., 1.};
-  m.add_boundary_node(n/2, n/2);
+  m.add_boundary_node({n/2, n/2});
   m.run();
 
-  auto res = eq_w_rel_tol(m.get_value(0, n - 1), sqrt2, tol);
+  auto res = eq_w_rel_tol(m.get_value({0, n - 1}), sqrt2, tol);
   if (!res) return res;
   
-  res = eq_w_rel_tol(m.get_value(0, n - 1), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_value({0, n - 1}), sqrt2, tol);
   if (!res) return res;
 
-  res = eq_w_rel_tol(m.get_value(n - 1, 0), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_value({n - 1, 0}), sqrt2, tol);
   if (!res) return res;
 
-  res = eq_w_rel_tol(m.get_value(n - 1, n - 1), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_value({n - 1, n - 1}), sqrt2, tol);
   if (!res) return res;
 
   return testing::AssertionSuccess();
@@ -82,19 +82,19 @@ quadrants_are_correct(
 
   for (int i = 0, i0 = 0, j0 = 0; i < 4; i0 = ++i/2, j0 = i0 % 2) {
     olim m {{n, n}, h, (slow2) s0, x0[i], y0[i]};
-    m.add_boundary_node(i0, j0);
+    m.add_boundary_node({i0, j0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value(i0, j0), 0.0);
+    auto res = eq_w_rel_tol(m.get_value({i0, j0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value((i0 + 1) % 2, j0), 1.0);
+    res = eq_w_rel_tol(m.get_value({(i0 + 1) % 2, j0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value(i0, (j0 + 1) % 2), 1.0);
+    res = eq_w_rel_tol(m.get_value({i0, (j0 + 1) % 2}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value((i0 + 1) % 2, (j0 + 1) % 2), diag_value);
+    res = eq_w_rel_tol(m.get_value({(i0 + 1) % 2, (j0 + 1) % 2}), diag_value);
     if (!res) return res;
   }
 
@@ -384,7 +384,7 @@ planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
   double h = 2.0/(n - 1);
   
   olim m {{n, n}, h, s, 1, 1};
-  m.add_boundary_node(n/2, n/2);
+  m.add_boundary_node({n/2, n/2});
   m.run();
   
   olim3d_t m3d {{n, n, n}, h, s3d, 1, 1, 1};
@@ -400,7 +400,7 @@ planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
   // Check that planes are correct:
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      double U = m.get_value(i, j);
+      double U = m.get_value({i, j});
 
       auto res = eq_w_rel_tol(U, m3d.get_value(i, j, n/2));
       if (!res) return msg(res, i, j, n/2);
@@ -421,7 +421,7 @@ testing::AssertionResult
 result_is_symmetric(slow2 s = s0, int n = 51, double tol = 1e-13) {
   double h = 2.0/(n - 1);
   olim m {{n, n}, h, s, 1, 1};
-  m.add_boundary_node(n/2, n/2);
+  m.add_boundary_node({n/2, n/2});
   m.run();
 
   auto msg = [] (testing::AssertionResult & res, int i, int j)
@@ -432,14 +432,14 @@ result_is_symmetric(slow2 s = s0, int n = 51, double tol = 1e-13) {
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-      auto res = eq_w_rel_tol(m.get_value(i, j), m.get_value(i, j_), tol);
+      auto res = eq_w_rel_tol(m.get_value({i, j}), m.get_value({i, j_}), tol);
       if (!res) return msg(res, i, j);
     }
   }
 
   for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
     for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m.get_value(i, j), m.get_value(i_, j), tol);
+      auto res = eq_w_rel_tol(m.get_value({i, j}), m.get_value({i_, j}), tol);
       if (!res) return msg(res, i, j);
     }
   }
@@ -579,16 +579,16 @@ olims_agree(slow2 s = s0, int n = 51) {
   int i0 = n/2;
 
   olim1 m1 {{n, n}, h, s, 1, 1};
-  m1.add_boundary_node(i0, i0);
+  m1.add_boundary_node({i0, i0});
   m1.run();
 
   olim2 m2 {{n, n}, h, s, 1, 1};
-  m2.add_boundary_node(i0, i0);
+  m2.add_boundary_node({i0, i0});
   m2.run();
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m1.get_value(i, j), m2.get_value(i, j));
+      auto res = eq_w_rel_tol(m1.get_value({i, j}), m2.get_value({i, j}));
       if (!res) return res;
     }
   }
@@ -733,21 +733,21 @@ solution_is_exact_in_factored_square(
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
-  typename olim::fac_src_t src {(double) i0, (double) j0, 1.0};
+  typename olim::fac_src_t src {{(double) i0, (double) j0}, 1.0};
   olim o {{n, n}, h, (slow2) s0, 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      o.set_fac_src(i, j, &src);
+      o.set_fac_src({i, j}, &src);
     }
   }
-  o.add_boundary_node(i0, j0);
+  o.add_boundary_node({i0, j0});
   o.run();
   for (int i = 0; i < n; ++i) {
     double y = h*i - 1;
     for (int j = 0; j < n; ++j) {
       double x = h*j - 1;
       double u = std::hypot(x, y);
-      double U = o.get_value(i, j);
+      double U = o.get_value({i, j});
       if (fabs(u - U) > tol*fabs(u) + tol) {
         return testing::AssertionFailure()
           << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)

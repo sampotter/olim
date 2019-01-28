@@ -39,3 +39,11 @@ inline int d2l(int di, int dj, int dk) {
 inline vec3<double> get_p(int l) {
   return {(double) di<3>[l], (double) dj<3>[l], (double) dk<3>[l]};
 }
+
+inline vec2<int> get_offset(int k) {
+  return {di<2>[k], dj<2>[k]};
+}
+
+inline int off2lin(vec2<int> offset) {
+  return d2l(offset[0], offset[1]);
+}

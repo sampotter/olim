@@ -59,7 +59,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < dims[1]; ++i) {
     for (int j = 0; j < dims[0]; ++j) {
-      ptr[linear_index(i, j)] = s(h*j - x0, h*i - y0);
+      ptr[linear_index({i, j})] = s(h*j - x0, h*i - y0);
     }
   }
 }
@@ -98,12 +98,12 @@ void marcher<base, num_nb>::run()
 
 template <class base, int num_nb>
 void
-marcher<base, num_nb>::add_boundary_node(int i, int j, double value)
+marcher<base, num_nb>::add_boundary_node(vec2<int> inds, double value)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
+  assert(in_bounds(inds));
 #endif
-  int lin = linear_index(i, j);
+  int lin = linear_index(inds);
   _U[lin] = value;
   _state[lin] = state::trial;
   _heap.insert(lin);
@@ -112,10 +112,10 @@ marcher<base, num_nb>::add_boundary_node(int i, int j, double value)
 template <class base, int num_nb>
 void
 marcher<base, num_nb>::add_boundary_nodes(
-  int const * i, int const * j, double const * U, int num)
+  vec2<int> const * inds, double const * U, int num)
 {
-  for (int k = 0; k < num; ++k) {
-    add_boundary_node(i[k], j[k], U[k]);
+  for (int i = 0; i < num; ++i) {
+    add_boundary_node(inds[i], U[i]);
   }
 }
 
@@ -134,15 +134,17 @@ marcher<base, num_nb>::add_boundary_nodes(
 
 template <class base, int num_nb>
 void
-marcher<base, num_nb>::add_boundary_node(
-  double x, double y, double s, double value)
+marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double value)
 {
 #if PRINT_UPDATES
   printf("add_boundary_node(x = %g, y = %g, s = %g, value = %g)\n",
          x, y, s, value);
 #endif
-  double h = get_h(), i = y/h, j = x/h, u0 = value, s0 = s;
-  assert(in_bounds(i, j));
+  double h = get_h(), u0 = value, s0 = s;
+  vec2<double> inds = coords/h;
+  assert(in_bounds(inds));
+
+  double i = inds[0], j = inds[1];
 
   // TODO: this isn't as general as it could be. We also want to
   // handle cases where i or j are grid-aligned, in which case we need
@@ -162,9 +164,9 @@ marcher<base, num_nb>::add_boundary_node(
     int b0 = a & 1, b1 = (a & 2) >> 1;
     int i_ = is[b0], j_ = js[b1];
 
-    assert(in_bounds(i_, j_));
+    assert(in_bounds({i_, j_}));
 
-    int lin = linear_index(i_, j_);
+    int lin = linear_index({i_, j_});
     _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
@@ -173,45 +175,40 @@ marcher<base, num_nb>::add_boundary_node(
 
 template <class base, int num_nb>
 void
-marcher<base, num_nb>::set_fac_src(int i, int j, fac_src const * fc)
+marcher<base, num_nb>::set_fac_src(vec2<int> inds, fac_src const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
+  assert(in_bounds(inds));
 #endif
-  _lin2fac[linear_index(i, j)] = fc;
+  _lin2fac[linear_index(inds)] = fc;
 }
 
 template <class base, int num_nb>
 double
-marcher<base, num_nb>::get_value(int i, int j) const
+marcher<base, num_nb>::get_value(vec2<int> inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
+  assert(in_bounds(inds));
 #endif
-  return _U[linear_index(i, j)];
+  return _U[linear_index(inds)];
 }
 
 template <class base, int num_nb>
 bool
-marcher<base, num_nb>::in_bounds(int i, int j) const
+marcher<base, num_nb>::in_bounds(vec2<int> inds) const
 {
-  return (unsigned) i < (unsigned) _dims[0] && (unsigned) j < (unsigned) _dims[1];
-}
-
-template <class base, int num_nb>
-bool marcher<base, num_nb>::in_bounds(double i, double j) const {
-  return 0 <= i <= _dims[0] - 1 && 0 <= j <= _dims[1] - 1;
+  return (unsigned) inds[0] < (unsigned) _dims[0] && (unsigned) inds[1] < (unsigned) _dims[1];
 }
 
 template <class base, int num_nb>
 double
-marcher<base, num_nb>::get_s(int i, int j) const
+marcher<base, num_nb>::get_s(vec2<int> inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(i, j));
+  assert(in_bounds(inds));
   assert(_s_cache != nullptr);
 #endif
-  return _s_cache[linear_index(i, j)];
+  return _s_cache[linear_index(inds)];
 }
 
 // TODO: we want to delete this---right now, it's a bit muddled, since
@@ -220,27 +217,23 @@ marcher<base, num_nb>::get_s(int i, int j) const
 // function will just be deleted
 template <class base, int num_nb>
 bool
-marcher<base, num_nb>::is_valid(int i, int j) const
+marcher<base, num_nb>::is_valid(vec2<int> inds) const
 {
-  return in_bounds(i, j) && _state[linear_index(i, j)] == state::valid;
+  return in_bounds(inds) && _state[linear_index(inds)] == state::valid;
 }
 
 template <class base, int num_nb>
 void
 marcher<base, num_nb>::visit_neighbors(int lin_center)
 {
-  int const i = get_i(lin_center);
-  int const j = get_j(lin_center);
-
-  // These are temporary indices used below, analogous to i and j,
-  // respectively.
-  int a, b, lin;
+  vec2<int> inds = get_inds(lin_center);
 
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
-  for (int k = 0; k < num_nb; ++k) {
-    a = i + di<2>[k], b = j + dj<2>[k], lin = linear_index(a, b);
-    if (in_bounds(a, b) && _state[lin] == state::far) {
+  for (int i = 0; i < num_nb; ++i) {
+    vec2<int> inds_ = inds + get_offset(i);
+    int lin = linear_index(inds_);
+    if (in_bounds(inds_) && _state[lin] == state::far) {
       _state[lin] = state::trial;
       _heap.insert(lin);
     }
@@ -248,11 +241,12 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  for (int k = 0; k < 8; ++k) {
-    valid_nb[k] = -1;
-    a = i + di<2>[k], b = j + dj<2>[k], lin = linear_index(a, b);
-    if (in_bounds(a, b) && _state[lin] == state::valid) {
-      valid_nb[k] = lin;
+  for (int i = 0; i < 8; ++i) {
+    valid_nb[i] = -1;
+    vec2<int> inds_ = inds + get_offset(i);
+    int lin = linear_index(inds_);
+    if (in_bounds(inds_) && _state[lin] == state::valid) {
+      valid_nb[i] = lin;
     }
   }
 
@@ -260,9 +254,8 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // - l is a radial index circling (a, b)
   // - parent is the radial index of (i, j) expressed in the same
   //   index space as l
-  int di_k, dj_k;
-  int * nb = static_cast<base *>(this)->nb;
-  auto const set_nb = [&] (int parent) {
+  auto const set_nb = [&] (int parent, vec2<int> offset) {
+    int * nb = static_cast<base *>(this)->nb;
     for (int l = 0; l < num_nb; ++l) {
       nb[l] = -1;
     }
@@ -271,14 +264,12 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
       if (l == parent) {
         continue;
       }
-      int di_kl, dj_kl;
-      if (std::abs(di_kl = di_k + di<2>[l]) > 1 ||
-          std::abs(dj_kl = dj_k + dj<2>[l]) > 1) {
+      vec2<int> offset_ = offset + get_offset(l);
+      if (offset_.normi() > 1) {
         continue;
       }
-      if (in_bounds(i + di_kl, j + dj_kl)) {
-        int m = d2l(di_kl, dj_kl);
-        nb[l] = valid_nb[m];
+      if (in_bounds(inds + offset_)) {
+        nb[l] = valid_nb[off2lin(offset_)];
       }
     }
   };
@@ -299,13 +290,13 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
     }
   };
 
-  // Get the parent index of a radial index `k'.
-  auto const get_parent = [] (int k) {
+  // Get the parent index of a radial index `i'.
+  auto const get_parent = [] (int i) {
     if (num_nb == 4) {
-      return (k + 2) % 4;
+      return (i + 2) % 4;
     } else {
-      if (k < 4) return (k + 2) % 4;
-      else return ((k - 2) % 4) + 4;
+      if (i < 4) return (i + 2) % 4;
+      else return ((i - 2) % 4) + 4;
     }
   };
 
@@ -314,14 +305,14 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // `set_nb' to grab its valid neighbors and use `update' to
   // actually update the node's value and update its position in the
   // heap.
-  for (int k = 0; k < num_nb; ++k) {
-    if (valid_nb[k] == -1) {
-      di_k = di<2>[k], dj_k = dj<2>[k];
-      a = i + di_k, b = j + dj_k;
-      if (!in_bounds(a, b)) continue;
-      int parent = get_parent(k);
-      set_nb(parent);
-      update(linear_index(a, b));
+  for (int i = 0; i < num_nb; ++i) {
+    if (valid_nb[i] == -1) {
+      vec2<int> offset = get_offset(i);
+      vec2<int> inds_ = inds + offset;
+      if (!in_bounds(inds_)) continue;
+      int parent = get_parent(i);
+      set_nb(parent, offset);
+      update(linear_index(inds_));
     }
   }
 }

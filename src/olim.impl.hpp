@@ -9,12 +9,11 @@ template <cost_func F, bool do_adj, bool do_diag>
 void
 olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 {
-  int i_hat = this->get_i(lin_hat);
-  int j_hat = this->get_j(lin_hat);
+  vec2<int> const inds = this->get_inds(lin_hat);
 
   for (int k = 0; k < num_nb; ++k) {
     if (this->nb[k] != -1) {
-      s[k] = this->get_s(i_hat + di<2>[k], j_hat + dj<2>[k]);
+      s[k] = this->get_s(inds + get_offset(k));
     }
   }
 
@@ -24,7 +23,7 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 
     auto fc = this->_lin2fac[lin_hat];
     double sf = fc->s;
-    vec2<double> pf = {fc->i - i_hat, fc->j - j_hat};
+    vec2<double> pf = fc->coords - inds;
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(a, U);

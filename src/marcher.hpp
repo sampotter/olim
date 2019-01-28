@@ -13,9 +13,10 @@
 
 struct fac_src
 {
-  fac_src(double i, double j, double s): i {i}, j {j}, s {s} {}
+  fac_src(vec2<double> coords, double s): coords {coords}, s {s} {}
 
-  double i, j, s;
+  vec2<double> coords;
+  double s;
 };
 
 template <class base, int num_nb>
@@ -41,37 +42,32 @@ struct marcher
 
   void run();
 
-  void add_boundary_node(int i, int j, double value = 0.0);
-  void add_boundary_nodes(int const * i, int const * j, double const * U, int num);
+  void add_boundary_node(vec2<int> inds, double value = 0.0);
+  void add_boundary_nodes(vec2<int> const * inds, double const * U, int num);
   void add_boundary_nodes(std::tuple<int, int, double> const * nodes, int num);
 
-  void add_boundary_node(double x, double y, double s, double value = 0.0);
+  void add_boundary_node(vec2<double> coords, double s, double value = 0.0);
 
-  void set_fac_src(int i, int j, fac_src const * src);
+  void set_fac_src(vec2<int> inds, fac_src const * src);
 
-  double get_s(int i, int j) const;
-  double get_value(int i, int j) const;
+  double get_s(vec2<int> inds) const;
+  double get_value(vec2<int> inds) const;
 
   inline double const * get_s_cache_data() const {
     return _s_cache;
   }
 
 OLIM_PROTECTED:
-  inline int linear_index(int i, int j) const {
-    return j + _dims[1]*i;
+  inline int linear_index(vec2<int> inds) const {
+    return inds[1] + _dims[1]*inds[0];
   }
 
-  inline int get_i(int lin) const {
-    return lin/_dims[1];
+  inline vec2<int> get_inds(int lin) const {
+    return {lin/_dims[1], lin % _dims[1]};
   }
 
-  inline int get_j(int lin) const {
-    return lin % _dims[1];
-  }
-
-  bool in_bounds(int i, int j) const;
-  bool in_bounds(double i, double j) const;
-  bool is_valid(int i, int j) const;
+  bool in_bounds(vec2<int> inds) const;
+  bool is_valid(vec2<int> inds) const;
 
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();

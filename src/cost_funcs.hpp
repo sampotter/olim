@@ -24,7 +24,7 @@ template <int d>
 inline void check_lambda(vec<double, d> const & lam);
 
 template <>
-inline void check_lambda<2>(vec<double, 2> const & lam) {
+inline void check_lambda<2>(vec2<double> const & lam) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(lam[0] >= -eps<double>);
   assert(lam[1] >= -eps<double>);
@@ -51,14 +51,14 @@ template <int n, int d> struct qr_wkspc {};
 
 template <> struct qr_wkspc<3, 2>
 {
-  vec<double, 3> q1, q2;
+  vec3<double> q1, q2;
   double r[3];
-  vec<double, 2> Qt_p0;
+  vec2<double> Qt_p0;
   double numer;
 
-  void init(vec<double, 3> const & p0,
-            vec<double, 3> const & p1,
-            vec<double, 3> const & p2) {
+  void init(vec3<double> const & p0,
+            vec3<double> const & p1,
+            vec3<double> const & p2) {
     // Compute 3x2 reduced QR decomposition of [p1 - p0, p2 - p0].
     q1 = p1 - p0;
     r[0] = q1.norm2();
@@ -258,14 +258,14 @@ void set_args(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
   w.theta_h_ds[1] = h*(s2 - s0)/2;
 }
 
-inline void set_lambda_common(F0_wkspc<2> & w, vec<double, 2> const & lam)
+inline void set_lambda_common(F0_wkspc<2> & w, vec2<double> const & lam)
 {
   check_lambda<2>(lam);
 
   w.u_lam = w.u0 + w.du*lam;
 }
 
-inline void set_lambda_common(F1_wkspc<2> & w, vec<double, 2> const & lam)
+inline void set_lambda_common(F1_wkspc<2> & w, vec2<double> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -279,7 +279,7 @@ inline void set_lambda_common(F1_wkspc<2> & w, vec<double, 2> const & lam)
 #define __dPt_dP(i) dPt_dP<p0, p1, p2, i>(dim_t {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
-void set_lambda(F_wkspc<F, 2> & w, vec<double, 2> const & lam)
+void set_lambda(F_wkspc<F, 2> & w, vec2<double> const & lam)
 {
   using namespace bitops;
   using dim_t = dim<n>;
@@ -310,7 +310,7 @@ void set_lambda(F_wkspc<F, 2> & w, vec<double, 2> const & lam)
 #undef __dPt_dP
 
 template <cost_func F>
-void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, vec<double, 2> const & lam)
+void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, vec2<double> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -335,7 +335,7 @@ void set_lambda(F_wkspc<F, 2> & w, geom_wkspc<2> & g, vec<double, 2> const & lam
 
 template <cost_func F>
 void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
-                vec<double, 2> const & lam)
+                vec2<double> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -382,7 +382,7 @@ void set_lambda(F0_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
 
 template <cost_func F>
 void set_lambda(F1_fac_wkspc<2> & w, geom_fac_wkspc<2> const & g,
-                vec<double, 2> const & lam)
+                vec2<double> const & lam)
 {
   check_lambda<2>(lam);
 
@@ -406,7 +406,7 @@ void eval(fac_wkspc<d> const & w, double & f)
   check(f);
 }
 
-inline void grad(F0_wkspc<2> const & w, vec<double, 2> & df)
+inline void grad(F0_wkspc<2> const & w, vec2<double> & df)
 {
   df[0] = w.du[0] + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.du[1] + w.sh_lam*w.dPt_nu_lam[1];
@@ -415,7 +415,7 @@ inline void grad(F0_wkspc<2> const & w, vec<double, 2> & df)
   check(df[1]);
 }
 
-inline void grad(F0_fac_wkspc<2> const & w, vec<double, 2> & df)
+inline void grad(F0_fac_wkspc<2> const & w, vec2<double> & df)
 {
   df[0] = w.dtau[0] + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.dtau[1] + w.sh_lam*w.dPt_nu_lam[1];
@@ -429,7 +429,7 @@ inline void grad(F0_fac_wkspc<2> const & w, vec<double, 2> & df)
   check(df[1]);
 }
 
-inline void grad(F1_wkspc<2> const & w, vec<double, 2> & df)
+inline void grad(F1_wkspc<2> const & w, vec2<double> & df)
 {
   df[0] = w.du[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.du[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
@@ -438,7 +438,7 @@ inline void grad(F1_wkspc<2> const & w, vec<double, 2> & df)
   check(df[1]);
 }
 
-inline void grad(F1_fac_wkspc<2> const & w, vec<double, 2> & df)
+inline void grad(F1_fac_wkspc<2> const & w, vec2<double> & df)
 {
   df[0] = w.dtau[0] + w.theta_h_ds[0]*w.l_lam + w.sh_lam*w.dPt_nu_lam[0];
   df[1] = w.dtau[1] + w.theta_h_ds[1]*w.l_lam + w.sh_lam*w.dPt_nu_lam[1];
@@ -572,9 +572,9 @@ template <cost_func F, int n, int p0, int p1, int p2>
 struct cost_functor_bv<F, n, p0, p1, p2>
 {
   cost_functor_bv(F_wkspc<F, 2> & w): w {w} {}
-  inline void set_lambda(vec<double, 2> const & lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
+  inline void set_lambda(vec2<double> const & lam) { ::set_lambda<F, n, p0, p1, p2>(w, lam); }
   inline void eval(double & f) const {::eval(w, f);}
-  inline void grad(vec<double, 2> & df) const {::grad(w, df);}
+  inline void grad(vec2<double> & df) const {::grad(w, df);}
   inline void hess(double * d2f) const {::hess<n, p0, p1, p2>(w, d2f);}
   F_wkspc<F, 2> & w;
 };
@@ -606,7 +606,7 @@ struct cost_functor_fac
 
 inline void eval_mp1_fix(F0_wkspc<2> const & w,
                          double s, double s0, double s1, double s2, double h,
-                         vec<double, 2> const & lam, double & f)
+                         vec2<double> const & lam, double & f)
 {
   f = w.u_lam + h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
   check(f);
@@ -614,7 +614,7 @@ inline void eval_mp1_fix(F0_wkspc<2> const & w,
 
 inline void eval_mp1_fix(fac_wkspc<2> const & w,
                          double s, double s0, double s1, double s2, double h,
-                         vec<double, 2> const & lam, double & f)
+                         vec2<double> const & lam, double & f)
 {
   f = w.tau_lam + w.sh_fac*w.l_fac_lam +
     h*(s + s0 + (s1 - s0)*lam[0] + (s2 - s0)*lam[1])*w.l_lam/2;
@@ -623,13 +623,13 @@ inline void eval_mp1_fix(fac_wkspc<2> const & w,
 
 template <cost_func F, int n>
 void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
-                  vec<double, 2> & lam, double & u)
+                  vec2<double> & lam, double & u)
 {
   // TODO: use Theorem 3.7 instead of 3.6 to evaluate (should save
   // some flops.
 
   // Compute A = inv(R')*du/sh.
-  vec<double, 2> A = w.du/w.sh_lam;
+  vec2<double> A = w.du/w.sh_lam;
   A[1] -= qr->r[1]*A[0]/qr->r[0];
   A[1] /= qr->r[2];
   A[0] /= qr->r[0];
@@ -660,10 +660,10 @@ void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
 #define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
 
 template <cost_func F, int n, int p0, int p1, int p2>
-void direct_solve(F_wkspc<F, 2> const & w, vec<double, 2> & lam, double & u)
+void direct_solve(F_wkspc<F, 2> const & w, vec2<double> & lam, double & u)
 {
   // Compute A = inv(R')*du/sh here.
-  vec<double, 2> A = w.du/w.sh_lam;
+  vec2<double> A = w.du/w.sh_lam;
   A[1] -= __r12*A[0]/__r11;
   A[1] /= __r22;
   A[0] /= __r11;

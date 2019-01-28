@@ -28,12 +28,12 @@ inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
 
   func.set_lambda(info.lambda);
 
-  vec<double, 2> df;
+  vec2<double> df;
   double d2f[3];
   func.grad(df);
   func.hess(d2f);
 
-  vec<double, 2> mu;
+  vec2<double> mu;
   int k;
   lagmults<2>(info.lambda, df, d2f, mu, &k);
 

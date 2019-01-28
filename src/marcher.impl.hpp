@@ -156,7 +156,7 @@ marcher<base, num_nb>::add_boundary_node(
   int is[2] = {(int) floor(i), (int) floor(i) + 1};
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
 
-  vec<double, 2> P[4] = {
+  vec2<double> P[4] = {
     {i - is[0], j - js[0]},
     {i - is[1], j - js[0]},
     {i - is[0], j - js[1]},

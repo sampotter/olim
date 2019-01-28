@@ -24,8 +24,8 @@ struct sqp_bary {};
 
 template <class cost_functor, line_search L>
 struct sqp_bary<cost_functor, 3, 2, L> {
-  void operator()(cost_functor & func, vec<double, 2> const & xinit,
-                  vec<double, 2> & x, double * f, bool * error,
+  void operator()(cost_functor & func, vec2<double> const & xinit,
+                  vec2<double> & x, double * f, bool * error,
                   double tol = eps<double>, int niters = 0);
 };
 

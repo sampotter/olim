@@ -5,7 +5,7 @@
 
 template <>
 void
-qpe_bary<2, 0>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
+qpe_bary<2, 0>(double const * G, vec2<double> const & c, vec2<double> & x)
 {
   x[0] = 0.0;
   x[1] = -c[1]/G[2];
@@ -13,7 +13,7 @@ qpe_bary<2, 0>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
 
 template <>
 void
-qpe_bary<2, 1>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
+qpe_bary<2, 1>(double const * G, vec2<double> const & c, vec2<double> & x)
 {
   x[0] = -c[0]/G[0];
   x[1] = 0.0;
@@ -21,7 +21,7 @@ qpe_bary<2, 1>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
 
 template <>
 void
-qpe_bary<2, 2>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
+qpe_bary<2, 2>(double const * G, vec2<double> const & c, vec2<double> & x)
 {
   double pZ = ((G[2] - G[0])/2 + c[1] - c[0])/(G[0] - 2*G[1] + G[2]);
   x[0] = 0.5 + pZ;
@@ -30,15 +30,15 @@ qpe_bary<2, 2>(double const * G, vec<double, 2> const & c, vec<double, 2> & x)
 
 template <>
 void
-qpi_bary<2>(double const * G, vec<double, 2> const & c,
-            vec<double, 2> const & x0, vec<double, 2> & x,
+qpi_bary<2>(double const * G, vec2<double> const & c,
+            vec2<double> const & x0, vec2<double> & x,
             bool * error, double tol, int niters)
 {
   if (error) {
     *error = false;
   }
 
-  vec<double, 2> xprev, p = {0, 0}, y;
+  vec2<double> xprev, p = {0, 0}, y;
   double alpha, alpha_new;
   x = x0;
 

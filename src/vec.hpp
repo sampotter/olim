@@ -155,3 +155,9 @@ constexpr int dot(int p, int q) {
   assert(0 <= q && q < 8);
   return nbits[p & q];
 }
+
+template <class T>
+using vec2 = vec<T, 2>;
+
+template <class T>
+using vec3 = vec<T, 3>;

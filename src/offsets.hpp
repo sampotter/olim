@@ -36,6 +36,6 @@ inline int d2l(int di, int dj, int dk) {
 #    pragma GCC diagnostic pop
 #endif
 
-inline vec<double, 3> get_p(int l) {
+inline vec3<double> get_p(int l) {
   return {(double) di<3>[l], (double) dj<3>[l], (double) dk<3>[l]};
 }

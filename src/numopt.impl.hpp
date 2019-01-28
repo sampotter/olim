@@ -17,15 +17,15 @@ inline double compute_lambda_min_symmetric<2>(double const * A) {
 template <class cost_functor, line_search L>
 void
 sqp_bary<cost_functor, 3, 2, L>::operator()(
-  cost_functor & func, vec<double, 2> const & xinit,
-  vec<double, 2> & x, double * f, bool * error, double tol, int niters)
+  cost_functor & func, vec2<double> const & xinit,
+  vec2<double> & x, double * f, bool * error, double tol, int niters)
 {
   if (error) *error = false;
 
   int k = 0;
   double f0, f1, lambda_min;
   double d2f[3], alpha;
-  vec<double, 2> x0, x1, df, h, c;
+  vec2<double> x0, x1, df, h, c;
   bool qpi_error;
   hybrid_status status;
 

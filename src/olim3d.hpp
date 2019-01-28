@@ -164,9 +164,9 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec<double, 3> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
-      vec<double, 3> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
-      vec<double, 3> p_fac = {
+      vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
+      vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
+      vec3<double> p_fac = {
         fc->i - this->get_i(lin_hat),
         fc->j - this->get_j(lin_hat),
         fc->k - this->get_k(lin_hat)
@@ -247,10 +247,10 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec<double, 3> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
-      vec<double, 3> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
-      vec<double, 3> p2 = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
-      vec<double, 3> p_fac = {
+      vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
+      vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
+      vec3<double> p2 = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
+      vec3<double> p_fac = {
         fc->i - this->get_i(lin_hat),
         fc->j - this->get_j(lin_hat),
         fc->k - this->get_k(lin_hat)
@@ -326,7 +326,7 @@ struct olim3d_hu: public abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>
   bool * valid_d1, * valid_d2, * coplanar;
   geom_wkspc<2> * geom_wkspcs;
   qr_wkspc<3, 2> * qr_wkspcs;
-  vec<double, 3> p0, p1, p2, p_fac;
+  vec3<double> p0, p1, p2, p_fac;
 
   inline double get_p_norm(int l) const {
     if (l < 6) return 1;

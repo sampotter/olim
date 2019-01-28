@@ -11,47 +11,41 @@ template <class base, int num_nb>
 marcher_3d<base, num_nb>::marcher_3d() {}
 
 template <class base, int num_nb>
-marcher_3d<base, num_nb>::marcher_3d(int height, int width, int depth, double h,
-                                     no_slow_t const &):
-  _size {width*height*depth},
+marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, no_slow_t const &):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width},
-  _depth {depth}
+  _dims {dims}
 {
   init();
 }
 
 template <class base, int num_nb>
-marcher_3d<base, num_nb>::marcher_3d(
-  int height, int width, int depth, double h,
-  std::function<double(double, double, double)> s,
-  double x0, double y0, double z0):
-  _size {width*height*depth},
+marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
+                                     std::function<double(double, double, double)> s,
+                                     double x0, double y0, double z0):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width},
-  _depth {depth}
+  _dims {dims}
 {
   init();
 
   // Grab a writable pointer to cache the values of `s'.
   double x, z, * ptr = const_cast<double *>(_s_cache);
-  for (int k = 0; k < depth; ++k) {
+  for (int k = 0; k < _dims[2]; ++k) {
     z = h*k - z0;
-    for (int j = 0; j < width; ++j) {
+    for (int j = 0; j < _dims[1]; ++j) {
       x = h*j - x0;
-      for (int i = 0; i < height; ++i) {
+      for (int i = 0; i < _dims[0]; ++i) {
         ptr[linear_index(i, j, k)] = s(x, h*i - y0, z);
       }
     }
@@ -59,22 +53,19 @@ marcher_3d<base, num_nb>::marcher_3d(
 }
 
 template <class base, int num_nb>
-marcher_3d<base, num_nb>::marcher_3d(int height, int width, int depth, double h,
-                                     double const * s_cache):
-  _size {width*height*depth},
+marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, double const * s_cache):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width},
-  _depth {depth}
+  _dims {dims}
 {
   init();
 
-  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width*depth);
+  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*_size);
 }
 
 template <class base, int num_nb>
@@ -189,8 +180,8 @@ double marcher_3d<base, num_nb>::get_value(int i, int j, int k) const {
 
 template <class base, int num_nb>
 bool marcher_3d<base, num_nb>::in_bounds(int i, int j, int k) const {
-  return (unsigned) i < (unsigned) _height &&
-    (unsigned) j < (unsigned) _width && (unsigned) k < (unsigned) _depth;
+  return (unsigned) i < (unsigned) _dims[0] &&
+    (unsigned) j < (unsigned) _dims[1] && (unsigned) k < (unsigned) _dims[2];
 }
 
 template <class base, int num_nb>

@@ -50,26 +50,24 @@ struct abstract_olim3d:
 
   abstract_olim3d() { init(); }
 
-  abstract_olim3d(int height, int width, int depth, double h,
-                  no_slow_t const &):
-      marcher_3d_t {height, width, depth, h, no_slow_t {}}
+  abstract_olim3d(vec3<int> dims, double h, no_slow_t const &):
+    marcher_3d_t {dims, h, no_slow_t {}}
 #if COLLECT_STATS
       , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif
   { init(); }
 
-  abstract_olim3d(int height, int width, int depth, double h = 1,
+  abstract_olim3d(vec3<int> dims, double h = 1,
                   std::function<double(double, double, double)> s = static_cast<slow3>(s0),
                   double x0 = 0.0, double y0 = 0.0, double z0 = 0.0):
-      marcher_3d_t {height, width, depth, h, s, x0, y0, z0}
+      marcher_3d_t {dims, h, s, x0, y0, z0}
 #if COLLECT_STATS
       , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif
   { init(); }
 
-  abstract_olim3d(int height, int width, int depth, double h,
-                  double const * s_cache):
-      marcher_3d_t {height, width, depth, h, s_cache}
+  abstract_olim3d(vec3<int> dims, double h, double const * s_cache):
+      marcher_3d_t {dims, h, s_cache}
 #if COLLECT_STATS
       , _node_stats {new updates::stats<3>[height*width*depth]}
 #endif

@@ -4,7 +4,7 @@
 
 TEST (marcher, fractional_add_boundaries_is_correct_with_constant_slowness) {
   double S[4] = {1, 1, 1, 1};
-  olim4_rhr o {2, 2, 1, S};
+  olim4_rhr o {{2, 2}, 1, S};
   o.add_boundary_node(3./8, 1./4, 1.);
   ASSERT_DOUBLE_EQ(o.get_value(0, 0), 0.45069390943299864);
   ASSERT_DOUBLE_EQ(o.get_value(0, 1), 0.673145600891813);
@@ -19,7 +19,7 @@ TEST (marcher, fractional_add_boundaries_is_correct_with_nonconstant_slowness) {
     0.8385254915624212, 0.9762812094883317
   };
   {
-    olim4_rhr o {2, 2, h, S};
+    olim4_rhr o {{2, 2}, h, S};
     o.add_boundary_node(x, y, s);
     ASSERT_DOUBLE_EQ(o.get_value(0, 0), S[0]*h*l[0]);
     ASSERT_DOUBLE_EQ(o.get_value(0, 1), S[1]*h*l[1]);
@@ -27,7 +27,7 @@ TEST (marcher, fractional_add_boundaries_is_correct_with_nonconstant_slowness) {
     ASSERT_DOUBLE_EQ(o.get_value(1, 1), S[3]*h*l[3]);
   }
   {
-    olim4_mp0 o {2, 2, h, S};
+    olim4_mp0 o {{2, 2}, h, S};
     o.add_boundary_node(x, y, s);
     ASSERT_DOUBLE_EQ(o.get_value(0, 0), (s + S[0])*h*l[0]/2);
     ASSERT_DOUBLE_EQ(o.get_value(0, 1), (s + S[1])*h*l[1]/2);

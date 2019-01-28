@@ -117,6 +117,14 @@ struct vec
     return t;
   }
 
+  inline T product() const {
+    T t {1};
+    for (int i = 0; i < n; ++i) {
+      t *= _data[i];
+    }
+    return t;
+  }
+
 OLIM_PRIVATE:
   T _data[n];
 };

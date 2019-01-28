@@ -41,7 +41,7 @@ TEST (MARCHER, s1_symmetry_test) {
   double h = 2./(n - 1);
   int i0 = n/2;
 
-  olim3d_t o {n, n, n, h, slow3s[1], 1., 1., 1.};
+  olim3d_t o {{n, n, n}, h, slow3s[1], 1., 1., 1.};
   o.add_boundary_node(i0, i0, i0);
   o.run();
 

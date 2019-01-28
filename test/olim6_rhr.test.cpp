@@ -15,11 +15,11 @@ agrees_with_basic_marcher_3d(slow3 s) {
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
-  basic_marcher_3d m3d {n, n, n, h, s, 1, 1, 1};
+  basic_marcher_3d m3d {{n, n, n}, h, s, 1, 1, 1};
   m3d.add_boundary_node(i0, j0, k0);
   m3d.run();
 
-  olim3d_t m6 {n, n, n, h, s, 1, 1, 1};
+  olim3d_t m6 {{n, n, n}, h, s, 1, 1, 1};
   m6.add_boundary_node(i0, j0, k0);
   m6.run();
 

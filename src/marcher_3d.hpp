@@ -7,6 +7,7 @@
 #include "heap.hpp"
 #include "slow.hpp"
 #include "typedefs.h"
+#include "vec.hpp"
 
 struct fac_src_3d
 {
@@ -28,13 +29,11 @@ struct marcher_3d
   static constexpr int ndim = 3;
 
   marcher_3d();
-  marcher_3d(int height, int width, int depth, double h,
-             no_slow_t const &);
-  marcher_3d(int height, int width, int depth, double h = 1,
+  marcher_3d(vec3<int> dims, double h, no_slow_t const &);
+  marcher_3d(vec3<int> dims, double h = 1,
              std::function<double(double, double, double)> s = static_cast<slow3>(s0),
              double x0 = 0.0, double y0 = 0.0, double z0 = 0.0);
-  marcher_3d(int height, int width, int depth, double h,
-             double const * s_cache);
+  marcher_3d(vec3<int> dims, double h, double const * s_cache);
   virtual ~marcher_3d();
 
   void init();
@@ -53,29 +52,25 @@ struct marcher_3d
   double get_s(int i, int j, int k) const;
   double get_value(int i, int j, int k) const;
 
-  int get_height() const { return _height; }
-  int get_width() const { return _width; }
-  int get_depth() const { return _depth; }
-
   inline double const * get_s_cache_data() const {
     return _s_cache;
   }
 
 OLIM_PROTECTED:
   inline int linear_index(int i, int j, int k) const {
-    return _height*(_width*k + j) + i; // column-major
+    return _dims[0]*(_dims[1]*k + j) + i; // column-major
   }
 
   inline int get_i(int lin) const {
-    return lin % _height;
+    return lin % _dims[0];
   }
 
   inline int get_j(int lin) const {
-    return lin/_height % _width;
+    return lin/_dims[0] % _dims[1];
   }
 
   inline int get_k(int lin) const {
-    return lin/(_height*_width);
+    return lin/(_dims[0]*_dims[1]);
   }
 
   bool in_bounds(int i, int j, int k) const;
@@ -121,9 +116,7 @@ OLIM_PROTECTED:
   state * _state {nullptr};
   int * _heap_pos {nullptr};
   double _h {1};
-  int _height;
-  int _width;
-  int _depth;
+  vec3<int> _dims;
 
   // TODO: this is a quick hack just to get this working for the time
   // being.

@@ -12,58 +12,53 @@
 // to double up on these...
 
 template <class base, int num_nb>
-marcher<base, num_nb>::marcher(
-  int height, int width, double h, no_slow_t const &):
-  _size {width*height},
+marcher<base, num_nb>::marcher(vec2<int> dims, double h, no_slow_t const &):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width}
+  _dims {dims}
 {
   init();
 }
 
 template <class base, int num_nb>
-marcher<base, num_nb>::marcher(
-  int height, int width, double h, double const * s_cache):
-  _size {width*height},
+marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s_cache):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width}
+  _dims {dims}
 {
   init();
 
-  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*height*width);
+  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*_size);
 }
 
 template <class base, int num_nb>
-marcher<base, num_nb>::marcher(
-  int height, int width, double h,
-  std::function<double(double, double)> s, double x0, double y0):
-  _size {width*height},
+marcher<base, num_nb>::marcher(vec2<int> dims, double h,
+                               std::function<double(double, double)> s,
+                               double x0, double y0):
+  _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s_cache {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
-  _height {height},
-  _width {width}
+  _dims {dims}
 {
   init();
 
   double * ptr = const_cast<double *>(_s_cache);
-  for (int i = 0; i < height; ++i) {
-    for (int j = 0; j < width; ++j) {
+  for (int i = 0; i < dims[1]; ++i) {
+    for (int j = 0; j < dims[0]; ++j) {
       ptr[linear_index(i, j)] = s(h*j - x0, h*i - y0);
     }
   }
@@ -201,12 +196,12 @@ template <class base, int num_nb>
 bool
 marcher<base, num_nb>::in_bounds(int i, int j) const
 {
-  return (unsigned) i < (unsigned) _height && (unsigned) j < (unsigned) _width;
+  return (unsigned) i < (unsigned) _dims[0] && (unsigned) j < (unsigned) _dims[1];
 }
 
 template <class base, int num_nb>
 bool marcher<base, num_nb>::in_bounds(double i, double j) const {
-  return 0 <= i <= _height - 1 && 0 <= j <= _width - 1;
+  return 0 <= i <= _dims[0] - 1 && 0 <= j <= _dims[1] - 1;
 }
 
 template <class base, int num_nb>
@@ -217,7 +212,7 @@ marcher<base, num_nb>::get_s(int i, int j) const
   assert(in_bounds(i, j));
   assert(_s_cache != nullptr);
 #endif
-  return _s_cache[_width*i + j];
+  return _s_cache[linear_index(i, j)];
 }
 
 // TODO: we want to delete this---right now, it's a bit muddled, since

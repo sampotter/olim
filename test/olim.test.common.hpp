@@ -31,7 +31,7 @@ eq_w_rel_tol(double x, double y, double tol = 1e-13) {
 template <class olim>
 testing::AssertionResult
 trivial_case_works() {
-  olim m {1, 1};
+  olim m {{1, 1}};
   m.add_boundary_node(0, 0);
   m.run();
   return eq_w_rel_tol(m.get_value(0, 0), 0.0);
@@ -40,7 +40,7 @@ trivial_case_works() {
 template <class olim>
 testing::AssertionResult
 adjacent_update_works() {
-  olim m {2, 1, 0.5};
+  olim m {{2, 1}, 0.5};
   m.add_boundary_node(0, 0);
   m.run();
   return eq_w_rel_tol(m.get_value(1, 0), 0.5);
@@ -50,7 +50,7 @@ template <class olim>
 testing::AssertionResult
 correct_corners_in_limit(int n, double tol) {
   double h = 2./(n - 1);
-  olim m {n, n, h, (slow2) s0, 1., 1.};
+  olim m {{n, n}, h, (slow2) s0, 1., 1.};
   m.add_boundary_node(n/2, n/2);
   m.run();
 
@@ -81,7 +81,7 @@ quadrants_are_correct(
   double y0[4] = {0.0, 1.0, 0.0, 1.0};
 
   for (int i = 0, i0 = 0, j0 = 0; i < 4; i0 = ++i/2, j0 = i0 % 2) {
-    olim m {n, n, h, (slow2) s0, x0[i], y0[i]};
+    olim m {{n, n}, h, (slow2) s0, x0[i], y0[i]};
     m.add_boundary_node(i0, j0);
     m.run();
 
@@ -113,7 +113,7 @@ quadrants_are_correct(
    * Tests for quadrants in the x-y plane:
    */
   {
-    olim3d_t m {n, n, 1, h, (slow3) s0, 0, 0, 0};
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
 
@@ -130,7 +130,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, n, 1, h, (slow3) s0, 1, 0, 0};
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
 
@@ -147,7 +147,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, n, 1, h, (slow3) s0, 0, 1, 0};
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
 
@@ -164,7 +164,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, n, 1, h, (slow3) s0, 1, 1, 0};
+    olim3d_t m {{n, n, 1}, h, (slow3) s0, 1, 1, 0};
     m.add_boundary_node(1, 1, 0);
     m.run();
 
@@ -185,7 +185,7 @@ quadrants_are_correct(
    * Tests for quadrants in the x-z plane:
    */
   {
-    olim3d_t m {n, 1, n, h, (slow3) s0, 0, 0, 0};
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
 
@@ -202,7 +202,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, 1, n, h, (slow3) s0, 0, 1, 0};
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 1, 0};
     m.add_boundary_node(1, 0, 0);
     m.run();
 
@@ -219,7 +219,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, 1, n, h, (slow3) s0, 0, 0, 1};
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
 
@@ -236,7 +236,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {n, 1, n, h, (slow3) s0, 0, 1, 1};
+    olim3d_t m {{n, 1, n}, h, (slow3) s0, 0, 1, 1};
     m.add_boundary_node(1, 0, 1);
     m.run();
 
@@ -257,7 +257,7 @@ quadrants_are_correct(
    * Tests for quadrants in the y-z plane:
    */
   {
-    olim3d_t m {1, n, n, h, (slow3) s0, 0, 0, 0};
+    olim3d_t m {{1, n, n}, h, (slow3) s0, 0, 0, 0};
     m.add_boundary_node(0, 0, 0);
     m.run();
 
@@ -274,7 +274,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {1, n, n, h, (slow3) s0, 1, 0, 0};
+    olim3d_t m {{1, n, n}, h, (slow3) s0, 1, 0, 0};
     m.add_boundary_node(0, 1, 0);
     m.run();
 
@@ -291,7 +291,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {1, n, n, h, (slow3) s0, 0, 0, 1};
+    olim3d_t m {{1, n, n}, h, (slow3) s0, 0, 0, 1};
     m.add_boundary_node(0, 0, 1);
     m.run();
 
@@ -308,7 +308,7 @@ quadrants_are_correct(
     if (!res) return res;
   }
   {
-    olim3d_t m {1, n, n, h, (slow3) s0, 1, 0, 1};
+    olim3d_t m {{1, n, n}, h, (slow3) s0, 1, 0, 1};
     m.add_boundary_node(0, 1, 1);
     m.run();
 
@@ -337,7 +337,7 @@ octants_are_correct(double diag2val, double diag3val) {
     for (int j = 0; j < 2; ++j) {
       for (int k = 0; k < 2; ++k) {
         double x0 = j, y0 = i, z0 = k;
-        olim3d_t m {n, n, n, h, (slow3) s0, x0, y0, z0};
+        olim3d_t m {{n, n, n}, h, (slow3) s0, x0, y0, z0};
         m.add_boundary_node(i, j, k);
         m.run();
 
@@ -386,11 +386,11 @@ planes_are_correct(
 
   double h = 2.0/(n - 1);
   
-  olim m {n, n, h, s, 1, 1};
+  olim m {{n, n}, h, s, 1, 1};
   m.add_boundary_node(n/2, n/2);
   m.run();
   
-  olim3d_t m3d {n, n, n, h, s3d, 1, 1, 1};
+  olim3d_t m3d {{n, n, n}, h, s3d, 1, 1, 1};
   m3d.add_boundary_node(n/2, n/2, n/2);
   m3d.run();
 
@@ -424,7 +424,7 @@ testing::AssertionResult
 result_is_symmetric(slow2 s = s0, int n = 51,
                     double tol = 1e-13) {
   double h = 2.0/(n - 1);
-  olim m {n, n, h, s, 1, 1};
+  olim m {{n, n}, h, s, 1, 1};
   m.add_boundary_node(n/2, n/2);
   m.run();
 
@@ -456,7 +456,7 @@ testing::AssertionResult
 result_is_symmetric(slow3 s = s0, int n = 21,
                     double tol = 1e-13) {
   double h = 2.0/(n - 1);
-  olim3d_t m {n, n, n, h, s, 1, 1, 1};
+  olim3d_t m {{n, n, n}, h, s, 1, 1, 1};
   m.add_boundary_node(n/2, n/2, n/2);
   m.run();
 
@@ -504,7 +504,7 @@ testing::AssertionResult
 two_by_two_by_three_cells_are_correct() {
   int dims[3][3] = {{3, 2, 2}, {2, 3, 2}, {2, 2, 3}};
 
-  olim3d_t m_gt {3, 2, 2, 1, (slow3) s0, 0, 0, 0};
+  olim3d_t m_gt {{3, 2, 2}, 1, (slow3) s0, 0, 0, 0};
   m_gt.add_boundary_node(0, 0, 0);
   m_gt.run();
 
@@ -519,8 +519,7 @@ two_by_two_by_three_cells_are_correct() {
       int k0 = (kmax - 1)*((corner & 4) >> 2);
 
       double x0 = j0, y0 = i0, z0 = k0;
-      olim3d_t m {
-        imax, jmax, kmax, 1, (slow3) s0, x0, y0, z0};
+      olim3d_t m {{imax, jmax, kmax}, 1, (slow3) s0, x0, y0, z0};
       m.add_boundary_node(i0, j0, k0);
       m.run();
 
@@ -550,7 +549,7 @@ testing::AssertionResult
 plane_boundaries_are_correct() {
   int n = 2;
   double h = 1;
-  olim3d_t m {n, n, n, h, (slow3) s0, 0, 0, 0};
+  olim3d_t m {{n, n, n}, h, (slow3) s0, 0, 0, 0};
 
   int is[4], js[4], ks[4] = {0, 0, 0, 0};
   double Us[4];
@@ -584,11 +583,11 @@ olims_agree(slow2 s = s0, int n = 51) {
   double h = 2.0/(n - 1);
   int i0 = n/2;
 
-  olim1 m1 {n, n, h, s, 1, 1};
+  olim1 m1 {{n, n}, h, s, 1, 1};
   m1.add_boundary_node(i0, i0);
   m1.run();
 
-  olim2 m2 {n, n, h, s, 1, 1};
+  olim2 m2 {{n, n}, h, s, 1, 1};
   m2.add_boundary_node(i0, i0);
   m2.run();
 
@@ -740,7 +739,7 @@ solution_is_exact_in_factored_square(
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
   typename olim::fac_src_t src {(double) i0, (double) j0, 1.0};
-  olim o {n, n, h, (slow2) s0, 1., 1.};
+  olim o {{n, n}, h, (slow2) s0, 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       o.set_fac_src(i, j, &src);
@@ -773,7 +772,7 @@ solution_is_exact_in_factored_square(
   int i0 = n/2, j0 = n/2, k0 = n/2;
 
   typename olim::fac_src_t src {(double) i0, (double) j0, (double) k0, 1.0};
-  olim o {n, n, n, h, (slow3) s0, 1., 1., 1.};
+  olim o {{n, n, n}, h, (slow3) s0, 1., 1., 1.};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {

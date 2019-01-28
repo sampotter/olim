@@ -9,6 +9,7 @@
 #include "heap.hpp"
 #include "slow.hpp"
 #include "typedefs.h"
+#include "vec.hpp"
 
 struct fac_src
 {
@@ -29,9 +30,9 @@ struct marcher
   static constexpr int ndim = 2;
   // static constexpr int num_neighbors = base::num_neighbors;
 
-  marcher(int height, int width, double h, no_slow_t const &);
-  marcher(int height, int width, double h, double const * s_cache);
-  marcher(int height, int width, double h = 1,
+  marcher(vec2<int> dims, double h, no_slow_t const &);
+  marcher(vec2<int> dims, double h, double const * s_cache);
+  marcher(vec2<int> dims, double h = 1,
           std::function<double(double, double)> s = static_cast<slow2>(s0),
           double x0 = 0.0, double y0 = 0.0);
   virtual ~marcher();
@@ -51,24 +52,21 @@ struct marcher
   double get_s(int i, int j) const;
   double get_value(int i, int j) const;
 
-  int get_height() const { return _height; }
-  int get_width() const { return _width; }
-
   inline double const * get_s_cache_data() const {
     return _s_cache;
   }
 
 OLIM_PROTECTED:
   inline int linear_index(int i, int j) const {
-    return _width*i + j;
+    return j + _dims[1]*i;
   }
 
   inline int get_i(int lin) const {
-    return lin/_width;
+    return lin/_dims[1];
   }
 
   inline int get_j(int lin) const {
-    return lin % _width;
+    return lin % _dims[1];
   }
 
   bool in_bounds(int i, int j) const;
@@ -116,8 +114,7 @@ OLIM_PROTECTED:
   state * _state {nullptr};
   int * _heap_pos {nullptr};
   double _h {1};
-  int _height;
-  int _width;
+  vec2<int> _dims;
 
   // TODO: this is a quick hack just to get this working for the time
   // being.

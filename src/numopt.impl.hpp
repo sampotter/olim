@@ -113,5 +113,3 @@ sqp_bary<cost_functor, 3, 2, L>::operator()(
     *f = f1;
   }
 }
-
-#undef __compute_lambda_min

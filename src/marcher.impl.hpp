@@ -44,7 +44,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s_cache)
 template <class base, int num_nb>
 marcher<base, num_nb>::marcher(vec2<int> dims, double h,
                                std::function<double(double, double)> s,
-                               double x0, double y0):
+                               vec2<double> origin):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
@@ -59,7 +59,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < dims[1]; ++i) {
     for (int j = 0; j < dims[0]; ++j) {
-      ptr[linear_index({i, j})] = s(h*j - x0, h*i - y0);
+      ptr[linear_index({i, j})] = s(h*i - origin[0], h*j - origin[1]);
     }
   }
 }
@@ -136,10 +136,6 @@ template <class base, int num_nb>
 void
 marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double value)
 {
-#if PRINT_UPDATES
-  printf("add_boundary_node(x = %g, y = %g, s = %g, value = %g)\n",
-         x, y, s, value);
-#endif
   double h = get_h(), u0 = value, s0 = s;
   vec2<double> inds = coords/h;
   assert(in_bounds(inds));
@@ -197,7 +193,8 @@ template <class base, int num_nb>
 bool
 marcher<base, num_nb>::in_bounds(vec2<int> inds) const
 {
-  return (unsigned) inds[0] < (unsigned) _dims[0] && (unsigned) inds[1] < (unsigned) _dims[1];
+  return (unsigned) inds[0] < (unsigned) _dims[0]
+      && (unsigned) inds[1] < (unsigned) _dims[1];
 }
 
 template <class base, int num_nb>
@@ -231,7 +228,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
-    vec2<int> inds_ = inds + get_offset(i);
+    vec2<int> inds_ = inds + get_offset<2>(i);
     int lin = linear_index(inds_);
     if (in_bounds(inds_) && _state[lin] == state::far) {
       _state[lin] = state::trial;
@@ -243,7 +240,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // (i.e. the unit max norm ball).
   for (int i = 0; i < 8; ++i) {
     valid_nb[i] = -1;
-    vec2<int> inds_ = inds + get_offset(i);
+    vec2<int> inds_ = inds + get_offset<2>(i);
     int lin = linear_index(inds_);
     if (in_bounds(inds_) && _state[lin] == state::valid) {
       valid_nb[i] = lin;
@@ -264,12 +261,12 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
       if (l == parent) {
         continue;
       }
-      vec2<int> offset_ = offset + get_offset(l);
+      vec2<int> offset_ = offset + get_offset<2>(l);
       if (offset_.normi() > 1) {
         continue;
       }
       if (in_bounds(inds + offset_)) {
-        nb[l] = valid_nb[off2lin(offset_)];
+        nb[l] = valid_nb[off2lin<2>(offset_)];
       }
     }
   };
@@ -292,6 +289,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
 
   // Get the parent index of a radial index `i'.
   auto const get_parent = [] (int i) {
+    // TODO: check base::num_nb to reduce amount of branching here
     if (num_nb == 4) {
       return (i + 2) % 4;
     } else {
@@ -307,7 +305,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // heap.
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
-      vec2<int> offset = get_offset(i);
+      vec2<int> offset = get_offset<2>(i);
       vec2<int> inds_ = inds + offset;
       if (!in_bounds(inds_)) continue;
       int parent = get_parent(i);

@@ -40,10 +40,22 @@ inline vec3<double> get_p(int l) {
   return {(double) di<3>[l], (double) dj<3>[l], (double) dk<3>[l]};
 }
 
-inline vec2<int> get_offset(int k) {
-  return {di<2>[k], dj<2>[k]};
+template <int n>
+inline vec<int, n> get_offset(int i) {
+  static_assert(n == 2 || n == 3);
+  if (n == 2) {
+    return {di<2>[i], dj<2>[i]};
+  } else if (n == 3) {
+    return {di<3>[i], dj<3>[i], dk<3>[i]};
+  }
 }
 
-inline int off2lin(vec2<int> offset) {
-  return d2l(offset[0], offset[1]);
+template <int n>
+inline int off2lin(vec<int, n> offset) {
+  static_assert(n == 2 || n == 3);
+  if (n == 2) {
+    return d2l(offset[0], offset[1]);
+  } else if (n == 3) {
+    return d2l(offset[0], offset[1], offset[2]);
+  }
 }

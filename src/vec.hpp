@@ -15,6 +15,14 @@ struct vec
     std::copy(ts.begin(), ts.end(), _data);
   }
 
+  inline static constexpr vec<T, n> zero() {
+    vec<T, n> x;
+    for (int i = 0; i < n; ++i) {
+      x[i] = 0;
+    }
+    return x;
+  }
+
   template <class S>
   inline operator vec<S, n>() const {
     vec<S, n> x;

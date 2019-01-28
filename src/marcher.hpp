@@ -35,7 +35,7 @@ struct marcher
   marcher(vec2<int> dims, double h, double const * s_cache);
   marcher(vec2<int> dims, double h = 1,
           std::function<double(double, double)> s = static_cast<slow2>(s0),
-          double x0 = 0.0, double y0 = 0.0);
+          vec2<double> origin = vec2<double>::zero());
   virtual ~marcher();
 
   void init();
@@ -45,7 +45,6 @@ struct marcher
   void add_boundary_node(vec2<int> inds, double value = 0.0);
   void add_boundary_nodes(vec2<int> const * inds, double const * U, int num);
   void add_boundary_nodes(std::tuple<int, int, double> const * nodes, int num);
-
   void add_boundary_node(vec2<double> coords, double s, double value = 0.0);
 
   void set_fac_src(vec2<int> inds, fac_src const * src);

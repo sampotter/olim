@@ -50,7 +50,7 @@ template <class olim>
 testing::AssertionResult
 correct_corners_in_limit(int n, double tol) {
   double h = 2./(n - 1);
-  olim m {{n, n}, h, (slow2) s0, 1., 1.};
+  olim m {{n, n}, h, (slow2) s0, {1., 1.}};
   m.add_boundary_node({n/2, n/2});
   m.run();
 
@@ -81,7 +81,7 @@ quadrants_are_correct(
   double y0[4] = {0.0, 1.0, 0.0, 1.0};
 
   for (int i = 0, i0 = 0, j0 = 0; i < 4; i0 = ++i/2, j0 = i0 % 2) {
-    olim m {{n, n}, h, (slow2) s0, x0[i], y0[i]};
+    olim m {{n, n}, h, (slow2) s0, {x0[i], y0[i]}};
     m.add_boundary_node({i0, j0});
     m.run();
 
@@ -383,7 +383,7 @@ planes_are_correct(slow2 s = (slow2) s0, slow3 s3d = (slow3) s0, int n = 51)
 
   double h = 2.0/(n - 1);
   
-  olim m {{n, n}, h, s, 1, 1};
+  olim m {{n, n}, h, s, {1, 1}};
   m.add_boundary_node({n/2, n/2});
   m.run();
   
@@ -420,7 +420,7 @@ template <class olim>
 testing::AssertionResult
 result_is_symmetric(slow2 s = s0, int n = 51, double tol = 1e-13) {
   double h = 2.0/(n - 1);
-  olim m {{n, n}, h, s, 1, 1};
+  olim m {{n, n}, h, s, {1, 1}};
   m.add_boundary_node({n/2, n/2});
   m.run();
 
@@ -578,11 +578,11 @@ olims_agree(slow2 s = s0, int n = 51) {
   double h = 2.0/(n - 1);
   int i0 = n/2;
 
-  olim1 m1 {{n, n}, h, s, 1, 1};
+  olim1 m1 {{n, n}, h, s, {1, 1}};
   m1.add_boundary_node({i0, i0});
   m1.run();
 
-  olim2 m2 {{n, n}, h, s, 1, 1};
+  olim2 m2 {{n, n}, h, s, {1, 1}};
   m2.add_boundary_node({i0, i0});
   m2.run();
 
@@ -734,7 +734,7 @@ solution_is_exact_in_factored_square(
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
   typename olim::fac_src_t src {{(double) i0, (double) j0}, 1.0};
-  olim o {{n, n}, h, (slow2) s0, 1., 1.};
+  olim o {{n, n}, h, (slow2) s0, {1., 1.}};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       o.set_fac_src({i, j}, &src);

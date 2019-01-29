@@ -266,7 +266,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
         continue;
       }
       if (in_bounds(inds + offset_)) {
-        nb[l] = valid_nb[off2lin<2>(offset_)];
+        nb[l] = valid_nb[get_linear_offset<2>(offset_)];
       }
     }
   };

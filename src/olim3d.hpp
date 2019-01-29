@@ -162,12 +162,10 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
-      vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
       vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
       auto info = updates::tri<F, 3>()(
-        p0,
-        p1,
+        get_p<3>(l0),
+        get_p<3>(l1),
         this->_U[this->nb[l0]],
         this->_U[this->nb[l1]],
         this->s_hat,
@@ -241,12 +239,9 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p0 = {(double)di<3>[l0], (double)dj<3>[l0], (double)dk<3>[l0]};
-      vec3<double> p1 = {(double)di<3>[l1], (double)dj<3>[l1], (double)dk<3>[l1]};
-      vec3<double> p2 = {(double)di<3>[l2], (double)dj<3>[l2], (double)dk<3>[l2]};
       vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
       geom_fac_wkspc<2> g;
-      g.init<3>(p0, p1, p2, p_fac);
+      g.init<3>(get_p<3>(l0), get_p<3>(l1), get_p<3>(l2), p_fac);
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
         u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
         s1 = this->s[l1], s2 = this->s[l2], h = this->get_h(), s_fac = fc->s;

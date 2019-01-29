@@ -243,7 +243,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
         continue;
       }
       if (in_bounds(inds + offset_)) {
-        child_nb[m] = valid_nb[off2lin<3>(offset_)];
+        child_nb[m] = valid_nb[get_linear_offset<3>(offset_)];
       }
     }
   };

@@ -40,6 +40,24 @@ struct vec
     return _data[i];
   }
 
+  inline bool operator==(vec<T, n> const & x) const {
+    for (int i = 0; i < n; ++i) {
+      if (x[i] != _data[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  inline bool operator!=(vec<T, n> const & x) const {
+    for (int i = 0; i < n; ++i) {
+      if (x[i] != _data[i]) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   inline vec<T, n> & operator*=(T const & t) {
     for (int i = 0; i < n; ++i) {
       _data[i] *= t;
@@ -228,4 +246,3 @@ constexpr int dot(int p, int q) {
   assert(0 <= q && q < 8);
   return nbits[p & q];
 }
-

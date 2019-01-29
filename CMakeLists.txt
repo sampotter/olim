@@ -187,6 +187,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     olim3d_hu_mp0
     olim3d_hu_mp1
     olim3d_hu_rhr
+    range
 	updates.tetra
 	updates.tri)
   foreach (test ${tests})

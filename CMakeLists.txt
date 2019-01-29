@@ -29,7 +29,7 @@ include (gtest.cmake)
 
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra -Werror -std=c++1z")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra -Werror")
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DOLIM_DEBUG")
 set (CMAKE_CXX_FLAGS_RELWITHDEBINFO
   "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -DOLIM_DEBUG -DRELWITHDEBINFO")
@@ -57,6 +57,7 @@ set (OLIM_SRC_FILES
   src/slow.cpp)
 
 add_library (olim STATIC ${OLIM_SRC_FILES})
+target_compile_features (olim PRIVATE cxx_std_17)
 
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   if (IPO_RESULT)
@@ -190,6 +191,7 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 	updates.tri)
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
+    target_compile_features (${test}.test PRIVATE cxx_std_17)
 	target_link_libraries (${test}.test olim gtest ${CMAKE_THREAD_LIBS_INIT})
 	target_include_directories (
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

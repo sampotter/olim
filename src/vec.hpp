@@ -137,7 +137,7 @@ struct vec
   inline vec<T, n> floor() const {
     vec<T, n> x;
     for (int i = 0; i < n; ++i) {
-      x[i] = std::floor(_data[i]);
+      x[i] = floor(_data[i]);
     }
     return x;
   }

@@ -57,12 +57,12 @@ struct marcher
   }
 
 OLIM_PROTECTED:
-  inline int linear_index(vec2<int> inds) const {
-    return inds[1] + _dims[1]*inds[0];
+  inline int to_linear_index(vec2<int> inds) const {
+    return ::to_linear_index(inds, _dims);
   }
 
-  inline vec2<int> get_inds(int lin) const {
-    return {lin/_dims[1], lin % _dims[1]};
+  inline vec2<int> to_vector_index(int lin) const {
+    return ::to_vector_index(lin, _dims);
   }
 
   bool in_bounds(vec2<int> inds) const;

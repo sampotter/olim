@@ -9,7 +9,7 @@ template <cost_func F, bool do_adj, bool do_diag>
 void
 olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
 {
-  vec2<int> const inds = this->get_inds(lin_hat);
+  vec2<int> const inds = this->to_vector_index(lin_hat);
 
   for (int k = 0; k < num_nb; ++k) {
     if (this->nb[k] != -1) {

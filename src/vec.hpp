@@ -194,6 +194,26 @@ T disti(vec<T, n> const & u, vec<T, n> const & v) {
   return (u - v).normi();
 }
 
+// TODO: implement both column-major and row-major ordering correctly
+
+inline int to_linear_index(vec2<int> const & inds, vec2<int> const & dims) {
+  // return inds[1] + dims[1]*inds[0];
+  return inds[0] + dims[0]*inds[1];
+}
+
+inline int to_linear_index(vec3<int> const & inds, vec3<int> const & dims) {
+  return inds[0] + dims[0]*(inds[1] + dims[1]*inds[2]);
+}
+
+inline vec2<int> to_vector_index(int lin, vec2<int> const & dims) {
+  // return {lin/dims[1], lin % dims[1]};
+  return {lin % dims[0], lin/dims[0]};
+}
+
+inline vec3<int> to_vector_index(int lin, vec3<int> const & dims) {
+  return {lin % dims[0], lin/dims[0] % dims[1], lin/(dims[0]*dims[1])};
+}
+
 /**
  * Number of bits that are set for integers 0 through 7.
  */

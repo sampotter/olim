@@ -104,7 +104,7 @@ void
 abstract_olim3d<F, base, num_nb>::update_impl(
   int lin_hat, int * nb, int parent, double & U)
 {
-  vec3<int> inds = this->get_inds(lin_hat);
+  vec3<int> inds = this->to_vector_index(lin_hat);
 
 #if COLLECT_STATS
   this->_stats = this->get_stats(i, j, k);
@@ -381,8 +381,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
       for (int l2 = 0; l2 < 26; ++l2) {
         p2 = get_p<3>(l2);
         is_coplanar(l0, l1, l2) = fabs((p0^p1)*p2) < 1e1*tol;
-        geom_wkspcs[linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
-        qr_wkspcs[linear_index(l0, l1, l2)].init(p0, p1, p2);
+        geom_wkspcs[to_linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
+        qr_wkspcs[to_linear_index(l0, l1, l2)].init(p0, p1, p2);
       }
     }
   }
@@ -416,7 +416,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
   if (this->is_factored(lin_hat)) {
     auto fc = this->_lin2fac[lin_hat];
     s_fac = fc->s;
-    p_fac = fc->coords - this->get_inds(lin_hat);
+    p_fac = fc->coords - this->to_vector_index(lin_hat);
   }
 
   // Create a cache for the minimizing lambdas to use for skipping
@@ -492,7 +492,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
       } else {
         F_wkspc<F, 2> w;
         set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
-        int lin = linear_index(l0, l1, l2);
+        int lin = to_linear_index(l0, l1, l2);
         cost_functor<F, 3, 2> func {w, geom_wkspcs[lin]};
         func.qr = &qr_wkspcs[lin];
         updates::tetra<F, 3>()(func, info);

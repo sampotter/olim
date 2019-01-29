@@ -59,7 +59,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < dims[1]; ++i) {
     for (int j = 0; j < dims[0]; ++j) {
-      ptr[linear_index({i, j})] = s(h*i - origin[0], h*j - origin[1]);
+      ptr[to_linear_index({i, j})] = s(h*i - origin[0], h*j - origin[1]);
     }
   }
 }
@@ -103,7 +103,7 @@ marcher<base, num_nb>::add_boundary_node(vec2<int> inds, double value)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
-  int lin = linear_index(inds);
+  int lin = to_linear_index(inds);
   _U[lin] = value;
   _state[lin] = state::trial;
   _heap.insert(lin);
@@ -162,7 +162,7 @@ marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double v
 
     assert(in_bounds({i_, j_}));
 
-    int lin = linear_index({i_, j_});
+    int lin = to_linear_index({i_, j_});
     _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
@@ -176,7 +176,7 @@ marcher<base, num_nb>::set_fac_src(vec2<int> inds, fac_src const * fc)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
-  _lin2fac[linear_index(inds)] = fc;
+  _lin2fac[to_linear_index(inds)] = fc;
 }
 
 template <class base, int num_nb>
@@ -186,7 +186,7 @@ marcher<base, num_nb>::get_value(vec2<int> inds) const
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
-  return _U[linear_index(inds)];
+  return _U[to_linear_index(inds)];
 }
 
 template <class base, int num_nb>
@@ -205,7 +205,7 @@ marcher<base, num_nb>::get_s(vec2<int> inds) const
   assert(in_bounds(inds));
   assert(_s_cache != nullptr);
 #endif
-  return _s_cache[linear_index(inds)];
+  return _s_cache[to_linear_index(inds)];
 }
 
 // TODO: we want to delete this---right now, it's a bit muddled, since
@@ -216,20 +216,20 @@ template <class base, int num_nb>
 bool
 marcher<base, num_nb>::is_valid(vec2<int> inds) const
 {
-  return in_bounds(inds) && _state[linear_index(inds)] == state::valid;
+  return in_bounds(inds) && _state[to_linear_index(inds)] == state::valid;
 }
 
 template <class base, int num_nb>
 void
 marcher<base, num_nb>::visit_neighbors(int lin_center)
 {
-  vec2<int> inds = get_inds(lin_center);
+  vec2<int> inds = to_vector_index(lin_center);
 
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
     vec2<int> inds_ = inds + get_offset<2>(i);
-    int lin = linear_index(inds_);
+    int lin = to_linear_index(inds_);
     if (in_bounds(inds_) && _state[lin] == state::far) {
       _state[lin] = state::trial;
       _heap.insert(lin);
@@ -241,7 +241,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   for (int i = 0; i < 8; ++i) {
     valid_nb[i] = -1;
     vec2<int> inds_ = inds + get_offset<2>(i);
-    int lin = linear_index(inds_);
+    int lin = to_linear_index(inds_);
     if (in_bounds(inds_) && _state[lin] == state::valid) {
       valid_nb[i] = lin;
     }
@@ -310,7 +310,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
       if (!in_bounds(inds_)) continue;
       int parent = get_parent(i);
       set_nb(parent, offset);
-      update(linear_index(inds_));
+      update(to_linear_index(inds_));
     }
   }
 }

@@ -83,7 +83,7 @@ struct abstract_olim3d:
   void dump_stats() const;
   void write_stats_bin(const char * path) const;
   updates::stats<3> * get_stats(int i, int j, int k) const {
-    return &_node_stats[this->linear_index(i, j, k)];
+    return &_node_stats[this->to_linear_index(i, j, k)];
   }
   updates::stats<3> * _stats {nullptr};
   updates::stats<3> * _node_stats {nullptr};
@@ -162,7 +162,7 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
+      vec3<double> p_fac = fc->coords - this->to_vector_index(lin_hat);
       auto info = updates::tri<F, 3>()(
         get_p<3>(l0),
         get_p<3>(l1),
@@ -239,7 +239,7 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         this->nb[l0] != -1 && this->nb[l1] != -1 && this->nb[l2] != -1) {
       auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p_fac = fc->coords - this->get_inds(lin_hat);
+      vec3<double> p_fac = fc->coords - this->to_vector_index(lin_hat);
       geom_fac_wkspc<2> g;
       g.init<3>(get_p<3>(l0), get_p<3>(l1), get_p<3>(l2), p_fac);
       double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
@@ -327,12 +327,12 @@ struct olim3d_hu: public abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>
     return valid_d2[26*l0 + l1];
   }
 
-  inline int linear_index(int l0, int l1, int l2) const {
+  inline int to_linear_index(int l0, int l1, int l2) const {
     return 26*(26*l0 + l1) + l2;
   }
 
   inline bool & is_coplanar(int l0, int l1, int l2) {
-    return coplanar[linear_index(l0, l1, l2)];
+    return coplanar[to_linear_index(l0, l1, l2)];
   }
 
   void update_crtp(double & U);

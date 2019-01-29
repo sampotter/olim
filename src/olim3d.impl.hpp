@@ -374,18 +374,13 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
 
   // Use the scalar triple product (dot(p x q, r)) to check if
   // three points are coplanar.
-  double p0_x_p1[3];
   for (int l0 = 0; l0 < 26; ++l0) {
     p0 = get_p<3>(l0);
     for (int l1 = 0; l1 < 26; ++l1) {
       p1 = get_p<3>(l1);
-      p0_x_p1[0] = p0[1]*p1[2] - p0[2]*p1[1];
-      p0_x_p1[1] = p0[2]*p1[0] - p0[0]*p1[2];
-      p0_x_p1[2] = p0[0]*p1[1] - p0[1]*p1[0];
       for (int l2 = 0; l2 < 26; ++l2) {
         p2 = get_p<3>(l2);
-        is_coplanar(l0, l1, l2) = fabs(
-          p0_x_p1[0]*p2[0] + p0_x_p1[1]*p2[1] + p0_x_p1[2]*p2[2]) < 1e1*tol;
+        is_coplanar(l0, l1, l2) = fabs((p0^p1)*p2) < 1e1*tol;
         geom_wkspcs[linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
         qr_wkspcs[linear_index(l0, l1, l2)].init(p0, p1, p2);
       }

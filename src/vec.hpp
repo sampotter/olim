@@ -154,6 +154,12 @@ OLIM_PRIVATE:
   T _data[n];
 };
 
+template <class T>
+using vec2 = vec<T, 2>;
+
+template <class T>
+using vec3 = vec<T, 3>;
+
 template <class S, class T, int n>
 auto operator-(vec<S, n> const & x, vec<T, n> const & y) {
   vec<decltype(x[0] - y[0]), n> z;
@@ -161,6 +167,11 @@ auto operator-(vec<S, n> const & x, vec<T, n> const & y) {
     z[i] = x[i] - y[i];
   }
   return z;
+}
+
+template <class T>
+vec3<T> operator^(vec3<T> const & x, vec3<T> const & y) {
+  return {x[1]*y[2] - x[2]*y[1], x[2]*y[0] - x[0]*y[2], x[0]*y[1] - x[1]*y[0]};
 }
 
 template <class T, int n>
@@ -198,8 +209,3 @@ constexpr int dot(int p, int q) {
   return nbits[p & q];
 }
 
-template <class T>
-using vec2 = vec<T, 2>;
-
-template <class T>
-using vec3 = vec<T, 3>;

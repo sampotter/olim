@@ -65,6 +65,7 @@
   20. [ ] Should probably remove `marcher::proxy' and just pass a
       pointer to marcher itself, since it can implement the interface
       that `proxy' needs to implement for compatibility with heap
+  21. [ ] Remove initializer_list use... See [[https://stackoverflow.com/questions/36265128/initialize-stdarray-by-parameter-pack-from-arbitrary-index][this]]
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up

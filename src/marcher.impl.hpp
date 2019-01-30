@@ -5,6 +5,7 @@
 
 #include "common.hpp"
 #include "offsets.hpp"
+#include "range.hpp"
 #include "updates.line.hpp"
 
 // TODO: really need an external memory constructor that will let us
@@ -57,10 +58,8 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   init();
 
   double * ptr = const_cast<double *>(_s_cache);
-  for (int i = 0; i < dims[1]; ++i) {
-    for (int j = 0; j < dims[0]; ++j) {
-      ptr[to_linear_index({i, j})] = s(vec2<double> {h*i, h*j} - origin);
-    }
+  for (auto inds: range<2> {dims}) {
+    ptr[to_linear_index(inds)] = s(h*inds - origin);
   }
 }
 
@@ -121,19 +120,6 @@ marcher<base, num_nb>::add_boundary_nodes(
 
 template <class base, int num_nb>
 void
-marcher<base, num_nb>::add_boundary_nodes(
-  std::tuple<int, int, double> const * nodes, int num)
-{
-  for (int k = 0; k < num; ++k) {
-    add_boundary_node(
-      std::get<0>(nodes[k]),
-      std::get<1>(nodes[k]),
-      std::get<2>(nodes[k]));
-  }
-}
-
-template <class base, int num_nb>
-void
 marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double value)
 {
   double h = get_h(), u0 = value, s0 = s;
@@ -149,21 +135,14 @@ marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double v
   int is[2] = {(int) floor(i), (int) floor(i) + 1};
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
 
-  vec2<double> P[4] = {
-    {i - is[0], j - js[0]},
-    {i - is[1], j - js[0]},
-    {i - is[0], j - js[1]},
-    {i - is[1], j - js[1]}
-  };
+  for (auto inds_: range<2> {{2, 2}}) {
+    vec2<int> inds__ = {is[inds_[0]], js[inds_[1]]};
+    assert(in_bounds(inds__));
 
-  for (int a = 0; a < 4; ++a) {
-    int b0 = a & 1, b1 = (a & 2) >> 1;
-    int i_ = is[b0], j_ = js[b1];
+    vec2<double> p = vec2<double> {inds} - inds__;
 
-    assert(in_bounds({i_, j_}));
-
-    int lin = to_linear_index({i_, j_});
-    _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
+    int lin = to_linear_index(inds__);
+    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
@@ -193,8 +172,7 @@ template <class base, int num_nb>
 bool
 marcher<base, num_nb>::in_bounds(vec2<int> inds) const
 {
-  return (unsigned) inds[0] < (unsigned) _dims[0]
-      && (unsigned) inds[1] < (unsigned) _dims[1];
+  return vec2<unsigned> {inds} < vec2<unsigned> {_dims};
 }
 
 template <class base, int num_nb>

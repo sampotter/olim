@@ -12,6 +12,7 @@ struct vec
   vec() {}
 
   vec(std::initializer_list<T> ts) {
+    assert(ts.size() == n);
     std::copy(ts.begin(), ts.end(), _data);
   }
 
@@ -56,6 +57,15 @@ struct vec
       }
     }
     return false;
+  }
+
+  inline bool operator<(vec<T, n> const & x) const {
+    for (int i = 0; i < n; ++i) {
+      if (_data[i] >= x[i]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   inline vec<T, n> & operator*=(T const & t) {

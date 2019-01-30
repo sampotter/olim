@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "common.hpp"
+#include "range.hpp"
 #include "slow.hpp"
 #include "typedefs.h"
 #include "vec.hpp"
@@ -332,41 +333,38 @@ quadrants_are_correct(
 template <class olim3d_t>
 testing::AssertionResult
 octants_are_correct(double diag2val, double diag3val) {
-  int n = 2;
-  double h = 1;
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 2; ++j) {
-      for (int k = 0; k < 2; ++k) {
-        double x0 = j, y0 = i, z0 = k;
-        olim3d_t m {{n, n, n}, h, s0<3>, {x0, y0, z0}};
-        m.add_boundary_node({i, j, k});
-        m.run();
+  vec3<int> dims {{2, 2, 2}};
 
-        auto res = eq_w_rel_tol(m.get_value({i, j, k}), 0.0);
-        if (!res) return res;
+  for (auto inds: range<3> {dims}) {
+    olim3d_t m {dims, 1., s0<3>, vec3<double> {inds}};
+    m.add_boundary_node(inds);
+    m.run();
 
-        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, k}), 1.0);
-        if (!res) return res;
+    int i = inds[0], j = inds[1], k = inds[2];
 
-        res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, k}), 1.0);
-        if (!res) return res;
+    auto res = eq_w_rel_tol(m.get_value({i, j, k}), 0.0);
+    if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value({i, j, (k + 1) % 2}), 1.0);
-        if (!res) return res;
+    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, k}), 1.0);
+    if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, k}), diag2val);
-        if (!res) return res;
+    res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, k}), 1.0);
+    if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, (k + 1) % 2}), diag2val);
-        if (!res) return res;
+    res = eq_w_rel_tol(m.get_value({i, j, (k + 1) % 2}), 1.0);
+    if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, (k + 1) % 2}), diag2val);
-        if (!res) return res;
+    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, k}), diag2val);
+    if (!res) return res;
 
-        res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, (k + 1) % 2}), diag3val);
-        if (!res) return res;
-      }
-    }
+    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, (k + 1) % 2}), diag2val);
+    if (!res) return res;
+
+    res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, (k + 1) % 2}), diag2val);
+    if (!res) return res;
+
+    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, (k + 1) % 2}), diag3val);
+    if (!res) return res;
   }
 
   return testing::AssertionSuccess();
@@ -399,19 +397,19 @@ planes_are_correct(slow<2> s = s0<2>, slow<3> s3d = s0<3>, int n = 51)
   };
 
   // Check that planes are correct:
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      double U = m.get_value({i, j});
+  for (auto inds: range<2> {{n, n}}) {
+    double U = m.get_value(inds);
 
-      auto res = eq_w_rel_tol(U, m3d.get_value({i, j, n/2}));
-      if (!res) return msg(res, i, j, n/2);
+    int i = inds[0], j = inds[1];
 
-      res = eq_w_rel_tol(U, m3d.get_value({i, n/2, j}));
-      if (!res) return msg(res, i, n/2, j);
+    auto res = eq_w_rel_tol(U, m3d.get_value({i, j, n/2}));
+    if (!res) return msg(res, i, j, n/2);
 
-      res = eq_w_rel_tol(U, m3d.get_value({n/2, i, j}));
-      if (!res) return msg(res, n/2, i, j);
-    }
+    res = eq_w_rel_tol(U, m3d.get_value({i, n/2, j}));
+    if (!res) return msg(res, i, n/2, j);
+
+    res = eq_w_rel_tol(U, m3d.get_value({n/2, i, j}));
+    if (!res) return msg(res, n/2, i, j);
   }
 
   return testing::AssertionSuccess();
@@ -585,11 +583,9 @@ olims_agree(slow<2> s = s0, int n = 51) {
   m2.add_boundary_node({i0, i0});
   m2.run();
 
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m1.get_value({i, j}), m2.get_value({i, j}));
-      if (!res) return res;
-    }
+  for (auto inds: range<2> {{n, n}}) {
+    auto res = eq_w_rel_tol(m1.get_value(inds), m2.get_value(inds));
+    if (!res) return res;
   }
 
   return testing::AssertionSuccess();
@@ -608,13 +604,9 @@ void agrees_with_other_olim3d_t(int n = 21) {
   m2.add_boundary_node(i0, i0, i0);
   m2.run();
 
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int k = 0; k < n; ++k) {
-        auto res = eq_w_rel_tol(m1.get_value(i, j, k), m2.get_value(i, j, k));
-        if (!res) return res;
-      }
-    }
+  for (auto inds: range<3> {{n, n, n}}) {
+    auto res = eq_w_rel_tol(m1.get_value(inds), m2.get_value(inds));
+    if (!res) return res;
   }
 }
 

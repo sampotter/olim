@@ -63,17 +63,17 @@ void abstract_olim3d<F, base, num_nb>::init()
 template <class base, int num_nb>
 void abstract_olim3d<base, num_nb>::dump_stats() const
 {
-  printf("depth = %d, width = %d, height = %d\n", this->get_depth(),
-         this->get_width(), this->get_height());
-  for (int k = 0; k < this->get_depth(); ++k) {
-    for (int j = 0; j < this->get_width(); ++j) {
-      for (int i = 0; i < this->get_height(); ++i) {
-        auto stats = this->get_stats(i, j, k);
-        printf("%d, %d, %d: visits = %d, line = %d, tri = %d, tetra = %d\n",
-               i, j, k, stats->num_visits, stats->count[0], stats->count[1],
-               stats->count[2]);
-      }
-    }
+  printf("width = %d, height = %d, depth = %d\n",
+         this->_dims[0], this->_dims[1], this->_dims[2]);
+  for (auto inds: range<3> {this->_dims}) {
+    auto stats = this->get_stats(inds);
+    printf(
+      "%d, %d, %d: visits = %d, line = %d, tri = %d, tetra = %d\n",
+      inds[0], inds[1], inds[2],
+      stats->num_visits,
+      stats->count[0],
+      stats->count[1],
+      stats->count[2]);
   }
 }
 
@@ -83,17 +83,13 @@ void abstract_olim3d<base, num_nb>::write_stats_bin(
 {
   FILE * f = fopen(path, "wb");
   updates::stats<3> * stats = nullptr;
-  for (int k = 0; k < this->get_depth(); ++k) {
-    for (int j = 0; j < this->get_depth(); ++j) {
-      for (int i = 0; i < this->get_depth(); ++i) {
-        stats = get_stats(i, j, k);
-        fwrite(&i, sizeof i, 1, f);
-        fwrite(&j, sizeof j, 1, f);
-        fwrite(&k, sizeof k, 1, f);
-        fwrite(&stats->num_visits, sizeof stats->num_visits, 1, f);
-        fwrite(stats->count, sizeof stats->count[0], 3, f);
-      }
-    }
+  for (auto inds: range<3> {this->_dims}) {
+    stats = get_stats(inds);
+    fwrite(&inds[0], sizeof inds[0], 1, f);
+    fwrite(&inds[1], sizeof inds[1], 1, f);
+    fwrite(&inds[2], sizeof inds[2], 1, f);
+    fwrite(&stats->num_visits, sizeof stats->num_visits, 1, f);
+    fwrite(stats->count, sizeof stats->count[0], 3, f);
   }
   fclose(f);
 }
@@ -348,9 +344,9 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
 
   static constexpr double tol = eps<double>;
 
-  auto const is_valid = [&] (int l0, int l1, int d) -> bool {
-    p0 = get_p<3>(l0);
-    p1 = get_p<3>(l1);
+  auto const is_valid = [&] (vec2<int> inds, int d) -> bool {
+    p0 = get_p<3>(inds[0]);
+    p1 = get_p<3>(inds[1]);
     if (lp_norm == L1) {
       return dist1(p0, p1) <= d + tol;
     } else if (lp_norm == L2) {
@@ -360,31 +356,23 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
     }
   };
 
-  for (int l0 = 0; l0 < 26; ++l0) {
-    for (int l1 = 0; l1 < 26; ++l1) {
-      is_valid_d1(l0, l1) = is_valid(l0, l1, d1);
-    }
+  for (auto inds: range<2> {{26, 26}}) {
+    is_valid_d1(inds) = is_valid(inds, d1);
   }
 
-  for (int l0 = 0; l0 < 26; ++l0) {
-    for (int l1 = 0; l1 < 26; ++l1) {
-      is_valid_d2(l0, l1) = is_valid(l0, l1, d2);
-    }
+  for (auto inds: range<2> {{26, 26}}) {
+    is_valid_d2(inds) = is_valid(inds, d2);
   }
 
   // Use the scalar triple product (dot(p x q, r)) to check if
   // three points are coplanar.
-  for (int l0 = 0; l0 < 26; ++l0) {
-    p0 = get_p<3>(l0);
-    for (int l1 = 0; l1 < 26; ++l1) {
-      p1 = get_p<3>(l1);
-      for (int l2 = 0; l2 < 26; ++l2) {
-        p2 = get_p<3>(l2);
-        is_coplanar(l0, l1, l2) = fabs((p0^p1)*p2) < 1e1*tol;
-        geom_wkspcs[to_linear_index(l0, l1, l2)].template init<3>(p0, p1, p2);
-        qr_wkspcs[to_linear_index(l0, l1, l2)].init(p0, p1, p2);
-      }
-    }
+  for (auto inds: range<3> {{26, 26, 26}}) {
+    p0 = get_p<3>(inds[0]);
+    p1 = get_p<3>(inds[1]);
+    p2 = get_p<3>(inds[2]);
+    is_coplanar(inds) = fabs((p0^p1)*p2) < 1e1*tol;
+    get_geom_wkspc(inds).template init<3>(p0, p1, p2);
+    get_qr_wkspc(inds).init(p0, p1, p2);
   }
 }
 
@@ -427,7 +415,7 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
 
   // Find the minimal triangle update containing l0.
   for (int l = 0; l < 26; ++l) {
-    if (l == l0 || nb[l] == -1 || !is_valid_d1(l0, l)) {
+    if (l == l0 || nb[l] == -1 || !is_valid_d1({l0, l})) {
       continue;
     }
 
@@ -465,8 +453,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
   // and p1.
   for (int l2 = 0; l2 < 26; ++l2) {
     if (l0 == l2 || l1 == l2 || nb[l2] == -1 ||
-        !is_valid_d2(l0, l2) || !is_valid_d2(l1, l2) ||
-        is_coplanar(l0, l1, l2)) {
+        !is_valid_d2({l0, l2}) || !is_valid_d2({l1, l2}) ||
+        is_coplanar({l0, l1, l2})) {
       continue;
     }
 
@@ -475,33 +463,35 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
     updates::info<2> info;
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
-    {
-      double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
-        u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
-        s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
-      if (this->is_factored(lin_hat)) {
-        geom_fac_wkspc<2> g;
-        g.init<3>(p0, p1, p2, p_fac);
-        F_fac_wkspc<F, 2> w;
-        set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
-        cost_functor_fac<F, 3, 2> func {w, g};
-        updates::tetra<F, 3>()(func, info);
-        if (F == MP0) {
-          eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
-        }
-      } else {
-        F_wkspc<F, 2> w;
-        set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
-        int lin = to_linear_index(l0, l1, l2);
-        cost_functor<F, 3, 2> func {w, geom_wkspcs[lin]};
-        func.qr = &qr_wkspcs[lin];
-        updates::tetra<F, 3>()(func, info);
-        if (F == MP0 && info.inbounds()) {
-          func.set_lambda(info.lambda);
-          eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
-        }
+
+    double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
+      u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
+      s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
+
+    if (this->is_factored(lin_hat)) {
+      geom_fac_wkspc<2> g;
+      g.init<3>(p0, p1, p2, p_fac);
+      F_fac_wkspc<F, 2> w;
+      set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
+      cost_functor_fac<F, 3, 2> func {w, g};
+      updates::tetra<F, 3>()(func, info);
+      if (F == MP0) {
+        eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
       }
     }
+    else {
+      F_wkspc<F, 2> w;
+      set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
+      int lin = to_nb_linear_index(vec3<int> {l0, l1, l2});
+      cost_functor<F, 3, 2> func {w, geom_wkspcs[lin]};
+      func.qr = &qr_wkspcs[lin];
+      updates::tetra<F, 3>()(func, info);
+      if (F == MP0 && info.inbounds()) {
+        func.set_lambda(info.lambda);
+        eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
+      }
+    }
+
 #if COLLECT_STATS
     ++this->_stats->count[2];
 #endif

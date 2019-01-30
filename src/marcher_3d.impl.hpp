@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "offsets.hpp"
+#include "range.hpp"
 #include "updates.line.hpp"
 
 template <class base, int num_nb>
@@ -39,14 +40,9 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
 {
   init();
 
-  // Grab a writable pointer to cache the values of `s'.
   double * ptr = const_cast<double *>(_s_cache);
-  for (int k = 0; k < _dims[2]; ++k) {
-    for (int j = 0; j < _dims[1]; ++j) {
-      for (int i = 0; i < _dims[0]; ++i) {
-        ptr[to_linear_index({i, j, k})] = s(vec3<double> {h*i, h*j, h*k} - origin);
-      }
-    }
+  for (auto inds: range<3> {_dims}) {
+    ptr[to_linear_index(inds)] = s(h*inds - origin);
   }
 }
 
@@ -134,25 +130,14 @@ marcher_3d<base, num_nb>::add_boundary_node(vec3<double> coords, double s, doubl
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
   int ks[2] = {(int) floor(k), (int) floor(k) + 1};
 
-  vec3<double> P[8] = {
-    {i - is[0], j - js[0], k - ks[0]},
-    {i - is[1], j - js[0], k - ks[0]},
-    {i - is[0], j - js[1], k - ks[0]},
-    {i - is[1], j - js[1], k - ks[0]},
-    {i - is[0], j - js[0], k - ks[1]},
-    {i - is[1], j - js[0], k - ks[1]},
-    {i - is[0], j - js[1], k - ks[1]},
-    {i - is[1], j - js[1], k - ks[1]},
-  };
+  for (auto inds_: range<3> {{2, 2, 2}}) {
+    vec3<int> inds__ = {is[inds_[0]], js[inds_[1]], ks[inds_[2]]};
+    assert(in_bounds(inds__));
 
-  for (int a = 0; a < 8; ++a) {
-    int b0 = a & 1, b1 = (a & 2) >> 1, b2 = (a & 4) >> 2;
-    int i_ = is[b0], j_ = js[b1], k_ = ks[b2];
+    vec3<double> p = vec3<double> {inds} - inds__;
 
-    assert(in_bounds({i_, j_, k_}));
-
-    int lin = to_linear_index({i_, j_, k_});
-    _U[lin] = updates::line<base::F_>()(P[a].norm2(), u0, _s_cache[lin], s0, h);
+    int lin = to_linear_index(inds__);
+    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s_cache[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
@@ -177,9 +162,7 @@ double marcher_3d<base, num_nb>::get_value(vec3<int> inds) const {
 
 template <class base, int num_nb>
 bool marcher_3d<base, num_nb>::in_bounds(vec3<int> inds) const {
-  return (unsigned) inds[0] < (unsigned) _dims[0]
-      && (unsigned) inds[1] < (unsigned) _dims[1]
-      && (unsigned) inds[2] < (unsigned) _dims[2];
+  return vec3<unsigned> {inds} < vec3<unsigned> {_dims};
 }
 
 template <class base, int num_nb>

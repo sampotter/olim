@@ -319,20 +319,32 @@ struct olim3d_hu: public abstract_olim3d<F, olim3d_hu<F, lp_norm, d1, d2>, 26>
     else return sqrt3;
   };
 
-  inline bool & is_valid_d1(int l0, int l1) {
-    return valid_d1[26*l0 + l1];
+  inline int to_nb_linear_index(vec2<int> inds) {
+    return 26*inds[0] + inds[1];
   }
 
-  inline bool & is_valid_d2(int l0, int l1) {
-    return valid_d2[26*l0 + l1];
+  inline int to_nb_linear_index(vec3<int> inds) {
+    return 26*(26*inds[0] + inds[1]) + inds[2];
   }
 
-  inline int to_linear_index(int l0, int l1, int l2) const {
-    return 26*(26*l0 + l1) + l2;
+  inline geom_wkspc<2> & get_geom_wkspc(vec3<int> inds) {
+    return geom_wkspcs[to_nb_linear_index(inds)];
   }
 
-  inline bool & is_coplanar(int l0, int l1, int l2) {
-    return coplanar[to_linear_index(l0, l1, l2)];
+  inline qr_wkspc<3, 2> & get_qr_wkspc(vec3<int> inds) {
+    return qr_wkspcs[to_nb_linear_index(inds)];
+  }
+
+  inline bool & is_valid_d1(vec2<int> inds) {
+    return valid_d1[to_nb_linear_index(inds)];
+  }
+
+  inline bool & is_valid_d2(vec2<int> inds) {
+    return valid_d2[to_nb_linear_index(inds)];
+  }
+
+  inline bool & is_coplanar(vec3<int> inds) {
+    return coplanar[to_nb_linear_index(inds)];
   }
 
   void update_crtp(double & U);

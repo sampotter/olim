@@ -10,7 +10,7 @@ using olim_t = olim4_rhr;
 using olim3d_t = olim6_rhr;
 
 testing::AssertionResult
-agrees_with_basic_marcher_3d(slow3 s) {
+agrees_with_basic_marcher_3d(slow<3> s) {
   int n = 11;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;

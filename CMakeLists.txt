@@ -53,8 +53,7 @@ set (OLIM_SRC_FILES
   src/basic_marcher.cpp
   src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
-  src/numopt.cpp
-  src/slow.cpp)
+  src/numopt.cpp)
 
 add_library (olim STATIC ${OLIM_SRC_FILES})
 target_compile_features (olim PRIVATE cxx_std_17)

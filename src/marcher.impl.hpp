@@ -43,7 +43,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s_cache)
 
 template <class base, int num_nb>
 marcher<base, num_nb>::marcher(vec2<int> dims, double h,
-                               std::function<double(double, double)> s,
+                               std::function<double(vec2<double>)> s,
                                vec2<double> origin):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
@@ -59,7 +59,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   double * ptr = const_cast<double *>(_s_cache);
   for (int i = 0; i < dims[1]; ++i) {
     for (int j = 0; j < dims[0]; ++j) {
-      ptr[to_linear_index({i, j})] = s(h*i - origin[0], h*j - origin[1]);
+      ptr[to_linear_index({i, j})] = s(vec2<double> {h*i, h*j} - origin);
     }
   }
 }

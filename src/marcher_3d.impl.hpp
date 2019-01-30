@@ -26,7 +26,7 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, no_slow_t const &
 
 template <class base, int num_nb>
 marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
-                                     std::function<double(double, double, double)> s,
+                                     std::function<double(vec3<double>)> s,
                                      vec3<double> origin):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
@@ -40,15 +40,11 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
   init();
 
   // Grab a writable pointer to cache the values of `s'.
-  double x, y, z;
   double * ptr = const_cast<double *>(_s_cache);
   for (int k = 0; k < _dims[2]; ++k) {
-    z = h*k - origin[2];
     for (int j = 0; j < _dims[1]; ++j) {
-      y = h*j - origin[1];
       for (int i = 0; i < _dims[0]; ++i) {
-        x = h*i - origin[0];
-        ptr[to_linear_index({i, j, k})] = s(x, y, z);
+        ptr[to_linear_index({i, j, k})] = s(vec3<double> {h*i, h*j, h*k} - origin);
       }
     }
   }

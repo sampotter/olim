@@ -21,6 +21,3 @@ enum marcher_type {
   OLIM26_RHR,
   SOLIM4_MP0
 };
-
-typedef double(* slow2)(double, double);
-typedef double(* slow3)(double, double, double);

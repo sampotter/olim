@@ -34,7 +34,7 @@ struct marcher
   marcher(vec2<int> dims, double h, no_slow_t const &);
   marcher(vec2<int> dims, double h, double const * s_cache);
   marcher(vec2<int> dims, double h = 1,
-          std::function<double(double, double)> s = static_cast<slow2>(s0),
+          std::function<double(vec2<double>)> s = static_cast<slow<2>>(s0<2>),
           vec2<double> origin = vec2<double>::zero());
   virtual ~marcher();
 

@@ -21,8 +21,8 @@ TEST (olim4_mp1, correct_corners_in_limit) {
 }
 
 TEST (olim4_mp1, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s0));
-  ASSERT_TRUE(result_is_symmetric<olim_t>((slow2) s1));
+  ASSERT_TRUE(result_is_symmetric<olim_t>(s0<2>));
+  ASSERT_TRUE(result_is_symmetric<olim_t>(s1<2>));
 }
 
 TEST (olim4_mp1, solution_is_exact_in_factored_region) {

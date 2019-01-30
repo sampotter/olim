@@ -31,7 +31,7 @@ struct marcher_3d
   marcher_3d();
   marcher_3d(vec3<int> dims, double h, no_slow_t const &);
   marcher_3d(vec3<int> dims, double h = 1,
-             std::function<double(double, double, double)> s = static_cast<slow3>(s0),
+             std::function<double(vec3<double>)> s = static_cast<slow<3>>(s0<3>),
              vec3<double> origin = vec3<double>::zero());
   marcher_3d(vec3<int> dims, double h, double const * s_cache);
   virtual ~marcher_3d();

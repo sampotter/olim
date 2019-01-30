@@ -58,7 +58,7 @@ struct abstract_olim3d:
   { init(); }
 
   abstract_olim3d(vec3<int> dims, double h = 1,
-                  std::function<double(double, double, double)> s = static_cast<slow3>(s0),
+                  std::function<double(vec3<double>)> s = static_cast<slow<3>>(s0<3>),
                   vec3<double> origin = vec3<double>::zero()):
       marcher_3d_t {dims, h, s, origin}
 #if COLLECT_STATS

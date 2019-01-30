@@ -24,8 +24,8 @@ TEST (basic_marcher_3d, planes_are_correct) {
 }
 
 TEST (basic_marcher_3d, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>((slow3) s0));
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>((slow3) s1, 21, 1e-10));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(s0<3>));
+  ASSERT_TRUE(result_is_symmetric<olim3d_t>(s1<3>, 21, 1e-10));
 }
 
 TEST (basic_marcher_3d, two_by_two_by_three_cells_are_correct) {

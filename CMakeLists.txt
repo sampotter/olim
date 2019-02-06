@@ -18,8 +18,6 @@ option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
 option (BUILD_PYTHON_BINDINGS "Build Python bindings to libolim." ON)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
-option (BUILD_TIMINGS "Build the timings executable." OFF)
-option (BUILD_GEN_PLOT_DATA "Build the gen_plot_data executables." OFF)
 option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 
@@ -73,44 +71,17 @@ endif ()
 # do this here.
 if (BUILD_SCRATCH)
   add_executable (scratch misc/cpp/scratch.cpp)
+  target_compile_features (scratch PRIVATE cxx_std_17)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (scratch olim)
-endif ()
-
-if (BUILD_TIMINGS)
-  add_executable (timings misc/cpp/timings.cpp)
-  target_include_directories (timings PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (timings olim)
-endif ()
-
-if (BUILD_GEN_PLOT_DATA)
-  if (COLLECT_STATS)
-    message (WARNING "Building gen_plot_data while collecting "
-      "statistics! This wiill give unreliable timings.")
-  endif ()
-
-  add_executable (gen_plot_data_2d misc/cpp/gen_plot_data_2d.cpp)
-  target_include_directories (gen_plot_data_2d
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_2d olim)
-
-  add_executable (gen_plot_data_3d misc/cpp/gen_plot_data_3d.cpp)
-  target_include_directories (gen_plot_data_3d
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_plot_data_3d olim)
-
-  add_executable (gen_qv_plot_data misc/cpp/gen_qv_plot_data.cpp)
-  target_include_directories (gen_qv_plot_data
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_qv_plot_data olim)
 endif ()
 
 if (BUILD_GEN_STATS)
   if (NOT COLLECT_STATS)
     message (WARNING "Building gen_stats without COLLECT_STATS=ON!")
   endif ()
-
   add_executable (gen_stats misc/cpp/gen_stats.cpp)
+  target_compile_features (gen_stats PRIVATE cxx_std_17)
   target_include_directories (gen_stats
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (gen_stats olim)
@@ -149,6 +120,7 @@ if (${BUILD_PYTHON_BINDINGS})
 	endif ()
   endif ()
   pybind11_add_module (pyolim MODULE ${GENERATED_PYOLIM_CPP_PATH})
+  target_compile_features (pyolim PRIVATE cxx_std_17)
   target_link_libraries (pyolim PRIVATE olim)
   target_include_directories (pyolim PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 endif ()

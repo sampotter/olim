@@ -136,7 +136,7 @@ marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double v
   int js[2] = {(int) floor(j), (int) floor(j) + 1};
 
   for (auto inds_: range<2> {{2, 2}}) {
-    vec2<int> inds__ = {is[inds_[0]], js[inds_[1]]};
+    vec2<int> inds__ {is[inds_[0]], js[inds_[1]]};
     assert(in_bounds(inds__));
 
     vec2<double> p = vec2<double> {inds} - inds__;

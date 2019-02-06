@@ -12,7 +12,7 @@ TEST (range, begin_is_correct) {
 
 TEST (range, end_is_correct) {
   range<2> r {{2, 3}};
-  vec2<int> end {{0, 3}};
+  vec2<int> end {0, 3};
   ASSERT_EQ(*r.end(), end);
 }
 

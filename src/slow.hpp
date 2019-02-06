@@ -51,7 +51,7 @@ inline double s7(vec2<double> x) {
   double aux0 = (x[0] + x[1])/2;
   double aux1 = x[0] + cos(aux0);
   double aux2 = sin(aux0)/2;
-  return vec2<double> {{aux1*(1 - aux2), x[1] - aux1*aux2}}.norm2();
+  return vec2<double> {aux1*(1 - aux2), x[1] - aux1*aux2}.norm2();
 }
 
 inline double f7(vec2<double> x) {

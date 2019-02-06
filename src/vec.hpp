@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <initializer_list>
 
 #include <assert.h>
 #include <math.h>
@@ -11,10 +10,31 @@ struct vec
 {
   vec() {}
 
-  vec(std::initializer_list<T> ts) {
-    assert(ts.size() == n);
-    std::copy(ts.begin(), ts.end(), _data);
+  vec(vec<T, n> const & x) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] = x._data[i];
+    }
   }
+
+  vec(T const * t_ptr) {
+    for (int i = 0; i < n; ++i) {
+      _data[i] = t_ptr[i];
+    }
+  }
+
+  template <class... Ts>
+  vec(T const & t, Ts const &... ts) {
+    static_assert(sizeof...(ts) == n - 1);
+    init(t, ts...);
+  }
+
+  template <class... Ts>
+  inline void init(T const & t, Ts const &... ts) {
+    _data[n - 1 - sizeof...(ts)] = t;
+    init(ts...);
+  }
+
+  inline void init() {}
 
   inline static constexpr vec<T, n> zero() {
     vec<T, n> x;

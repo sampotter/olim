@@ -333,7 +333,7 @@ quadrants_are_correct(
 template <class olim3d_t>
 testing::AssertionResult
 octants_are_correct(double diag2val, double diag3val) {
-  vec3<int> dims {{2, 2, 2}};
+  vec3<int> dims {2, 2, 2};
 
   for (auto inds: range<3> {dims}) {
     olim3d_t m {dims, 1., s0<3>, vec3<double> {inds}};

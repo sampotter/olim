@@ -9,7 +9,7 @@
 #include "updates.line.hpp"
 
 // TODO: really need an external memory constructor that will let us
-// use external memory somewhere for _s_cache and _U so we don't have
+// use external memory somewhere for _s and _U so we don't have
 // to double up on these...
 
 template <class base, int num_nb>
@@ -17,7 +17,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h, no_slow_t const &):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -27,11 +27,11 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h, no_slow_t const &):
 }
 
 template <class base, int num_nb>
-marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s_cache):
+marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -39,7 +39,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h, double const * s_cache)
 {
   init();
 
-  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*_size);
+  memcpy((void *) _s, (void *) s, sizeof(double)*_size);
 }
 
 template <class base, int num_nb>
@@ -49,7 +49,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -57,7 +57,7 @@ marcher<base, num_nb>::marcher(vec2<int> dims, double h,
 {
   init();
 
-  double * ptr = const_cast<double *>(_s_cache);
+  double * ptr = const_cast<double *>(_s);
   for (auto inds: range<2> {dims}) {
     ptr[to_linear_index(inds)] = s(h*inds - origin);
   }
@@ -67,7 +67,7 @@ template <class base, int num_nb>
 marcher<base, num_nb>::~marcher()
 {
   delete[] _U;
-  delete[] _s_cache;
+  delete[] _s;
   delete[] _state;
   delete[] _heap_pos;
 }
@@ -142,7 +142,7 @@ marcher<base, num_nb>::add_boundary_node(vec2<double> coords, double s, double v
     vec2<double> p = vec2<double> {inds} - inds__;
 
     int lin = to_linear_index(inds__);
-    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s_cache[lin], s0, h);
+    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
@@ -181,9 +181,9 @@ marcher<base, num_nb>::get_s(vec2<int> inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
-  assert(_s_cache != nullptr);
+  assert(_s != nullptr);
 #endif
-  return _s_cache[to_linear_index(inds)];
+  return _s[to_linear_index(inds)];
 }
 
 // TODO: we want to delete this---right now, it's a bit muddled, since
@@ -254,7 +254,7 @@ marcher<base, num_nb>::visit_neighbors(int lin_center)
   // adjusts its position in the heap.
   auto const update = [&] (int lin_hat) {
     auto U = inf<double>;
-    static_cast<base *>(this)->s_hat = _s_cache[lin_hat];
+    static_cast<base *>(this)->s_hat = _s[lin_hat];
     update_impl(lin_hat, U);
     if (U < _U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO

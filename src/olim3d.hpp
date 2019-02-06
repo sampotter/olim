@@ -66,8 +66,8 @@ struct abstract_olim3d:
 #endif
   { init(); }
 
-  abstract_olim3d(vec3<int> dims, double h, double const * s_cache):
-      marcher_3d_t {dims, h, s_cache}
+  abstract_olim3d(vec3<int> dims, double h, double const * s):
+      marcher_3d_t {dims, h, s}
 #if COLLECT_STATS
       , _node_stats {new updates::stats<3>[dims.product()]}
 #endif

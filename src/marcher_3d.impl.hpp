@@ -16,7 +16,7 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, no_slow_t const &
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -32,7 +32,7 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -40,18 +40,18 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h,
 {
   init();
 
-  double * ptr = const_cast<double *>(_s_cache);
+  double * ptr = const_cast<double *>(_s);
   for (auto inds: range<3> {_dims}) {
     ptr[to_linear_index(inds)] = s(h*inds - origin);
   }
 }
 
 template <class base, int num_nb>
-marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, double const * s_cache):
+marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, double const * s):
   _size {dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
-  _s_cache {new double[_size]},
+  _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
   _h {h},
@@ -59,14 +59,14 @@ marcher_3d<base, num_nb>::marcher_3d(vec3<int> dims, double h, double const * s_
 {
   init();
 
-  memcpy((void *) _s_cache, (void *) s_cache, sizeof(double)*_size);
+  memcpy((void *) _s, (void *) s, sizeof(double)*_size);
 }
 
 template <class base, int num_nb>
 marcher_3d<base, num_nb>::~marcher_3d()
 {
   delete[] _U;
-  delete[] _s_cache;
+  delete[] _s;
   delete[] _state;
   delete[] _heap_pos;
 }
@@ -137,7 +137,7 @@ marcher_3d<base, num_nb>::add_boundary_node(vec3<double> coords, double s, doubl
     vec3<double> p = vec3<double> {inds} - inds__;
 
     int lin = to_linear_index(inds__);
-    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s_cache[lin], s0, h);
+    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s[lin], s0, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
@@ -169,9 +169,9 @@ template <class base, int num_nb>
 double marcher_3d<base, num_nb>::get_s(vec3<int> inds) const {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
-  assert(_s_cache != nullptr);
+  assert(_s != nullptr);
 #endif
-  return _s_cache[to_linear_index(inds)];
+  return _s[to_linear_index(inds)];
 }
 
 // TODO: we want to delete this---right now, it's a bit muddled, since
@@ -230,7 +230,7 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   auto & s_hat = static_cast<base *>(this)->s_hat;
   auto const update = [&] (int lin_hat, int parent) {
     auto U = inf<double>;
-    s_hat = _s_cache[lin_hat];
+    s_hat = _s[lin_hat];
     update_impl(lin_hat, child_nb, parent, U);
     if (U < _U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO

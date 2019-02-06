@@ -32,7 +32,7 @@ struct marcher
   // static constexpr int num_neighbors = base::num_neighbors;
 
   marcher(vec2<int> dims, double h, no_slow_t const &);
-  marcher(vec2<int> dims, double h, double const * s_cache);
+  marcher(vec2<int> dims, double h, double const * s);
   marcher(vec2<int> dims, double h = 1,
           std::function<double(vec2<double>)> s = static_cast<slow<2>>(s0<2>),
           vec2<double> origin = vec2<double>::zero());
@@ -52,8 +52,8 @@ struct marcher
   double get_s(vec2<int> inds) const;
   double get_value(vec2<int> inds) const;
 
-  inline double const * get_s_cache_data() const {
-    return _s_cache;
+  inline double * get_s_ptr() const {
+    return _s;
   }
 
 OLIM_PROTECTED:
@@ -105,7 +105,7 @@ OLIM_PROTECTED:
   heap<int, proxy> _heap;
   
   double * _U {nullptr};
-  double const * _s_cache {nullptr};
+  double * _s {nullptr};
   state * _state {nullptr};
   int * _heap_pos {nullptr};
   double _h {1};

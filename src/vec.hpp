@@ -88,6 +88,15 @@ struct vec
     return true;
   }
 
+  inline bool operator<=(vec<T, n> const & x) const {
+    for (int i = 0; i < n; ++i) {
+      if (_data[i] > x[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   inline vec<T, n> & operator*=(T const & t) {
     for (int i = 0; i < n; ++i) {
       _data[i] *= t;

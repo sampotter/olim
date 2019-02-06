@@ -358,6 +358,8 @@ to_vector_index<ordering::COLUMN_MAJOR>(int lin, vec3<int> dims)
   return {lin % dims[0], lin/dims[0] % dims[1], lin/(dims[0]*dims[1])};
 }
 
+// TODO: really need to find a better home for this stuff
+
 /**
  * Number of bits that are set for integers 0 through 7.
  */

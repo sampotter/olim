@@ -11,7 +11,6 @@
 #include "common.hpp"
 #include "range.hpp"
 #include "slow.hpp"
-#include "typedefs.h"
 #include "vec.hpp"
 
 testing::AssertionResult
@@ -374,12 +373,6 @@ template <class olim, class olim3d_t>
 testing::AssertionResult
 planes_are_correct(slow<2> s = s0<2>, slow<3> s3d = s0<3>, int n = 51)
 {
-  assert(n % 2 == 1);
-
-  assert(n >= 5); // TODO: There are speed functions which break with n =
-                  // 3... TODO: why? does this have to do with how big
-                  // h is? Is some kind of CFL condition violated?
-
   double h = 2.0/(n - 1);
   
   olim m {{n, n}, h, s, {1, 1}};
@@ -396,10 +389,8 @@ planes_are_correct(slow<2> s = s0<2>, slow<3> s3d = s0<3>, int n = 51)
     return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
   };
 
-  // Check that planes are correct:
   for (auto inds: range<2> {{n, n}}) {
     double U = m.get_value(inds);
-
     int i = inds[0], j = inds[1];
 
     auto res = eq_w_rel_tol(U, m3d.get_value({i, j, n/2}));

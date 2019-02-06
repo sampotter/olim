@@ -66,6 +66,9 @@
       pointer to marcher itself, since it can implement the interface
       that `proxy' needs to implement for compatibility with heap
   21. [ ] Remove initializer_list use... See [[https://stackoverflow.com/questions/36265128/initialize-stdarray-by-parameter-pack-from-arbitrary-index][this]]
+  22. [ ] Add a "SHOULD_ASSERT" macro
+  23. [ ] Make a distinction between the `cost_funcs' module and the
+      `quadrature' enum/type
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up

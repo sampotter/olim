@@ -27,7 +27,7 @@ status_e olim_wrapper_run(olim_wrapper_s * w);
 status_e olim_wrapper_add_bd(olim_wrapper_s * w, int * inds, double U);
 status_e olim_wrapper_get_U_ptr(olim_wrapper_s * w, double ** U_ptr);
 status_e olim_wrapper_get_s_ptr(olim_wrapper_s * w, double ** s_ptr);
-  status_e olim_wrapper_get_state_ptr(olim_wrapper_s * w, char ** state_ptr);
+status_e olim_wrapper_get_state_ptr(olim_wrapper_s * w, char ** state_ptr);
 
 #ifdef __cplusplus
 }

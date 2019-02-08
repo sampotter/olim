@@ -16,7 +16,6 @@ endif ()
 
 option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
-option (BUILD_PYTHON_BINDINGS "Build Python bindings to libolim." ON)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
 option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
@@ -88,44 +87,6 @@ if (BUILD_GEN_STATS)
   target_link_libraries (gen_stats olim)
 endif ()
 
-if (${BUILD_PYTHON_BINDINGS})
-  # We use a Python script to generate our interface file to reduce
-  # the amount of boilerplate we need to maintain manually.
-  set (GENERATE_PYOLIM_CPP_SCRIPT generate_pyolim_cpp.py)
-  set (GENERATED_PYOLIM_CPP_PATH
-	${CMAKE_CURRENT_BINARY_DIR}/src/pyolim.cpp)
-  set (GENERATE_PYOLIM_COMMAND
-	./${GENERATE_PYOLIM_CPP_SCRIPT} > ${GENERATED_PYOLIM_CPP_PATH})
-
-  add_custom_command (
-	OUTPUT src/pyolim.cpp
-	COMMAND ${CMAKE_COMMAND} -E copy
-	  ${CMAKE_CURRENT_SOURCE_DIR}/${GENERATE_PYOLIM_CPP_SCRIPT}
-      ${GENERATE_PYOLIM_CPP_SCRIPT}
-    COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_SOURCE_DIR}/pyolim_extra.cpp pyolim_extra.cpp
-	COMMAND ${GENERATE_PYOLIM_COMMAND}
-	DEPENDS ${GENERATE_PYOLIM_CPP_SCRIPT} ${OLIM_SRC_FILES})
-
-  # We probably aren't doing this the best way---as it is, we end up
-  # recompiling all of OLIM_SRC_FILES to do this. Ideally, we want to
-  # statically link the olim target into this module.
-  find_package (pybind11 QUIET)
-  if (NOT ${pybind11_FOUND})
-	message (STATUS "Couldn't find system pybind11 install")
-	if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external/pybind11)
-	  message (FATAL_ERROR "Couldn't find pybind11 submodule")
-	else ()
-	  message (STATUS "Using pybind11 provided by git submodule")
-      add_subdirectory (external/pybind11)
-	endif ()
-  endif ()
-  pybind11_add_module (pyolim MODULE ${GENERATED_PYOLIM_CPP_PATH})
-  target_compile_features (pyolim PRIVATE cxx_std_17)
-  target_link_libraries (pyolim PRIVATE olim)
-  target_include_directories (pyolim PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-endif ()
-
 # We don't use any of these test targets when we're building our
 # Release build, so save time by skipping them.
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
@@ -171,18 +132,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     gtest_discover_tests (${test}.test)
   endforeach ()
-
-  # Now, add our Python tests.
-  if (BUILD_PYTHON_BINDINGS)
-    set (python_tests
-      pyolim)
-    foreach (test ${python_tests})
-      configure_file (
-        ${CMAKE_CURRENT_SOURCE_DIR}/test/${test}.test
-        ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
-      add_test (${test}.test ${CMAKE_CURRENT_BINARY_DIR}/${test}.test)
-    endforeach ()
-  endif ()
 endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 enable_testing ()

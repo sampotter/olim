@@ -10,8 +10,8 @@ template <class marcher_3d>
 void run_marcher_3d(int n) {
   double h = 2./(n - 1);
   int i = n/2;
-  marcher_3d m {n, n, n, h, (slow3) s0, 1., 1., 1.};
-  m.add_boundary_node(i, i, i);
+  marcher_3d m {{n, n, n}, h, (slow<3>) s0<3>, {1., 1., 1.}};
+  m.add_boundary_node({i, i, i});
   m.run();
 }
 

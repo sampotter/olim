@@ -58,6 +58,8 @@ void lagmults<2>(vec2<double> const & lam, vec2<double> const & df,
     }
   }
 
+#if OLIM_DEBUG && !RELWITHDEBINFO
   assert(!isnan(mu[0]));
   assert(!isnan(mu[1]));
+#endif
 }

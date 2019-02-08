@@ -160,7 +160,8 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
     olim3d_hu_rhr
     range
 	updates.tetra
-	updates.tri)
+	updates.tri
+    vec)
   foreach (test ${tests})
 	add_executable (${test}.test test/${test}.test.cpp)
     target_compile_features (${test}.test PRIVATE cxx_std_17)

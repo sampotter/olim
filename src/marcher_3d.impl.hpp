@@ -190,10 +190,12 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   // Stage neighbors.
   for (int i = 0; i < num_nb; ++i) {
     vec3<int> inds_ = inds + get_offset<3>(i);
-    int lin = to_linear_index(inds_);
-    if (in_bounds(inds_) && _state[lin] == state::far) {
-      _state[lin] = state::trial;
-      _heap.insert(lin);
+    if (in_bounds(inds_)) {
+      int lin = to_linear_index(inds_);
+      if (_state[lin] == state::far) {
+        _state[lin] = state::trial;
+        _heap.insert(lin);
+      }
     }
   }
 
@@ -202,9 +204,11 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
   for (int i = 0; i < 26; ++i) {
     valid_nb[i] = -1;
     vec3<int> inds_ = inds + get_offset<3>(i);
-    int lin = to_linear_index(inds_);
-    if (in_bounds(inds_) && _state[lin] == state::valid) {
-      valid_nb[i] = lin;
+    if (in_bounds(inds_)) {
+      int lin = to_linear_index(inds_);
+      if (_state[lin] == state::valid) {
+        valid_nb[i] = lin;
+      }
     }
   }
 
@@ -252,10 +256,11 @@ void marcher_3d<base, num_nb>::visit_neighbors(int lin_center) {
     if (valid_nb[i] == -1) {
       vec3<int> offset = get_offset<3>(i);
       vec3<int> inds_ = inds + offset;
-      if (!in_bounds(inds_)) continue;
-      int parent = get_parent(i);
-      set_child_nb(parent, offset);
-      update(to_linear_index(inds_), parent);
+      if (in_bounds(inds_)) {
+        int parent = get_parent(i);
+        set_child_nb(parent, offset);
+        update(to_linear_index(inds_), parent);
+      }
     }
   }
 }

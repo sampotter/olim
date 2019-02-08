@@ -10,11 +10,7 @@
 #include "common.hpp"
 #include "vec.hpp"
 
-enum class cost_func {mp0, mp1, rhr};
-
-constexpr auto MP0 = cost_func::mp0;
-constexpr auto MP1 = cost_func::mp1;
-constexpr auto RHR = cost_func::rhr;
+#include "type.h"
 
 constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;

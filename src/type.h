@@ -1,3 +1,14 @@
 #pragma once
 
-enum class state: char {valid, trial, far};
+enum neighborhood {
+  OLIM4
+};
+
+/**
+ * TODO: `cost_func' -> `quadrature'
+ */
+enum cost_func {
+  MP0,
+  MP1,
+  RHR
+};

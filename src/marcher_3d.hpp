@@ -6,7 +6,7 @@
 
 #include "heap.hpp"
 #include "slow.hpp"
-#include "typedefs.h"
+#include "state.hpp"
 #include "vec.hpp"
 
 struct fac_src_3d

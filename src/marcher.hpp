@@ -52,8 +52,21 @@ struct marcher
   double get_s(vec2<int> inds) const;
   double get_value(vec2<int> inds) const;
 
+  inline double * get_U_ptr() const {
+    printf("get_U_ptr(): %p\n", _U);
+    return _U;
+  }
+
   inline double * get_s_ptr() const {
     return _s;
+  }
+
+  inline char * get_state_ptr() const {
+    return reinterpret_cast<char *>(_state);
+  }
+
+  inline void set_s_ptr(double * s) {
+    _s = s;
   }
 
 OLIM_PROTECTED:

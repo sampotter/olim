@@ -94,7 +94,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
         if use_local_factoring:
             fc = olim.FacCenter(i0, j0, slow(0, 0))
             for i, j in zip(I, J):
-                o.set_node_fac_center(i, j, fc)
+                o.set_fac_src(i, j, fc)
         o.add_boundary_node(i0, j0)
 
         t0 = time.perf_counter()

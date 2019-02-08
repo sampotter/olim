@@ -98,7 +98,7 @@ for (slow, Olim), (ind, n) in itertools.product(Slows_by_Olims, enumerate(N)):
         if not args.no_factoring:
             fc = olim.FacCenter3d(i0, j0, k0, slow(0, 0, 0))
             for i, j, k in zip(I, J, K):
-                o.set_node_fac_center(i, j, k, fc)
+                o.set_fac_src(i, j, k, fc)
         o.add_boundary_node(i0, j0, k0)
 
         t0 = time.perf_counter()

@@ -21,8 +21,11 @@ option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 
 include (CMakeDependentOption)
-include (GoogleTest)
-include (gtest.cmake)
+
+if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+  include (GoogleTest)
+  include (gtest.cmake)
+endif ()
 
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -132,6 +135,6 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
       ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
     gtest_discover_tests (${test}.test)
   endforeach ()
-endif (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
+endif ()
 
 enable_testing ()

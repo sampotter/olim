@@ -9,6 +9,11 @@ from libc.stdlib cimport malloc, free
 
 class Neighborhood(Enum):
     OLIM4 = 0
+    OLIM8 = 1
+    OLIM6 = 2
+    OLIM18 = 3
+    OLIM26 = 4
+    OLIM3D = 5
 
 class Quadrature(Enum):
     MP0 = 0
@@ -19,6 +24,11 @@ cdef extern from "olim_wrapper.h":
 
     enum neighborhood:
         OLIM4
+        OLIM8
+        OLIM6
+        OLIM18
+        OLIM26
+        OLIM3D
 
     enum cost_func:
         RHR

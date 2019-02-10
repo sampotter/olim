@@ -1,7 +1,12 @@
 #pragma once
 
 enum neighborhood {
-  OLIM4
+  OLIM4,
+  OLIM8,
+  OLIM6,
+  OLIM18,
+  OLIM26,
+  OLIM3D
 };
 
 /**

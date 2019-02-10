@@ -48,8 +48,6 @@ endif ()
 configure_file (src/config.hpp.in src/config.hpp)
 
 set (OLIM_SRC_FILES
-  src/basic_marcher.cpp
-  src/basic_marcher_3d.cpp
   src/cost_funcs.cpp
   src/numopt.cpp
   src/olim_wrapper.cpp)
@@ -83,10 +81,9 @@ if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   # First, take care of our C++ tests.
   find_package (Threads) # required by gtest
   set (tests
-	basic_marcher
-	basic_marcher_3d
     bitops
     cost_funcs
+    fmm
 	heap
     hybrid
     marcher

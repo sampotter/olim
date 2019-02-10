@@ -74,9 +74,9 @@
       `quadrature' enum/type
   24. [ ] Remove all instances of `virtual'!
   25. [ ] See comment about constructors in `abstract_olim3d'
-  26. [ ] Combine basic_marcher and basic_marcher_3d
-      - [ ] name `fmm'
-      - [ ] specialize for 2d and 3d
+  26. [-] Combine basic_marcher and basic_marcher_3d
+      - [X] name `fmm'
+      - [X] specialize for 2d and 3d
       - [ ] add an algorithm for general dimension
 
 * General optimization

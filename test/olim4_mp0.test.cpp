@@ -1,4 +1,4 @@
-#include "basic_marcher.hpp"
+#include "fmm.hpp"
 #include "olim.hpp"
 #include "olim.test.common.hpp"
 
@@ -26,7 +26,7 @@ TEST (olim4_mp0, result_is_symmetric) {
 }
 
 TEST (olim4_rhr, agrees_with_basic_marcher) {
-  auto res = olims_agree<olim_t, basic_marcher>(s0<2>);
+  auto res = olims_agree<olim_t, fmm<2>>(s0<2>);
   ASSERT_TRUE(res);
 }
 

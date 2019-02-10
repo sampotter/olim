@@ -1,6 +1,6 @@
 #include "olim.test.common.hpp"
 
-#include <basic_marcher_3d.hpp>
+#include <fmm.hpp>
 #include <olim.hpp>
 #include <olim3d.hpp>
 
@@ -10,12 +10,12 @@ using olim_t = olim4_rhr;
 using olim3d_t = olim6_rhr;
 
 testing::AssertionResult
-agrees_with_basic_marcher_3d(slow<3> s) {
+agrees_with_fmm3(slow<3> s) {
   int n = 11;
   double h = 2.0/(n - 1);
   int i0 = (n - 1)/2, j0 = i0, k0 = i0;
 
-  basic_marcher_3d m3d {{n, n, n}, h, s, {1, 1, 1}};
+  fmm<3> m3d {{n, n, n}, h, s, {1, 1, 1}};
   m3d.add_boundary_node({i0, j0, k0});
   m3d.run();
 
@@ -57,9 +57,9 @@ TEST (MARCHER, result_is_symmetric) {
   }
 }
 
-TEST (MARCHER, agrees_with_basic_marcher_3d) {
+TEST (MARCHER, agrees_with_fmm3) {
   for (int i = 0; i < 2; ++i) {
-    ASSERT_TRUE(agrees_with_basic_marcher_3d(slow3s[i]));
+    ASSERT_TRUE(agrees_with_fmm3(slow3s[i]));
   }
 }
 

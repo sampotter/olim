@@ -1,9 +1,5 @@
 #pragma once
 
-#if COLLECT_STATS
-#    include <cstdio>
-#endif
-
 #include <src/config.hpp>
 
 #include "offsets.hpp"
@@ -53,74 +49,9 @@ constexpr int oct2inds[8][7] = {
   {ind::U, ind::UN, ind::N, ind::NW, ind::W, ind::UW, ind::UNW}
 };
 
-template <cost_func F, class base, int num_nb>
-void abstract_olim3d<F, base, num_nb>::init()
-{
-  static_cast<base *>(this)->init_crtp();
-}
-
-#if COLLECT_STATS
-template <class base, int num_nb>
-void abstract_olim3d<base, num_nb>::dump_stats() const
-{
-  printf("width = %d, height = %d, depth = %d\n",
-         this->_dims[0], this->_dims[1], this->_dims[2]);
-  for (auto inds: range<3> {this->_dims}) {
-    auto stats = this->get_stats(inds);
-    printf(
-      "%d, %d, %d: visits = %d, line = %d, tri = %d, tetra = %d\n",
-      inds[0], inds[1], inds[2],
-      stats->num_visits,
-      stats->count[0],
-      stats->count[1],
-      stats->count[2]);
-  }
-}
-
-template <class base, int num_nb>
-void abstract_olim3d<base, num_nb>::write_stats_bin(
-  const char * path) const
-{
-  FILE * f = fopen(path, "wb");
-  updates::stats<3> * stats = nullptr;
-  for (auto inds: range<3> {this->_dims}) {
-    stats = get_stats(inds);
-    fwrite(&inds[0], sizeof inds[0], 1, f);
-    fwrite(&inds[1], sizeof inds[1], 1, f);
-    fwrite(&inds[2], sizeof inds[2], 1, f);
-    fwrite(&stats->num_visits, sizeof stats->num_visits, 1, f);
-    fwrite(stats->count, sizeof stats->count[0], 3, f);
-  }
-  fclose(f);
-}
-#endif // COLLECT_STATS
-
-template <cost_func F, class base, int num_nb>
-void
-abstract_olim3d<F, base, num_nb>::update_impl(
-  int lin_hat, int * nb, int parent, double & U)
-{
-  vec3<int> inds = this->to_vector_index(lin_hat);
-
-#if COLLECT_STATS
-  this->_stats = this->get_stats(i, j, k);
-  ++this->_stats->num_visits;
-#endif
-
-  for (int i = 0; i < num_nb; ++i) {
-    if (nb[i] != -1) {
-      this->s[i] = this->get_s(inds + get_offset<3>(i));
-    }
-  }
-
-  static_cast<base *>(this)->lin_hat = lin_hat;
-  static_cast<base *>(this)->nb = nb;
-  static_cast<base *>(this)->parent = parent;
-  static_cast<base *>(this)->update_crtp(U);
-}
-
 template <cost_func F, class groups>
-void olim3d_bv<F, groups>::update_crtp(double & U)
+void olim3d_bv<F, groups>::update_impl(
+  int lin_hat, int const * nb, int parent, double & U)
 {
   using std::min;
 
@@ -133,11 +64,11 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
   {
     double U_ = inf<double>;
     if (parent < 6) {
-      line<1>(parent, U_);
+      line<1>(lin_hat, nb, parent, U_);
     } else if (groups::num_nb > 6 && parent < 18) {
-      line<2>(parent, U_);
+      line<2>(lin_hat, nb, parent, U_);
     } else if (groups::num_nb > 18) {
-      line<3>(parent, U_);
+      line<3>(lin_hat, nb, parent, U_);
     }
     assert(!isinf(U_));
     U = min(U, U_);
@@ -161,49 +92,49 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::group_I) {
-        tetra_fac<1, 2, 3>(U);
-        tetra_fac<3, 4, 5>(U);
-        tetra_fac<5, 0, 1>(U);
+        tetra_fac<1, 2, 3>(lin_hat, nb, parent, U);
+        tetra_fac<3, 4, 5>(lin_hat, nb, parent, U);
+        tetra_fac<5, 0, 1>(lin_hat, nb, parent, U);
       }
       if (groups::group_II) {
-        tetra_fac<0, 1, 3>(U);
-        tetra_fac<1, 2, 4>(U);
-        tetra_fac<2, 3, 5>(U);
-        tetra_fac<3, 4, 0>(U);
-        tetra_fac<4, 5, 1>(U);
-        tetra_fac<5, 0, 2>(U);
+        tetra_fac<0, 1, 3>(lin_hat, nb, parent, U);
+        tetra_fac<1, 2, 4>(lin_hat, nb, parent, U);
+        tetra_fac<2, 3, 5>(lin_hat, nb, parent, U);
+        tetra_fac<3, 4, 0>(lin_hat, nb, parent, U);
+        tetra_fac<4, 5, 1>(lin_hat, nb, parent, U);
+        tetra_fac<5, 0, 2>(lin_hat, nb, parent, U);
       }
       if (groups::group_III) {
-        tetra_fac<0, 1, 4>(U);
-        tetra_fac<1, 2, 5>(U);
-        tetra_fac<2, 3, 0>(U);
-        tetra_fac<3, 4, 1>(U);
-        tetra_fac<4, 5, 2>(U);
-        tetra_fac<5, 0, 3>(U);
+        tetra_fac<0, 1, 4>(lin_hat, nb, parent, U);
+        tetra_fac<1, 2, 5>(lin_hat, nb, parent, U);
+        tetra_fac<2, 3, 0>(lin_hat, nb, parent, U);
+        tetra_fac<3, 4, 1>(lin_hat, nb, parent, U);
+        tetra_fac<4, 5, 2>(lin_hat, nb, parent, U);
+        tetra_fac<5, 0, 3>(lin_hat, nb, parent, U);
       }
       if (groups::group_IV_a) {
-        tetra_fac<0, 2, 4>(U);
+        tetra_fac<0, 2, 4>(lin_hat, nb, parent, U);
       }
       if (groups::group_IV_b) {
-        tetra_fac<1, 3, 5>(U);
+        tetra_fac<1, 3, 5>(lin_hat, nb, parent, U);
       }
       if (groups::group_V) {
-        tetra_fac<0, 1, 6>(U);
-        tetra_fac<1, 2, 6>(U);
-        tetra_fac<2, 3, 6>(U);
-        tetra_fac<3, 4, 6>(U);
-        tetra_fac<4, 5, 6>(U);
-        tetra_fac<5, 0, 6>(U);
+        tetra_fac<0, 1, 6>(lin_hat, nb, parent, U);
+        tetra_fac<1, 2, 6>(lin_hat, nb, parent, U);
+        tetra_fac<2, 3, 6>(lin_hat, nb, parent, U);
+        tetra_fac<3, 4, 6>(lin_hat, nb, parent, U);
+        tetra_fac<4, 5, 6>(lin_hat, nb, parent, U);
+        tetra_fac<5, 0, 6>(lin_hat, nb, parent, U);
       }
       if (groups::group_VI_a) {
-        tetra_fac<0, 2, 6>(U);
-        tetra_fac<2, 4, 6>(U);
-        tetra_fac<4, 0, 6>(U);
+        tetra_fac<0, 2, 6>(lin_hat, nb, parent, U);
+        tetra_fac<2, 4, 6>(lin_hat, nb, parent, U);
+        tetra_fac<4, 0, 6>(lin_hat, nb, parent, U);
       }
       if (groups::group_VI_b) {
-        tetra_fac<1, 3, 6>(U);
-        tetra_fac<3, 5, 6>(U);
-        tetra_fac<5, 1, 6>(U);
+        tetra_fac<1, 3, 6>(lin_hat, nb, parent, U);
+        tetra_fac<3, 5, 6>(lin_hat, nb, parent, U);
+        tetra_fac<5, 1, 6>(lin_hat, nb, parent, U);
       }
     }
 
@@ -213,32 +144,32 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::do_tri11_updates) {
-        tri_fac<0, 2>(U);
-        tri_fac<2, 4>(U);
-        tri_fac<4, 0>(U);
+        tri_fac<0, 2>(lin_hat, nb, parent, U);
+        tri_fac<2, 4>(lin_hat, nb, parent, U);
+        tri_fac<4, 0>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri12_updates) {
-        tri_fac<0, 1>(U);
-        tri_fac<2, 1>(U);
-        tri_fac<2, 3>(U);
-        tri_fac<4, 3>(U);
-        tri_fac<4, 5>(U);
-        tri_fac<0, 5>(U);
+        tri_fac<0, 1>(lin_hat, nb, parent, U);
+        tri_fac<2, 1>(lin_hat, nb, parent, U);
+        tri_fac<2, 3>(lin_hat, nb, parent, U);
+        tri_fac<4, 3>(lin_hat, nb, parent, U);
+        tri_fac<4, 5>(lin_hat, nb, parent, U);
+        tri_fac<0, 5>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri13_updates) {
-        tri_fac<0, 6>(U);
-        tri_fac<2, 6>(U);
-        tri_fac<4, 6>(U);
+        tri_fac<0, 6>(lin_hat, nb, parent, U);
+        tri_fac<2, 6>(lin_hat, nb, parent, U);
+        tri_fac<4, 6>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri22_updates) {
-        tri_fac<1, 3>(U);
-        tri_fac<3, 5>(U);
-        tri_fac<5, 1>(U);
+        tri_fac<1, 3>(lin_hat, nb, parent, U);
+        tri_fac<3, 5>(lin_hat, nb, parent, U);
+        tri_fac<5, 1>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri23_updates) {
-        tri_fac<1, 6>(U);
-        tri_fac<3, 6>(U);
-        tri_fac<5, 6>(U);
+        tri_fac<1, 6>(lin_hat, nb, parent, U);
+        tri_fac<3, 6>(lin_hat, nb, parent, U);
+        tri_fac<5, 6>(lin_hat, nb, parent, U);
       }
     }
   }
@@ -249,49 +180,49 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::group_I) {
-        tetra<1, 2, 3, 0b011, 0b010, 0b110>(U);
-        tetra<3, 4, 5, 0b110, 0b100, 0b101>(U);
-        tetra<5, 0, 1, 0b101, 0b001, 0b011>(U);
+        tetra<1, 2, 3, 0b011, 0b010, 0b110>(lin_hat, nb, parent, U);
+        tetra<3, 4, 5, 0b110, 0b100, 0b101>(lin_hat, nb, parent, U);
+        tetra<5, 0, 1, 0b101, 0b001, 0b011>(lin_hat, nb, parent, U);
       }
       if (groups::group_II) {
-        tetra<0, 1, 3, 0b001, 0b011, 0b110>(U);
-        tetra<1, 2, 4, 0b011, 0b010, 0b100>(U);
-        tetra<2, 3, 5, 0b010, 0b110, 0b101>(U);
-        tetra<3, 4, 0, 0b110, 0b100, 0b001>(U);
-        tetra<4, 5, 1, 0b100, 0b101, 0b011>(U);
-        tetra<5, 0, 2, 0b101, 0b001, 0b010>(U);
+        tetra<0, 1, 3, 0b001, 0b011, 0b110>(lin_hat, nb, parent, U);
+        tetra<1, 2, 4, 0b011, 0b010, 0b100>(lin_hat, nb, parent, U);
+        tetra<2, 3, 5, 0b010, 0b110, 0b101>(lin_hat, nb, parent, U);
+        tetra<3, 4, 0, 0b110, 0b100, 0b001>(lin_hat, nb, parent, U);
+        tetra<4, 5, 1, 0b100, 0b101, 0b011>(lin_hat, nb, parent, U);
+        tetra<5, 0, 2, 0b101, 0b001, 0b010>(lin_hat, nb, parent, U);
       }
       if (groups::group_III) {
-        tetra<0, 1, 4, 0b001, 0b011, 0b100>(U);
-        tetra<1, 2, 5, 0b011, 0b010, 0b101>(U);
-        tetra<2, 3, 0, 0b010, 0b110, 0b001>(U);
-        tetra<3, 4, 1, 0b110, 0b100, 0b011>(U);
-        tetra<4, 5, 2, 0b100, 0b101, 0b010>(U);
-        tetra<5, 0, 3, 0b101, 0b001, 0b110>(U);
+        tetra<0, 1, 4, 0b001, 0b011, 0b100>(lin_hat, nb, parent, U);
+        tetra<1, 2, 5, 0b011, 0b010, 0b101>(lin_hat, nb, parent, U);
+        tetra<2, 3, 0, 0b010, 0b110, 0b001>(lin_hat, nb, parent, U);
+        tetra<3, 4, 1, 0b110, 0b100, 0b011>(lin_hat, nb, parent, U);
+        tetra<4, 5, 2, 0b100, 0b101, 0b010>(lin_hat, nb, parent, U);
+        tetra<5, 0, 3, 0b101, 0b001, 0b110>(lin_hat, nb, parent, U);
       }
       if (groups::group_IV_a) {
-        tetra<0, 2, 4, 0b001, 0b010, 0b100>(U);
+        tetra<0, 2, 4, 0b001, 0b010, 0b100>(lin_hat, nb, parent, U);
       }
       if (groups::group_IV_b) {
-        tetra<1, 3, 5, 0b011, 0b110, 0b101>(U);
+        tetra<1, 3, 5, 0b011, 0b110, 0b101>(lin_hat, nb, parent, U);
       }
       if (groups::group_V) {
-        tetra<0, 1, 6, 0b001, 0b011, 0b111>(U);
-        tetra<1, 2, 6, 0b011, 0b010, 0b111>(U);
-        tetra<2, 3, 6, 0b010, 0b110, 0b111>(U);
-        tetra<3, 4, 6, 0b110, 0b100, 0b111>(U);
-        tetra<4, 5, 6, 0b100, 0b101, 0b111>(U);
-        tetra<5, 0, 6, 0b101, 0b001, 0b111>(U);
+        tetra<0, 1, 6, 0b001, 0b011, 0b111>(lin_hat, nb, parent, U);
+        tetra<1, 2, 6, 0b011, 0b010, 0b111>(lin_hat, nb, parent, U);
+        tetra<2, 3, 6, 0b010, 0b110, 0b111>(lin_hat, nb, parent, U);
+        tetra<3, 4, 6, 0b110, 0b100, 0b111>(lin_hat, nb, parent, U);
+        tetra<4, 5, 6, 0b100, 0b101, 0b111>(lin_hat, nb, parent, U);
+        tetra<5, 0, 6, 0b101, 0b001, 0b111>(lin_hat, nb, parent, U);
       }
       if (groups::group_VI_a) {
-        tetra<0, 2, 6, 0b001, 0b010, 0b111>(U);
-        tetra<2, 4, 6, 0b010, 0b100, 0b111>(U);
-        tetra<4, 0, 6, 0b100, 0b001, 0b111>(U);
+        tetra<0, 2, 6, 0b001, 0b010, 0b111>(lin_hat, nb, parent, U);
+        tetra<2, 4, 6, 0b010, 0b100, 0b111>(lin_hat, nb, parent, U);
+        tetra<4, 0, 6, 0b100, 0b001, 0b111>(lin_hat, nb, parent, U);
       }
       if (groups::group_VI_b) {
-        tetra<1, 3, 6, 0b011, 0b110, 0b111>(U);
-        tetra<3, 5, 6, 0b110, 0b101, 0b111>(U);
-        tetra<5, 1, 6, 0b101, 0b011, 0b111>(U);
+        tetra<1, 3, 6, 0b011, 0b110, 0b111>(lin_hat, nb, parent, U);
+        tetra<3, 5, 6, 0b110, 0b101, 0b111>(lin_hat, nb, parent, U);
+        tetra<5, 1, 6, 0b101, 0b011, 0b111>(lin_hat, nb, parent, U);
       }
     }
 
@@ -301,39 +232,39 @@ void olim3d_bv<F, groups>::update_crtp(double & U)
     for (octant = 0; octant < 8; ++octant) {
       inds = oct2inds[octant];
       if (groups::do_tri11_updates) {
-        tri<0, 2, 0b001, 0b010>(U);
-        tri<2, 4, 0b010, 0b100>(U);
-        tri<4, 0, 0b100, 0b001>(U);
+        tri<0, 2, 0b001, 0b010>(lin_hat, nb, parent, U);
+        tri<2, 4, 0b010, 0b100>(lin_hat, nb, parent, U);
+        tri<4, 0, 0b100, 0b001>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri12_updates) {
-        tri<0, 1, 0b001, 0b011>(U);
-        tri<2, 1, 0b010, 0b011>(U);
-        tri<2, 3, 0b010, 0b110>(U);
-        tri<4, 3, 0b100, 0b110>(U);
-        tri<4, 5, 0b100, 0b101>(U);
-        tri<0, 5, 0b001, 0b101>(U);
+        tri<0, 1, 0b001, 0b011>(lin_hat, nb, parent, U);
+        tri<2, 1, 0b010, 0b011>(lin_hat, nb, parent, U);
+        tri<2, 3, 0b010, 0b110>(lin_hat, nb, parent, U);
+        tri<4, 3, 0b100, 0b110>(lin_hat, nb, parent, U);
+        tri<4, 5, 0b100, 0b101>(lin_hat, nb, parent, U);
+        tri<0, 5, 0b001, 0b101>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri13_updates) {
-        tri<0, 6, 0b001, 0b111>(U);
-        tri<2, 6, 0b010, 0b111>(U);
-        tri<4, 6, 0b100, 0b111>(U);
+        tri<0, 6, 0b001, 0b111>(lin_hat, nb, parent, U);
+        tri<2, 6, 0b010, 0b111>(lin_hat, nb, parent, U);
+        tri<4, 6, 0b100, 0b111>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri22_updates) {
-        tri<1, 3, 0b011, 0b110>(U);
-        tri<3, 5, 0b110, 0b101>(U);
-        tri<5, 1, 0b101, 0b011>(U);
+        tri<1, 3, 0b011, 0b110>(lin_hat, nb, parent, U);
+        tri<3, 5, 0b110, 0b101>(lin_hat, nb, parent, U);
+        tri<5, 1, 0b101, 0b011>(lin_hat, nb, parent, U);
       }
       if (groups::do_tri23_updates) {
-        tri<1, 6, 0b011, 0b111>(U);
-        tri<3, 6, 0b110, 0b111>(U);
-        tri<5, 6, 0b101, 0b111>(U);
+        tri<1, 6, 0b011, 0b111>(lin_hat, nb, parent, U);
+        tri<3, 6, 0b110, 0b111>(lin_hat, nb, parent, U);
+        tri<5, 6, 0b101, 0b111>(lin_hat, nb, parent, U);
       }
     }
   }
 }
 
 template <cost_func F, int lp_norm, int d1, int d2>
-void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
+void olim3d_hu<F, lp_norm, d1, d2>::init()
 {
   // TODO: only allocate once
   valid_d1 = new bool[26*26];
@@ -377,7 +308,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::init_crtp()
 }
 
 template <cost_func F, int lp_norm, int d1, int d2>
-void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
+void olim3d_hu<F, lp_norm, d1, d2>::update_impl(
+  int lin_hat, int const * nb, int parent, double & U)
 {
   using std::min;
 
@@ -395,11 +327,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
 
   // TODO: see comment above about one-point updates
   U0 = updates::line<F>()(
-    get_p_norm(l0), this->_U[this->nb[l0]], this->s_hat, this->s[l0],
+    get_p_norm(l0), this->_U[nb[l0]], this->_s[lin_hat], this->_s[nb[l0]],
     this->get_h());
-#if COLLECT_STATS
-  ++this->_stats->count[0];
-#endif
 
   if (this->is_factored(lin_hat)) {
     auto fc = this->_lin2fac[lin_hat];
@@ -424,14 +353,11 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
     // Do the triangle update.
     auto const tmp = this->is_factored(lin_hat) ?
       updates::tri<F, 3>()(
-        p0, p1, this->_U[this->nb[l0]], this->_U[this->nb[l]],
-        this->s_hat, this->s[l0], this->s[l], this->get_h(), p_fac, s_fac) :
+        p0, p1, this->_U[nb[l0]], this->_U[nb[l]],
+        this->_s[lin_hat], this->_s[nb[l0]], this->_s[nb[l]], this->get_h(), p_fac, s_fac) :
       updates::tri<F, 3>()(
-        p0, p1, this->_U[this->nb[l0]], this->_U[this->nb[l]],
-        this->s_hat, this->s[l0], this->s[l], this->get_h());
-#if COLLECT_STATS
-    ++this->_stats->count[1];
-#endif
+        p0, p1, this->_U[nb[l0]], this->_U[nb[l]],
+        this->_s[lin_hat], this->_s[nb[l0]], this->_s[nb[l]], this->get_h());
     U_ = tmp.value;
     if (U_ < U1) {
       U1 = U_;
@@ -464,9 +390,9 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
 
-    double u0 = this->_U[this->nb[l0]], u1 = this->_U[this->nb[l1]],
-      u2 = this->_U[this->nb[l2]], s = this->s_hat, s0 = this->s[l0],
-      s1 = this->s[l1], s2 = this->s[l2], h = this->get_h();
+    double u0 = this->_U[nb[l0]], u1 = this->_U[nb[l1]],
+      u2 = this->_U[nb[l2]], s = this->_s[lin_hat], s0 = this->_s[nb[l0]],
+      s1 = this->_s[nb[l1]], s2 = this->_s[nb[l2]], h = this->get_h();
 
     if (this->is_factored(lin_hat)) {
       geom_fac_wkspc<2> g;
@@ -492,9 +418,6 @@ void olim3d_hu<F, lp_norm, d1, d2>::update_crtp(double & U)
       }
     }
 
-#if COLLECT_STATS
-    ++this->_stats->count[2];
-#endif
     U_ = info.value;
     if (U_ < U2) {
       U2 = U_;

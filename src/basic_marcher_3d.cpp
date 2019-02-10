@@ -5,12 +5,12 @@
 
 #include "common.hpp"
 
-void basic_marcher_3d::update_impl(int lin_hat, int * nb, int parent, double & U)
+void basic_marcher_3d::update_impl(int lin_hat, int const * nb, int parent, double & U)
 {
   (void) lin_hat;
   (void) parent;
 
-  double sh = get_h()*s_hat, sh_sq = sh*sh;
+  double sh = get_h()*this->_s[lin_hat], sh_sq = sh*sh;
   double U1 = 0, U2 = 0, U3 = 0, disc = 0;
 
   auto const value = [&] (int i) {

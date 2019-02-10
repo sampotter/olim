@@ -7,10 +7,11 @@
 
 #include "common.hpp"
 
-void basic_marcher::update_impl(int lin, double & U) {
+void basic_marcher::update_impl(int lin, int const * nb, int parent, double & U) {
   (void) lin;
+  (void) parent;
 
-  double sh = this->s_hat*this->get_h();
+  double sh = this->_s[lin]*this->get_h();
 
   double U1 = fmin(
     nb[0] != -1 ? _U[nb[0]] : inf<double>,

@@ -14,10 +14,8 @@ else ()
   endif ()
 endif ()
 
-option (COLLECT_STATS "Collect statistics about olimlib's performance." OFF)
 option (CHECK_HEAP_PROP_IN_DEBUG "Validate heap continuously in debug mode." OFF)
 option (BUILD_SCRATCH "Build a scratch executable (for testing)." OFF)
-option (BUILD_GEN_STATS "Build the gen_stats executables." OFF)
 option (LINK_PROFILE "Link Google's CPU profiler." OFF)
 
 include (CMakeDependentOption)
@@ -77,17 +75,6 @@ if (BUILD_SCRATCH)
   target_compile_features (scratch PRIVATE cxx_std_17)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (scratch olim)
-endif ()
-
-if (BUILD_GEN_STATS)
-  if (NOT COLLECT_STATS)
-    message (WARNING "Building gen_stats without COLLECT_STATS=ON!")
-  endif ()
-  add_executable (gen_stats misc/cpp/gen_stats.cpp)
-  target_compile_features (gen_stats PRIVATE cxx_std_17)
-  target_include_directories (gen_stats
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-  target_link_libraries (gen_stats olim)
 endif ()
 
 # We don't use any of these test targets when we're building our

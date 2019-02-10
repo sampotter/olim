@@ -21,14 +21,14 @@ TEST (marcher_3d, fractional_add_boundaries_is_correct_with_constant_slowness) {
   };
   olim6_rhr o {{2, 2, 2}, 1, S};
   o.add_boundary_node(vec3<double> {x, y, z}, 1.);
-  ASSERT_DOUBLE_EQ(o.get_value({0, 0, 0}), l[0]);
-  ASSERT_DOUBLE_EQ(o.get_value({0, 0, 1}), l[1]);
-  ASSERT_DOUBLE_EQ(o.get_value({0, 1, 0}), l[2]);
-  ASSERT_DOUBLE_EQ(o.get_value({1, 0, 0}), l[3]);
-  ASSERT_DOUBLE_EQ(o.get_value({0, 1, 1}), l[4]);
-  ASSERT_DOUBLE_EQ(o.get_value({1, 0, 1}), l[5]);
-  ASSERT_DOUBLE_EQ(o.get_value({1, 1, 0}), l[6]);
-  ASSERT_DOUBLE_EQ(o.get_value({1, 1, 1}), l[7]);
+  ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), l[0]);
+  ASSERT_DOUBLE_EQ(o.get_U({0, 0, 1}), l[1]);
+  ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), l[2]);
+  ASSERT_DOUBLE_EQ(o.get_U({1, 0, 0}), l[3]);
+  ASSERT_DOUBLE_EQ(o.get_U({0, 1, 1}), l[4]);
+  ASSERT_DOUBLE_EQ(o.get_U({1, 0, 1}), l[5]);
+  ASSERT_DOUBLE_EQ(o.get_U({1, 1, 0}), l[6]);
+  ASSERT_DOUBLE_EQ(o.get_U({1, 1, 1}), l[7]);
 }
 
 TEST (marcher_3d, fractional_add_boundaries_is_correct_with_nonconstant_slowness) {
@@ -47,25 +47,25 @@ TEST (marcher_3d, fractional_add_boundaries_is_correct_with_nonconstant_slowness
   {
     olim6_rhr o {{2, 2, 2}, h, S};
     o.add_boundary_node(vec3<double> {x, y, z}, s);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 0, 0}), S[0]*h*l[0]);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 0, 0}), S[1]*h*l[1]);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 1, 0}), S[2]*h*l[2]);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 1, 0}), S[3]*h*l[3]);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 0, 1}), S[4]*h*l[4]);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 0, 1}), S[5]*h*l[5]);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 1, 1}), S[6]*h*l[6]);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 1, 1}), S[7]*h*l[7]);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), S[0]*h*l[0]);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 0, 0}), S[1]*h*l[1]);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), S[2]*h*l[2]);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 1, 0}), S[3]*h*l[3]);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 0, 1}), S[4]*h*l[4]);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 0, 1}), S[5]*h*l[5]);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 1, 1}), S[6]*h*l[6]);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 1, 1}), S[7]*h*l[7]);
   }
   {
     olim6_mp0 o {{2, 2, 2}, h, S};
     o.add_boundary_node(vec3<double> {x, y, z}, s);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 0, 0}), (s + S[0])*h*l[0]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 0, 0}), (s + S[1])*h*l[1]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 1, 0}), (s + S[2])*h*l[2]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 1, 0}), (s + S[3])*h*l[3]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 0, 1}), (s + S[4])*h*l[4]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 0, 1}), (s + S[5])*h*l[5]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({0, 1, 1}), (s + S[6])*h*l[6]/2);
-    ASSERT_DOUBLE_EQ(o.get_value({1, 1, 1}), (s + S[7])*h*l[7]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), (s + S[0])*h*l[0]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 0, 0}), (s + S[1])*h*l[1]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), (s + S[2])*h*l[2]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 1, 0}), (s + S[3])*h*l[3]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 0, 1}), (s + S[4])*h*l[4]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 0, 1}), (s + S[5])*h*l[5]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({0, 1, 1}), (s + S[6])*h*l[6]/2);
+    ASSERT_DOUBLE_EQ(o.get_U({1, 1, 1}), (s + S[7])*h*l[7]/2);
   }
 }

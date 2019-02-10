@@ -7,15 +7,11 @@
 
 template <cost_func F, bool do_adj, bool do_diag>
 void
-olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
+olim<F, do_adj, do_diag>::update_impl(int lin_hat, int const * nb, int parent, double & U)
 {
-  vec2<int> const inds = this->to_vector_index(lin_hat);
+  (void) parent;
 
-  for (int k = 0; k < num_nb; ++k) {
-    if (this->nb[k] != -1) {
-      s[k] = this->get_s(inds + get_offset<2>(k));
-    }
-  }
+  vec2<int> const inds = this->to_vector_index(lin_hat);
 
   if (this->is_factored(lin_hat)) {
     // TODO: this is a rough draft quality implementation of additive
@@ -26,27 +22,27 @@ olim<F, do_adj, do_diag>::update_impl(int lin_hat, double & U)
     vec2<double> pf = fc->coords - inds;
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
-      line<1>(a, U);
-      tri_fac(a, b, pf, sf, U);
+      line<1>(lin_hat, nb, a, U);
+      tri_fac(lin_hat, nb, a, b, pf, sf, U);
     }
     if (do_diag) {
       for (int a = 4, b = 0, c = 1; a < 8; ++a, c = (++b + 1) % 4) {
-        line<2>(a, U);
-        tri_fac(a, b, pf, sf, U);
-        tri_fac(a, c, pf, sf, U);
+        line<2>(lin_hat, nb, a, U);
+        tri_fac(lin_hat, nb, a, b, pf, sf, U);
+        tri_fac(lin_hat, nb, a, c, pf, sf, U);
       }
     }
   }
   else {
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
-      line<1>(a, U);
-      tri<0b01, 0b10>(a, b, U);
+      line<1>(lin_hat, nb, a, U);
+      tri<0b01, 0b10>(lin_hat, nb, a, b, U);
     }
     if (do_diag) {
       for (int a = 4, b = 0, c = 1; a < 8; ++a, c = (++b + 1) % 4) {
-        line<2>(a, U);
-        tri<0b11, 0b01>(a, b, U);
-        tri<0b11, 0b10>(a, c, U);
+        line<2>(lin_hat, nb, a, U);
+        tri<0b11, 0b01>(lin_hat, nb, a, b, U);
+        tri<0b11, 0b10>(lin_hat, nb, a, c, U);
       }
     }
   }

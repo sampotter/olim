@@ -12,6 +12,10 @@ struct range
     _end {to_vector_index<ord>(_end_lin, _dims)}
   {}
 
+  static range<n, ord> cube(int dim) {
+    return {dim*vec<int, n>::one()};
+  }
+  
   inline range<n, ord> & operator++() {
     ++_lin;
     return *this;

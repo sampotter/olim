@@ -3,7 +3,6 @@
 #include <src/config.hpp>
 
 // TODO: remove these
-#include <functional>
 #include <unordered_map>
 
 #include "heap.hpp"
@@ -11,46 +10,46 @@
 #include "state.hpp"
 #include "vec.hpp"
 
+template <int N>
 struct fac_src
 {
-  fac_src(vec2<double> coords, double s): coords {coords}, s {s} {}
+  fac_src(vec<double, N> coords, double s): coords {coords}, s {s} {}
 
-  vec2<double> coords;
+  vec<double, N> coords;
   double s;
 };
 
-template <class base, int num_nb>
+template <class base, int N, int num_nb>
 struct marcher
 {
-  using fac_src_t = fac_src;
+  using fac_src_t = fac_src<N>;
 
   // These are for use with our pybind11 bindings. They aren't used
   // internally.
   using float_type = double;
 
-  static constexpr int ndim = 2;
-  // static constexpr int num_neighbors = base::num_neighbors;
+  using fvec = vec<double, N>;
+  using ivec = vec<int, N>;
+  using uvec = vec<unsigned, N>;
 
-  marcher(vec2<int> dims, double h, no_slow_t const &);
-  marcher(vec2<int> dims, double h, double const * s);
-  marcher(vec2<int> dims, double h = 1,
-          std::function<double(vec2<double>)> s = static_cast<slow<2>>(s0<2>),
-          vec2<double> origin = vec2<double>::zero());
+  static constexpr int ndim = N;
+
+  marcher(ivec dims, double h);
+  marcher(ivec dims, double h, no_slow_t const &);
+  marcher(ivec dims, double h, double const * s);
+  marcher(ivec dims, double h, slow<N> s, fvec origin = fvec::zero());
   virtual ~marcher();
-
-  void init();
 
   void run();
 
-  void add_boundary_node(vec2<int> inds, double value = 0.0);
-  void add_boundary_nodes(vec2<int> const * inds, double const * U, int num);
-  void add_boundary_nodes(std::tuple<int, int, double> const * nodes, int num);
-  void add_boundary_node(vec2<double> coords, double s, double value = 0.0);
+  void add_boundary_node(ivec inds, double U = 0.0);
+  void add_boundary_nodes(ivec const * inds, double const * U, int num);
+  void add_boundary_node(fvec coords, double s, double U = 0.0);
 
-  void set_fac_src(vec2<int> inds, fac_src const * src);
+  void set_fac_src(ivec inds, fac_src<N> const * src);
 
-  double get_s(vec2<int> inds) const;
-  double get_value(vec2<int> inds) const;
+  double get_s(ivec inds) const;
+  double get_U(ivec inds) const;
 
   inline double * get_U_ptr() const {
     printf("get_U_ptr(): %p\n", _U);
@@ -70,16 +69,16 @@ struct marcher
   }
 
 OLIM_PROTECTED:
-  inline int to_linear_index(vec2<int> inds) const {
+  inline int to_linear_index(ivec inds) const {
     return ::to_linear_index(inds, _dims);
   }
 
-  inline vec2<int> to_vector_index(int lin) const {
+  inline ivec to_vector_index(int lin) const {
     return ::to_vector_index(lin, _dims);
   }
 
-  bool in_bounds(vec2<int> inds) const;
-  bool is_valid(vec2<int> inds) const;
+  bool in_bounds(ivec inds) const;
+  bool is_valid(ivec inds) const;
 
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();
@@ -88,9 +87,7 @@ OLIM_PROTECTED:
   double get_h() const { return _h; }
   
   void visit_neighbors(int lin);
-  virtual void update_impl(int lin, double & U) = 0;
-
-  int valid_nb[8];
+  virtual void update_impl(int lin, int const * nb, int parent, double & U) = 0;
 
   struct proxy
   {
@@ -122,11 +119,11 @@ OLIM_PROTECTED:
   state * _state {nullptr};
   int * _heap_pos {nullptr};
   double _h {1};
-  vec2<int> _dims;
+  ivec _dims;
 
   // TODO: this is a quick hack just to get this working for the time
   // being.
-  std::unordered_map<int, fac_src const *> _lin2fac;
+  std::unordered_map<int, fac_src<N> const *> _lin2fac;
 };
 
 #include "marcher.impl.hpp"

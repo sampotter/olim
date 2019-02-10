@@ -1,19 +1,16 @@
 #pragma once
 
-#include "marcher_3d.hpp"
+#include "marcher.hpp"
 #include "updates.line.hpp"
 
-struct basic_marcher_3d: public marcher_3d<basic_marcher_3d, 6>,
+struct basic_marcher_3d: public marcher<basic_marcher_3d, 3, 6>,
                          public updates::line<RHR>
 {
   static constexpr int num_nb = 6;
   static constexpr cost_func F_ = RHR;
 
-  using marcher_3d::marcher_3d;
-
-  double s_hat;
-  int nb[num_nb];
+  using marcher::marcher;
 
 OLIM_PRIVATE:
-  virtual void update_impl(int lin, int * nb, int parent, double & U);
+  virtual void update_impl(int lin, int const * nb, int parent, double & U);
 };

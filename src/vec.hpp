@@ -38,6 +38,14 @@ struct vec
 
   inline void init() {}
 
+  inline static constexpr vec<T, n> one() {
+    vec<T, n> x;
+    for (int i = 0; i < n; ++i) {
+      x[i] = 1;
+    }
+    return x;
+  }
+
   inline static constexpr vec<T, n> zero() {
     vec<T, n> x;
     for (int i = 0; i < n; ++i) {
@@ -264,10 +272,6 @@ template <>
 inline int
 to_linear_index<ordering::ROW_MAJOR>(vec2<int> inds, vec2<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(vec2<int>::zero() <= inds);
-  assert(inds < dims);
-#endif
   return inds[1] + dims[1]*inds[0];
 }
 
@@ -275,10 +279,6 @@ template <>
 inline int
 to_linear_index<ordering::COLUMN_MAJOR>(vec2<int> inds, vec2<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(vec2<int>::zero() <= inds);
-  assert(inds < dims);
-#endif
   return inds[0] + dims[0]*inds[1];
 }
 
@@ -290,10 +290,6 @@ template <>
 inline int
 to_linear_index<ordering::ROW_MAJOR>(vec3<int> inds, vec3<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(vec3<int>::zero() <= inds);
-  assert(inds < dims);
-#endif
   return inds[2] + dims[2]*(inds[1] + dims[1]*inds[0]);
 }
 
@@ -301,10 +297,6 @@ template <>
 inline int
 to_linear_index<ordering::COLUMN_MAJOR>(vec3<int> inds, vec3<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(vec3<int>::zero() <= inds);
-  assert(inds < dims);
-#endif
   return inds[0] + dims[0]*(inds[1] + dims[1]*inds[2]);
 }
 
@@ -315,10 +307,6 @@ template <>
 inline vec2<int>
 to_vector_index<ordering::ROW_MAJOR>(int lin, vec2<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(0 <= lin);
-  assert(lin < dims.product());
-#endif
   return {lin/dims[1], lin % dims[1]};
 }
 
@@ -326,10 +314,6 @@ template <>
 inline vec2<int>
 to_vector_index<ordering::COLUMN_MAJOR>(int lin, vec2<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(0 <= lin);
-  assert(lin < dims.product());
-#endif
   return {lin % dims[0], lin/dims[0]};
 }
 
@@ -340,10 +324,6 @@ template <>
 inline vec3<int>
 to_vector_index<ordering::ROW_MAJOR>(int lin, vec3<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(0 <= lin);
-  assert(lin < dims.product());
-#endif
   return {lin/(dims[2]*dims[1]), lin/dims[2] % dims[1], lin % dims[2]};
 }
 
@@ -351,10 +331,6 @@ template <>
 inline vec3<int>
 to_vector_index<ordering::COLUMN_MAJOR>(int lin, vec3<int> dims)
 {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(0 <= lin);
-  assert(lin < dims.product());
-#endif
   return {lin % dims[0], lin/dims[0] % dims[1], lin/(dims[0]*dims[1])};
 }
 

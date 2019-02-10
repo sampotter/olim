@@ -47,8 +47,8 @@ TEST (MARCHER, s1_symmetry_test) {
 
   int i = 5, j1 = 3, j2 = 17, k = 9;
   double u = 0.5590785434269516;
-  double U1 = o.get_value({i, j1, k});
-  double U2 = o.get_value({i, j2, k});
+  double U1 = o.get_U({i, j1, k});
+  double U2 = o.get_U({i, j2, k});
 
   ASSERT_NEAR(U1, u, 2e-16);
   ASSERT_NEAR(U2, u, 2e-16);

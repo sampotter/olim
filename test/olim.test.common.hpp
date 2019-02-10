@@ -32,10 +32,10 @@ eq_w_rel_tol(double x, double y, double tol = 1e-13) {
 template <class olim>
 testing::AssertionResult
 trivial_case_works() {
-  olim m {{1, 1}};
+  olim m {{1, 1}, 1};
   m.add_boundary_node({0, 0});
   m.run();
-  return eq_w_rel_tol(m.get_value({0, 0}), 0.0);
+  return eq_w_rel_tol(m.get_U({0, 0}), 0.0);
 }
 
 template <class olim>
@@ -44,7 +44,7 @@ adjacent_update_works() {
   olim m {{2, 1}, 0.5};
   m.add_boundary_node({0, 0});
   m.run();
-  return eq_w_rel_tol(m.get_value({1, 0}), 0.5);
+  return eq_w_rel_tol(m.get_U({1, 0}), 0.5);
 }
 
 template <class olim>
@@ -55,16 +55,16 @@ correct_corners_in_limit(int n, double tol) {
   m.add_boundary_node({n/2, n/2});
   m.run();
 
-  auto res = eq_w_rel_tol(m.get_value({0, n - 1}), sqrt2, tol);
+  auto res = eq_w_rel_tol(m.get_U({0, n - 1}), sqrt2, tol);
   if (!res) return res;
   
-  res = eq_w_rel_tol(m.get_value({0, n - 1}), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_U({0, n - 1}), sqrt2, tol);
   if (!res) return res;
 
-  res = eq_w_rel_tol(m.get_value({n - 1, 0}), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_U({n - 1, 0}), sqrt2, tol);
   if (!res) return res;
 
-  res = eq_w_rel_tol(m.get_value({n - 1, n - 1}), sqrt2, tol);
+  res = eq_w_rel_tol(m.get_U({n - 1, n - 1}), sqrt2, tol);
   if (!res) return res;
 
   return testing::AssertionSuccess();
@@ -86,16 +86,16 @@ quadrants_are_correct(
     m.add_boundary_node({i0, j0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({i0, j0}), 0.0);
+    auto res = eq_w_rel_tol(m.get_U({i0, j0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i0 + 1) % 2, j0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({(i0 + 1) % 2, j0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({i0, (j0 + 1) % 2}), 1.0);
+    res = eq_w_rel_tol(m.get_U({i0, (j0 + 1) % 2}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i0 + 1) % 2, (j0 + 1) % 2}), diag_value);
+    res = eq_w_rel_tol(m.get_U({(i0 + 1) % 2, (j0 + 1) % 2}), diag_value);
     if (!res) return res;
   }
 
@@ -118,16 +118,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 1, 0}), diag_value);
+    res = eq_w_rel_tol(m.get_U({1, 1, 0}), diag_value);
     if (!res) return res;
   }
   {
@@ -135,16 +135,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 0.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), diag_value);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 1, 0}), 1.0);
     if (!res) return res;
   }
   {
@@ -152,16 +152,16 @@ quadrants_are_correct(
     m.add_boundary_node({1, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), diag_value);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 0.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 1, 0}), 1.0);
     if (!res) return res;
   }
   {
@@ -169,16 +169,16 @@ quadrants_are_correct(
     m.add_boundary_node({1, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 1, 0}), 0.0);
+    res = eq_w_rel_tol(m.get_U({1, 1, 0}), 0.0);
     if (!res) return res;
   }
 
@@ -190,16 +190,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 1}), diag_value);
+    res = eq_w_rel_tol(m.get_U({1, 0, 1}), diag_value);
     if (!res) return res;
   }
   {
@@ -207,16 +207,16 @@ quadrants_are_correct(
     m.add_boundary_node({1, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), diag_value);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 0.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 1}), 1.0);
     if (!res) return res;
   }
   {
@@ -224,16 +224,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 0.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), diag_value);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 1}), 1.0);
     if (!res) return res;
   }
   {
@@ -241,16 +241,16 @@ quadrants_are_correct(
     m.add_boundary_node({1, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({1, 0, 1}), 0.0);
+    res = eq_w_rel_tol(m.get_U({1, 0, 1}), 0.0);
     if (!res) return res;
   }
 
@@ -262,16 +262,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 0, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 0.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 1}), diag_value);
+    res = eq_w_rel_tol(m.get_U({0, 1, 1}), diag_value);
     if (!res) return res;
   }
   {
@@ -279,16 +279,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 1, 0});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), diag_value);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 0.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 1}), 1.0);
     if (!res) return res;
   }
   {
@@ -296,16 +296,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 0, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), 1.0);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 0.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), diag_value);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 1}), 1.0);
     if (!res) return res;
   }
   {
@@ -313,16 +313,16 @@ quadrants_are_correct(
     m.add_boundary_node({0, 1, 1});
     m.run();
 
-    auto res = eq_w_rel_tol(m.get_value({0, 0, 0}), diag_value);
+    auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 0, 1}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 0, 1}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 0}), 1.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 0}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({0, 1, 1}), 0.0);
+    res = eq_w_rel_tol(m.get_U({0, 1, 1}), 0.0);
     if (!res) return res;
   }
 
@@ -341,28 +341,28 @@ octants_are_correct(double diag2val, double diag3val) {
 
     int i = inds[0], j = inds[1], k = inds[2];
 
-    auto res = eq_w_rel_tol(m.get_value({i, j, k}), 0.0);
+    auto res = eq_w_rel_tol(m.get_U({i, j, k}), 0.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, k}), 1.0);
+    res = eq_w_rel_tol(m.get_U({(i + 1) % 2, j, k}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, k}), 1.0);
+    res = eq_w_rel_tol(m.get_U({i, (j + 1) % 2, k}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({i, j, (k + 1) % 2}), 1.0);
+    res = eq_w_rel_tol(m.get_U({i, j, (k + 1) % 2}), 1.0);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, k}), diag2val);
+    res = eq_w_rel_tol(m.get_U({(i + 1) % 2, (j + 1) % 2, k}), diag2val);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, j, (k + 1) % 2}), diag2val);
+    res = eq_w_rel_tol(m.get_U({(i + 1) % 2, j, (k + 1) % 2}), diag2val);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({i, (j + 1) % 2, (k + 1) % 2}), diag2val);
+    res = eq_w_rel_tol(m.get_U({i, (j + 1) % 2, (k + 1) % 2}), diag2val);
     if (!res) return res;
 
-    res = eq_w_rel_tol(m.get_value({(i + 1) % 2, (j + 1) % 2, (k + 1) % 2}), diag3val);
+    res = eq_w_rel_tol(m.get_U({(i + 1) % 2, (j + 1) % 2, (k + 1) % 2}), diag3val);
     if (!res) return res;
   }
 
@@ -390,16 +390,16 @@ planes_are_correct(slow<2> s = s0<2>, slow<3> s3d = s0<3>, int n = 51)
   };
 
   for (auto inds: range<2> {{n, n}}) {
-    double U = m.get_value(inds);
+    double U = m.get_U(inds);
     int i = inds[0], j = inds[1];
 
-    auto res = eq_w_rel_tol(U, m3d.get_value({i, j, n/2}));
+    auto res = eq_w_rel_tol(U, m3d.get_U({i, j, n/2}));
     if (!res) return msg(res, i, j, n/2);
 
-    res = eq_w_rel_tol(U, m3d.get_value({i, n/2, j}));
+    res = eq_w_rel_tol(U, m3d.get_U({i, n/2, j}));
     if (!res) return msg(res, i, n/2, j);
 
-    res = eq_w_rel_tol(U, m3d.get_value({n/2, i, j}));
+    res = eq_w_rel_tol(U, m3d.get_U({n/2, i, j}));
     if (!res) return msg(res, n/2, i, j);
   }
 
@@ -422,14 +422,14 @@ result_is_symmetric(slow<2> s = s0, int n = 51, double tol = 1e-13) {
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-      auto res = eq_w_rel_tol(m.get_value({i, j}), m.get_value({i, j_}), tol);
+      auto res = eq_w_rel_tol(m.get_U({i, j}), m.get_U({i, j_}), tol);
       if (!res) return msg(res, i, j);
     }
   }
 
   for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
     for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m.get_value({i, j}), m.get_value({i_, j}), tol);
+      auto res = eq_w_rel_tol(m.get_U({i, j}), m.get_U({i_, j}), tol);
       if (!res) return msg(res, i, j);
     }
   }
@@ -455,7 +455,7 @@ result_is_symmetric(slow<3> s = s0, int n = 21, double tol = 1e-13) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
         auto res = eq_w_rel_tol(
-          m.get_value({i, j, k}), m.get_value({i, j, k_}), tol);
+          m.get_U({i, j, k}), m.get_U({i, j, k_}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -465,7 +465,7 @@ result_is_symmetric(slow<3> s = s0, int n = 21, double tol = 1e-13) {
     for (int k = 0; k < n; ++k) {
       for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
         auto res = eq_w_rel_tol(
-          m.get_value({i, j, k}), m.get_value({i, j_, k}), tol);
+          m.get_U({i, j, k}), m.get_U({i, j_, k}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -475,7 +475,7 @@ result_is_symmetric(slow<3> s = s0, int n = 21, double tol = 1e-13) {
     for (int k = 0; k < n; ++k) {
       for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
         auto res = eq_w_rel_tol(
-          m.get_value({i, j, k}), m.get_value({i_, j, k}), tol);
+          m.get_U({i, j, k}), m.get_U({i_, j, k}), tol);
         if (!res) return msg(res, i, j, k);
       }
     }
@@ -517,7 +517,7 @@ two_by_two_by_three_cells_are_correct() {
             a_ = imax == 3 ? a : jmax == 3 ? b : c;
             b_ = imax == 3 ? b : jmax == 3 ? c : a;
             c_ = imax == 3 ? c : jmax == 3 ? a : b;
-            auto res = eq_w_rel_tol(m.get_value({i, j, k}), m_gt.get_value({a_, b_, c_}));
+            auto res = eq_w_rel_tol(m.get_U({i, j, k}), m_gt.get_U({a_, b_, c_}));
             if (!res) return res;
           }
         }
@@ -552,7 +552,7 @@ plane_boundaries_are_correct() {
   m.run();
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
-      auto res = eq_w_rel_tol(m.get_value({i, j, 1}), 1.0);
+      auto res = eq_w_rel_tol(m.get_U({i, j, 1}), 1.0);
       if (!res) return res;
     }
   }
@@ -575,7 +575,7 @@ olims_agree(slow<2> s = s0, int n = 51) {
   m2.run();
 
   for (auto inds: range<2> {{n, n}}) {
-    auto res = eq_w_rel_tol(m1.get_value(inds), m2.get_value(inds));
+    auto res = eq_w_rel_tol(m1.get_U(inds), m2.get_U(inds));
     if (!res) return res;
   }
 
@@ -596,7 +596,7 @@ void agrees_with_other_olim3d_t(int n = 21) {
   m2.run();
 
   for (auto inds: range<3> {{n, n, n}}) {
-    auto res = eq_w_rel_tol(m1.get_value(inds), m2.get_value(inds));
+    auto res = eq_w_rel_tol(m1.get_U(inds), m2.get_U(inds));
     if (!res) return res;
   }
 }
@@ -628,7 +628,7 @@ planes_are_correct_nonsymmetric(
     for (int j = 0; j < n2; ++j) {
       double x = j*h - x0;
       double u = fxy(x, y);
-      auto res = eq_w_rel_tol(m3d.get_value(i, j, 0), u);
+      auto res = eq_w_rel_tol(m3d.get_U(i, j, 0), u);
       if (!res) return res;
     }
   }
@@ -638,7 +638,7 @@ planes_are_correct_nonsymmetric(
     for (int k = 0; k < n3; ++k) {
       double z = k*h - z0;
       double u = fyz(y, z);
-      auto res = eq_w_rel_tol(m3d.get_value(i, 0, k), u);
+      auto res = eq_w_rel_tol(m3d.get_U(i, 0, k), u);
       if (!res) return res;
     }
   }
@@ -648,7 +648,7 @@ planes_are_correct_nonsymmetric(
     for (int k = 0; k < n3; ++k) {
       double z = k*h - z0;
       double u = fxz(x, z);
-      auto res = eq_w_rel_tol(m3d.get_value(0, j, k), u);
+      auto res = eq_w_rel_tol(m3d.get_U(0, j, k), u);
       if (!res) return res;
     }
   }
@@ -686,21 +686,21 @@ planes_agree_nonsymmetric(
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m3d.get_value(i, j, 0), mxy.get_value(i, j));
+      auto res = eq_w_rel_tol(m3d.get_U(i, j, 0), mxy.get_U(i, j));
       if (!res) return res;
     }
   }
 
   for (int i = 0; i < n; ++i) {
     for (int k = 0; k < n; ++k) {
-      auto res = eq_w_rel_tol(m3d.get_value(i, 0, k), myz.get_value(i, k));
+      auto res = eq_w_rel_tol(m3d.get_U(i, 0, k), myz.get_U(i, k));
       if (!res) return res;
     }
   }
 
   for (int j = 0; j < n; ++j) {
     for (int k = 0; k < n; ++k) {
-      auto res = eq_w_rel_tol(m3d.get_value(0, j, k), mxz.get_value(j, k));
+      auto res = eq_w_rel_tol(m3d.get_U(0, j, k), mxz.get_U(j, k));
       if (!res) return res;
     }
   }
@@ -729,7 +729,7 @@ solution_is_exact_in_factored_square(
     for (int j = 0; j < n; ++j) {
       double x = h*j - 1;
       double u = std::hypot(x, y);
-      double U = o.get_value({i, j});
+      double U = o.get_U({i, j});
       if (fabs(u - U) > tol*fabs(u) + tol) {
         return testing::AssertionFailure()
           << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)
@@ -766,7 +766,7 @@ solution_is_exact_in_factored_square(
       for (int k = 0; k < n; ++k) {
         double z = h*k - 1;
         double u = std::sqrt(x*x + y*y + z*z);
-        double U = o.get_value({i, j, k});
+        double U = o.get_U({i, j, k});
         if (fabs(u - U) > tol*fabs(u) + tol) {
           return testing::AssertionFailure()
             << "|" << u << " - " << U << "| > " << tol << "*" << fabs(u)

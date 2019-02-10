@@ -33,14 +33,17 @@
   4. [X] Add .cross to vec.hpp for olim3d_hu::init_crtp
   5. [ ] Simplify updates.tri.hpp... It's way more complicated than it
      needs to be... 330 lines where it should be around 100-150
-  6. [ ] Collapse marcher and marcher_3d into one class
+  6. [X] Collapse marcher and marcher_3d into one class
   7. [ ] Some renaming
      - [ ] olim -> olim2
      - [ ] olim3d -> olim3
+       - [ ] olim3d_bv -> ?
+       - [ ] olim3d_hu -> ?
      - [ ] basic_marcher -> fmm2
      - [ ] basic_marcher_3d -> fmm3
+     - [ ] lin_hat -> lin (possible?)
   8. [X] speed -> slowness
-  9. [ ] get_value -> get_U
+  9. [X] get_value -> get_U
   10. [X] T -> U everwhere
   11. [ ] Add T = template parameter for double/float
   12. [ ] Distinguish between indices
@@ -58,17 +61,23 @@
   14. [ ] Don't actually need to store qr_wkspc in cost_functor...
   15. [ ] Reduce line count in tests using generic lambdas...
   16. [ ] Remove STL headers
-  17. [ ] Remove macros
-      - [ ] P*** macros -> b'***' literals
+  17. [X] Remove macros
+      - [X] P*** macros -> b'***' literals
   18. [ ] Global p_fac -> pf
   19. [ ] Global s_fac -> sf
   20. [ ] Should probably remove `marcher::proxy' and just pass a
       pointer to marcher itself, since it can implement the interface
       that `proxy' needs to implement for compatibility with heap
-  21. [ ] Remove initializer_list use... See [[https://stackoverflow.com/questions/36265128/initialize-stdarray-by-parameter-pack-from-arbitrary-index][this]]
+  21. [X] Remove initializer_list use... See [[https://stackoverflow.com/questions/36265128/initialize-stdarray-by-parameter-pack-from-arbitrary-index][this]]
   22. [ ] Add a "SHOULD_ASSERT" macro
   23. [ ] Make a distinction between the `cost_funcs' module and the
       `quadrature' enum/type
+  24. [ ] Remove all instances of `virtual'!
+  25. [ ] See comment about constructors in `abstract_olim3d'
+  26. [ ] Combine basic_marcher and basic_marcher_3d
+      - [ ] name `fmm'
+      - [ ] specialize for 2d and 3d
+      - [ ] add an algorithm for general dimension
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up

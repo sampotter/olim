@@ -26,7 +26,7 @@ agrees_with_basic_marcher_3d(slow<3> s) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        auto res = eq_w_rel_tol(m3d.get_value({i, j, k}), m6.get_value({i, j, k}));
+        auto res = eq_w_rel_tol(m3d.get_U({i, j, k}), m6.get_U({i, j, k}));
         if (!res) return res;
       }
     }

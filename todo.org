@@ -27,9 +27,12 @@
 * General refactoring
   1. [X] Remove all instances of EIKONAL and replace with OLIM
   2. [X] Add vector class
-  3. [ ] Rewrite as much as possible in terms of vector class
-     - [ ] Add a `range' iterator to simplify loops and make them
+  3. [-] Rewrite as much as possible in terms of vector class
+     - [X] Add a `range' iterator to simplify loops and make them
        coordinate-free
+     - [ ] Use vec for passing around U values and S values in updates
+     - [ ] Convert solvers to receive vec values
+     - [ ] Use SIMD to speed this up!!!
   4. [X] Add .cross to vec.hpp for olim3d_hu::init_crtp
   5. [ ] Simplify updates.tri.hpp... It's way more complicated than it
      needs to be... 330 lines where it should be around 100-150
@@ -78,6 +81,9 @@
       - [X] name `fmm'
       - [X] specialize for 2d and 3d
       - [ ] add an algorithm for general dimension
+  27. [ ] The problem with std::visit on OS X is that it might throw
+      std::variant_bad_access, which I guess doesn't exist until
+      10.14. One possible way around this is to turn off exceptions?
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up
@@ -94,11 +100,26 @@
   5. [ ] Try to get olim6_rhr to run as fast as basic_marcher_3d
      - currently pretty damn close... olim6_rhr is about 15% slower
   6. [ ] Speed up tests
-     - [ ] switch to cgreen
      - [ ] unity build
   7. [ ] Try disabling exceptions
   8. [ ] Replace `malloc' and `new's with "operator new" (minimum
      number of includes and no unnecessary calling of ctors via new)
+     - need to be careful about this---new can throw...
+     - a combination of malloc and placement new might be the best way
+       to go
+  9. [ ] The generated bindings are quite large because we have to
+     instantiate every possible OLIM. Can we get this size down by
+     "factoring" the OLIM?
+     - i.e., we have olimN_Q, where N is the neighborhood and Q is the
+       quadrature rule
+     - can we split this into two seperate classes, so that instead of
+       having to stamp out olimN_Q for all N x Q, we could just stamp
+       out a class for "N" and a class for "Q", for a total of N + Q
+       class?
+     - this wouldn't be a substantial redunction in the total number
+       of classes, but my feeling is that the bloat is coming from,
+       e.g., having to stamp out 18 versions of the cost_func stuff
+       instead of just 3...
 
 * Interface/FFI improvements
   1. [ ] Replace pybind11 with Cython

@@ -52,7 +52,6 @@ struct marcher
   double get_U(ivec inds) const;
 
   inline double * get_U_ptr() const {
-    printf("get_U_ptr(): %p\n", _U);
     return _U;
   }
 

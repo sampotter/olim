@@ -1,6 +1,6 @@
-project (olim)
-
 cmake_minimum_required (VERSION 3.9)
+
+project (olim)
 
 include (CheckIPOSupported)
 check_ipo_supported (RESULT IPO_RESULT OUTPUT IPO_OUTPUT)

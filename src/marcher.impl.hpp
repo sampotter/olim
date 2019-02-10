@@ -79,6 +79,13 @@ void marcher<base, n, num_nb>::run()
 
 template <class base, int n, int num_nb>
 void
+marcher<base, n, num_nb>::add_boundary_node(int * inds, double U)
+{
+  add_boundary_node(ivec {inds}, U);
+}
+
+template <class base, int n, int num_nb>
+void
 marcher<base, n, num_nb>::add_boundary_node(ivec inds, double U)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO

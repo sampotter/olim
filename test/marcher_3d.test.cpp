@@ -20,7 +20,7 @@ TEST (marcher_3d, fractional_add_boundaries_is_correct_with_constant_slowness) {
     l3(1 - x, 1 - y, 1 - z)  // 1, 1, 1
   };
   olim6_rhr o {{2, 2, 2}, 1, S};
-  o.add_boundary_node(vec3<double> {x, y, z}, 1.);
+  o.add_src(vec3<double> {x, y, z}, 1.);
   ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), l[0]);
   ASSERT_DOUBLE_EQ(o.get_U({0, 0, 1}), l[1]);
   ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), l[2]);
@@ -46,7 +46,7 @@ TEST (marcher_3d, fractional_add_boundaries_is_correct_with_nonconstant_slowness
   };
   {
     olim6_rhr o {{2, 2, 2}, h, S};
-    o.add_boundary_node(vec3<double> {x, y, z}, s);
+    o.add_src(vec3<double> {x, y, z}, s);
     ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), S[0]*h*l[0]);
     ASSERT_DOUBLE_EQ(o.get_U({1, 0, 0}), S[1]*h*l[1]);
     ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), S[2]*h*l[2]);
@@ -58,7 +58,7 @@ TEST (marcher_3d, fractional_add_boundaries_is_correct_with_nonconstant_slowness
   }
   {
     olim6_mp0 o {{2, 2, 2}, h, S};
-    o.add_boundary_node(vec3<double> {x, y, z}, s);
+    o.add_src(vec3<double> {x, y, z}, s);
     ASSERT_DOUBLE_EQ(o.get_U({0, 0, 0}), (s + S[0])*h*l[0]/2);
     ASSERT_DOUBLE_EQ(o.get_U({1, 0, 0}), (s + S[1])*h*l[1]/2);
     ASSERT_DOUBLE_EQ(o.get_U({0, 1, 0}), (s + S[2])*h*l[2]/2);

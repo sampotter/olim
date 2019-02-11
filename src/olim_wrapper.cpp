@@ -9,7 +9,7 @@
 
 struct null_olim {
   void run() {}
-  void add_boundary_node(int *, double) {}
+  void add_src(int *, double) {}
   double * get_U_ptr() const { return nullptr; }
   double * get_s_ptr() const { return nullptr; }
   char * get_state_ptr() const { return nullptr; }
@@ -325,51 +325,51 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0>().add_boundary_node(inds, U);
+      w->olim<olim4_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1>().add_boundary_node(inds, U);
+      w->olim<olim4_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr>().add_boundary_node(inds, U);
+      w->olim<olim4_rhr>().add_src(inds, U);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0>().add_boundary_node(inds, U);
+      w->olim<olim8_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1>().add_boundary_node(inds, U);
+      w->olim<olim8_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr>().add_boundary_node(inds, U);
+      w->olim<olim8_rhr>().add_src(inds, U);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0>().add_boundary_node(inds, U);
+      w->olim<olim6_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1>().add_boundary_node(inds, U);
+      w->olim<olim6_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr>().add_boundary_node(inds, U);
+      w->olim<olim6_rhr>().add_src(inds, U);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0>().add_boundary_node(inds, U);
+      w->olim<olim18_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1>().add_boundary_node(inds, U);
+      w->olim<olim18_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr>().add_boundary_node(inds, U);
+      w->olim<olim18_rhr>().add_src(inds, U);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0>().add_boundary_node(inds, U);
+      w->olim<olim26_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1>().add_boundary_node(inds, U);
+      w->olim<olim26_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr>().add_boundary_node(inds, U);
+      w->olim<olim26_rhr>().add_src(inds, U);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_hu_mp0>().add_boundary_node(inds, U);
+      w->olim<olim3d_hu_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim3d_hu_mp1>().add_boundary_node(inds, U);
+      w->olim<olim3d_hu_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim3d_hu_rhr>().add_boundary_node(inds, U);
+      w->olim<olim3d_hu_rhr>().add_src(inds, U);
     }
   }
 

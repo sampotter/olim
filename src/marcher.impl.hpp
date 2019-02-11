@@ -132,14 +132,14 @@ void marcher<base, n, num_nb>::run()
 
 template <class base, int n, int num_nb>
 void
-marcher<base, n, num_nb>::add_boundary_node(int * inds, double U)
+marcher<base, n, num_nb>::add_src(int * inds, double U)
 {
-  add_boundary_node(ivec {inds}, U);
+  add_src(ivec {inds}, U);
 }
 
 template <class base, int n, int num_nb>
 void
-marcher<base, n, num_nb>::add_boundary_node(ivec inds, double U)
+marcher<base, n, num_nb>::add_src(ivec inds, double U)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
@@ -153,16 +153,16 @@ marcher<base, n, num_nb>::add_boundary_node(ivec inds, double U)
 
 template <class base, int n, int num_nb>
 void
-marcher<base, n, num_nb>::add_boundary_nodes(ivec const * inds, double const * U, int num)
+marcher<base, n, num_nb>::add_srcs(ivec const * inds, double const * U, int num)
 {
   for (int i = 0; i < num; ++i) {
-    add_boundary_node(inds[i], U[i]);
+    add_src(inds[i], U[i]);
   }
 }
 
 template <class base, int n, int num_nb>
 void
-marcher<base, n, num_nb>::add_boundary_node(fvec coords, double s, double U)
+marcher<base, n, num_nb>::add_src(fvec coords, double s, double U)
 {
   double h = get_h();
   fvec inds = coords/h;
@@ -172,7 +172,7 @@ marcher<base, n, num_nb>::add_boundary_node(fvec coords, double s, double U)
   // TODO: this isn't as general as it could be. We also want to
   // handle cases where i or j are grid-aligned, in which case we need
   // to process 6 nodes. If i and j are both grid aligned, then we
-  // should just call the integer add_boundary_node.
+  // should just call the integer add_src.
   int corners[n][2];
   for (int i = 0; i < n; ++i) {
     corners[i][0] = (int) floor(inds[i]);

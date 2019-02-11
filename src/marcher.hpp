@@ -47,10 +47,10 @@ struct marcher
 
   void run();
 
-  void add_boundary_node(int * inds, double U = 0.0);
-  void add_boundary_node(ivec inds, double U = 0.0);
-  void add_boundary_nodes(ivec const * inds, double const * U, int num);
-  void add_boundary_node(fvec coords, double s, double U = 0.0);
+  void add_src(int * inds, double U = 0.0);
+  void add_src(ivec inds, double U = 0.0);
+  void add_srcs(ivec const * inds, double const * U, int num);
+  void add_src(fvec coords, double s, double U = 0.0);
 
   void set_fac_src(ivec inds, fac_src<n> const * src);
 

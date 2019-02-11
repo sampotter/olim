@@ -10,6 +10,7 @@
 struct null_olim {
   void run() {}
   void add_src(int *, double) {}
+  void add_bd(int *, double) {}
   double * get_U_ptr() const { return nullptr; }
   double * get_s_ptr() const { return nullptr; }
   char * get_state_ptr() const { return nullptr; }
@@ -321,7 +322,7 @@ status_e olim_wrapper_run(olim_wrapper * w)
   return SUCCESS;
 }
 
-status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds, double U)
+status_e olim_wrapper_add_src(olim_wrapper * w, int * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -370,6 +371,61 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds, double U)
       w->olim<olim3d_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
       w->olim<olim3d_rhr>().add_src(inds, U);
+    }
+  }
+
+  return SUCCESS;
+}
+
+status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
+{
+  if (w->nb == OLIM4) {
+    if (w->F == MP0) {
+      w->olim<olim4_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim4_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim4_rhr>().add_bd(inds);
+    }
+  } else if (w->nb == OLIM8) {
+    if (w->F == MP0) {
+      w->olim<olim8_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim8_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim8_rhr>().add_bd(inds);
+    }
+  } else if (w->nb == OLIM6) {
+    if (w->F == MP0) {
+      w->olim<olim6_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim6_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim6_rhr>().add_bd(inds);
+    }
+  } else if (w->nb == OLIM18) {
+    if (w->F == MP0) {
+      w->olim<olim18_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim18_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim18_rhr>().add_bd(inds);
+    }
+  } else if (w->nb == OLIM26) {
+    if (w->F == MP0) {
+      w->olim<olim26_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim26_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim26_rhr>().add_bd(inds);
+    }
+  } else if (w->nb == OLIM3D) {
+    if (w->F == MP0) {
+      w->olim<olim3d_mp0>().add_bd(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim3d_mp1>().add_bd(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim3d_rhr>().add_bd(inds);
     }
   }
 

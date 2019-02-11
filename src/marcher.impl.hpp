@@ -196,6 +196,27 @@ marcher<base, n, num_nb>::add_src(fvec coords, double s, double U)
 
 template <class base, int n, int num_nb>
 void
+marcher<base, n, num_nb>::add_bd(int * inds)
+{
+  add_bd(ivec {inds});
+}
+
+template <class base, int n, int num_nb>
+void
+marcher<base, n, num_nb>::add_bd(ivec inds)
+{
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(in_bounds(inds));
+#endif
+  inds += ivec::one();
+  int lin = to_linear_index(inds);
+  _U[lin] = inf<double>;
+  _s[lin] = inf<double>;
+  _state[lin] = state::boundary;
+}
+
+template <class base, int n, int num_nb>
+void
 marcher<base, n, num_nb>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO

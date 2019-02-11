@@ -56,6 +56,7 @@ cdef extern from "olim_wrapper.h":
     status olim_wrapper_init(olim_wrapper**, olim_wrapper_params*)
     status olim_wrapper_deinit(olim_wrapper**)
     status olim_wrapper_run(olim_wrapper*)
+    status olim_wrapper_add_src(olim_wrapper*, int*)
     status olim_wrapper_add_bd(olim_wrapper*, int*, double)
     status olim_wrapper_get_U_ptr(olim_wrapper*, double**)
     status olim_wrapper_get_s_ptr(olim_wrapper*, double**)
@@ -184,31 +185,56 @@ cdef class Olim:
     def run(self):
         olim_wrapper_run(self._w)
 
+    def add_src(self, *args):
+        if self._p.ndims == 2:
+            if len(args) == 2:
+                self.add_src_2(list(args[:2]))
+            elif len(args) == 3:
+                self.add_src_2(list(args[:2]), U=args[2])
+            else:
+                raise Exception('error!')
+        elif self._p.ndims == 3:
+            if len(args) == 3:
+                self.add_src_3(list(args[:3]))
+            elif len(args) == 4:
+                self.add_src_3(list(args[:3]), U=args[3])
+            else:
+                raise Exception('error!')
+
+    cdef add_src_2(self, list inds, double U=0):
+        cdef int inds_[2]
+        inds_[0] = inds[0]
+        inds_[1] = inds[1]
+        olim_wrapper_add_src(self._w, inds_, U)
+
+    cdef add_src_3(self, list inds, double U=0):
+        cdef int inds_[3]
+        inds_[0] = inds[0]
+        inds_[1] = inds[1]
+        inds_[2] = inds[2]
+        olim_wrapper_add_src(self._w, inds_, U)
+
     def add_bd(self, *args):
         if self._p.ndims == 2:
             if len(args) == 2:
                 self.add_bd_2(list(args[:2]))
-            elif len(args) == 3:
-                self.add_bd_2(list(args[:2]), U=args[2])
             else:
                 raise Exception('error!')
         elif self._p.ndims == 3:
             if len(args) == 3:
                 self.add_bd_3(list(args[:3]))
-            elif len(args) == 4:
-                self.add_bd_3(list(args[:3]), U=args[3])
             else:
                 raise Exception('error!')
 
-    cdef add_bd_2(self, list inds, double U=0):
+    cdef add_bd_2(self, list inds):
         cdef int inds_[2]
         inds_[0] = inds[0]
         inds_[1] = inds[1]
-        olim_wrapper_add_bd(self._w, inds_, U)
+        olim_wrapper_add_bd(self._w, inds_)
 
-    cdef add_bd_3(self, list inds, double U=0):
+    cdef add_bd_3(self, list inds):
         cdef int inds_[3]
         inds_[0] = inds[0]
         inds_[1] = inds[1]
         inds_[2] = inds[2]
-        olim_wrapper_add_bd(self._w, inds_, U)
+        olim_wrapper_add_bd(self._w, inds_)

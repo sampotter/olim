@@ -14,14 +14,14 @@
 
 template <class base, int n, int num_nb>
 marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
-  _size {dims.product()},
+  _dims {dims + 2*ivec::one()},
+  _size {_dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
   _U {new double[_size]},
   _s {new double[_size]},
   _state {new state[_size]},
   _heap_pos {new int[_size]},
-  _h {h},
-  _dims {dims}
+  _h {h}
 {
   for (int i = 0; i < _size; ++i) {
     _U[i] = inf<double>;
@@ -29,6 +29,61 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
 
   for (int i = 0; i < _size; ++i) {
     _state[i] = state::far;
+  }
+
+  /**
+   * Set the state of all nodes on the edge of the domain to
+   * `boundary' and set boundary slowness values to infinity.
+   *
+   * First, iterate over each dimension `d':
+   */
+  for (int d = 0; d < n; ++d) {
+    // Extract the dimensions not equal to `d' as a new dimension
+    // vector called `subdims'.
+    vec<int, n - 1> subdims;
+    int j = 0;
+    for (int i = 0; i < n; ++i) {
+      if (i != d) {
+        subdims[j] = _dims[i];
+        ++j;
+      }
+    }
+
+    // Iterate over each point spanned by `subdims'.
+    ivec inds;
+    int lin;
+    for (int i = 0; i < subdims.product(); ++i) {
+      // Prepare an index vector of full dimension with indices
+      // corresponding to `subdims'.
+      vec<int, n - 1> subinds = ::to_vector_index(i, subdims);
+      int k = 0;
+      for (int j = 0; j < n; ++j) {
+        if (j != d) {
+          inds[j] = subinds[k++];
+        }
+      }
+
+      // Set dimension `d' to its two extremal values and set the
+      // corresponding points' states to `boundary' and slowness
+      // values to infinity.
+
+      inds[d] = 0;
+      lin = to_linear_index(inds);
+      _state[lin] = state::boundary;
+      _s[lin] = inf<double>;
+
+      inds[d] = _dims[d] - 1;
+      lin = to_linear_index(inds);
+      _state[lin] = state::boundary;
+      _s[lin] = inf<double>;
+    }
+  }
+
+  /**
+   * Precompute linear offsets. These are used in `visit_neighbors'.
+   */
+  for (int i = 0; i < max_num_nb(n); ++i) {
+    _linear_offsets[i] = to_linear_index(get_offset<n>(i));
   }
 }
 
@@ -45,8 +100,13 @@ template <class base, int n, int num_nb>
 marcher<base, n, num_nb>::marcher(ivec dims, double h, double const * s):
   marcher {dims, h, no_slow_t {}}
 {
-  memcpy((void *) _s, (void *) s, sizeof(double)*_size);
+  // TODO: this isn't the most efficient way to do this. It would be
+  // better to iterate over pointers to the heads of each maximum
+  // contiguous block of memory and call memcpy for each one. This is
+  // more complicated but would reduce the amount of index math
+  // substantially.
   for (auto inds: range<n> {dims}) {
+    _s[to_linear_index(inds + ivec::one())] = s[::to_linear_index(inds, dims)];
   }
 }
 
@@ -84,6 +144,7 @@ marcher<base, n, num_nb>::add_boundary_node(ivec inds, double U)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
+  inds += ivec::one();
   int lin = to_linear_index(inds);
   _U[lin] = U;
   _state[lin] = state::trial;
@@ -103,9 +164,10 @@ template <class base, int n, int num_nb>
 void
 marcher<base, n, num_nb>::add_boundary_node(fvec coords, double s, double U)
 {
-  double h = get_h(), u0 = U, s0 = s;
+  double h = get_h();
   fvec inds = coords/h;
   assert(in_bounds(inds));
+  inds += fvec::one();
 
   // TODO: this isn't as general as it could be. We also want to
   // handle cases where i or j are grid-aligned, in which case we need
@@ -122,11 +184,11 @@ marcher<base, n, num_nb>::add_boundary_node(fvec coords, double s, double U)
     for (int i = 0; i < n; ++i) {
       inds__[i] = corners[i][inds_[i]];
     }
-    assert(in_bounds(inds__));
 
-    fvec p = fvec {inds} - inds__;
+    fvec p = inds - fvec {inds__};
+
     int lin = to_linear_index(inds__);
-    _U[lin] = updates::line<base::F_>()(p.norm2(), u0, _s[lin], s0, h);
+    _U[lin] = updates::line<base::F_>()(p.norm2(), U, _s[lin], s, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }
@@ -139,7 +201,15 @@ marcher<base, n, num_nb>::set_fac_src(ivec inds, fac_src<n> const * fc)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
+  inds += ivec::one();
   _lin2fac[to_linear_index(inds)] = fc;
+}
+
+template <class base, int n, int num_nb>
+bool
+marcher<base, n, num_nb>::in_bounds(ivec inds) const
+{
+  return uvec {inds} < uvec {_dims - 2*ivec::one()};
 }
 
 template <class base, int n, int num_nb>
@@ -147,16 +217,10 @@ double
 marcher<base, n, num_nb>::get_U(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(_U != nullptr);
   assert(in_bounds(inds));
 #endif
-  return _U[to_linear_index(inds)];
-}
-
-template <class base, int n, int num_nb>
-bool
-marcher<base, n, num_nb>::in_bounds(ivec inds) const
-{
-  return uvec {inds} < uvec {_dims};
+  return _U[to_linear_index(inds + ivec::one())];
 }
 
 template <class base, int n, int num_nb>
@@ -164,47 +228,37 @@ double
 marcher<base, n, num_nb>::get_s(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
   assert(_s != nullptr);
+  assert(in_bounds(inds));
 #endif
-  return _s[to_linear_index(inds)];
+  return _s[to_linear_index(inds + ivec::one())];
 }
 
-// TODO: we want to delete this---right now, it's a bit muddled, since
-// it should probably be called `is_inbounds_and_valid'... but we want
-// to get rid of `in_bounds', anyway, so once we do that, this
-// function will just be deleted
 template <class base, int n, int num_nb>
-bool
-marcher<base, n, num_nb>::is_valid(ivec inds) const
+state
+marcher<base, n, num_nb>::get_state(ivec inds) const
 {
-  return in_bounds(inds) && _state[to_linear_index(inds)] == state::valid;
-}
-
-constexpr int max_num_nb(int n) {
-  int lut[2] = {8, 26};
-  return lut[n - 2];
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(_state != nullptr);
+  assert(in_bounds(inds));
+#endif
+  return _state[to_linear_index(inds + ivec::one())];
 }
 
 template <class base, int n, int num_nb>
 void
 marcher<base, n, num_nb>::visit_neighbors(int lin_center)
 {
-  ivec inds = to_vector_index(lin_center);
-
   int valid_nb[max_num_nb(n)];
   int child_nb[num_nb];
 
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
-    ivec inds_ = inds + get_offset<n>(i);
-    if (in_bounds(inds_)) {
-      int lin = to_linear_index(inds_);
-      if (_state[lin] == state::far) {
-        _state[lin] = state::trial;
-        _heap.insert(lin);
-      }
+    int lin = lin_center + _linear_offsets[i];
+    if (_state[lin] == state::far) {
+      _state[lin] = state::trial;
+      _heap.insert(lin);
     }
   }
 
@@ -212,35 +266,27 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // (i.e. the unit max norm ball).
   for (int i = 0; i < max_num_nb(n); ++i) {
     valid_nb[i] = -1;
-    ivec inds_ = inds + get_offset<n>(i);
-    if (in_bounds(inds_))  {
-      int lin = to_linear_index(inds_);
-      if (_state[lin] == state::valid) {
-        valid_nb[i] = lin;
-      }
+    int lin = lin_center + _linear_offsets[i];
+    if (_state[lin] == state::valid) {
+      valid_nb[i] = lin;
     }
   }
 
-  // Some explanation of the indices used below:
-  // - l is a radial index circling (a, b)
-  // - parent is the radial index of (i, j) expressed in the same
-  //   index space as l
+  // TODO: comment this
   auto const set_child_nb = [&] (int parent, ivec offset) {
-    for (int l = 0; l < num_nb; ++l) {
-      child_nb[l] = -1;
+    for (int i = 0; i < num_nb; ++i) {
+      child_nb[i] = -1;
     }
     child_nb[parent] = lin_center;
-    for (int l = 0; l < num_nb; ++l) {
-      if (l == parent) {
+    for (int i = 0; i < num_nb; ++i) {
+      if (i == parent) {
         continue;
       }
-      ivec offset_ = offset + get_offset<n>(l);
+      ivec offset_ = offset + get_offset<n>(i);
       if (offset_.normi() > 1) {
         continue;
       }
-      if (in_bounds(inds + offset_)) {
-        child_nb[l] = valid_nb[get_linear_offset<n>(offset_)];
-      }
+      child_nb[i] = valid_nb[get_linear_offset<n>(offset_)];
     }
   };
 
@@ -286,18 +332,17 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   };
 
   // This is the main update loop. Each neighbor of n which isn't
-  // valid is now trial. For each neighboring trial node, use
-  // `set_child_nb' to grab its valid neighbors and use `update' to
-  // actually update the node's value and update its position in the
-  // heap.
+  // `valid' is now `trial' or `boundary'. We ignore `boundary' nodes;
+  // for each neighboring trial node, use `set_child_nb' to grab its
+  // valid neighbors and use `update' to actually update the node's
+  // value and update its position in the heap.
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
-      ivec offset = get_offset<n>(i);
-      ivec inds_ = inds + offset;
-      if (in_bounds(inds_)) {
+      int lin = lin_center + _linear_offsets[i];
+      if (_state[lin] == state::trial) {
         int parent = get_parent(i);
-        set_child_nb(parent, offset);
-        update(to_linear_index(inds_), parent);
+        set_child_nb(parent, get_offset<n>(i));
+        update(lin, parent);
       }
     }
   }

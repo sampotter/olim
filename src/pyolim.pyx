@@ -20,6 +20,12 @@ class Quadrature(Enum):
     MP1 = 1
     RHR = 2
 
+class State(Enum):
+    VALID = 0
+    TRIAL = 1
+    FAR = 2
+    BOUNDARY = 3
+
 cdef extern from "olim_wrapper.h":
     enum neighborhood:
         OLIM4
@@ -75,12 +81,12 @@ cdef class Olim:
         olim_wrapper_get_U_ptr(self._w, &U)
         if self._p.ndims == 2:
             M, N = self.dims
-            mv_2 = <double[:M, :N]> U
-            return np.asarray(mv_2)
+            mv_2 = <double[:(M + 2), :(N + 2)]> U
+            return np.asarray(mv_2[1:-1, 1:-1])
         elif self._p.ndims == 3:
             M, N, P = self.dims
-            mv_3 = <double[:M, :N, :P]> U
-            return np.asarray(mv_3)
+            mv_3 = <double[:(M + 2), :(N + 2), :(P + 2)]> U
+            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
 
     @U.setter
     def U(self, U_mv):
@@ -93,15 +99,15 @@ cdef class Olim:
         cdef double * U = NULL
         olim_wrapper_get_U_ptr(self._w, &U)
         M, N = self.dims
-        cdef double[:, ::1] mv = <double[:M, :N]> U
-        mv[...] = U_mv
+        cdef double[:, ::1] mv = <double[:(M + 2), :(N + 2)]> U
+        mv[1:-1, 1:-1] = U_mv
 
     cdef set_U_3(self, double[:, :, ::1] U_mv):
         cdef double * U = NULL
         olim_wrapper_get_U_ptr(self._w, &U)
         M, N, P = self.dims
-        cdef double[:, :, ::1] mv = <double[:M, :N, :P]> U
-        mv[...] = U_mv
+        cdef double[:, :, ::1] mv = <double[:(M + 2), :(N + 2), :(P + 2)]> U
+        mv[1:-1, 1:-1, 1:-1] = U_mv
 
     @property
     def s(self):
@@ -111,12 +117,12 @@ cdef class Olim:
         olim_wrapper_get_s_ptr(self._w, &s)
         if self._p.ndims == 2:
             M, N = self.dims
-            mv_2 = <double[:M, :N]> s
-            return np.asarray(mv_2)
+            mv_2 = <double[:(M + 2), :(N + 2)]> s
+            return np.asarray(mv_2[1:-1, 1:-1])
         elif self._p.ndims == 3:
             M, N, P = self.dims
-            mv_3 = <double[:M, :N, :P]> s
-            return np.asarray(mv_3)
+            mv_3 = <double[:(M + 2), :(N + 2), :(P + 2)]> s
+            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
 
     @s.setter
     def s(self, s_mv):
@@ -129,15 +135,15 @@ cdef class Olim:
         cdef double * s = NULL
         olim_wrapper_get_s_ptr(self._w, &s)
         M, N = self.dims
-        cdef double[:, ::1] mv = <double[:M, :N]> s
-        mv[...] = s_mv
+        cdef double[:, ::1] mv = <double[:(M + 2), :(N + 2)]> s
+        mv[1:-1, 1:-1] = s_mv
 
     cdef set_s_3(self, double[:, :, ::1] s_mv):
         cdef double * s = NULL
         olim_wrapper_get_s_ptr(self._w, &s)
         M, N, P = self.dims
-        cdef double[:, :, ::1] mv = <double[:M, :N, :P]> s
-        mv[...] = s_mv
+        cdef double[:, :, ::1] mv = <double[:(M + 2), :(N + 2), :(P + 2)]> s
+        mv[1:-1, 1:-1, 1:-1] = s_mv
 
     @property
     def state(self):
@@ -147,12 +153,12 @@ cdef class Olim:
         olim_wrapper_get_state_ptr(self._w, &state)
         if self._p.ndims == 2:
             M, N = self.dims
-            mv_2 = <char[:M, :N]> state
-            return np.asarray(mv_2)
+            mv_2 = <char[:(M + 2), :(N + 2)]> state
+            return np.asarray(mv_2[1:-1, 1:-1])
         elif self._p.ndims == 3:
             M, N, P = self.dims
             mv_3 = <char[:M, :N, :P]> state
-            return np.asarray(mv_3)
+            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
 
     def __cinit__(self, nb, quad, s, double h):
         self._p.nb = nb.value

@@ -10,29 +10,35 @@
 #include "state.hpp"
 #include "vec.hpp"
 
-template <int N>
+constexpr int max_num_nb(int n) {
+  int lut[2] = {8, 26};
+  return lut[n - 2];
+}
+
+template <int n>
 struct fac_src
 {
-  fac_src(vec<double, N> coords, double s): coords {coords}, s {s} {}
+  fac_src(vec<double, n> coords, double s):
+    coords {coords + decltype(coords)::one()}, s {s} {}
 
-  vec<double, N> coords;
+  vec<double, n> coords;
   double s;
 };
 
-template <class base, int N, int num_nb>
+template <class base, int n, int num_nb>
 struct marcher
 {
-  using fac_src_t = fac_src<N>;
+  using fac_src_t = fac_src<n>;
 
   // These are for use with our pybind11 bindings. They aren't used
   // internally.
   using float_type = double;
 
-  using fvec = vec<double, N>;
-  using ivec = vec<int, N>;
-  using uvec = vec<unsigned, N>;
+  using fvec = vec<double, n>;
+  using ivec = vec<int, n>;
+  using uvec = vec<unsigned, n>;
 
-  static constexpr int ndim = N;
+  static constexpr int ndim = n;
 
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);
@@ -46,10 +52,11 @@ struct marcher
   void add_boundary_nodes(ivec const * inds, double const * U, int num);
   void add_boundary_node(fvec coords, double s, double U = 0.0);
 
-  void set_fac_src(ivec inds, fac_src<N> const * src);
+  void set_fac_src(ivec inds, fac_src<n> const * src);
 
-  double get_s(ivec inds) const;
   double get_U(ivec inds) const;
+  double get_s(ivec inds) const;
+  state get_state(ivec inds) const;
 
   inline double * get_U_ptr() const {
     return _U;
@@ -77,7 +84,6 @@ OLIM_PROTECTED:
   }
 
   bool in_bounds(ivec inds) const;
-  bool is_valid(ivec inds) const;
 
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();
@@ -109,6 +115,7 @@ OLIM_PROTECTED:
     marcher * _m {nullptr};
   };
 
+  ivec _dims;
   int _size;
 
   heap<int, proxy> _heap;
@@ -118,11 +125,12 @@ OLIM_PROTECTED:
   state * _state {nullptr};
   int * _heap_pos {nullptr};
   double _h {1};
-  ivec _dims;
+
+  int _linear_offsets[max_num_nb(n)];
 
   // TODO: this is a quick hack just to get this working for the time
   // being.
-  std::unordered_map<int, fac_src<N> const *> _lin2fac;
+  std::unordered_map<int, fac_src<n> const *> _lin2fac;
 };
 
 #include "marcher.impl.hpp"

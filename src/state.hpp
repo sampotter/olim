@@ -3,5 +3,6 @@
 enum class state: char {
   valid,
   trial,
-  far
+  far,
+  boundary
 };

@@ -16,19 +16,6 @@ TEST (MARCHER, octants_are_correct) {
   ASSERT_TRUE(octants_are_correct<olim3d_t>(sqrt2, sqrt2 + 1.0/sqrt3));
 }
 
-TEST (MARCHER, planes_are_correct) {
-  auto res = planes_are_correct<olim_t, olim3d_t>(slow2s[0], slow3s[0]);
-  ASSERT_TRUE(res);
-
-  res = planes_are_correct<olim_t, olim3d_t>(slow2s[1], slow3s[1], 9);
-  ASSERT_TRUE(res);
-}
-
-TEST (MARCHER, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>(slow3s[0]));
-  ASSERT_TRUE(result_is_symmetric<olim3d_t>(slow3s[1]));
-}
-
 TEST (MARCHER, two_by_two_by_three_cells_are_correct) {
   ASSERT_TRUE(two_by_two_by_three_cells_are_correct<olim3d_t>());
 }

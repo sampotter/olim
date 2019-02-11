@@ -49,29 +49,6 @@ adjacent_update_works() {
 
 template <class olim>
 testing::AssertionResult
-correct_corners_in_limit(int n, double tol) {
-  double h = 2./(n - 1);
-  olim m {{n, n}, h, s0<2>, {1., 1.}};
-  m.add_boundary_node({n/2, n/2});
-  m.run();
-
-  auto res = eq_w_rel_tol(m.get_U({0, n - 1}), sqrt2, tol);
-  if (!res) return res;
-  
-  res = eq_w_rel_tol(m.get_U({0, n - 1}), sqrt2, tol);
-  if (!res) return res;
-
-  res = eq_w_rel_tol(m.get_U({n - 1, 0}), sqrt2, tol);
-  if (!res) return res;
-
-  res = eq_w_rel_tol(m.get_U({n - 1, n - 1}), sqrt2, tol);
-  if (!res) return res;
-
-  return testing::AssertionSuccess();
-}
-
-template <class olim>
-testing::AssertionResult
 quadrants_are_correct(
   double diag_value, std::enable_if_t<olim::ndim == 2> * = 0)
 {
@@ -369,121 +346,6 @@ octants_are_correct(double diag2val, double diag3val) {
   return testing::AssertionSuccess();
 }
 
-template <class olim, class olim3d_t>
-testing::AssertionResult
-planes_are_correct(slow<2> s = s0<2>, slow<3> s3d = s0<3>, int n = 51)
-{
-  double h = 2.0/(n - 1);
-  
-  olim m {{n, n}, h, s, {1, 1}};
-  m.add_boundary_node({n/2, n/2});
-  m.run();
-  
-  olim3d_t m3d {{n, n, n}, h, s3d, {1, 1, 1}};
-  m3d.add_boundary_node({n/2, n/2, n/2});
-  m3d.run();
-
-  auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
-    -> testing::AssertionResult &
-  {
-    return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
-  };
-
-  for (auto inds: range<2> {{n, n}}) {
-    double U = m.get_U(inds);
-    int i = inds[0], j = inds[1];
-
-    auto res = eq_w_rel_tol(U, m3d.get_U({i, j, n/2}));
-    if (!res) return msg(res, i, j, n/2);
-
-    res = eq_w_rel_tol(U, m3d.get_U({i, n/2, j}));
-    if (!res) return msg(res, i, n/2, j);
-
-    res = eq_w_rel_tol(U, m3d.get_U({n/2, i, j}));
-    if (!res) return msg(res, n/2, i, j);
-  }
-
-  return testing::AssertionSuccess();
-}
-
-template <class olim>
-testing::AssertionResult
-result_is_symmetric(slow<2> s = s0, int n = 51, double tol = 1e-13) {
-  double h = 2.0/(n - 1);
-  olim m {{n, n}, h, s, {1, 1}};
-  m.add_boundary_node({n/2, n/2});
-  m.run();
-
-  auto msg = [] (testing::AssertionResult & res, int i, int j)
-    -> testing::AssertionResult &
-  {
-    return res << ", (i = " << i << ", j = " << j << ")";
-  };
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-      auto res = eq_w_rel_tol(m.get_U({i, j}), m.get_U({i, j_}), tol);
-      if (!res) return msg(res, i, j);
-    }
-  }
-
-  for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
-    for (int j = 0; j < n; ++j) {
-      auto res = eq_w_rel_tol(m.get_U({i, j}), m.get_U({i_, j}), tol);
-      if (!res) return msg(res, i, j);
-    }
-  }
-
-  return testing::AssertionSuccess();
-}
-
-template <class olim3d_t>
-testing::AssertionResult
-result_is_symmetric(slow<3> s = s0, int n = 21, double tol = 1e-13) {
-  double h = 2.0/(n - 1);
-  olim3d_t m {{n, n, n}, h, s, {1, 1, 1}};
-  m.add_boundary_node({n/2, n/2, n/2});
-  m.run();
-
-  auto msg = [] (testing::AssertionResult & res, int i, int j, int k)
-    -> testing::AssertionResult &
-  {
-    return res << ", (i = " << i << ", j = " << j << ", k = " << k << ")";
-  };
-
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      for (int k = 0, k_ = n - 1; k < n; ++k, --k_) {
-        auto res = eq_w_rel_tol(
-          m.get_U({i, j, k}), m.get_U({i, j, k_}), tol);
-        if (!res) return msg(res, i, j, k);
-      }
-    }
-  }
-
-  for (int i = 0; i < n; ++i) {
-    for (int k = 0; k < n; ++k) {
-      for (int j = 0, j_ = n - 1; j < n; ++j, --j_) {
-        auto res = eq_w_rel_tol(
-          m.get_U({i, j, k}), m.get_U({i, j_, k}), tol);
-        if (!res) return msg(res, i, j, k);
-      }
-    }
-  }
-
-  for (int j = 0; j < n; ++j) {
-    for (int k = 0; k < n; ++k) {
-      for (int i = 0, i_ = n - 1; i < n; ++i, --i_) {
-        auto res = eq_w_rel_tol(
-          m.get_U({i, j, k}), m.get_U({i_, j, k}), tol);
-        if (!res) return msg(res, i, j, k);
-      }
-    }
-  }
-
-  return testing::AssertionSuccess();
-}
-
 template <class olim3d_t>
 testing::AssertionResult
 two_by_two_by_three_cells_are_correct() {
@@ -558,47 +420,6 @@ plane_boundaries_are_correct() {
   }
 
   return testing::AssertionSuccess();
-}
-
-template <class olim1, class olim2>
-testing::AssertionResult
-olims_agree(slow<2> s = s0, int n = 51) {
-  double h = 2.0/(n - 1);
-  int i0 = n/2;
-
-  olim1 m1 {{n, n}, h, s, {1, 1}};
-  m1.add_boundary_node({i0, i0});
-  m1.run();
-
-  olim2 m2 {{n, n}, h, s, {1, 1}};
-  m2.add_boundary_node({i0, i0});
-  m2.run();
-
-  for (auto inds: range<2> {{n, n}}) {
-    auto res = eq_w_rel_tol(m1.get_U(inds), m2.get_U(inds));
-    if (!res) return res;
-  }
-
-  return testing::AssertionSuccess();
-}
-
-template <class olim3d_t, class other_olim3d_t>
-void agrees_with_other_olim3d_t(int n = 21) {
-  double h = 2.0/(n - 1);
-  int i0 = n/2;
-
-  olim3d_t m1 {n, n, n, h, s0<3>, 1, 1, 1};
-  m1.add_boundary_node(i0, i0, i0);
-  m1.run();
-
-  other_olim3d_t m2 {n, n, n, h, s0<3>, 1, 1, 1};
-  m2.add_boundary_node(i0, i0, i0);
-  m2.run();
-
-  for (auto inds: range<3> {{n, n, n}}) {
-    auto res = eq_w_rel_tol(m1.get_U(inds), m2.get_U(inds));
-    if (!res) return res;
-  }
 }
 
 template <class olim, class olim3d_t>

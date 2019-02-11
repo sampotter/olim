@@ -15,15 +15,6 @@ TEST (olim8_mp1, quadrants_are_correct) {
   ASSERT_TRUE(quadrants_are_correct<olim_t>(sqrt(2)));
 }
 
-TEST (olim8_mp1, correct_corners_in_limit) {
-  ASSERT_TRUE(correct_corners_in_limit<olim_t>(101, 10*eps<double>));
-}
-
-TEST (olim8_mp1, result_is_symmetric) {
-  ASSERT_TRUE(result_is_symmetric<olim_t>(s0<2>));
-  ASSERT_TRUE(result_is_symmetric<olim_t>(s1<2>));
-}
-
 TEST (olim8_mp1, solution_is_exact_in_factored_region) {
   ASSERT_TRUE(solution_is_exact_in_factored_square<olim_t>(5));
 }

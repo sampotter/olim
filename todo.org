@@ -84,6 +84,12 @@
   27. [ ] The problem with std::visit on OS X is that it might throw
       std::variant_bad_access, which I guess doesn't exist until
       10.14. One possible way around this is to turn off exceptions?
+  28. [ ] some renaming:
+      - [ ] add_bd/add_boundary -> add_src/add_source
+        - [ ] also add a function which adds a boundary node and does
+          corresponding changes to U and s apart from state
+      - [ ] run -> solve
+      - [ ] add step back in
 
 * General optimization
   1. [ ] The octant optimization is worth doing: without it, we end up
@@ -94,6 +100,9 @@
      - [ ] Add a "barrier" state and just set the boundary to
        "barrier" to implement this without having to think too hard
        about it
+     - [ ] Once we finish this, we should see about reducing the
+       amount that we're converting back and forth between linear and
+       Cartesian indices
   3. [ ] Reduce branching by replacing "if (nb[i]) {...}" with a
      precomputed array of indices to valid neighbors
   4. [ ] Split fac and non-fac update functions

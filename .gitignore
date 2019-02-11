@@ -18,3 +18,4 @@ cg.*
 annotate.txt
 callgrind.*
 tmp
+src/pyolim.c

@@ -2,7 +2,7 @@
 #include "olim3d.hpp"
 #include "olim.test.common.hpp"
 
-#define MARCHER olim3d_hu_rhr
+#define MARCHER olim3d_rhr
 
 using olim_t = olim8_rhr;
 using olim3d_t = MARCHER;

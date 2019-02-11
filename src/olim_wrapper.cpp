@@ -33,9 +33,9 @@ union olim_variant {
   olim26_mp0 _olim26_mp0;
   olim26_mp1 _olim26_mp1;
   olim26_rhr _olim26_rhr;
-  olim3d_hu_mp0 _olim3d_hu_mp0;
-  olim3d_hu_mp1 _olim3d_hu_mp1;
-  olim3d_hu_rhr _olim3d_hu_rhr;
+  olim3d_mp0 _olim3d_mp0;
+  olim3d_mp1 _olim3d_mp1;
+  olim3d_rhr _olim3d_rhr;
 };
 
 struct olim_wrapper
@@ -123,18 +123,18 @@ struct olim_wrapper
   }
 
   template <>
-  olim3d_hu_mp0 & olim<olim3d_hu_mp0>() {
-    return _olim._olim3d_hu_mp0;
+  olim3d_mp0 & olim<olim3d_mp0>() {
+    return _olim._olim3d_mp0;
   }
 
   template <>
-  olim3d_hu_mp1 & olim<olim3d_hu_mp1>() {
-    return _olim._olim3d_hu_mp1;
+  olim3d_mp1 & olim<olim3d_mp1>() {
+    return _olim._olim3d_mp1;
   }
 
   template <>
-  olim3d_hu_rhr & olim<olim3d_hu_rhr>() {
-    return _olim._olim3d_hu_rhr;
+  olim3d_rhr & olim<olim3d_rhr>() {
+    return _olim._olim3d_rhr;
   }
 };
 
@@ -196,11 +196,11 @@ status_e olim_wrapper_init(olim_wrapper ** w_ptr, olim_wrapper_params_s * p)
     }
   } else if (p->nb == OLIM3D) {
     if (p->F == MP0) {
-      construct_olim<olim3d_hu_mp0>(w, p);
+      construct_olim<olim3d_mp0>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim3d_hu_mp1>(w, p);
+      construct_olim<olim3d_mp1>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim3d_hu_rhr>(w, p);
+      construct_olim<olim3d_rhr>(w, p);
     }
   }
 
@@ -253,11 +253,11 @@ status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      destruct_olim<olim3d_hu_mp0>(w);
+      destruct_olim<olim3d_mp0>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim3d_hu_mp1>(w);
+      destruct_olim<olim3d_mp1>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim3d_hu_rhr>(w);
+      destruct_olim<olim3d_rhr>(w);
     }
   }
 
@@ -310,11 +310,11 @@ status_e olim_wrapper_run(olim_wrapper * w)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_hu_mp0>().run();
+      w->olim<olim3d_mp0>().run();
     } else if (w->F == MP1) {
-      w->olim<olim3d_hu_mp1>().run();
+      w->olim<olim3d_mp1>().run();
     } else if (w->F == RHR) {
-      w->olim<olim3d_hu_rhr>().run();
+      w->olim<olim3d_rhr>().run();
     }
   }
 
@@ -365,11 +365,11 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds, double U)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_hu_mp0>().add_src(inds, U);
+      w->olim<olim3d_mp0>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim3d_hu_mp1>().add_src(inds, U);
+      w->olim<olim3d_mp1>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim3d_hu_rhr>().add_src(inds, U);
+      w->olim<olim3d_rhr>().add_src(inds, U);
     }
   }
 
@@ -420,11 +420,11 @@ status_e olim_wrapper_get_U_ptr(olim_wrapper * w, double ** U_ptr)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim3d_hu_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_mp0>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim3d_hu_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_mp1>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim3d_hu_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_rhr>().get_U_ptr();
     }
   }
 
@@ -475,11 +475,11 @@ status_e olim_wrapper_get_s_ptr(olim_wrapper * w, double ** s_ptr)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim3d_hu_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_mp0>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim3d_hu_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_mp1>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim3d_hu_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_rhr>().get_s_ptr();
     }
   }
 
@@ -530,11 +530,11 @@ status_e olim_wrapper_get_state_ptr(olim_wrapper * w, char ** state_ptr)
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim3d_hu_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_mp0>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim3d_hu_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_mp1>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim3d_hu_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_rhr>().get_state_ptr();
     }
   }
 

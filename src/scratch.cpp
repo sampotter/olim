@@ -38,7 +38,7 @@ int main(int argc, char * argv[]) {
   if (marcher_name == "olim26_mp1") run_marcher_3d<olim26_mp1>(n);
   if (marcher_name == "olim26_rhr") run_marcher_3d<olim26_rhr>(n);
 
-  if (marcher_name == "olim3d_hu_mp0") run_marcher_3d<olim3d_hu_mp0>(n);
-  if (marcher_name == "olim3d_hu_mp1") run_marcher_3d<olim3d_hu_mp1>(n);
-  if (marcher_name == "olim3d_hu_rhr") run_marcher_3d<olim3d_hu_rhr>(n);
+  if (marcher_name == "olim3d_mp0") run_marcher_3d<olim3d_mp0>(n);
+  if (marcher_name == "olim3d_mp1") run_marcher_3d<olim3d_mp1>(n);
+  if (marcher_name == "olim3d_rhr") run_marcher_3d<olim3d_rhr>(n);
 }

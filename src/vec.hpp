@@ -266,6 +266,11 @@ T disti(vec<T, n> const & u, vec<T, n> const & v) {
 enum class ordering {ROW_MAJOR, COLUMN_MAJOR};
 
 template <ordering order = ordering::COLUMN_MAJOR>
+inline int to_linear_index(vec<int, 1> inds, vec<int, 1>) {
+  return inds[0];
+}
+
+template <ordering order = ordering::COLUMN_MAJOR>
 inline int to_linear_index(vec2<int> inds, vec2<int> dims);
 
 template <>
@@ -298,6 +303,13 @@ inline int
 to_linear_index<ordering::COLUMN_MAJOR>(vec3<int> inds, vec3<int> dims)
 {
   return inds[0] + dims[0]*(inds[1] + dims[1]*inds[2]);
+}
+
+template <ordering order = ordering::COLUMN_MAJOR>
+inline vec<int, 1>
+to_vector_index(int lin, vec<int, 1> dims)
+{
+  return lin % dims[0];
 }
 
 template <ordering order = ordering::COLUMN_MAJOR>

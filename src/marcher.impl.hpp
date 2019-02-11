@@ -46,14 +46,7 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, double const * s):
   marcher {dims, h, no_slow_t {}}
 {
   memcpy((void *) _s, (void *) s, sizeof(double)*_size);
-}
-
-template <class base, int n, int num_nb>
-marcher<base, n, num_nb>::marcher(ivec dims, double h, slow<n> s, fvec origin):
-  marcher {dims, h, no_slow_t {}}
-{
   for (auto inds: range<n> {dims}) {
-    _s[to_linear_index(inds)] = s(h*inds - origin);
   }
 }
 

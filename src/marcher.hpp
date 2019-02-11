@@ -34,10 +34,9 @@ struct marcher
 
   static constexpr int ndim = N;
 
-  marcher(ivec dims, double h);
   marcher(ivec dims, double h, no_slow_t const &);
+  marcher(ivec dims, double h);
   marcher(ivec dims, double h, double const * s);
-  marcher(ivec dims, double h, slow<N> s, fvec origin = fvec::zero());
   virtual ~marcher();
 
   void run();

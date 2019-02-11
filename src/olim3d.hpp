@@ -254,6 +254,9 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>
 
   using marcher_t = marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>;
 
+  // TODO: define an init_crtp that can be called from marcher and get
+  // rid of all these explicit calls to marcher's constructors
+
   olim3d_hu(ivec dims, double h): marcher_t {dims, h} {
     init();
   }

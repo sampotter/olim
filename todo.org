@@ -129,6 +129,8 @@
        of classes, but my feeling is that the bloat is coming from,
        e.g., having to stamp out 18 versions of the cost_func stuff
        instead of just 3...
+  10. [ ] Checking nb[i] >= 0 is almost surely going to be faster than
+      checking if nb[i] != -1...
 
 * Interface/FFI improvements
   1. [ ] Replace pybind11 with Cython

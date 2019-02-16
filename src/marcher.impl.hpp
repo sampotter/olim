@@ -273,6 +273,13 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   int valid_nb[max_num_nb(n)];
   int child_nb[num_nb];
 
+  // TODO: another optimization idea:
+  // - we gather stuff from "general memory" (_state[lin], _U[lin}, etc.)
+  // - it might make sense to fetch all of stuff here, and then use SIMD
+  //   instructions to do comparisons
+  // - many of the things we do with this stuff can be done fully
+  //   in parallel
+
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
@@ -286,29 +293,19 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
   for (int i = 0; i < max_num_nb(n); ++i) {
-    valid_nb[i] = -1;
     int lin = lin_center + _linear_offsets[i];
-    if (_state[lin] == state::valid) {
-      valid_nb[i] = lin;
-    }
+    valid_nb[i] = _state[lin] == state::valid ? lin : -1;
   }
 
   // TODO: comment this
   auto const set_child_nb = [&] (int parent, ivec offset) {
     for (int i = 0; i < num_nb; ++i) {
-      child_nb[i] = -1;
+      ivec offset_ = offset + get_offset<n>(i);
+      child_nb[i] = offset_.normi() > 1 ?
+        -1 :
+        valid_nb[get_linear_offset<n>(offset_)];
     }
     child_nb[parent] = lin_center;
-    for (int i = 0; i < num_nb; ++i) {
-      if (i == parent) {
-        continue;
-      }
-      ivec offset_ = offset + get_offset<n>(i);
-      if (offset_.normi() > 1) {
-        continue;
-      }
-      child_nb[i] = valid_nb[get_linear_offset<n>(offset_)];
-    }
   };
 
   // Update the node at (i, j). Before calling, `nb' needs to be

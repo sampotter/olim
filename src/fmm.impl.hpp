@@ -63,9 +63,15 @@ void fmm<3>::update_impl(int lin_hat, int const * nb, int parent, double & U)
     return (U1 + U2 + U3 + sqrt(disc))/3;
   };
 
-  for (int l0 = 0, l1 = 1, l2 = 2; l0 < 6;
-       ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
+  int l1s[7] = {1, 2, 3, 4, 5, 0, 1};
+  int * l2s = &l1s[1];
+
+  // for (int l0 = 0, l1 = 1, l2 = 2; l0 < 6;
+  //      ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
+  for (int l0 = 0, l1, l2; l0 < 6; ++l0) {
     if (nb[l0] != -1) {
+      l1 = l1s[l0];
+      l2 = l2s[l0];
       U1 = value(l0);
       U = fmin(U, U1 + sh);
       if (nb[l1] != -1) {

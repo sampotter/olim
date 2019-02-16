@@ -65,9 +65,6 @@ void fmm<3>::update_impl(int lin_hat, int const * nb, int parent, double & U)
 
   int l1s[7] = {1, 2, 3, 4, 5, 0, 1};
   int * l2s = &l1s[1];
-
-  // for (int l0 = 0, l1 = 1, l2 = 2; l0 < 6;
-  //      ++l0, l1 = (l1 + 1) % 6, l2 = (l2 + 1) % 6) {
   for (int l0 = 0, l1, l2; l0 < 6; ++l0) {
     if (nb[l0] != -1) {
       l1 = l1s[l0];
@@ -97,6 +94,7 @@ void fmm<3>::update_impl(int lin_hat, int const * nb, int parent, double & U)
       }
     }
   }
+
   if (nb[0] != -1 && nb[2] != -1 && nb[4] != -1) {
     U1 = value(0), U2 = value(2), U3 = value(4);
     disc = disc_3pt();
@@ -104,6 +102,7 @@ void fmm<3>::update_impl(int lin_hat, int const * nb, int parent, double & U)
       U = fmin(U, value_3pt());
     }
   }
+
   if (nb[1] != -1 && nb[3] != -1 && nb[5] != -1) {
     U1 = value(1), U2 = value(3), U3 = value(5);
     disc = disc_3pt();

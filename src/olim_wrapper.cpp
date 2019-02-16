@@ -47,97 +47,97 @@ struct olim_wrapper
 
   template <class olim_t>
   olim_t & olim();
-
-  template <>
-  olim4_mp0 & olim<olim4_mp0>() {
-    return _olim._olim4_mp0;
-  }
-
-  template <>
-  olim4_mp1 & olim<olim4_mp1>() {
-    return _olim._olim4_mp1;
-  }
-
-  template <>
-  olim4_rhr & olim<olim4_rhr>() {
-    return _olim._olim4_rhr;
-  }
-
-  template <>
-  olim8_mp0 & olim<olim8_mp0>() {
-    return _olim._olim8_mp0;
-  }
-
-  template <>
-  olim8_mp1 & olim<olim8_mp1>() {
-    return _olim._olim8_mp1;
-  }
-
-  template <>
-  olim8_rhr & olim<olim8_rhr>() {
-    return _olim._olim8_rhr;
-  }
-
-  template <>
-  olim6_mp0 & olim<olim6_mp0>() {
-    return _olim._olim6_mp0;
-  }
-
-  template <>
-  olim6_mp1 & olim<olim6_mp1>() {
-    return _olim._olim6_mp1;
-  }
-
-  template <>
-  olim6_rhr & olim<olim6_rhr>() {
-    return _olim._olim6_rhr;
-  }
-
-  template <>
-  olim18_mp0 & olim<olim18_mp0>() {
-    return _olim._olim18_mp0;
-  }
-
-  template <>
-  olim18_mp1 & olim<olim18_mp1>() {
-    return _olim._olim18_mp1;
-  }
-
-  template <>
-  olim18_rhr & olim<olim18_rhr>() {
-    return _olim._olim18_rhr;
-  }
-
-  template <>
-  olim26_mp0 & olim<olim26_mp0>() {
-    return _olim._olim26_mp0;
-  }
-
-  template <>
-  olim26_mp1 & olim<olim26_mp1>() {
-    return _olim._olim26_mp1;
-  }
-
-  template <>
-  olim26_rhr & olim<olim26_rhr>() {
-    return _olim._olim26_rhr;
-  }
-
-  template <>
-  olim3d_mp0 & olim<olim3d_mp0>() {
-    return _olim._olim3d_mp0;
-  }
-
-  template <>
-  olim3d_mp1 & olim<olim3d_mp1>() {
-    return _olim._olim3d_mp1;
-  }
-
-  template <>
-  olim3d_rhr & olim<olim3d_rhr>() {
-    return _olim._olim3d_rhr;
-  }
 };
+
+template <>
+olim4_mp0 & olim_wrapper::olim<olim4_mp0>() {
+  return _olim._olim4_mp0;
+}
+
+template <>
+olim4_mp1 & olim_wrapper::olim<olim4_mp1>() {
+  return _olim._olim4_mp1;
+}
+
+template <>
+olim4_rhr & olim_wrapper::olim<olim4_rhr>() {
+  return _olim._olim4_rhr;
+}
+
+template <>
+olim8_mp0 & olim_wrapper::olim<olim8_mp0>() {
+  return _olim._olim8_mp0;
+}
+
+template <>
+olim8_mp1 & olim_wrapper::olim<olim8_mp1>() {
+  return _olim._olim8_mp1;
+}
+
+template <>
+olim8_rhr & olim_wrapper::olim<olim8_rhr>() {
+  return _olim._olim8_rhr;
+}
+
+template <>
+olim6_mp0 & olim_wrapper::olim<olim6_mp0>() {
+  return _olim._olim6_mp0;
+}
+
+template <>
+olim6_mp1 & olim_wrapper::olim<olim6_mp1>() {
+  return _olim._olim6_mp1;
+}
+
+template <>
+olim6_rhr & olim_wrapper::olim<olim6_rhr>() {
+  return _olim._olim6_rhr;
+}
+
+template <>
+olim18_mp0 & olim_wrapper::olim<olim18_mp0>() {
+  return _olim._olim18_mp0;
+}
+
+template <>
+olim18_mp1 & olim_wrapper::olim<olim18_mp1>() {
+  return _olim._olim18_mp1;
+}
+
+template <>
+olim18_rhr & olim_wrapper::olim<olim18_rhr>() {
+  return _olim._olim18_rhr;
+}
+
+template <>
+olim26_mp0 & olim_wrapper::olim<olim26_mp0>() {
+  return _olim._olim26_mp0;
+}
+
+template <>
+olim26_mp1 & olim_wrapper::olim<olim26_mp1>() {
+  return _olim._olim26_mp1;
+}
+
+template <>
+olim26_rhr & olim_wrapper::olim<olim26_rhr>() {
+  return _olim._olim26_rhr;
+}
+
+template <>
+olim3d_mp0 & olim_wrapper::olim<olim3d_mp0>() {
+  return _olim._olim3d_mp0;
+}
+
+template <>
+olim3d_mp1 & olim_wrapper::olim<olim3d_mp1>() {
+  return _olim._olim3d_mp1;
+}
+
+template <>
+olim3d_rhr & olim_wrapper::olim<olim3d_rhr>() {
+  return _olim._olim3d_rhr;
+}
 
 template <class olim_t>
 void construct_olim(olim_wrapper * w, olim_wrapper_params_s * p)

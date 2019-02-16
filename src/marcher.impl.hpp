@@ -83,7 +83,7 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
    * Precompute linear offsets. These are used in `visit_neighbors'.
    */
   for (int i = 0; i < max_num_nb(n); ++i) {
-    _linear_offsets[i] = to_linear_index(get_offset<n>(i));
+    _linear_offset[i] = to_linear_index(get_offset<n>(i));
   }
 }
 
@@ -323,7 +323,7 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
-    int lin = lin_center + _linear_offsets[i];
+    int lin = lin_center + _linear_offset[i];
     if (_state[lin] == state::far) {
       _state[lin] = state::trial;
       _heap.insert(lin);
@@ -333,7 +333,7 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
   for (int i = 0; i < max_num_nb(n); ++i) {
-    int lin = lin_center + _linear_offsets[i];
+    int lin = lin_center + _linear_offset[i];
     valid_nb[i] = _state[lin] == state::valid ? lin : -1;
   }
 
@@ -370,7 +370,7 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // value and update its position in the heap.
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
-      int lin = lin_center + _linear_offsets[i];
+      int lin = lin_center + _linear_offset[i];
       if (_state[lin] == state::trial) {
         int parent = get_parent<n, num_nb>(i);
         set_child_nb(parent, get_offset<n>(i));

@@ -129,7 +129,7 @@ OLIM_PROTECTED:
   int * _heap_pos {nullptr};
   double _h {1};
 
-  int _linear_offsets[max_num_nb(n)];
+  int _linear_offset[max_num_nb(n)];
 
   // TODO: this is a quick hack just to get this working for the time
   // being.

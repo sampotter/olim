@@ -85,6 +85,19 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
   for (int i = 0; i < max_num_nb(n); ++i) {
     _linear_offset[i] = to_linear_index(get_offset<n>(i));
   }
+
+  /**
+   * Precompute arrays of offsets to child nodes.
+   */
+  for (int i = 0; i < num_nb; ++i) {
+    ivec offset = get_offset<n>(i);
+    for (int j = 0; j < num_nb; ++j) {
+      ivec offset_ = offset + get_offset<n>(j);
+      _child_offset[i][j] = offset_.normi() > 1 ?
+        -1 :
+        get_linear_offset<n>(offset_);
+    }
+  }
 }
 
 template <class base, int n, int num_nb>
@@ -342,27 +355,9 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
   // we're solving the eikonal equation, we can get away with only
   // checking for nodes which are at most a distance of 1 in the max
   // norm from the newly valid node.
-  //
-  // TODO: we can make the following optimization here:
-  // - we start with a radial index to the child
-  // - we convert this into a parent index and a cartesian offset
-  // - we use the cartesian offset to and another radial index to
-  //   figure out which nodes are close enough to be "children"
-  // - we only use the parent index for setting the corresponding child_nb
-  //   to lin_center
-  // Instead, we could:
-  // - when constructing this class, allocate an array which contains a
-  //   ragged 2D array of the final child_nb indices
-  // - avoid ever computing any indices or doing any of this math
-  // - we already know that the normi() call below takes a significant amount
-  //   of time: this would completely remove it---forget optimizing it
-  //   using SIMD instructions!
-  auto const set_child_nb = [&] (int parent, ivec offset) {
+  auto const set_child_nb = [&] (int parent, int const * offsets) {
     for (int i = 0; i < num_nb; ++i) {
-      ivec offset_ = offset + get_offset<n>(i);
-      child_nb[i] = offset_.normi() > 1 ?
-        -1 :
-        valid_nb[get_linear_offset<n>(offset_)];
+      child_nb[i] = offsets[i] == -1 ? -1 : valid_nb[offsets[i]];
     }
     child_nb[parent] = lin_center;
   };
@@ -392,7 +387,7 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
       int lin = lin_center + _linear_offset[i];
       if (_state[lin] == state::trial) {
         int parent = get_parent<n, num_nb>(i);
-        set_child_nb(parent, get_offset<n>(i));
+        set_child_nb(parent, _child_offset[i]);
         update(lin, parent);
       }
     }

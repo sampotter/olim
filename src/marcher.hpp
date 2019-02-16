@@ -130,6 +130,7 @@ OLIM_PROTECTED:
   double _h {1};
 
   int _linear_offset[max_num_nb(n)];
+  int _child_offset[num_nb][num_nb];
 
   // TODO: this is a quick hack just to get this working for the time
   // being.

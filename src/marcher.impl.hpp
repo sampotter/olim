@@ -337,7 +337,26 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
     valid_nb[i] = _state[lin] == state::valid ? lin : -1;
   }
 
-  // TODO: comment this
+  // This function fills the `child_nb' array with the indices of the
+  // neighboring nodes of the child node that will be updated. Since
+  // we're solving the eikonal equation, we can get away with only
+  // checking for nodes which are at most a distance of 1 in the max
+  // norm from the newly valid node.
+  //
+  // TODO: we can make the following optimization here:
+  // - we start with a radial index to the child
+  // - we convert this into a parent index and a cartesian offset
+  // - we use the cartesian offset to and another radial index to
+  //   figure out which nodes are close enough to be "children"
+  // - we only use the parent index for setting the corresponding child_nb
+  //   to lin_center
+  // Instead, we could:
+  // - when constructing this class, allocate an array which contains a
+  //   ragged 2D array of the final child_nb indices
+  // - avoid ever computing any indices or doing any of this math
+  // - we already know that the normi() call below takes a significant amount
+  //   of time: this would completely remove it---forget optimizing it
+  //   using SIMD instructions!
   auto const set_child_nb = [&] (int parent, ivec offset) {
     for (int i = 0; i < num_nb; ++i) {
       ivec offset_ = offset + get_offset<n>(i);

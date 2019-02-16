@@ -69,7 +69,7 @@ endif ()
 # quick test and have it build with the rest of the library, you can
 # do this here.
 if (BUILD_SCRATCH)
-  add_executable (scratch misc/cpp/scratch.cpp)
+  add_executable (scratch src/scratch.cpp)
   target_compile_features (scratch PRIVATE cxx_std_17)
   target_include_directories (scratch PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries (scratch olim)

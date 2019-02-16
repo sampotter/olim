@@ -7,6 +7,11 @@
 
 #include "common.hpp"
 
+enum class ordering {
+  ROW_MAJOR,
+  COLUMN_MAJOR
+};
+
 template <class T, int n>
 struct vec
 {
@@ -262,8 +267,6 @@ T disti(vec<T, n> const & u, vec<T, n> const & v) {
 }
 
 // TODO: implement both column-major and row-major ordering correctly
-
-enum class ordering {ROW_MAJOR, COLUMN_MAJOR};
 
 template <ordering order = ordering::COLUMN_MAJOR>
 inline int to_linear_index(vec<int, 1> inds, vec<int, 1>) {

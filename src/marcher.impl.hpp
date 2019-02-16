@@ -266,6 +266,46 @@ marcher<base, n, num_nb>::get_state(ivec inds) const
   return _state[to_linear_index(inds + ivec::one())];
 }
 
+template <int n, int num_nb>
+int get_parent(int i);
+
+template <>
+int get_parent<2, 4>(int i) {
+  static constexpr int lut[4] = {2, 3, 0, 1};
+  return lut[i];
+}
+
+template <>
+int get_parent<2, 8>(int i) {
+  static constexpr int lut[8] = {2, 3, 0, 1, 6, 7, 4, 5};
+  return lut[i];
+}
+
+template <>
+int get_parent<3, 6>(int i) {
+  static constexpr int lut[6] = {3, 4, 5, 0, 1, 2};
+  return lut[i];
+}
+
+template <>
+int get_parent<3, 18>(int i) {
+  static constexpr int lut[18] = {
+    3, 4, 5, 0, 1, 2,
+    16, 17, 14, 15, 12, 13, 10, 11,  8,  9,  6,  7
+  };
+  return lut[i];
+}
+
+template <>
+int get_parent<3, 26>(int i) {
+  static constexpr int lut[26] = {
+    3, 4, 5, 0, 1, 2,
+    16, 17, 14, 15, 12, 13, 10, 11,  8,  9,  6,  7,
+    24, 25, 22, 23, 20, 21, 18, 19
+  };
+  return lut[i];
+}
+
 template <class base, int n, int num_nb>
 void
 marcher<base, n, num_nb>::visit_neighbors(int lin_center)
@@ -323,32 +363,6 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
     }
   };
 
-  // Get the parent index of a radial index `i'.
-  //
-  // TODO: `get_parent' is a contender for the worst code in the whole
-  // project. Would it be better to just use a LUT here? Should try
-  // this at some point...
-  auto const get_parent = [] (int i) {
-    if (n == 2) {
-      if (num_nb <= 4) {
-        return (i + 2) % 4;
-      } else {
-        if (i < 4) return (i + 2) % 4;
-        else return ((i - 2) % 4) + 4;
-      }
-    } else if (n == 3) {
-      if (num_nb <= 6) {
-        return (i + 3) % 6;
-      } else if (num_nb <= 18) {
-        return i < 6 ? (i + 3) % 6 : 22 - 2*(i/2) + (i % 2);
-      } else {
-        if (i < 6) return (i + 3) % 6;
-        else if (i < 18) return 22 - 2*(i/2) + (i % 2);
-        else return 42 - 2*(i/2) + (i % 2);
-      }
-    }
-  };
-
   // This is the main update loop. Each neighbor of n which isn't
   // `valid' is now `trial' or `boundary'. We ignore `boundary' nodes;
   // for each neighboring trial node, use `set_child_nb' to grab its
@@ -358,7 +372,7 @@ marcher<base, n, num_nb>::visit_neighbors(int lin_center)
     if (valid_nb[i] == -1) {
       int lin = lin_center + _linear_offsets[i];
       if (_state[lin] == state::trial) {
-        int parent = get_parent(i);
+        int parent = get_parent<n, num_nb>(i);
         set_child_nb(parent, get_offset<n>(i));
         update(lin, parent);
       }

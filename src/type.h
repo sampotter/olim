@@ -1,5 +1,8 @@
 #pragma once
 
+// TODO: this file should be renamed; and, realistically, these enums
+// should be moved somewhere else
+
 enum neighborhood {
   OLIM4,
   OLIM8,

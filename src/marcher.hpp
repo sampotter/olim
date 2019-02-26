@@ -12,6 +12,8 @@
 #include "vec.hpp"
 
 constexpr int max_num_nb(int n) {
+  // TODO: would be nice to rewrite this as 3^n - 1, but need a
+  // constexpr int power function
   int lut[2] = {8, 26};
   return lut[n - 2];
 }

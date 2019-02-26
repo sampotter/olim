@@ -1,11 +1,44 @@
 #include "olim_wrapper.h"
 
+#include "fac.hpp"
 #include "olim.hpp"
 #include "olim3d.hpp"
 
 // TODO: this is pretty awful, but at least it works. Definitely need
 // to improve on this somehow. I tried std::variant, but ran into
 // problems with it. Not totally sure what the cause of them was.
+
+struct fac_src_wrapper {
+  int ndims;
+  union {
+    fac_src<2> _fac_src_2;
+    fac_src<3> _fac_src_3;
+  };
+
+  fac_src_wrapper(int ndims, double const * coords, double s): ndims {ndims} {
+    if (ndims == 2) {
+      new (&_fac_src_2) fac_src<2> {{coords}, s};
+    } else if (ndims == 3) {
+      new (&_fac_src_3) fac_src<3> {{coords}, s};
+    } else {
+      assert(false);
+    } 
+  }
+};
+
+status_e fac_src_wrapper_init(fac_src_wrapper **w_ptr, fac_src_wrapper_params *p)
+{
+  *w_ptr = new fac_src_wrapper {p->ndims, p->coords, p->s};
+
+  return SUCCESS;
+}
+
+status_e fac_src_wrapper_deinit(fac_src_wrapper_s **w_ptr)
+{
+  delete *w_ptr;
+
+  return SUCCESS;
+}
 
 struct null_olim {
   void run() {}
@@ -372,6 +405,61 @@ status_e olim_wrapper_add_src(olim_wrapper * w, int * inds, double U)
     } else if (w->F == RHR) {
       w->olim<olim3d_rhr>().add_src(inds, U);
     }
+status_e
+olim_wrapper_set_fac_src(olim_wrapper * w, int * inds, fac_src_wrapper * fs)
+{
+  if (w->nb == OLIM4) {
+    if (w->F == MP0) {
+      w->olim<olim4_mp0>().set_fac_src({inds}, &fs->_fac_src_2);
+    } else if (w->F == MP1) {
+      w->olim<olim4_mp1>().set_fac_src({inds}, &fs->_fac_src_2);
+    } else if (w->F == RHR) {
+      w->olim<olim4_rhr>().set_fac_src({inds}, &fs->_fac_src_2);
+    }
+  } else if (w->nb == OLIM8) {
+    if (w->F == MP0) {
+      w->olim<olim8_mp0>().set_fac_src({inds}, &fs->_fac_src_2);
+    } else if (w->F == MP1) {
+      w->olim<olim8_mp1>().set_fac_src({inds}, &fs->_fac_src_2);
+    } else if (w->F == RHR) {
+      w->olim<olim8_rhr>().set_fac_src({inds}, &fs->_fac_src_2);
+    }
+  } else if (w->nb == OLIM6) {
+    if (w->F == MP0) {
+      w->olim<olim6_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == MP1) {
+      w->olim<olim6_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == RHR) {
+      w->olim<olim6_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+    }
+  } else if (w->nb == OLIM18) {
+    if (w->F == MP0) {
+      w->olim<olim18_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == MP1) {
+      w->olim<olim18_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == RHR) {
+      w->olim<olim18_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+    }
+  } else if (w->nb == OLIM26) {
+    if (w->F == MP0) {
+      w->olim<olim26_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == MP1) {
+      w->olim<olim26_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == RHR) {
+      w->olim<olim26_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+    }
+  } else if (w->nb == OLIM3D) {
+    if (w->F == MP0) {
+      w->olim<olim3d_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == MP1) {
+      w->olim<olim3d_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+    } else if (w->F == RHR) {
+      w->olim<olim3d_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+    }
+  } else if (w->nb == FMM2) {
+    throw std::runtime_error("FMM2 doesn't currently support factoring");
+  } else if (w->nb == FMM3) {
+    throw std::runtime_error("FMM3 doesn't currently support factoring");
   }
 
   return SUCCESS;

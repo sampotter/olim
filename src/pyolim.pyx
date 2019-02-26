@@ -40,6 +40,20 @@ cdef extern from "olim_wrapper.h":
         MP1
         RHR
 
+    enum status:
+        SUCCESS
+
+    struct fac_src_wrapper_params:
+        int ndims
+        double *coords
+        double s
+
+    struct fac_src_wrapper:
+        pass
+
+    status fac_src_wrapper_init(fac_src_wrapper**, fac_src_wrapper_params *);
+    status fac_src_wrapper_deinit(fac_src_wrapper**);
+
     struct olim_wrapper_params:
         neighborhood nb
         cost_func F
@@ -50,17 +64,32 @@ cdef extern from "olim_wrapper.h":
     struct olim_wrapper:
         pass
 
-    enum status:
-        SUCCESS
-
     status olim_wrapper_init(olim_wrapper**, olim_wrapper_params*)
     status olim_wrapper_deinit(olim_wrapper**)
     status olim_wrapper_run(olim_wrapper*)
     status olim_wrapper_add_src(olim_wrapper*, int*)
     status olim_wrapper_add_bd(olim_wrapper*, int*, double)
+    status olim_wrapper_set_fac_src(olim_wrapper*, int*, void*)
     status olim_wrapper_get_U_ptr(olim_wrapper*, double**)
     status olim_wrapper_get_s_ptr(olim_wrapper*, double**)
     status olim_wrapper_get_state_ptr(olim_wrapper*, char**)
+
+cdef class FacSrc:
+    cdef:
+        fac_src_wrapper_params _p
+        fac_src_wrapper* _w
+
+    def __cinit__(self, coords, s):
+        self._p.ndims = len(coords)
+        self._p.coords = <double*>malloc(self._p.ndims*sizeof(double))
+        self._p.s = s
+        err = fac_src_wrapper_init(&self._w, &self._p)
+        if err != SUCCESS:
+            raise Exception('error!')
+
+    def __dealloc__(self):
+        free(self._p.coords)
+        fac_src_wrapper_deinit(&self._w)
 
 cdef class Olim:
     cdef:
@@ -238,3 +267,7 @@ cdef class Olim:
         inds_[1] = inds[1]
         inds_[2] = inds[2]
         olim_wrapper_add_bd(self._w, inds_)
+
+    cpdef set_fac_src(self, inds, FacSrc fs):
+        cdef int[::1] mv = self.get_inds_mv(inds)
+        olim_wrapper_set_fac_src(self._w, &mv[0], fs._w)

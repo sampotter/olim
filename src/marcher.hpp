@@ -5,6 +5,7 @@
 // TODO: remove these
 #include <unordered_map>
 
+#include "fac.hpp"
 #include "heap.hpp"
 #include "slow.hpp"
 #include "state.hpp"
@@ -14,16 +15,6 @@ constexpr int max_num_nb(int n) {
   int lut[2] = {8, 26};
   return lut[n - 2];
 }
-
-template <int n>
-struct fac_src
-{
-  fac_src(vec<double, n> coords, double s):
-    coords {coords + decltype(coords)::one()}, s {s} {}
-
-  vec<double, n> coords;
-  double s;
-};
 
 template <class base, int n, int num_nb>
 struct marcher

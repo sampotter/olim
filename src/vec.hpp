@@ -1,7 +1,5 @@
 #pragma once
 
-#include <algorithm>
-
 #include <assert.h>
 #include <math.h>
 
@@ -181,7 +179,7 @@ struct vec
   inline T norm1() const {
     T t {0};
     for (int i = 0; i < n; ++i) {
-      t += std::abs(_data[i]);
+      t += fabs(_data[i]);
     }
     return t;
   }
@@ -201,7 +199,7 @@ struct vec
   inline T normi() const {
     T t {0};
     for (int i = 0; i < n; ++i) {
-      t = std::max(t, std::abs(_data[i]));
+      t = fmax(t, fabs(_data[i]));
     }
     return t;
   }

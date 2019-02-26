@@ -14,6 +14,8 @@ class Neighborhood(Enum):
     OLIM18 = 3
     OLIM26 = 4
     OLIM3D = 5
+    FMM2 = 6
+    FMM3 = 7
 
 class Quadrature(Enum):
     MP0 = 0
@@ -34,6 +36,8 @@ cdef extern from "olim_wrapper.h":
         OLIM18
         OLIM26
         OLIM3D
+        FMM2
+        FMM3
 
     enum cost_func:
         MP0

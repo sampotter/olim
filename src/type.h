@@ -9,7 +9,9 @@ enum neighborhood {
   OLIM6,
   OLIM18,
   OLIM26,
-  OLIM3D
+  OLIM3D,
+  FMM2,
+  FMM3
 };
 
 /**

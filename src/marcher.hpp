@@ -18,7 +18,7 @@ constexpr int max_num_nb(int n) {
   return lut[n - 2];
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord = ordering::COLUMN_MAJOR>
 struct marcher
 {
   using fac_src_t = fac_src<n>;
@@ -72,11 +72,11 @@ struct marcher
 
 OLIM_PROTECTED:
   inline int to_linear_index(ivec inds) const {
-    return ::to_linear_index(inds, _dims);
+    return ::to_linear_index<ord>(inds, _dims);
   }
 
   inline ivec to_vector_index(int lin) const {
-    return ::to_vector_index(lin, _dims);
+    return ::to_vector_index<ord>(lin, _dims);
   }
 
   bool in_bounds(ivec inds) const;

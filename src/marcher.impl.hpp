@@ -12,8 +12,8 @@
 // use external memory somewhere for _s and _U so we don't have
 // to double up on these...
 
-template <class base, int n, int num_nb>
-marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
+template <class base, int n, int num_nb, ordering ord>
+marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
   _dims {dims + 2*ivec::one()},
   _size {_dims.product()},
   _heap {{this}, initial_heap_capacity(_size)},
@@ -55,7 +55,7 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
     for (int i = 0; i < subdims.product(); ++i) {
       // Prepare an index vector of full dimension with indices
       // corresponding to `subdims'.
-      vec<int, n - 1> subinds = ::to_vector_index(i, subdims);
+      vec<int, n - 1> subinds = ::to_vector_index<ord>(i, subdims);
       int k = 0;
       for (int j = 0; j < n; ++j) {
         if (j != d) {
@@ -100,8 +100,8 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, no_slow_t const &):
   }
 }
 
-template <class base, int n, int num_nb>
-marcher<base, n, num_nb>::marcher(ivec dims, double h):
+template <class base, int n, int num_nb, ordering ord>
+marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
   marcher {dims, h, no_slow_t {}}
 {
   for (int i = 0; i < _size; ++i) {
@@ -109,8 +109,8 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h):
   }
 }
 
-template <class base, int n, int num_nb>
-marcher<base, n, num_nb>::marcher(ivec dims, double h, double const * s):
+template <class base, int n, int num_nb, ordering ord>
+marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, double const * s):
   marcher {dims, h, no_slow_t {}}
 {
   // TODO: this isn't the most efficient way to do this. It would be
@@ -118,13 +118,14 @@ marcher<base, n, num_nb>::marcher(ivec dims, double h, double const * s):
   // contiguous block of memory and call memcpy for each one. This is
   // more complicated but would reduce the amount of index math
   // substantially.
-  for (auto inds: range<n> {dims}) {
-    _s[to_linear_index(inds + ivec::one())] = s[::to_linear_index(inds, dims)];
+  for (auto inds: range<n, ord> {dims}) {
+    auto lin = to_linear_index(inds + ivec::one());
+    _s[lin] = s[::to_linear_index<ord>(inds, dims)];
   }
 }
 
-template <class base, int n, int num_nb>
-marcher<base, n, num_nb>::~marcher()
+template <class base, int n, int num_nb, ordering ord>
+marcher<base, n, num_nb, ord>::~marcher()
 {
   delete[] _U;
   delete[] _s;
@@ -132,8 +133,8 @@ marcher<base, n, num_nb>::~marcher()
   delete[] _heap_pos;
 }
 
-template <class base, int n, int num_nb>
-void marcher<base, n, num_nb>::run()
+template <class base, int n, int num_nb, ordering ord>
+void marcher<base, n, num_nb, ord>::run()
 {
   while (!_heap.empty()) {
     int lin = _heap.front();
@@ -143,16 +144,16 @@ void marcher<base, n, num_nb>::run()
   }  
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_src(int * inds, double U)
+marcher<base, n, num_nb, ord>::add_src(int * inds, double U)
 {
   add_src(ivec {inds}, U);
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_src(ivec inds, double U)
+marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
@@ -164,18 +165,19 @@ marcher<base, n, num_nb>::add_src(ivec inds, double U)
   _heap.insert(lin);
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_srcs(ivec const * inds, double const * U, int num)
+marcher<base, n, num_nb, ord>::add_srcs(
+  ivec const * inds, double const * U, int num)
 {
   for (int i = 0; i < num; ++i) {
     add_src(inds[i], U[i]);
   }
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_src(fvec coords, double s, double U)
+marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 {
   double h = get_h();
   fvec inds = coords/h;
@@ -192,7 +194,7 @@ marcher<base, n, num_nb>::add_src(fvec coords, double s, double U)
     corners[i][1] = (int) floor(inds[i]) + 1;
   }
 
-  for (auto inds_: range<n>::cube(2)) {
+  for (auto inds_: range<n, ord>::cube(2)) {
     ivec inds__;
     for (int i = 0; i < n; ++i) {
       inds__[i] = corners[i][inds_[i]];
@@ -207,16 +209,16 @@ marcher<base, n, num_nb>::add_src(fvec coords, double s, double U)
   }
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_bd(int * inds)
+marcher<base, n, num_nb, ord>::add_bd(int * inds)
 {
   add_bd(ivec {inds});
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::add_bd(ivec inds)
+marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
@@ -228,9 +230,9 @@ marcher<base, n, num_nb>::add_bd(ivec inds)
   _state[lin] = state::boundary;
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::set_fac_src(ivec inds, fac_src<n> const * fc)
+marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
@@ -239,16 +241,16 @@ marcher<base, n, num_nb>::set_fac_src(ivec inds, fac_src<n> const * fc)
   _lin2fac[to_linear_index(inds)] = fc;
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 bool
-marcher<base, n, num_nb>::in_bounds(ivec inds) const
+marcher<base, n, num_nb, ord>::in_bounds(ivec inds) const
 {
   return uvec {inds} < uvec {_dims - 2*ivec::one()};
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 double
-marcher<base, n, num_nb>::get_U(ivec inds) const
+marcher<base, n, num_nb, ord>::get_U(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(_U != nullptr);
@@ -257,9 +259,9 @@ marcher<base, n, num_nb>::get_U(ivec inds) const
   return _U[to_linear_index(inds + ivec::one())];
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 double
-marcher<base, n, num_nb>::get_s(ivec inds) const
+marcher<base, n, num_nb, ord>::get_s(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(_s != nullptr);
@@ -268,9 +270,9 @@ marcher<base, n, num_nb>::get_s(ivec inds) const
   return _s[to_linear_index(inds + ivec::one())];
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 state
-marcher<base, n, num_nb>::get_state(ivec inds) const
+marcher<base, n, num_nb, ord>::get_state(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(_state != nullptr);
@@ -319,9 +321,9 @@ int get_parent<3, 26>(int i) {
   return lut[i];
 }
 
-template <class base, int n, int num_nb>
+template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb>::visit_neighbors(int lin_center)
+marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
 {
   int valid_nb[max_num_nb(n)];
   int child_nb[num_nb];

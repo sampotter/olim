@@ -125,8 +125,7 @@ OLIM_PROTECTED:
   int _linear_offset[max_num_nb(n)];
   int _child_offset[num_nb][num_nb];
 
-  // TODO: this is a quick hack just to get this working for the time
-  // being.
+  // TODO: a quick hack just to get this working for now
   std::unordered_map<int, fac_src<n> const *> _lin2fac;
 };
 

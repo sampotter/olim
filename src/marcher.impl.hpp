@@ -226,7 +226,7 @@ marcher<base, n, num_nb, ord>::add_bd(ivec inds)
   inds += ivec::one();
   int lin = to_linear_index(inds);
   _U[lin] = inf<double>;
-  _s[lin] = inf<double>;
+  _s[lin] = inf<double>; // TODO: may not want to do this
   _state[lin] = state::boundary;
 }
 

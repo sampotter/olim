@@ -23,10 +23,6 @@ struct marcher
 {
   using fac_src_t = fac_src<n>;
 
-  // These are for use with our pybind11 bindings. They aren't used
-  // internally.
-  using float_type = double;
-
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
   using uvec = vec<unsigned, n>;

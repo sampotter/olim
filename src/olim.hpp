@@ -6,13 +6,14 @@
 #include "updates.line.hpp"
 #include "updates.tri.hpp"
 
-template <cost_func F, bool do_adj, bool do_diag>
-struct olim: public marcher<olim<F, do_adj, do_diag>, 2, do_diag ? 8 : 4>
+template <cost_func F, bool do_adj, bool do_diag,
+          ordering ord = ordering::COLUMN_MAJOR>
+struct olim: public marcher<olim<F, do_adj, do_diag>, 2, do_diag ? 8 : 4, ord>
 {
   static constexpr cost_func F_ = F;
   static constexpr int num_nb = do_diag ? 8 : 4;
 
-  using marcher<olim<F, do_adj, do_diag>, 2, num_nb>::marcher;
+  using marcher<olim<F, do_adj, do_diag>, 2, num_nb, ord>::marcher;
   static_assert(do_adj || do_diag, "error");
 
 OLIM_PRIVATE:
@@ -64,12 +65,22 @@ OLIM_PRIVATE:
   }
 };
 
-using olim4_mp0 = olim<MP0, true, false>;
+template <ordering ord = ordering::COLUMN_MAJOR>
+using olim4_mp0 = olim<MP0, true, false, ord>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim4_mp1 = olim<MP1, true, false>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim4_rhr = olim<RHR, true, false>;
 
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim8_mp0 = olim<MP0, true, true>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim8_mp1 = olim<MP1, true, true>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim8_rhr = olim<RHR, true, true>;
 
 #include "olim.impl.hpp"

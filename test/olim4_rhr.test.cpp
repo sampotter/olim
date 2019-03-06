@@ -3,7 +3,7 @@
 #include "olim.hpp"
 #include "olim.test.common.hpp"
 
-using olim_t = olim4_rhr;
+using olim_t = olim4_rhr<>;
 
 TEST (olim4_rhr, trivial_case_works) {
   ASSERT_TRUE(trivial_case_works<olim_t>());

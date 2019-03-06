@@ -50,27 +50,49 @@ struct null_olim {
   char * get_state_ptr() const { return nullptr; }
 };
 
+constexpr ordering ord = ordering::ROW_MAJOR;
+
+using olim4_mp0_t = olim4_mp0<ord>;
+using olim4_mp1_t = olim4_mp1<ord>;
+using olim4_rhr_t = olim4_rhr<ord>;
+using olim8_mp0_t = olim8_mp0<ord>;
+using olim8_mp1_t = olim8_mp1<ord>;
+using olim8_rhr_t = olim8_rhr<ord>;
+using olim6_mp0_t = olim6_mp0<ord>;
+using olim6_mp1_t = olim6_mp1<ord>;
+using olim6_rhr_t = olim6_rhr<ord>;
+using olim18_mp0_t = olim18_mp0<ord>;
+using olim18_mp1_t = olim18_mp1<ord>;
+using olim18_rhr_t = olim18_rhr<ord>;
+using olim26_mp0_t = olim26_mp0<ord>;
+using olim26_mp1_t = olim26_mp1<ord>;
+using olim26_rhr_t = olim26_rhr<ord>;
+using olim3d_mp0_t = olim3d_mp0<ord>;
+using olim3d_mp1_t = olim3d_mp1<ord>;
+using olim3d_rhr_t = olim3d_rhr<ord>;
+
+template <ordering ord>
 union olim_variant {
   ~olim_variant() {}
   null_olim _null_olim;
-  olim4_mp0 _olim4_mp0;
-  olim4_mp1 _olim4_mp1;
-  olim4_rhr _olim4_rhr;
-  olim8_mp0 _olim8_mp0;
-  olim8_mp1 _olim8_mp1;
-  olim8_rhr _olim8_rhr;
-  olim6_mp0 _olim6_mp0;
-  olim6_mp1 _olim6_mp1;
-  olim6_rhr _olim6_rhr;
-  olim18_mp0 _olim18_mp0;
-  olim18_mp1 _olim18_mp1;
-  olim18_rhr _olim18_rhr;
-  olim26_mp0 _olim26_mp0;
-  olim26_mp1 _olim26_mp1;
-  olim26_rhr _olim26_rhr;
-  olim3d_mp0 _olim3d_mp0;
-  olim3d_mp1 _olim3d_mp1;
-  olim3d_rhr _olim3d_rhr;
+  olim4_mp0_t _olim4_mp0;
+  olim4_mp1_t _olim4_mp1;
+  olim4_rhr_t _olim4_rhr;
+  olim8_mp0_t _olim8_mp0;
+  olim8_mp1_t _olim8_mp1;
+  olim8_rhr_t _olim8_rhr;
+  olim6_mp0_t _olim6_mp0;
+  olim6_mp1_t _olim6_mp1;
+  olim6_rhr_t _olim6_rhr;
+  olim18_mp0_t _olim18_mp0;
+  olim18_mp1_t _olim18_mp1;
+  olim18_rhr_t _olim18_rhr;
+  olim26_mp0_t _olim26_mp0;
+  olim26_mp1_t _olim26_mp1;
+  olim26_rhr_t _olim26_rhr;
+  olim3d_mp0_t _olim3d_mp0;
+  olim3d_mp1_t _olim3d_mp1;
+  olim3d_rhr_t _olim3d_rhr;
   fmm<2> _fmm2;
   fmm<3> _fmm3;
 };
@@ -79,99 +101,99 @@ struct olim_wrapper
 {
   neighborhood nb;
   cost_func F;
-  olim_variant _olim;
+  olim_variant<ordering::ROW_MAJOR> _olim;
 
   template <class olim_t>
   olim_t & olim();
 };
 
 template <>
-olim4_mp0 & olim_wrapper::olim<olim4_mp0>() {
+olim4_mp0_t & olim_wrapper::olim<olim4_mp0_t>() {
   return _olim._olim4_mp0;
 }
 
 template <>
-olim4_mp1 & olim_wrapper::olim<olim4_mp1>() {
+olim4_mp1_t & olim_wrapper::olim<olim4_mp1_t>() {
   return _olim._olim4_mp1;
 }
 
 template <>
-olim4_rhr & olim_wrapper::olim<olim4_rhr>() {
+olim4_rhr_t & olim_wrapper::olim<olim4_rhr_t>() {
   return _olim._olim4_rhr;
 }
 
 template <>
-olim8_mp0 & olim_wrapper::olim<olim8_mp0>() {
+olim8_mp0_t & olim_wrapper::olim<olim8_mp0_t>() {
   return _olim._olim8_mp0;
 }
 
 template <>
-olim8_mp1 & olim_wrapper::olim<olim8_mp1>() {
+olim8_mp1_t & olim_wrapper::olim<olim8_mp1_t>() {
   return _olim._olim8_mp1;
 }
 
 template <>
-olim8_rhr & olim_wrapper::olim<olim8_rhr>() {
+olim8_rhr_t & olim_wrapper::olim<olim8_rhr_t>() {
   return _olim._olim8_rhr;
 }
 
 template <>
-olim6_mp0 & olim_wrapper::olim<olim6_mp0>() {
+olim6_mp0_t & olim_wrapper::olim<olim6_mp0_t>() {
   return _olim._olim6_mp0;
 }
 
 template <>
-olim6_mp1 & olim_wrapper::olim<olim6_mp1>() {
+olim6_mp1_t & olim_wrapper::olim<olim6_mp1_t>() {
   return _olim._olim6_mp1;
 }
 
 template <>
-olim6_rhr & olim_wrapper::olim<olim6_rhr>() {
+olim6_rhr_t & olim_wrapper::olim<olim6_rhr_t>() {
   return _olim._olim6_rhr;
 }
 
 template <>
-olim18_mp0 & olim_wrapper::olim<olim18_mp0>() {
+olim18_mp0_t & olim_wrapper::olim<olim18_mp0_t>() {
   return _olim._olim18_mp0;
 }
 
 template <>
-olim18_mp1 & olim_wrapper::olim<olim18_mp1>() {
+olim18_mp1_t & olim_wrapper::olim<olim18_mp1_t>() {
   return _olim._olim18_mp1;
 }
 
 template <>
-olim18_rhr & olim_wrapper::olim<olim18_rhr>() {
+olim18_rhr_t & olim_wrapper::olim<olim18_rhr_t>() {
   return _olim._olim18_rhr;
 }
 
 template <>
-olim26_mp0 & olim_wrapper::olim<olim26_mp0>() {
+olim26_mp0_t & olim_wrapper::olim<olim26_mp0_t>() {
   return _olim._olim26_mp0;
 }
 
 template <>
-olim26_mp1 & olim_wrapper::olim<olim26_mp1>() {
+olim26_mp1_t & olim_wrapper::olim<olim26_mp1_t>() {
   return _olim._olim26_mp1;
 }
 
 template <>
-olim26_rhr & olim_wrapper::olim<olim26_rhr>() {
+olim26_rhr_t & olim_wrapper::olim<olim26_rhr_t>() {
   return _olim._olim26_rhr;
 }
 
 template <>
-olim3d_mp0 & olim_wrapper::olim<olim3d_mp0>() {
+olim3d_mp0_t & olim_wrapper::olim<olim3d_mp0_t>() {
   return _olim._olim3d_mp0;
 }
 
 template <>
-olim3d_mp1 & olim_wrapper::olim<olim3d_mp1>() {
+olim3d_mp1_t & olim_wrapper::olim<olim3d_mp1_t>() {
   return _olim._olim3d_mp1;
 }
 
 template <>
-olim3d_rhr & olim_wrapper::olim<olim3d_rhr>() {
+olim3d_rhr_t & olim_wrapper::olim<olim3d_rhr_t>() {
   return _olim._olim3d_rhr;
 }
 
@@ -203,51 +225,51 @@ status_e olim_wrapper_init(olim_wrapper ** w_ptr, olim_wrapper_params_s * p)
 
   if (p->nb == OLIM4) {
     if (p->F == MP0) {
-      construct_olim<olim4_mp0>(w, p);
+      construct_olim<olim4_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim4_mp1>(w, p);
+      construct_olim<olim4_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim4_rhr>(w, p);
+      construct_olim<olim4_rhr_t>(w, p);
     }
   } else if (p->nb == OLIM8) {
     if (p->F == MP0) {
-      construct_olim<olim8_mp0>(w, p);
+      construct_olim<olim8_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim8_mp1>(w, p);
+      construct_olim<olim8_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim8_rhr>(w, p);
+      construct_olim<olim8_rhr_t>(w, p);
     }
   } else if (p->nb == OLIM6) {
     if (p->F == MP0) {
-      construct_olim<olim6_mp0>(w, p);
+      construct_olim<olim6_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim6_mp1>(w, p);
+      construct_olim<olim6_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim6_rhr>(w, p);
+      construct_olim<olim6_rhr_t>(w, p);
     }
   } else if (p->nb == OLIM18) {
     if (p->F == MP0) {
-      construct_olim<olim18_mp0>(w, p);
+      construct_olim<olim18_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim18_mp1>(w, p);
+      construct_olim<olim18_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim18_rhr>(w, p);
+      construct_olim<olim18_rhr_t>(w, p);
     }
   } else if (p->nb == OLIM26) {
     if (p->F == MP0) {
-      construct_olim<olim26_mp0>(w, p);
+      construct_olim<olim26_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim26_mp1>(w, p);
+      construct_olim<olim26_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim26_rhr>(w, p);
+      construct_olim<olim26_rhr_t>(w, p);
     }
   } else if (p->nb == OLIM3D) {
     if (p->F == MP0) {
-      construct_olim<olim3d_mp0>(w, p);
+      construct_olim<olim3d_mp0_t>(w, p);
     } else if (p->F == MP1) {
-      construct_olim<olim3d_mp1>(w, p);
+      construct_olim<olim3d_mp1_t>(w, p);
     } else if (p->F == RHR) {
-      construct_olim<olim3d_rhr>(w, p);
+      construct_olim<olim3d_rhr_t>(w, p);
     }
   } else if (p->nb == FMM2) {
     if (p->F == RHR) {
@@ -272,51 +294,51 @@ status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
 
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      destruct_olim<olim4_mp0>(w);
+      destruct_olim<olim4_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim4_mp1>(w);
+      destruct_olim<olim4_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim4_rhr>(w);
+      destruct_olim<olim4_rhr_t>(w);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      destruct_olim<olim8_mp0>(w);
+      destruct_olim<olim8_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim8_mp1>(w);
+      destruct_olim<olim8_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim8_rhr>(w);
+      destruct_olim<olim8_rhr_t>(w);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      destruct_olim<olim6_mp0>(w);
+      destruct_olim<olim6_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim6_mp1>(w);
+      destruct_olim<olim6_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim6_rhr>(w);
+      destruct_olim<olim6_rhr_t>(w);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      destruct_olim<olim18_mp0>(w);
+      destruct_olim<olim18_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim18_mp1>(w);
+      destruct_olim<olim18_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim18_rhr>(w);
+      destruct_olim<olim18_rhr_t>(w);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      destruct_olim<olim26_mp0>(w);
+      destruct_olim<olim26_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim26_mp1>(w);
+      destruct_olim<olim26_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim26_rhr>(w);
+      destruct_olim<olim26_rhr_t>(w);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      destruct_olim<olim3d_mp0>(w);
+      destruct_olim<olim3d_mp0_t>(w);
     } else if (w->F == MP1) {
-      destruct_olim<olim3d_mp1>(w);
+      destruct_olim<olim3d_mp1_t>(w);
     } else if (w->F == RHR) {
-      destruct_olim<olim3d_rhr>(w);
+      destruct_olim<olim3d_rhr_t>(w);
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -341,51 +363,51 @@ status_e olim_wrapper_run(olim_wrapper * w)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0>().run();
+      w->olim<olim4_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1>().run();
+      w->olim<olim4_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr>().run();
+      w->olim<olim4_rhr_t>().run();
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0>().run();
+      w->olim<olim8_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1>().run();
+      w->olim<olim8_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr>().run();
+      w->olim<olim8_rhr_t>().run();
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0>().run();
+      w->olim<olim6_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1>().run();
+      w->olim<olim6_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr>().run();
+      w->olim<olim6_rhr_t>().run();
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0>().run();
+      w->olim<olim18_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1>().run();
+      w->olim<olim18_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr>().run();
+      w->olim<olim18_rhr_t>().run();
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0>().run();
+      w->olim<olim26_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1>().run();
+      w->olim<olim26_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr>().run();
+      w->olim<olim26_rhr_t>().run();
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0>().run();
+      w->olim<olim3d_mp0_t>().run();
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1>().run();
+      w->olim<olim3d_mp1_t>().run();
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr>().run();
+      w->olim<olim3d_rhr_t>().run();
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -408,51 +430,51 @@ status_e olim_wrapper_add_src(olim_wrapper * w, int * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0>().add_src(inds, U);
+      w->olim<olim4_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1>().add_src(inds, U);
+      w->olim<olim4_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr>().add_src(inds, U);
+      w->olim<olim4_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0>().add_src(inds, U);
+      w->olim<olim8_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1>().add_src(inds, U);
+      w->olim<olim8_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr>().add_src(inds, U);
+      w->olim<olim8_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0>().add_src(inds, U);
+      w->olim<olim6_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1>().add_src(inds, U);
+      w->olim<olim6_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr>().add_src(inds, U);
+      w->olim<olim6_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0>().add_src(inds, U);
+      w->olim<olim18_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1>().add_src(inds, U);
+      w->olim<olim18_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr>().add_src(inds, U);
+      w->olim<olim18_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0>().add_src(inds, U);
+      w->olim<olim26_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1>().add_src(inds, U);
+      w->olim<olim26_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr>().add_src(inds, U);
+      w->olim<olim26_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0>().add_src(inds, U);
+      w->olim<olim3d_mp0_t>().add_src(inds, U);
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1>().add_src(inds, U);
+      w->olim<olim3d_mp1_t>().add_src(inds, U);
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr>().add_src(inds, U);
+      w->olim<olim3d_rhr_t>().add_src(inds, U);
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -476,51 +498,51 @@ olim_wrapper_set_fac_src(olim_wrapper * w, int * inds, fac_src_wrapper * fs)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_mp0_t>().set_fac_src({inds}, &fs->_fac_src_2);
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_mp1_t>().set_fac_src({inds}, &fs->_fac_src_2);
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_rhr_t>().set_fac_src({inds}, &fs->_fac_src_2);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_mp0_t>().set_fac_src({inds}, &fs->_fac_src_2);
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_mp1_t>().set_fac_src({inds}, &fs->_fac_src_2);
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_rhr_t>().set_fac_src({inds}, &fs->_fac_src_2);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
     }
   } else if (w->nb == FMM2) {
     throw std::runtime_error("FMM2 doesn't currently support factoring");
@@ -535,51 +557,51 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0>().add_bd(inds);
+      w->olim<olim4_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1>().add_bd(inds);
+      w->olim<olim4_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr>().add_bd(inds);
+      w->olim<olim4_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0>().add_bd(inds);
+      w->olim<olim8_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1>().add_bd(inds);
+      w->olim<olim8_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr>().add_bd(inds);
+      w->olim<olim8_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0>().add_bd(inds);
+      w->olim<olim6_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1>().add_bd(inds);
+      w->olim<olim6_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr>().add_bd(inds);
+      w->olim<olim6_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0>().add_bd(inds);
+      w->olim<olim18_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1>().add_bd(inds);
+      w->olim<olim18_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr>().add_bd(inds);
+      w->olim<olim18_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0>().add_bd(inds);
+      w->olim<olim26_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1>().add_bd(inds);
+      w->olim<olim26_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr>().add_bd(inds);
+      w->olim<olim26_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0>().add_bd(inds);
+      w->olim<olim3d_mp0_t>().add_bd(inds);
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1>().add_bd(inds);
+      w->olim<olim3d_mp1_t>().add_bd(inds);
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr>().add_bd(inds);
+      w->olim<olim3d_rhr_t>().add_bd(inds);
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -602,51 +624,51 @@ status_e olim_wrapper_get_U_ptr(olim_wrapper * w, double ** U_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim4_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim4_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim4_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim4_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim4_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim4_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim8_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim8_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim8_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim8_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim8_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim8_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim6_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim6_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim6_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim6_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim6_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim6_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim18_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim18_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim18_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim18_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim18_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim18_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim26_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim26_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim26_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim26_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim26_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim26_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *U_ptr = w->olim<olim3d_mp0>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_mp0_t>().get_U_ptr();
     } else if (w->F == MP1) {
-      *U_ptr = w->olim<olim3d_mp1>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_mp1_t>().get_U_ptr();
     } else if (w->F == RHR) {
-      *U_ptr = w->olim<olim3d_rhr>().get_U_ptr();
+      *U_ptr = w->olim<olim3d_rhr_t>().get_U_ptr();
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -669,51 +691,51 @@ status_e olim_wrapper_get_s_ptr(olim_wrapper * w, double ** s_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim4_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim4_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim4_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim4_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim4_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim4_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim8_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim8_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim8_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim8_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim8_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim8_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim6_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim6_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim6_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim6_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim6_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim6_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim18_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim18_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim18_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim18_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim18_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim18_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim26_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim26_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim26_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim26_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim26_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim26_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *s_ptr = w->olim<olim3d_mp0>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_mp0_t>().get_s_ptr();
     } else if (w->F == MP1) {
-      *s_ptr = w->olim<olim3d_mp1>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_mp1_t>().get_s_ptr();
     } else if (w->F == RHR) {
-      *s_ptr = w->olim<olim3d_rhr>().get_s_ptr();
+      *s_ptr = w->olim<olim3d_rhr_t>().get_s_ptr();
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
@@ -736,51 +758,51 @@ status_e olim_wrapper_get_state_ptr(olim_wrapper * w, char ** state_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim4_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim4_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim4_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim4_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim4_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim4_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim8_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim8_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim8_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim8_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim8_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim8_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim6_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim6_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim6_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim6_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim6_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim6_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim18_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim18_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim18_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim18_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim18_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim18_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim26_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim26_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim26_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim26_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim26_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim26_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      *state_ptr = w->olim<olim3d_mp0>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_mp0_t>().get_state_ptr();
     } else if (w->F == MP1) {
-      *state_ptr = w->olim<olim3d_mp1>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_mp1_t>().get_state_ptr();
     } else if (w->F == RHR) {
-      *state_ptr = w->olim<olim3d_rhr>().get_state_ptr();
+      *state_ptr = w->olim<olim3d_rhr_t>().get_state_ptr();
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {

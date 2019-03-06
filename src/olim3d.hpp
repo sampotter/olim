@@ -36,12 +36,12 @@ struct groups_t {
     (I || II || III || IV_b ? 18 : 6);
 };
 
-template <cost_func F, class groups>
-struct olim3d_bv: public marcher<olim3d_bv<F, groups>, 3, groups::num_nb>
+template <cost_func F, class groups, ordering ord = ordering::COLUMN_MAJOR>
+struct olim3d_bv: public marcher<olim3d_bv<F, groups>, 3, groups::num_nb, ord>
 {
   static constexpr cost_func F_ = F;
 
-  using marcher<olim3d_bv<F, groups>, 3, groups::num_nb>::marcher;
+  using marcher<olim3d_bv<F, groups>, 3, groups::num_nb, ord>::marcher;
 
   int octant;
   int const * inds;
@@ -223,24 +223,42 @@ OLIM_PRIVATE:
 };
 
 using olim6_groups = groups_t<0, 0, 0, 1, 0, 0, 0, 0>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim6_mp0 = olim3d_bv<MP0, olim6_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim6_mp1 = olim3d_bv<MP1, olim6_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim6_rhr = olim3d_bv<RHR, olim6_groups>;
 
 using olim18_groups = groups_t<1, 0, 0, 1, 1, 0, 0, 0>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim18_mp0 = olim3d_bv<MP0, olim18_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim18_mp1 = olim3d_bv<MP1, olim18_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim18_rhr = olim3d_bv<RHR, olim18_groups>;
 
 using olim26_groups = groups_t<0, 0, 0, 0, 0, 1, 0, 0>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim26_mp0 = olim3d_bv<MP0, olim26_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim26_mp1 = olim3d_bv<MP1, olim26_groups>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim26_rhr = olim3d_bv<RHR, olim26_groups>;
 
 enum LP_NORM {L1, L2, MAX};
 
-template <cost_func F, int lp_norm, int d1, int d2>
-struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>
+template <cost_func F, int lp_norm, int d1, int d2, ordering ord = ordering::COLUMN_MAJOR>
+struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26, ord>
 {
   static_assert(lp_norm == L1 || lp_norm == L2 || lp_norm == MAX,
                 "Bad choice of lp norm: must be L1, L2, or MAX");
@@ -252,7 +270,7 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>
   using ivec = vec<int, 3>;
   using fvec = vec<double, 3>;
 
-  using marcher_t = marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>;
+  using marcher_t = marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26, ord>;
 
   // TODO: define an init_crtp that can be called from marcher and get
   // rid of all these explicit calls to marcher's constructors
@@ -329,8 +347,13 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26>
   void update_impl(int lin_hat, int const * nb, int parent, double & U);
 };
 
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim3d_rhr = olim3d_hu<RHR, L1, 1, 2>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim3d_mp0 = olim3d_hu<MP0, L1, 1, 2>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
 using olim3d_mp1 = olim3d_hu<MP1, L1, 1, 2>;
 
 #include "olim3d.impl.hpp"

@@ -23,19 +23,19 @@ int main(int argc, char * argv[]) {
 
   if (marcher_name == "basic_marcher_3d") run_marcher_3d<fmm<3>>(n);
 
-  if (marcher_name == "olim6_mp0") run_marcher_3d<olim6_mp0>(n);
-  if (marcher_name == "olim6_mp1") run_marcher_3d<olim6_mp1>(n);
-  if (marcher_name == "olim6_rhr") run_marcher_3d<olim6_rhr>(n);
+  if (marcher_name == "olim6_mp0") run_marcher_3d<olim6_mp0<>>(n);
+  if (marcher_name == "olim6_mp1") run_marcher_3d<olim6_mp1<>>(n);
+  if (marcher_name == "olim6_rhr") run_marcher_3d<olim6_rhr<>>(n);
 
-  if (marcher_name == "olim18_mp0") run_marcher_3d<olim18_mp0>(n);
-  if (marcher_name == "olim18_mp1") run_marcher_3d<olim18_mp1>(n);
-  if (marcher_name == "olim18_rhr") run_marcher_3d<olim18_rhr>(n);
+  if (marcher_name == "olim18_mp0") run_marcher_3d<olim18_mp0<>>(n);
+  if (marcher_name == "olim18_mp1") run_marcher_3d<olim18_mp1<>>(n);
+  if (marcher_name == "olim18_rhr") run_marcher_3d<olim18_rhr<>>(n);
 
-  if (marcher_name == "olim26_mp0") run_marcher_3d<olim26_mp0>(n);
-  if (marcher_name == "olim26_mp1") run_marcher_3d<olim26_mp1>(n);
-  if (marcher_name == "olim26_rhr") run_marcher_3d<olim26_rhr>(n);
+  if (marcher_name == "olim26_mp0") run_marcher_3d<olim26_mp0<>>(n);
+  if (marcher_name == "olim26_mp1") run_marcher_3d<olim26_mp1<>>(n);
+  if (marcher_name == "olim26_rhr") run_marcher_3d<olim26_rhr<>>(n);
 
-  if (marcher_name == "olim3d_mp0") run_marcher_3d<olim3d_mp0>(n);
-  if (marcher_name == "olim3d_mp1") run_marcher_3d<olim3d_mp1>(n);
-  if (marcher_name == "olim3d_rhr") run_marcher_3d<olim3d_rhr>(n);
+  if (marcher_name == "olim3d_mp0") run_marcher_3d<olim3d_mp0<>>(n);
+  if (marcher_name == "olim3d_mp1") run_marcher_3d<olim3d_mp1<>>(n);
+  if (marcher_name == "olim3d_rhr") run_marcher_3d<olim3d_rhr<>>(n);
 }

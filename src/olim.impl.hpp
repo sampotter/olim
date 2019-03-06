@@ -5,9 +5,10 @@
 #include "common.hpp"
 #include "vec.hpp"
 
-template <cost_func F, bool do_adj, bool do_diag>
+template <cost_func F, bool do_adj, bool do_diag, ordering ord>
 void
-olim<F, do_adj, do_diag>::update_impl(int lin_hat, int const * nb, int parent, double & U)
+olim<F, do_adj, do_diag, ord>::update_impl(
+  int lin_hat, int const * nb, int parent, double & U)
 {
   (void) parent;
 

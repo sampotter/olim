@@ -49,8 +49,8 @@ constexpr int oct2inds[8][7] = {
   {ind::U, ind::UN, ind::N, ind::NW, ind::W, ind::UW, ind::UNW}
 };
 
-template <cost_func F, class groups>
-void olim3d_bv<F, groups>::update_impl(
+template <cost_func F, class groups, ordering ord>
+void olim3d_bv<F, groups, ord>::update_impl(
   int lin_hat, int const * nb, int parent, double & U)
 {
   using std::min;
@@ -263,8 +263,8 @@ void olim3d_bv<F, groups>::update_impl(
   }
 }
 
-template <cost_func F, int lp_norm, int d1, int d2>
-void olim3d_hu<F, lp_norm, d1, d2>::init()
+template <cost_func F, int lp_norm, int d1, int d2, ordering ord>
+void olim3d_hu<F, lp_norm, d1, d2, ord>::init()
 {
   // TODO: only allocate once
   valid_d1 = new bool[26*26];
@@ -307,8 +307,8 @@ void olim3d_hu<F, lp_norm, d1, d2>::init()
   }
 }
 
-template <cost_func F, int lp_norm, int d1, int d2>
-void olim3d_hu<F, lp_norm, d1, d2>::update_impl(
+template <cost_func F, int lp_norm, int d1, int d2, ordering ord>
+void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
   int lin_hat, int const * nb, int parent, double & U)
 {
   using std::min;

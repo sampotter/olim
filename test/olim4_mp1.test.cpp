@@ -2,7 +2,7 @@
 
 #include <olim.hpp>
 
-using olim_t = olim4_mp1;
+using olim_t = olim4_mp1<>;
 
 TEST (olim4_mp1, trivial_case_works) {
   ASSERT_TRUE(trivial_case_works<olim_t>());

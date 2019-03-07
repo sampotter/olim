@@ -28,7 +28,7 @@ directory:
 To build the Python library, after running the above, run (from the
 root directory of the project):
 
-```
+``` shell
 # python setup.py build_ext -L build/Release -t build/Release
 ```
 

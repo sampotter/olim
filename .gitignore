@@ -19,3 +19,4 @@ annotate.txt
 callgrind.*
 tmp
 src/pyolim.c
+src/pyolim.cpp

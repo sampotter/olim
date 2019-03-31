@@ -73,6 +73,7 @@ cdef extern from "olim_wrapper.h":
     status olim_wrapper_deinit(olim_wrapper**)
     status olim_wrapper_solve(olim_wrapper*)
     status olim_wrapper_step(olim_wrapper*)
+    status olim_wrapper_peek(olim_wrapper*, double*)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
     status olim_wrapper_set_fac_src(olim_wrapper*, int*, void*)
@@ -233,6 +234,11 @@ cdef class Olim:
 
     def step(self):
         olim_wrapper_step(self._w)
+
+    def min(self):
+        cdef double value
+        olim_wrapper_peek(self._w, &value)
+        return value
 
     # TODO: this can be simplified
     cdef get_inds_mv(self, inds):

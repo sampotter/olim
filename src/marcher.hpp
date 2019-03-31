@@ -37,6 +37,10 @@ struct marcher
   void solve();
   void step();
 
+  inline double peek() const {
+    return _U[_heap.front()];
+  }
+
   void add_src(int * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);
   void add_srcs(ivec const * inds, double const * U, int num);

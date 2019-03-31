@@ -138,7 +138,7 @@ void marcher<base, n, num_nb, ord>::solve()
 {
   while (!_heap.empty()) {
     step();
-  }  
+  }
 }
 
 template <class base, int n, int num_nb, ordering ord>

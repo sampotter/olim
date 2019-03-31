@@ -134,14 +134,20 @@ marcher<base, n, num_nb, ord>::~marcher()
 }
 
 template <class base, int n, int num_nb, ordering ord>
-void marcher<base, n, num_nb, ord>::run()
+void marcher<base, n, num_nb, ord>::solve()
 {
   while (!_heap.empty()) {
-    int lin = _heap.front();
-    _heap.pop_front();
-    _state[lin] = state::valid;
-    visit_neighbors(lin);
+    step();
   }  
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void marcher<base, n, num_nb, ord>::step()
+{
+  int lin = _heap.front();
+  _heap.pop_front();
+  _state[lin] = state::valid;
+  visit_neighbors(lin);
 }
 
 template <class base, int n, int num_nb, ordering ord>

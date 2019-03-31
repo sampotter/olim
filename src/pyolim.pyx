@@ -71,7 +71,8 @@ cdef extern from "olim_wrapper.h":
 
     status olim_wrapper_init(olim_wrapper**, olim_wrapper_params*)
     status olim_wrapper_deinit(olim_wrapper**)
-    status olim_wrapper_run(olim_wrapper*)
+    status olim_wrapper_solve(olim_wrapper*)
+    status olim_wrapper_step(olim_wrapper*)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
     status olim_wrapper_set_fac_src(olim_wrapper*, int*, void*)
@@ -100,6 +101,18 @@ cdef class Olim:
     cdef:
         olim_wrapper_params _p
         olim_wrapper* _w
+
+    @property
+    def quad(self):
+        return Quadrature(self._p.F)
+
+    @property
+    def nb(self):
+        return Neighborhood(self._p.nb)
+
+    @property
+    def h(self):
+        return self._p.h
 
     @property
     def ndims(self):
@@ -215,8 +228,11 @@ cdef class Olim:
         if err != SUCCESS:
             raise Exception('error!')
 
-    def run(self):
-        olim_wrapper_run(self._w)
+    def solve(self):
+        olim_wrapper_solve(self._w)
+
+    def step(self):
+        olim_wrapper_step(self._w)
 
     # TODO: this can be simplified
     cdef get_inds_mv(self, inds):

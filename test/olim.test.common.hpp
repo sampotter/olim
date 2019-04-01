@@ -34,7 +34,7 @@ testing::AssertionResult
 trivial_case_works() {
   olim m {{1, 1}, 1};
   m.add_src({0, 0});
-  m.run();
+  m.solve();
   return eq_w_rel_tol(m.get_U({0, 0}), 0.0);
 }
 
@@ -43,7 +43,7 @@ testing::AssertionResult
 adjacent_update_works() {
   olim m {{2, 1}, 0.5};
   m.add_src({0, 0});
-  m.run();
+  m.solve();
   return eq_w_rel_tol(m.get_U({1, 0}), 0.5);
 }
 
@@ -58,7 +58,7 @@ quadrants_are_correct(
   for (int i = 0, i0 = 0, j0 = 0; i < 4; i0 = ++i/2, j0 = i0 % 2) {
     olim m {{n, n}, h};
     m.add_src({i0, j0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({i0, j0}), 0.0);
     if (!res) return res;
@@ -90,7 +90,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, n, 1}, h};
     m.add_src({0, 0, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
@@ -107,7 +107,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, n, 1}, h};
     m.add_src({0, 1, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -124,7 +124,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, n, 1}, h};
     m.add_src({1, 0, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -141,7 +141,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, n, 1}, h};
     m.add_src({1, 1, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
@@ -162,7 +162,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, 1, n}, h};
     m.add_src({0, 0, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
@@ -179,7 +179,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, 1, n}, h};
     m.add_src({1, 0, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -196,7 +196,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, 1, n}, h};
     m.add_src({0, 0, 1});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -213,7 +213,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{n, 1, n}, h};
     m.add_src({1, 0, 1});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
@@ -234,7 +234,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{1, n, n}, h};
     m.add_src({0, 0, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 0.0);
     if (!res) return res;
@@ -251,7 +251,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{1, n, n}, h};
     m.add_src({0, 1, 0});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -268,7 +268,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{1, n, n}, h};
     m.add_src({0, 0, 1});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), 1.0);
     if (!res) return res;
@@ -285,7 +285,7 @@ quadrants_are_correct(
   {
     olim3d_t m {{1, n, n}, h};
     m.add_src({0, 1, 1});
-    m.run();
+    m.solve();
 
     auto res = eq_w_rel_tol(m.get_U({0, 0, 0}), diag_value);
     if (!res) return res;
@@ -311,7 +311,7 @@ octants_are_correct(double diag2val, double diag3val) {
   for (auto inds: range<3> {dims}) {
     olim3d_t m {dims, 1.};
     m.add_src(inds);
-    m.run();
+    m.solve();
 
     int i = inds[0], j = inds[1], k = inds[2];
 
@@ -350,7 +350,7 @@ two_by_two_by_three_cells_are_correct() {
 
   olim3d_t m_gt {{3, 2, 2}, 1};
   m_gt.add_src({0, 0, 0});
-  m_gt.run();
+  m_gt.solve();
 
   for (int dim = 0, imax, jmax, kmax; dim < 3; ++dim) {
     imax = dims[dim][0];
@@ -364,7 +364,7 @@ two_by_two_by_three_cells_are_correct() {
 
       olim3d_t m {{imax, jmax, kmax}, 1};
       m.add_src({i0, j0, k0});
-      m.run();
+      m.solve();
 
       int da = i0 == 0 ? 1 : -1;
       int db = j0 == 0 ? 1 : -1;
@@ -407,7 +407,7 @@ plane_boundaries_are_correct() {
   }
   m.add_srcs(inds, Us, 4);
 
-  m.run();
+  m.solve();
   for (int i = 0; i < 2; ++i) {
     for (int j = 0; j < 2; ++j) {
       auto res = eq_w_rel_tol(m.get_U({i, j, 1}), 1.0);
@@ -438,7 +438,7 @@ planes_are_correct_nonsymmetric(
 
   olim3d_t m3d {n1, n2, n3, h, s3d, x0, y0, z0};
   m3d.add_src(i1, i2, i3);
-  m3d.run();
+  m3d.solve();
 
   for (int i = 0; i < n1; ++i) {
     double y = i*h - y0;
@@ -487,19 +487,19 @@ planes_agree_nonsymmetric(
 
   olim3d_t m3d {n, n, n, h, s3d, 1, 1, 1};
   m3d.add_src(i0, i0, i0);
-  m3d.run();
+  m3d.solve();
 
   olim mxy {n, n, h, sxy, 1, 1};
   mxy.add_src(i0, i0);
-  mxy.run();
+  mxy.solve();
 
   olim myz {n, n, h, syz, 1, 1};
   myz.add_src(i0, i0);
-  myz.run();
+  myz.solve();
 
   olim mxz {n, n, h, sxz, 1, 1};
   mxz.add_src(i0, i0);
-  mxz.run();
+  mxz.solve();
 
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
@@ -540,7 +540,7 @@ solution_is_exact_in_factored_square(
     }
   }
   o.add_src({i0, j0});
-  o.run();
+  o.solve();
   for (int i = 0; i < n; ++i) {
     double y = h*i - 1;
     for (int j = 0; j < n; ++j) {
@@ -575,7 +575,7 @@ solution_is_exact_in_factored_square(
     }
   }
   o.add_src({i0, j0, k0});
-  o.run();
+  o.solve();
   for (int i = 0; i < n; ++i) {
     double x = h*i - 1;
     for (int j = 0; j < n; ++j) {

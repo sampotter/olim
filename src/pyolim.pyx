@@ -1,3 +1,4 @@
+# distutils: language=c++
 # cython: embedsignature=True
 # cython: language_level=3
 
@@ -70,7 +71,9 @@ cdef extern from "olim_wrapper.h":
 
     status olim_wrapper_init(olim_wrapper**, olim_wrapper_params*)
     status olim_wrapper_deinit(olim_wrapper**)
-    status olim_wrapper_run(olim_wrapper*)
+    status olim_wrapper_solve(olim_wrapper*)
+    status olim_wrapper_step(olim_wrapper*)
+    status olim_wrapper_peek(olim_wrapper*, double*)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
     status olim_wrapper_set_fac_src(olim_wrapper*, int*, void*)
@@ -101,26 +104,43 @@ cdef class Olim:
         olim_wrapper* _w
 
     @property
-    def dims(self):
-        if self._p.ndims == 2:
+    def quad(self):
+        return Quadrature(self._p.F)
+
+    @property
+    def nb(self):
+        return Neighborhood(self._p.nb)
+
+    @property
+    def h(self):
+        return self._p.h
+
+    @property
+    def ndims(self):
+        return self._p.ndims
+
+    @property
+    def shape(self):
+        if self.ndims == 2:
             return self._p.dims[0], self._p.dims[1]
-        elif self._p.ndims == 3:
+        elif self.ndims == 3:
             return self._p.dims[0], self._p.dims[1], self._p.dims[2]
 
     @property
+    def size(self):
+        return np.array(self.shape).prod()
+
+    @property
     def U(self):
-        cdef double * U
-        cdef double[:, ::1] mv_2
-        cdef double[:, :, ::1] mv_3
+        cdef double* U
         olim_wrapper_get_U_ptr(self._w, &U)
-        if self._p.ndims == 2:
-            M, N = self.dims
-            mv_2 = <double[:(M + 2), :(N + 2)]> U
-            return np.asarray(mv_2[1:-1, 1:-1])
-        elif self._p.ndims == 3:
-            M, N, P = self.dims
-            mv_3 = <double[:(M + 2), :(N + 2), :(P + 2)]> U
-            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
+        dims_ = np.array(self.shape) + 2*np.ones(self.ndims, dtype=np.int)
+        size_ = dims_.prod()
+        arr = np.asarray(<double[:size_]> U).reshape(dims_)
+        if self.ndims == 2:
+            return arr[1:-1, 1:-1]
+        elif self.ndims == 3:
+            return arr[1:-1, 1:-1, 1:-1]
 
     @U.setter
     def U(self, U_mv):
@@ -132,31 +152,28 @@ cdef class Olim:
     cdef set_U_2(self, double[:, ::1] U_mv):
         cdef double * U = NULL
         olim_wrapper_get_U_ptr(self._w, &U)
-        M, N = self.dims
+        M, N = self.shape
         cdef double[:, ::1] mv = <double[:(M + 2), :(N + 2)]> U
         mv[1:-1, 1:-1] = U_mv
 
     cdef set_U_3(self, double[:, :, ::1] U_mv):
         cdef double * U = NULL
         olim_wrapper_get_U_ptr(self._w, &U)
-        M, N, P = self.dims
+        M, N, P = self.shape
         cdef double[:, :, ::1] mv = <double[:(M + 2), :(N + 2), :(P + 2)]> U
         mv[1:-1, 1:-1, 1:-1] = U_mv
 
     @property
     def s(self):
-        cdef double * s
-        cdef double[:, ::1] mv_2
-        cdef double[:, :, ::1] mv_3
+        cdef double* s
         olim_wrapper_get_s_ptr(self._w, &s)
-        if self._p.ndims == 2:
-            M, N = self.dims
-            mv_2 = <double[:(M + 2), :(N + 2)]> s
-            return np.asarray(mv_2[1:-1, 1:-1])
-        elif self._p.ndims == 3:
-            M, N, P = self.dims
-            mv_3 = <double[:(M + 2), :(N + 2), :(P + 2)]> s
-            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
+        dims_ = np.array(self.shape) + 2*np.ones(self.ndims, dtype=np.int)
+        size_ = dims_.prod()
+        arr = np.asarray(<double[:size_]> s).reshape(dims_)
+        if self.ndims == 2:
+            return arr[1:-1, 1:-1]
+        elif self.ndims == 3:
+            return arr[1:-1, 1:-1, 1:-1]
 
     @s.setter
     def s(self, s_mv):
@@ -168,31 +185,28 @@ cdef class Olim:
     cdef set_s_2(self, double[:, ::1] s_mv):
         cdef double * s = NULL
         olim_wrapper_get_s_ptr(self._w, &s)
-        M, N = self.dims
+        M, N = self.shape
         cdef double[:, ::1] mv = <double[:(M + 2), :(N + 2)]> s
         mv[1:-1, 1:-1] = s_mv
 
     cdef set_s_3(self, double[:, :, ::1] s_mv):
         cdef double * s = NULL
         olim_wrapper_get_s_ptr(self._w, &s)
-        M, N, P = self.dims
+        M, N, P = self.shape
         cdef double[:, :, ::1] mv = <double[:(M + 2), :(N + 2), :(P + 2)]> s
         mv[1:-1, 1:-1, 1:-1] = s_mv
 
     @property
     def state(self):
         cdef char * state
-        cdef char[:, ::1] mv_2
-        cdef char[:, :, ::1] mv_3
         olim_wrapper_get_state_ptr(self._w, &state)
-        if self._p.ndims == 2:
-            M, N = self.dims
-            mv_2 = <char[:(M + 2), :(N + 2)]> state
-            return np.asarray(mv_2[1:-1, 1:-1])
-        elif self._p.ndims == 3:
-            M, N, P = self.dims
-            mv_3 = <char[:M, :N, :P]> state
-            return np.asarray(mv_3[1:-1, 1:-1, 1:-1])
+        dims_ = np.array(self.shape) + 2*np.ones(self.ndims, dtype=np.int)
+        size_ = dims_.prod()
+        arr = np.asarray(<char[:size_]> state).reshape(dims_)
+        if self.ndims == 2:
+            return arr[1:-1, 1:-1]
+        elif self.ndims == 3:
+            return arr[1:-1, 1:-1, 1:-1]
 
     def __cinit__(self, nb, quad, s, double h):
         self._p.nb = nb.value
@@ -215,9 +229,18 @@ cdef class Olim:
         if err != SUCCESS:
             raise Exception('error!')
 
-    def run(self):
-        olim_wrapper_run(self._w)
+    def solve(self):
+        olim_wrapper_solve(self._w)
 
+    def step(self):
+        olim_wrapper_step(self._w)
+
+    def min(self):
+        cdef double value
+        olim_wrapper_peek(self._w, &value)
+        return value
+
+    # TODO: this can be simplified
     cdef get_inds_mv(self, inds):
         cdef int[::1] mv = np.empty((self._p.ndims,), dtype=np.intc)
         cdef int i

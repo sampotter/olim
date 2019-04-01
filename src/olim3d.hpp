@@ -225,35 +225,35 @@ OLIM_PRIVATE:
 using olim6_groups = groups_t<0, 0, 0, 1, 0, 0, 0, 0>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim6_mp0 = olim3d_bv<MP0, olim6_groups>;
+using olim6_mp0 = olim3d_bv<MP0, olim6_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim6_mp1 = olim3d_bv<MP1, olim6_groups>;
+using olim6_mp1 = olim3d_bv<MP1, olim6_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim6_rhr = olim3d_bv<RHR, olim6_groups>;
+using olim6_rhr = olim3d_bv<RHR, olim6_groups, ord>;
 
 using olim18_groups = groups_t<1, 0, 0, 1, 1, 0, 0, 0>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim18_mp0 = olim3d_bv<MP0, olim18_groups>;
+using olim18_mp0 = olim3d_bv<MP0, olim18_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim18_mp1 = olim3d_bv<MP1, olim18_groups>;
+using olim18_mp1 = olim3d_bv<MP1, olim18_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim18_rhr = olim3d_bv<RHR, olim18_groups>;
+using olim18_rhr = olim3d_bv<RHR, olim18_groups, ord>;
 
 using olim26_groups = groups_t<0, 0, 0, 0, 0, 1, 0, 0>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim26_mp0 = olim3d_bv<MP0, olim26_groups>;
+using olim26_mp0 = olim3d_bv<MP0, olim26_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim26_mp1 = olim3d_bv<MP1, olim26_groups>;
+using olim26_mp1 = olim3d_bv<MP1, olim26_groups, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim26_rhr = olim3d_bv<RHR, olim26_groups>;
+using olim26_rhr = olim3d_bv<RHR, olim26_groups, ord>;
 
 enum LP_NORM {L1, L2, MAX};
 
@@ -348,12 +348,12 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26, ord>
 };
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim3d_rhr = olim3d_hu<RHR, L1, 1, 2>;
+using olim3d_rhr = olim3d_hu<RHR, L1, 1, 2, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim3d_mp0 = olim3d_hu<MP0, L1, 1, 2>;
+using olim3d_mp0 = olim3d_hu<MP0, L1, 1, 2, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim3d_mp1 = olim3d_hu<MP1, L1, 1, 2>;
+using olim3d_mp1 = olim3d_hu<MP1, L1, 1, 2, ord>;
 
 #include "olim3d.impl.hpp"

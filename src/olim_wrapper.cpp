@@ -42,9 +42,11 @@ status_e fac_src_wrapper_deinit(fac_src_wrapper_s **w_ptr)
 }
 
 struct null_olim {
-  void run() {}
+  void solve() {}
+  void step() {}
   void add_src(int *, double) {}
   void add_bd(int *, double) {}
+  double get_front_value() const { return 0; }
   double * get_U_ptr() const { return nullptr; }
   double * get_s_ptr() const { return nullptr; }
   char * get_state_ptr() const { return nullptr; }
@@ -359,65 +361,132 @@ status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
   return SUCCESS;
 }
 
-status_e olim_wrapper_run(olim_wrapper * w)
+status_e olim_wrapper_solve(olim_wrapper * w)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0_t>().run();
+      w->olim<olim4_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1_t>().run();
+      w->olim<olim4_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr_t>().run();
+      w->olim<olim4_rhr_t>().solve();
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0_t>().run();
+      w->olim<olim8_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1_t>().run();
+      w->olim<olim8_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr_t>().run();
+      w->olim<olim8_rhr_t>().solve();
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0_t>().run();
+      w->olim<olim6_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1_t>().run();
+      w->olim<olim6_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr_t>().run();
+      w->olim<olim6_rhr_t>().solve();
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0_t>().run();
+      w->olim<olim18_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1_t>().run();
+      w->olim<olim18_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr_t>().run();
+      w->olim<olim18_rhr_t>().solve();
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0_t>().run();
+      w->olim<olim26_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1_t>().run();
+      w->olim<olim26_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr_t>().run();
+      w->olim<olim26_rhr_t>().solve();
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0_t>().run();
+      w->olim<olim3d_mp0_t>().solve();
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1_t>().run();
+      w->olim<olim3d_mp1_t>().solve();
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr_t>().run();
+      w->olim<olim3d_rhr_t>().solve();
     }
   } else if (w->nb == FMM2) {
     if (w->F == RHR) {
-      w->olim<fmm<2>>().run();
+      w->olim<fmm<2>>().solve();
     } else {
       throw std::runtime_error("FMM2 requires quad == RHR");
     }
   } else if (w->nb == FMM3) {
     if (w->F == RHR) {
-      w->olim<fmm<3>>().run();
+      w->olim<fmm<3>>().solve();
+    } else {
+      throw std::runtime_error("FMM3 requires quad == RHR");
+    }
+  }
+
+  return SUCCESS;
+}
+
+status_e olim_wrapper_step(olim_wrapper * w)
+{
+  if (w->nb == OLIM4) {
+    if (w->F == MP0) {
+      w->olim<olim4_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim4_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim4_rhr_t>().step();
+    }
+  } else if (w->nb == OLIM8) {
+    if (w->F == MP0) {
+      w->olim<olim8_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim8_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim8_rhr_t>().step();
+    }
+  } else if (w->nb == OLIM6) {
+    if (w->F == MP0) {
+      w->olim<olim6_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim6_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim6_rhr_t>().step();
+    }
+  } else if (w->nb == OLIM18) {
+    if (w->F == MP0) {
+      w->olim<olim18_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim18_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim18_rhr_t>().step();
+    }
+  } else if (w->nb == OLIM26) {
+    if (w->F == MP0) {
+      w->olim<olim26_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim26_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim26_rhr_t>().step();
+    }
+  } else if (w->nb == OLIM3D) {
+    if (w->F == MP0) {
+      w->olim<olim3d_mp0_t>().step();
+    } else if (w->F == MP1) {
+      w->olim<olim3d_mp1_t>().step();
+    } else if (w->F == RHR) {
+      w->olim<olim3d_rhr_t>().step();
+    }
+  } else if (w->nb == FMM2) {
+    if (w->F == RHR) {
+      w->olim<fmm<2>>().step();
+    } else {
+      throw std::runtime_error("FMM2 requires quad == RHR");
+    }
+  } else if (w->nb == FMM3) {
+    if (w->F == RHR) {
+      w->olim<fmm<3>>().step();
     } else {
       throw std::runtime_error("FMM3 requires quad == RHR");
     }
@@ -612,6 +681,73 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
   } else if (w->nb == FMM3) {
     if (w->F == RHR) {
       w->olim<fmm<3>>().add_bd(inds);
+    } else {
+      throw std::runtime_error("FMM3 requires quad == RHR");
+    }
+  }
+
+  return SUCCESS;
+}
+
+status_e olim_wrapper_peek(olim_wrapper * w, double * value)
+{
+  if (w->nb == OLIM4) {
+    if (w->F == MP0) {
+      *value = w->olim<olim4_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim4_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim4_rhr_t>().peek();
+    }
+  } else if (w->nb == OLIM8) {
+    if (w->F == MP0) {
+      *value = w->olim<olim8_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim8_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim8_rhr_t>().peek();
+    }
+  } else if (w->nb == OLIM6) {
+    if (w->F == MP0) {
+      *value = w->olim<olim6_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim6_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim6_rhr_t>().peek();
+    }
+  } else if (w->nb == OLIM18) {
+    if (w->F == MP0) {
+      *value = w->olim<olim18_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim18_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim18_rhr_t>().peek();
+    }
+  } else if (w->nb == OLIM26) {
+    if (w->F == MP0) {
+      *value = w->olim<olim26_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim26_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim26_rhr_t>().peek();
+    }
+  } else if (w->nb == OLIM3D) {
+    if (w->F == MP0) {
+      *value = w->olim<olim3d_mp0_t>().peek();
+    } else if (w->F == MP1) {
+      *value = w->olim<olim3d_mp1_t>().peek();
+    } else if (w->F == RHR) {
+      *value = w->olim<olim3d_rhr_t>().peek();
+    }
+  } else if (w->nb == FMM2) {
+    if (w->F == RHR) {
+      *value = w->olim<fmm<2>>().peek();
+    } else {
+      throw std::runtime_error("FMM2 requires quad == RHR");
+    }
+  } else if (w->nb == FMM3) {
+    if (w->F == RHR) {
+      *value = w->olim<fmm<3>>().peek();
     } else {
       throw std::runtime_error("FMM3 requires quad == RHR");
     }

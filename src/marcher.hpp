@@ -34,7 +34,12 @@ struct marcher
   marcher(ivec dims, double h, double const * s);
   virtual ~marcher();
 
-  void run();
+  void solve();
+  void step();
+
+  inline double peek() const {
+    return _U[_heap.front()];
+  }
 
   void add_src(int * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);

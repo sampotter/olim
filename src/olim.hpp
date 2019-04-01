@@ -69,18 +69,18 @@ template <ordering ord = ordering::COLUMN_MAJOR>
 using olim4_mp0 = olim<MP0, true, false, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim4_mp1 = olim<MP1, true, false>;
+using olim4_mp1 = olim<MP1, true, false, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim4_rhr = olim<RHR, true, false>;
+using olim4_rhr = olim<RHR, true, false, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim8_mp0 = olim<MP0, true, true>;
+using olim8_mp0 = olim<MP0, false, true, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim8_mp1 = olim<MP1, true, true>;
+using olim8_mp1 = olim<MP1, false, true, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
-using olim8_rhr = olim<RHR, true, true>;
+using olim8_rhr = olim<RHR, false, true, ord>;
 
 #include "olim.impl.hpp"

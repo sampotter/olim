@@ -263,6 +263,24 @@ marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 
 template <class base, int n, int num_nb, ordering ord>
 void
+marcher<base, n, num_nb, ord>::add_free(int const * inds)
+{
+  add_free(ivec {inds});
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void
+marcher<base, n, num_nb, ord>::add_free(ivec inds)
+{
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(in_bounds(inds));
+#endif
+  int lin = to_linear_index(inds + ivec::one());
+  _state[lin] = state::free;
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void
 marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
@@ -397,8 +415,12 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
 
   // Update the node at (i, j). Before calling, `nb' needs to be
   // filled appropriately. Upon updating, this sets the value of n and
-  // adjusts its position in the heap.
-  auto const update = [&] (int lin_hat, int parent) {
+  // adjusts its position in the heap. If the node state is `free`, do
+  // *not* update the heap.
+  auto const update = [&] (int lin_hat, int parent, state state_) {
+#if OLIM_DEBUG && !RELWITHDEBINFO
+    assert(state_ == state::trial || state_ == state::free);
+#endif
     auto U = inf<double>;
     update_impl(lin_hat, child_nb, parent, U);
     if (U < _U[lin_hat]) {
@@ -406,22 +428,28 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
       assert(U >= 0);
 #endif
       _U[lin_hat] = U;
-      _heap.update(lin_hat);
+      if (state_ == state::trial) {
+        _heap.update(lin_hat);
+      }
     }
   };
 
   // This is the main update loop. Each neighbor of n which isn't
-  // `valid' is now `trial' or `boundary'. We ignore `boundary' nodes;
-  // for each neighboring trial node, use `set_child_nb' to grab its
-  // valid neighbors and use `update' to actually update the node's
-  // value and update its position in the heap.
+  // `valid' is now `trial', `boundary', or `free`. We ignore
+  // `boundary' nodes; for each neighboring `trial` or `free` node,
+  // use `set_child_nb' to grab its valid neighbors and use `update'
+  // to actually update the node's value and update its position in
+  // the heap. The difference between `trial` and `free` is that
+  // `free` nodes are _only_ updated---they are not merged into the
+  // heap and do not eventually become `valid`.
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
       int lin = lin_center + _linear_offset[i];
-      if (_state[lin] == state::trial) {
+      auto const state_ = _state[lin];
+      if (state_ == state::trial || state_ == state::free) {
         int parent = get_parent<n, num_nb>(i);
         set_child_nb(parent, _child_offset[i]);
-        update(lin, parent);
+        update(lin, parent, state_);
       }
     }
   }

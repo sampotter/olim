@@ -46,6 +46,7 @@ struct null_olim {
   void step() {}
   void add_src(int *, double) {}
   void add_bd(int *, double) {}
+  void add_free(int *, double) {}
   double get_front_value() const { return 0; }
   double * get_U_ptr() const { return nullptr; }
   double * get_s_ptr() const { return nullptr; }
@@ -681,6 +682,73 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
   } else if (w->nb == FMM3) {
     if (w->F == RHR) {
       w->olim<fmm<3>>().add_bd(inds);
+    } else {
+      throw std::runtime_error("FMM3 requires quad == RHR");
+    }
+  }
+
+  return SUCCESS;
+}
+
+status_e olim_wrapper_add_free(olim_wrapper * w, int * inds)
+{
+  if (w->nb == OLIM4) {
+    if (w->F == MP0) {
+      w->olim<olim4_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim4_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim4_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == OLIM8) {
+    if (w->F == MP0) {
+      w->olim<olim8_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim8_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim8_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == OLIM6) {
+    if (w->F == MP0) {
+      w->olim<olim6_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim6_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim6_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == OLIM18) {
+    if (w->F == MP0) {
+      w->olim<olim18_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim18_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim18_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == OLIM26) {
+    if (w->F == MP0) {
+      w->olim<olim26_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim26_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim26_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == OLIM3D) {
+    if (w->F == MP0) {
+      w->olim<olim3d_mp0_t>().add_free(inds);
+    } else if (w->F == MP1) {
+      w->olim<olim3d_mp1_t>().add_free(inds);
+    } else if (w->F == RHR) {
+      w->olim<olim3d_rhr_t>().add_free(inds);
+    }
+  } else if (w->nb == FMM2) {
+    if (w->F == RHR) {
+      w->olim<fmm<2>>().add_free(inds);
+    } else {
+      throw std::runtime_error("FMM2 requires quad == RHR");
+    }
+  } else if (w->nb == FMM3) {
+    if (w->F == RHR) {
+      w->olim<fmm<3>>().add_free(inds);
     } else {
       throw std::runtime_error("FMM3 requires quad == RHR");
     }

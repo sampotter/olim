@@ -38,8 +38,12 @@ struct marcher
   int step();
   int step_impl();
 
-  inline double peek() const {
-    return _U[_heap.front()];
+  inline bool peek(double * U) const {
+    bool const empty = _heap.empty();
+    if (!empty) {
+      *U = _U[_heap.front()];
+    }
+    return empty;
   }
 
   void add_src(int * inds, double U = 0.0);

@@ -36,7 +36,7 @@ status_e olim_wrapper_init(olim_wrapper_s **w_ptr, olim_wrapper_params_s *p);
 status_e olim_wrapper_deinit(olim_wrapper_s **w_ptr);
 status_e olim_wrapper_solve(olim_wrapper_s *w);
 status_e olim_wrapper_step(olim_wrapper_s *w, int *lin);
-status_e olim_wrapper_peek(olim_wrapper_s *w, double *value);
+status_e olim_wrapper_peek(olim_wrapper_s *w, double *value, bool *empty);
 status_e olim_wrapper_add_src(olim_wrapper_s *w, int *inds, double U);
 status_e olim_wrapper_add_bd(olim_wrapper_s *w, int *inds);
 status_e olim_wrapper_add_free(olim_wrapper_s *w, int *inds);

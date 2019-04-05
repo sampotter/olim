@@ -102,10 +102,18 @@ OLIM_PROTECTED:
     }
 
     inline int get_heap_pos(int lin) const {
+#if OLIM_DEBUG && !RELWITHDEBINFO
+      assert(_m->_heap_pos[lin] != -1);
+#endif
       return _m->_heap_pos[lin];
     }
 
     inline void set_heap_pos(int lin, int pos) {
+#if OLIM_DEBUG && !RELWITHDEBINFO
+      assert(pos >= 0);
+      assert(lin >= 0);
+      assert(lin < _m->_size);
+#endif
       _m->_heap_pos[lin] = pos;
     }
 

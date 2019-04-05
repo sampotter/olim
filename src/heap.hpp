@@ -127,9 +127,8 @@ void heap<elt, proxy>::insert(elt const & e) {
 
 template <class elt, class proxy>
 void heap<elt, proxy>::update(elt const & e) {
-  // assert(_data[n->get_heap_pos()] == n);
-  // swim(n->get_heap_pos());
-  assert(_data[_proxy.get_heap_pos(e)] == e);
+  auto const heap_pos = _proxy.get_heap_pos(e);
+  assert(_data[heap_pos] == e);
   swim(_proxy.get_heap_pos(e));
 }
 

@@ -31,6 +31,17 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
     _state[i] = state::far;
   }
 
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  /**
+   * If we're building in "slow debug mode", then we additionally
+   * initialize the heap positions to -1 for use with debug asserts
+   * elsewhere in `marcher'.
+   */
+  for (int i = 0; i < _size; ++i) {
+    _heap_pos[i] = -1;
+  }
+#endif
+
   /**
    * Set the state of all nodes on the edge of the domain to
    * `boundary' and set boundary slowness values to infinity.
@@ -145,6 +156,9 @@ template <class base, int n, int num_nb, ordering ord>
 void marcher<base, n, num_nb, ord>::step()
 {
   int lin = _heap.front();
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(_state[lin] == state::trial);
+#endif
   _heap.pop_front();
   _state[lin] = state::valid;
   visit_neighbors(lin);

@@ -35,7 +35,8 @@ struct marcher
   virtual ~marcher();
 
   void solve();
-  void step();
+  int step();
+  int step_impl();
 
   inline double peek() const {
     return _U[_heap.front()];

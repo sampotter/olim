@@ -148,12 +148,22 @@ template <class base, int n, int num_nb, ordering ord>
 void marcher<base, n, num_nb, ord>::solve()
 {
   while (!_heap.empty()) {
-    step();
+    (void) step_impl();
   }
 }
 
 template <class base, int n, int num_nb, ordering ord>
-void marcher<base, n, num_nb, ord>::step()
+int marcher<base, n, num_nb, ord>::step()
+{
+  return _heap.empty() ?
+    -1 :
+    ::to_linear_index<ord>(
+      to_vector_index(step_impl()) - ivec::one(),
+      _dims - 2*ivec::one());
+}
+
+template <class base, int n, int num_nb, ordering ord>
+int marcher<base, n, num_nb, ord>::step_impl()
 {
   int lin = _heap.front();
 #if OLIM_DEBUG && !RELWITHDEBINFO
@@ -162,6 +172,7 @@ void marcher<base, n, num_nb, ord>::step()
   _heap.pop_front();
   _state[lin] = state::valid;
   visit_neighbors(lin);
+  return lin;
 }
 
 template <class base, int n, int num_nb, ordering ord>

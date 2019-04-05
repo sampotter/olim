@@ -72,7 +72,7 @@ cdef extern from "olim_wrapper.h":
     status olim_wrapper_init(olim_wrapper**, olim_wrapper_params*)
     status olim_wrapper_deinit(olim_wrapper**)
     status olim_wrapper_solve(olim_wrapper*)
-    status olim_wrapper_step(olim_wrapper*)
+    status olim_wrapper_step(olim_wrapper*, int*)
     status olim_wrapper_peek(olim_wrapper*, double*)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
@@ -233,7 +233,12 @@ cdef class Olim:
         olim_wrapper_solve(self._w)
 
     def step(self):
-        olim_wrapper_step(self._w)
+        cdef int lin
+        olim_wrapper_step(self._w, &lin)
+        if lin == -1:
+            return None
+        else:
+            return np.unravel_index(lin, self.shape)
 
     def min(self):
         cdef double value

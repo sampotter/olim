@@ -46,7 +46,7 @@ struct marcher
   void add_srcs(ivec const * inds, double const * U, int num);
   void add_src(fvec coords, double s, double U = 0.0);
 
-  void add_bd(int * inds);
+  void add_bd(int const * inds);
   void add_bd(ivec inds);
 
   void set_fac_src(ivec inds, fac_src<n> const * src);

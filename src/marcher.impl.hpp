@@ -231,7 +231,7 @@ marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_bd(int * inds)
+marcher<base, n, num_nb, ord>::add_bd(int const * inds)
 {
   add_bd(ivec {inds});
 }

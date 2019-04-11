@@ -127,8 +127,10 @@ void heap<elt, proxy>::insert(elt const & e) {
 
 template <class elt, class proxy>
 void heap<elt, proxy>::update(elt const & e) {
+#if OLIM_DEBUG && !RELWITHDEBINFO
   auto const heap_pos = _proxy.get_heap_pos(e);
   assert(_data[heap_pos] == e);
+#endif
   swim(_proxy.get_heap_pos(e));
 }
 

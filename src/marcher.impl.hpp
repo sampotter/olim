@@ -155,11 +155,7 @@ void marcher<base, n, num_nb, ord>::solve()
 template <class base, int n, int num_nb, ordering ord>
 int marcher<base, n, num_nb, ord>::step()
 {
-  return _heap.empty() ?
-    -1 :
-    ::to_linear_index<ord>(
-      to_vector_index(step_impl()) - ivec::one(),
-      _dims - 2*ivec::one());
+  return _heap.empty() ? -1 : to_external_linear_index(step_impl());
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -173,6 +169,41 @@ int marcher<base, n, num_nb, ord>::step_impl()
   _state[lin] = state::valid;
   visit_neighbors(lin);
   return lin;
+}
+
+template <class base, int n, int num_nb, ordering ord>
+bool marcher<base, n, num_nb, ord>::peek(double * U, int * lin) const {
+  bool const is_empty = _heap.empty();
+  if (!is_empty) {
+    int lin_ = _heap.front();
+    if (U != nullptr) {
+      *U = _U[lin_];
+    }
+    if (lin != nullptr) {
+      *lin = to_external_linear_index(lin_);
+    }
+  }
+  return is_empty;
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void marcher<base, n, num_nb, ord>::adjust(int const * inds, double U) {
+  adjust(ivec {inds}, U);
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void marcher<base, n, num_nb, ord>::adjust(ivec inds, double U) {
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(in_bounds(inds));
+#endif
+  inds += ivec::one();
+  int lin = to_linear_index(inds);
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(U <= _U[lin]);
+  assert(_state[lin] == state::trial);
+#endif
+  _U[lin] = U;
+  _heap.update(lin);
 }
 
 template <class base, int n, int num_nb, ordering ord>

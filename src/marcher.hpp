@@ -37,14 +37,10 @@ struct marcher
   void solve();
   int step();
   int step_impl();
+  bool peek(double * U, int * lin) const;
 
-  inline bool peek(double * U) const {
-    bool const empty = _heap.empty();
-    if (!empty) {
-      *U = _U[_heap.front()];
-    }
-    return empty;
-  }
+  void adjust(int const * inds, double U);
+  void adjust(ivec inds, double U);
 
   void add_src(int * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);
@@ -86,6 +82,11 @@ OLIM_PROTECTED:
 
   inline ivec to_vector_index(int lin) const {
     return ::to_vector_index<ord>(lin, _dims);
+  }
+
+  inline int to_external_linear_index(int lin) const {
+    auto const inds = to_vector_index(lin) - ivec::one();
+    return ::to_linear_index<ord>(inds, _dims - 2*ivec::one());
   }
 
   bool in_bounds(ivec inds) const;

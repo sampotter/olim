@@ -75,7 +75,8 @@ cdef extern from "olim_wrapper.h":
     status olim_wrapper_deinit(olim_wrapper**)
     status olim_wrapper_solve(olim_wrapper*)
     status olim_wrapper_step(olim_wrapper*, int*)
-    status olim_wrapper_peek(olim_wrapper*, double*, bool*)
+    status olim_wrapper_peek(olim_wrapper*, double*, int*, bool*)
+    status olim_wrapper_adjust(olim_wrapper*, int*, double)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
     status olim_wrapper_add_free(olim_wrapper*, int*)
@@ -246,9 +247,10 @@ cdef class Olim:
     def min(self):
         cdef double value
         cdef bool empty
-        olim_wrapper_peek(self._w, &value, &empty)
+        cdef int lin
+        olim_wrapper_peek(self._w, &value, &lin, &empty)
         if not empty:
-            return value
+            return value, np.unravel_index(lin, self.shape)
 
     # TODO: this can be simplified
     cdef get_inds_mv(self, inds):
@@ -257,6 +259,10 @@ cdef class Olim:
         for i, ind in enumerate(inds):
             mv[i] = ind
         return mv
+
+    cpdef adjust(self, inds, U):
+        cdef int[::1] mv = self.get_inds_mv(inds)
+        olim_wrapper_adjust(self._w, &mv[0], U)
 
     cpdef add_src(self, inds, U=0):
         cdef int[::1] mv = self.get_inds_mv(inds)

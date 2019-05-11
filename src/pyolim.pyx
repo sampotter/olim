@@ -93,14 +93,18 @@ cdef class FacSrc:
     def __cinit__(self, coords, s):
         self._p.ndims = len(coords)
         self._p.coords = <double*>malloc(self._p.ndims*sizeof(double))
+        if self._p.coords == NULL:
+            raise MemoryError()
         self._p.s = s
         err = fac_src_wrapper_init(&self._w, &self._p)
         if err != SUCCESS:
             raise Exception('error!')
 
     def __dealloc__(self):
-        free(self._p.coords)
-        fac_src_wrapper_deinit(&self._w)
+        if self._p.coords != NULL:
+            free(self._p.coords)
+        if &self._w != NULL:
+            fac_src_wrapper_deinit(&self._w)
 
 cdef class Olim:
     cdef:
@@ -217,6 +221,8 @@ cdef class Olim:
         self._p.F = quad.value
         self._p.h = h
         self._p.dims = <int *> malloc(s.ndim*sizeof(int))
+        if self._p.dims == NULL:
+            raise MemoryError()
         for i in range(s.ndim):
             self._p.dims[i] = s.shape[i]
         self._p.ndims = s.ndim

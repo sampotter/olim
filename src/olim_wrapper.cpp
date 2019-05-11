@@ -285,6 +285,10 @@ status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
 {
   olim_wrapper * w = *w_ptr;
 
+  if (w == nullptr) {
+	return SUCCESS;
+  }
+
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
       destruct_olim<olim4_mp0_t>(w);

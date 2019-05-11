@@ -227,11 +227,14 @@ cdef class Olim:
 
         self.s[...] = s
 
-    def __dealloc__(self):
-        free(self._p.dims)
-        err = olim_wrapper_deinit(&self._w)
-        if err != SUCCESS:
-            raise Exception('error!')
+# TODO: this causes some problems when an instance of Olim is managed
+# as instance member of another class...? Not 100% sure...
+
+#    def __dealloc__(self):
+#        free(self._p.dims)
+#        err = olim_wrapper_deinit(&self._w)
+#        if err != SUCCESS:
+#            raise Exception('error!')
 
     def solve(self):
         olim_wrapper_solve(self._w)

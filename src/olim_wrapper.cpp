@@ -41,7 +41,21 @@ status_e fac_src_wrapper_deinit(fac_src_wrapper_s **w_ptr)
   return SUCCESS;
 }
 
-struct null_olim {};
+struct null_olim {
+  void solve() {}
+  void step() {}
+  bool peek(double *, int *) const { return false; }
+  void adjust(int const *, double) {}
+  void add_src(int *, double) {}
+  void add_bd(int *, double) {}
+  void add_free(int *, double) {}
+  void set_fac_src(int *, fac_src<2> const *) {}
+  void set_fac_src(int *, fac_src<3> const *) {}
+  double get_front_value() const { return 0; }
+  double * get_U_ptr() const { return nullptr; }
+  double * get_s_ptr() const { return nullptr; }
+  char * get_state_ptr() const { return nullptr; }
+};
 
 constexpr ordering ord = ordering::ROW_MAJOR;
 
@@ -625,51 +639,51 @@ olim_wrapper_set_fac_src(olim_wrapper * w, int * inds, fac_src_wrapper * fs)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
-      w->olim<olim4_mp0_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_mp0_t>().set_fac_src(inds, &fs->_fac_src_2);
     } else if (w->F == MP1) {
-      w->olim<olim4_mp1_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_mp1_t>().set_fac_src(inds, &fs->_fac_src_2);
     } else if (w->F == RHR) {
-      w->olim<olim4_rhr_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim4_rhr_t>().set_fac_src(inds, &fs->_fac_src_2);
     }
   } else if (w->nb == OLIM8) {
     if (w->F == MP0) {
-      w->olim<olim8_mp0_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_mp0_t>().set_fac_src(inds, &fs->_fac_src_2);
     } else if (w->F == MP1) {
-      w->olim<olim8_mp1_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_mp1_t>().set_fac_src(inds, &fs->_fac_src_2);
     } else if (w->F == RHR) {
-      w->olim<olim8_rhr_t>().set_fac_src({inds}, &fs->_fac_src_2);
+      w->olim<olim8_rhr_t>().set_fac_src(inds, &fs->_fac_src_2);
     }
   } else if (w->nb == OLIM6) {
     if (w->F == MP0) {
-      w->olim<olim6_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_mp0_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim6_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_mp1_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim6_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim6_rhr_t>().set_fac_src(inds, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM18) {
     if (w->F == MP0) {
-      w->olim<olim18_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_mp0_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim18_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_mp1_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim18_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim18_rhr_t>().set_fac_src(inds, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM26) {
     if (w->F == MP0) {
-      w->olim<olim26_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_mp0_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim26_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_mp1_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim26_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim26_rhr_t>().set_fac_src(inds, &fs->_fac_src_3);
     }
   } else if (w->nb == OLIM3D) {
     if (w->F == MP0) {
-      w->olim<olim3d_mp0_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_mp0_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == MP1) {
-      w->olim<olim3d_mp1_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_mp1_t>().set_fac_src(inds, &fs->_fac_src_3);
     } else if (w->F == RHR) {
-      w->olim<olim3d_rhr_t>().set_fac_src({inds}, &fs->_fac_src_3);
+      w->olim<olim3d_rhr_t>().set_fac_src(inds, &fs->_fac_src_3);
     }
   } else if (w->nb == FMM2) {
     throw std::runtime_error("FMM2 doesn't currently support factoring");

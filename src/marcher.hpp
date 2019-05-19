@@ -53,6 +53,7 @@ struct marcher
   void add_free(int const * inds);
   void add_free(ivec inds);
 
+  void set_fac_src(int * inds, fac_src<n> const * src);
   void set_fac_src(ivec inds, fac_src<n> const * src);
 
   double get_U(ivec inds) const;

@@ -312,6 +312,13 @@ marcher<base, n, num_nb, ord>::add_free(ivec inds)
 
 template <class base, int n, int num_nb, ordering ord>
 void
+marcher<base, n, num_nb, ord>::set_fac_src(int * inds, fac_src<n> const * fc)
+{
+  set_fac_src(ivec {inds}, fc);
+}
+
+template <class base, int n, int num_nb, ordering ord>
+void
 marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO

@@ -1,9 +1,9 @@
 #include "olim_wrapper.h"
 
 #include "fac.hpp"
-#include "fmm.hpp"
-#include "olim.hpp"
-#include "olim3d.hpp"
+#include "eikonal/fmm.hpp"
+#include "eikonal/olim.hpp"
+#include "eikonal/olim3d.hpp"
 
 // TODO: this is pretty awful, but at least it works. Definitely need
 // to improve on this somehow. I tried std::variant, but ran into
@@ -23,7 +23,7 @@ struct fac_src_wrapper {
       new (&_fac_src_3) fac_src<3> {{coords}, s};
     } else {
       assert(false);
-    } 
+    }
   }
 };
 

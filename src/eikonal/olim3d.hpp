@@ -1,9 +1,10 @@
 #pragma once
 
-#include "marcher.hpp"
-#include "updates.line.hpp"
-#include "updates.tetra.hpp"
-#include "updates.tri.hpp"
+#include "line.hpp"
+#include "tetra.hpp"
+#include "tri.hpp"
+
+#include "../marcher.hpp"
 
 // Group dependencies:
 //
@@ -49,6 +50,11 @@ struct olim3d_bv: public marcher<olim3d_bv<F, groups>, 3, groups::num_nb, ord>
 
   virtual void update_impl(int lin_hat, int const * nb, int parent, double & U);
 
+  // TODO: see comment in olim.hpp
+  inline double line(double l0, double u0, double s, double s0, double h) const {
+    return eikonal::line<F>()(l0, u0, s, s0, h);
+  }
+
 OLIM_PRIVATE:
 
   inline void reset_tri_skip_list() {
@@ -64,7 +70,7 @@ OLIM_PRIVATE:
   template <int d>
   inline void line(int lin_hat, int const * nb, int i, double & U) {
     if (nb[i] != -1) {
-      U = fmin(U, updates::line_bv<F, d>()(
+      U = fmin(U, eikonal::line_bv<F, d>()(
         this->_U[nb[i]],
         this->_s[lin_hat],
         this->_s[nb[i]],
@@ -121,7 +127,7 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         nb[l0] != -1 && nb[l1] != -1 && nb[l2] != -1) {
-      updates::info<2> info;
+      update_info<2> info;
       F_wkspc<F, 2> w;
       set_args<F>(
         w,
@@ -134,7 +140,7 @@ OLIM_PRIVATE:
         this->_s[nb[l2]],
         this->get_h());
       cost_functor_bv<F, 3, p0, p1, p2> func {w};
-      updates::tetra_bv<F, 3, p0, p1, p2>()(func, info);
+      eikonal::tetra_bv<F, 3, p0, p1, p2>()(func, info);
       bool inbounds = info.inbounds();
       if (F == MP0 && inbounds) {
         func.set_lambda(info.lambda);
@@ -201,8 +207,8 @@ OLIM_PRIVATE:
         this->get_h(),
         fc->s);
       cost_functor_fac<F, 3, 2> func {w, g};
-      updates::info<2> info;
-      updates::tetra<F, 3>()(func, info);
+      update_info<2> info;
+      eikonal::tetra<F, 3>()(func, info);
       if (F == MP0) {
         eval_mp1_fix(
           func.w,
@@ -312,8 +318,8 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26, ord>
 
   inline double get_p_norm(int l) const {
     if (l < 6) return 1;
-    else if (l < 18) return sqrt2;
-    else return sqrt3;
+    else if (l < 18) return int_sqrt(2);
+    else return int_sqrt(3);
   };
 
   inline int to_nb_linear_index(vec2<int> inds) {
@@ -342,6 +348,11 @@ struct olim3d_hu: public marcher<olim3d_hu<F, lp_norm, d1, d2>, 3, 26, ord>
 
   inline bool & is_coplanar(vec3<int> inds) {
     return coplanar[to_nb_linear_index(inds)];
+  }
+
+  // TODO: see comment in olim.hpp
+  inline double line(double l0, double u0, double s, double s0, double h) {
+    return eikonal::line<F>()(l0, u0, s, s0, h);
   }
 
   void update_impl(int lin_hat, int const * nb, int parent, double & U);

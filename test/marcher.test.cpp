@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "olim.hpp"
+#include "eikonal/olim.hpp"
 
 TEST (marcher, fractional_add_boundaries_is_correct_with_constant_slowness) {
   double S[4] = {1, 1, 1, 1};

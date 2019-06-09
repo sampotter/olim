@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "olim3d.hpp"
+#include "eikonal/olim3d.hpp"
 
 double l3(double x, double y, double z) {
   return sqrt(x*x + y*y + z*z);

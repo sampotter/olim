@@ -3,9 +3,9 @@
 #include <src/config.hpp>
 
 #include "common.hpp"
-#include "updates.tetra.hpp"
+#include "eikonal/tetra.hpp"
 
-using namespace updates;
+using namespace eikonal;
 
 #define P001 1
 #define P010 2
@@ -20,67 +20,67 @@ using namespace updates;
 // difference...
 
 template <cost_func F>
-info<2> tetra111(double u0, double u1, double u2, double s,
+update_info<2> tetra111(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
   F_wkspc<F, 2> w;
   set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, 3, P001, P010, P100> func {w};
-  updates::info<2> info;
+  update_info<2> info;
   tetra_bv<F, 3, P001, P010, P100>()(func, info);
   return info;
 }
 
 template <cost_func F>
-info<2> tetra122(double u0, double u1, double u2, double s,
+update_info<2> tetra122(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
   F_wkspc<F, 2> w;
   set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, 3, P001, P011, P101> func {w};
-  updates::info<2> info;
+  update_info<2> info;
   tetra_bv<F, 3, P001, P011, P101>()(func, info);
   return info;
 }
 
 template <cost_func F>
-info<2> tetra123(double u0, double u1, double u2, double s,
+update_info<2> tetra123(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
   F_wkspc<F, 2> w;
   set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, 3, P001, P011, P111> func {w};
-  updates::info<2> info;
+  update_info<2> info;
   tetra_bv<F, 3, P001, P011, P111>()(func, info);
   return info;
 }
 
 template <cost_func F>
-info<2> tetra222(double u0, double u1, double u2, double s,
+update_info<2> tetra222(double u0, double u1, double u2, double s,
                         double s0, double s1, double s2, double h)
 {
   F_wkspc<F, 2> w;
   set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, 3, P011, P101, P110> func {w};
-  updates::info<2> info;
+  update_info<2> info;
   tetra_bv<F, 3, P011, P101, P110>()(func, info);
   return info;
 }
 
 template <cost_func F>
-info<2> tetra223(double u0, double u1, double u2, double s,
+update_info<2> tetra223(double u0, double u1, double u2, double s,
                  double s0, double s1, double s2, double h)
 {
   F_wkspc<F, 2> w;
   set_args<F>(w, u0, u1, u2, s, s0, s1, s2, h);
   cost_functor_bv<F, 3, P011, P101, P111> func {w};
-  updates::info<2> info;
+  update_info<2> info;
   tetra_bv<F, 3, P011, P101, P111>()(func, info);
   return info;
 }
 
 TEST (updates_tetra, tetra122_works) {
-  updates::info<2> info;
+  update_info<2> info;
   double u0, u1, u2, s, s0, s1, s2, h;
 
   u0 = 0.23;
@@ -109,7 +109,7 @@ TEST (updates_tetra, tetra122_works) {
 }
 
 TEST (updates_tetra, tetra222_works) {
-  updates::info<2> info;
+  update_info<2> info;
   double u0, u1, u2, s, s0, s1, s2, h;
 
   u0 = 0.95;
@@ -470,7 +470,7 @@ void tetra111_mp0_is_symmetric_with_nonconstant_slowness() {
 }
 
 template <cost_func F>
-updates::info<2> do_tetra(
+update_info<2> do_tetra(
   vec<double, 3> const & p0,
   vec<double, 3> const & p1,
   vec<double, 3> const & p2,
@@ -490,8 +490,8 @@ updates::info<2> do_tetra(
   qr.init(p0, p1, p2);
   func.qr = &qr;
 
-  updates::info<2> info;
-  updates::tetra<F, 3>()(func, info);
+  update_info<2> info;
+  eikonal::tetra<F, 3>()(func, info);
 
   return info;
 }
@@ -598,7 +598,7 @@ TEST (updates_tetra, tetra123_works) {
 }
 
 template <cost_func F>
-updates::info<2>
+update_info<2>
 do_tetra(vec<double, 3> const & p0,
          vec<double, 3> const & p1,
          vec<double, 3> const & p2,
@@ -614,8 +614,8 @@ do_tetra(vec<double, 3> const & p0,
 
   cost_functor_fac<F, 3, 2> func {w, g};
 
-  updates::info<2> info;
-  updates::tetra<F, 3>()(func, info);
+  update_info<2> info;
+  eikonal::tetra<F, 3>()(func, info);
 
   return info;
 }
@@ -623,8 +623,8 @@ do_tetra(vec<double, 3> const & p0,
 template <cost_func F>
 testing::AssertionResult basic_factoring_works(double tol = eps<double>) {
   double u0, u1, u2, s, s0, s1, s2, h, s_fac;
-  vec<double, 3> p0, p1, p2, p_fac; 
-  u0 = u1 = u2 = sqrt2;
+  vec<double, 3> p0, p1, p2, p_fac;
+  u0 = u1 = u2 = int_sqrt(2);
   h = 1;
   s = s0 = s1 = s2 = s_fac = 1;
 
@@ -649,7 +649,7 @@ testing::AssertionResult basic_factoring_works(double tol = eps<double>) {
     }
   }
   {
-    double gt = sqrt3;
+    double gt = int_sqrt(3);
     if (fabs(info.value - gt) > tol*gt + tol) {
       return testing::AssertionFailure()
         << "|" << info.value << " - sqrt(3)| > " << tol*gt + tol;
@@ -667,7 +667,7 @@ TEST (updates_tetra, basic_factoring_test) {
 TEST (updates_tetra, should_skip_works) {
   vec<double, 3> p0, p1, p2;
   double u0, u1, u2, s, s0, s1, s2, h;
-  updates::info<2> info;
+  update_info<2> info;
   bool skip;
 
   {

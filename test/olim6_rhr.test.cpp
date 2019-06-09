@@ -1,8 +1,8 @@
 #include "olim.test.common.hpp"
 
-#include <fmm.hpp>
-#include <olim.hpp>
-#include <olim3d.hpp>
+#include "eikonal/fmm.hpp"
+#include "eikonal/olim.hpp"
+#include "eikonal/olim3d.hpp"
 
 using olim_t = olim4_rhr<>;
 using olim3d_t = olim6_rhr<>;

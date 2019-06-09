@@ -5,7 +5,6 @@
  */
 
 #include "common.hpp"
-#include "cost_funcs.hpp"
 #include "vec.hpp"
 
 enum class line_search {BACKTRACK, HYBRID};

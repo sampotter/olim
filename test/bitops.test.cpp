@@ -19,12 +19,12 @@ TEST (bitops, Q_works) {
   double Q01 = bitops::Q<P001, P010, P100, 0, 1>(N);
   double Q11 = bitops::Q<P001, P010, P100, 1, 1>(N);
   double Q21 = bitops::Q<P001, P010, P100, 2, 1>(N);
-  ASSERT_NEAR(Q00, -sqrt2/2, 2e-16);
-  ASSERT_NEAR(Q10, +sqrt2/2, 2e-16);
+  ASSERT_NEAR(Q00, -int_sqrt(2)/2, 2e-16);
+  ASSERT_NEAR(Q10, +int_sqrt(2)/2, 2e-16);
   ASSERT_NEAR(Q20, 0, 2e-16);
-  ASSERT_NEAR(Q01, -1/sqrt6, 2e-16);
-  ASSERT_NEAR(Q11, -1/sqrt6, 2e-16);
-  ASSERT_NEAR(Q21, +2/sqrt6, 2e-16);
+  ASSERT_NEAR(Q01, -1/int_sqrt(6), 2e-16);
+  ASSERT_NEAR(Q11, -1/int_sqrt(6), 2e-16);
+  ASSERT_NEAR(Q21, +2/int_sqrt(6), 2e-16);
 }
 
 TEST (bitops, R_works) {
@@ -32,7 +32,7 @@ TEST (bitops, R_works) {
   double R00 = bitops::R<P001, P010, P100, 0>(N);
   double R01 = bitops::R<P001, P010, P100, 1>(N);
   double R11 = bitops::R<P001, P010, P100, 2>(N);
-  ASSERT_NEAR(R00, sqrt2, 2e-16);
-  ASSERT_NEAR(R01, sqrt2/2, 2e-16);
-  ASSERT_NEAR(R11, sqrt3/sqrt2, 2e-16);
+  ASSERT_NEAR(R00, int_sqrt(2), 2e-16);
+  ASSERT_NEAR(R01, int_sqrt(2)/2, 2e-16);
+  ASSERT_NEAR(R11, int_sqrt(3)/int_sqrt(2), 2e-16);
 }

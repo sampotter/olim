@@ -2,8 +2,8 @@
 
 #include <src/config.hpp>
 
-#include "common.hpp"
-#include "vec.hpp"
+#include "../common.hpp"
+#include "../vec.hpp"
 
 template <cost_func F, bool do_adj, bool do_diag, ordering ord>
 void

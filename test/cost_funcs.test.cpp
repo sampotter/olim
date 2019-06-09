@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <random>
 
-#include "cost_funcs.hpp"
+#include "eikonal/func.hpp"
 
 #define P001 1
 #define P010 2
@@ -379,7 +379,7 @@ TEST (cost_funcs, rhr111_works) {
 
 TEST (cost_funcs, rhr_123_works) {
   double u0, u1, u2, h, s, s0, s1, s2, f, d2f[3];
-  vec<double, 2> lam, df; 
+  vec<double, 2> lam, df;
   {
     u0 = 0.6160446761466392;
     u1 = 0.4732888489027293;
@@ -489,7 +489,7 @@ TEST (cost_funcs, mp0_123_works) {
     ASSERT_NEAR(df[1], -0.1604962261339898, 2.22045e-16);
     ASSERT_NEAR(d2f[0], 0.1116985818210038, 2.22045e-16);
     ASSERT_NEAR(d2f[1], 0.08433077961136608, 2.22045e-16);
-    ASSERT_NEAR(d2f[2], 0.2660298640743628, 2.22045e-16);    
+    ASSERT_NEAR(d2f[2], 0.2660298640743628, 2.22045e-16);
   }
 }
 
@@ -821,7 +821,7 @@ TEST (cost_funcs, lagmults_works) {
     d2f[2] = -1.794678841455123;
     lagmults<2>(lam, df, d2f, mu, &k);
     ASSERT_NEAR(mu[0], -1.238128784424696, 4e-15);
-    ASSERT_EQ(k, 1);    
+    ASSERT_EQ(k, 1);
   }
   {
     lam[0] = 0.3333333333333333;

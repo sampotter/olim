@@ -2,9 +2,10 @@
 
 #include <type_traits>
 
-#include "marcher.hpp"
-#include "updates.line.hpp"
-#include "updates.tri.hpp"
+#include "line.hpp"
+#include "tri.hpp"
+
+#include "../marcher.hpp"
 
 template <cost_func F, bool do_adj, bool do_diag,
           ordering ord = ordering::COLUMN_MAJOR>
@@ -19,10 +20,17 @@ struct olim: public marcher<olim<F, do_adj, do_diag>, 2, do_diag ? 8 : 4, ord>
 OLIM_PRIVATE:
   virtual void update_impl(int lin_hat, int const * nb, int parent, double & U);
 
+  // TODO: this is used when we add non-grid-aligned points... there
+  // is probably a nicer, more flexible way of doing this, but it
+  // works for now.
+  inline double line(double l0, double u0, double s, double s0, double h) const {
+    return eikonal::line<F>()(l0, u0, s, s0, h);
+  }
+
   template <int d>
   inline void line(int lin_hat, int const * nb, int i, double & u) {
     if (nb[i] != -1) {
-      u = std::min(u, updates::line_bv<F, d>()(
+      u = std::min(u, eikonal::line_bv<F, d>()(
         this->_U[nb[i]],
         this->_s[lin_hat],
         this->_s[nb[i]],

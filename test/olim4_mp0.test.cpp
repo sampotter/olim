@@ -1,6 +1,7 @@
-#include "fmm.hpp"
-#include "olim.hpp"
 #include "olim.test.common.hpp"
+
+#include "eikonal/fmm.hpp"
+#include "eikonal/olim.hpp"
 
 using olim_t = olim4_mp0<>;
 

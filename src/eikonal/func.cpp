@@ -1,4 +1,4 @@
-#include "cost_funcs.hpp"
+#include "func.hpp"
 
 #include <assert.h>
 

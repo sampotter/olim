@@ -1,6 +1,7 @@
-#include "olim.hpp"
-#include "olim3d.hpp"
 #include "olim.test.common.hpp"
+
+#include "eikonal/olim.hpp"
+#include "eikonal/olim3d.hpp"
 
 using olim_t = olim8_mp1<>;
 using olim3d_t = olim18_mp1<>;

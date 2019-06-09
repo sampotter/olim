@@ -1,10 +1,11 @@
 #pragma once
 
-#include "marcher.hpp"
-#include "updates.line.hpp"
+#include "line.hpp"
+
+#include "../marcher.hpp"
 
 template <int N>
-struct fmm: public marcher<fmm<N>, N, 2*N>, public updates::line<RHR>
+struct fmm: public marcher<fmm<N>, N, 2*N>, public eikonal::line<RHR>
 {
   static constexpr cost_func F_ = RHR;
   static constexpr int num_nb = 2*N;

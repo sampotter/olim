@@ -1,13 +1,15 @@
 #pragma once
 
-#include "cost_funcs.hpp"
+#include "../common.hpp"
 
-namespace updates {
+#include "../type.h"
+
+namespace eikonal {
 
 template <cost_func F, int d>
 struct line_bv {
   inline double operator()(double u0, double s, double s0, double h) const {
-    return u0 + (F == RHR ? s : (s + s0)/2)*h*sqrt(d);
+    return u0 + (F == RHR ? s : (s + s0)/2)*h*int_sqrt(d);
   }
 };
 

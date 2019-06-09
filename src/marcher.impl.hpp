@@ -6,7 +6,7 @@
 #include "common.hpp"
 #include "offsets.hpp"
 #include "range.hpp"
-#include "updates.line.hpp"
+// #include "updates.line.hpp"
 
 // TODO: really need an external memory constructor that will let us
 // use external memory somewhere for _s and _U so we don't have
@@ -265,7 +265,7 @@ marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
     fvec p = inds - fvec {inds__};
 
     int lin = to_linear_index(inds__);
-    _U[lin] = updates::line<base::F_>()(p.norm2(), U, _s[lin], s, h);
+    _U[lin] = static_cast<base *>(this)->line(p.norm2(), U, _s[lin], s, h);
     _state[lin] = state::trial;
     _heap.insert(lin);
   }

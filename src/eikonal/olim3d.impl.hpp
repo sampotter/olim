@@ -2,7 +2,7 @@
 
 #include <src/config.hpp>
 
-#include "offsets.hpp"
+#include "../offsets.hpp"
 
 namespace ind {
   // degree 1
@@ -12,7 +12,7 @@ namespace ind {
   constexpr int S = 3;
   constexpr int W = 4;
   constexpr int D = 5;
-  
+
   // degree 2
   constexpr int UN = 6;
   constexpr int UE = 7;
@@ -26,7 +26,7 @@ namespace ind {
   constexpr int DE = 15;
   constexpr int DS = 16;
   constexpr int DW = 17;
-  
+
   // degree 3
   constexpr int UNE = 18;
   constexpr int USE = 19;
@@ -326,7 +326,7 @@ void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
   p0 = get_p<3>(l0);
 
   // TODO: see comment above about one-point updates
-  U0 = updates::line<F>()(
+  U0 = eikonal::line<F>()(
     get_p_norm(l0), this->_U[nb[l0]], this->_s[lin_hat], this->_s[nb[l0]],
     this->get_h());
 
@@ -386,7 +386,7 @@ void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
 
     p2 = get_p<3>(l2);
 
-    updates::info<2> info;
+    update_info<2> info;
     info.lambda[0] = arglam[l1];
     info.lambda[1] = 0;
 
@@ -400,7 +400,7 @@ void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
       F_fac_wkspc<F, 2> w;
       set_args<F>(w, g, u0, u1, u2, s, s0, s1, s2, h, s_fac);
       cost_functor_fac<F, 3, 2> func {w, g};
-      updates::tetra<F, 3>()(func, info);
+      eikonal::tetra<F, 3>()(func, info);
       if (F == MP0) {
         eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);
       }
@@ -411,7 +411,7 @@ void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
       int lin = to_nb_linear_index(vec3<int> {l0, l1, l2});
       cost_functor<F, 3, 2> func {w, geom_wkspcs[lin]};
       func.qr = &qr_wkspcs[lin];
-      updates::tetra<F, 3>()(func, info);
+      eikonal::tetra<F, 3>()(func, info);
       if (F == MP0 && info.inbounds()) {
         func.set_lambda(info.lambda);
         eval_mp1_fix(func.w, s, s0, s1, s2, h, info.lambda, info.value);

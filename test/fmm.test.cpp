@@ -1,5 +1,6 @@
-#include "fmm.hpp"
 #include "olim.test.common.hpp"
+
+#include "eikonal/fmm.hpp"
 
 using olim = fmm<2>;
 using olim3d_t = fmm<3>;

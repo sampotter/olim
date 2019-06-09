@@ -1,12 +1,12 @@
 #pragma once
 
-namespace updates {
+#include "vec.hpp"
 
 template <int d>
-struct info;
+struct update_info;
 
 template <>
-struct info<1>
+struct update_info<1>
 {
   double value {inf<double>};
   vec<double, 1> lambda = {0.5};
@@ -23,7 +23,7 @@ struct info<1>
 };
 
 template <>
-struct info<2>
+struct update_info<2>
 {
   double value {inf<double>};
   vec2<double> lambda = {1./3, 1./3};
@@ -39,6 +39,3 @@ struct info<2>
       eps<double> <= 1 - lambda[0] - lambda[1];
   }
 };
-
-}
-

@@ -4,9 +4,10 @@
 
 #include <math.h>
 
-#include "common.hpp"
-#include "hybrid.hpp"
-#include "vec.hpp"
+#include "../common.hpp"
+#include "../hybrid.hpp"
+#include "../update_info.hpp"
+#include "../vec.hpp"
 
 #define l__(x) sqrt((dp_dot_dp*(x) + 2*dp_dot_p0)*(x) + p0_dot_p0)
 #define check__(x) fabs(alpha*l__(x) - dp_dot_p0 - dp_dot_dp*(x))
@@ -17,7 +18,7 @@
 #define F0_line__(i) (u##i + h*(s + s##i)*int_sqrt__(p##i##_dot_p##i)/2)
 
 template <int n, int p0, int p1>
-updates::info<1>
+update_info<1>
 updates::tri_bv<MP0, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
@@ -50,7 +51,7 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  info<1> info;
+  update_info<1> info;
   if (disc < 0 || a == 0) {
     double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
     if (tmp0 < tmp1) {
@@ -82,7 +83,7 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
 #undef F0_line__
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<MP0, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
@@ -114,7 +115,7 @@ updates::tri<MP0, n>::operator()(
   hybrid_status status;
   std::tie(arglam, status) = hybrid(grad, 0., 1.);
 
-  info<1> info;
+  update_info<1> info;
   if (status == hybrid_status::DEGENERATE) {
     double F0 = tau0 + T0 + sh*p0.norm2();
     double F1 = tau1 + T1 + sh*p1.norm2();
@@ -131,7 +132,7 @@ updates::tri<MP0, n>::operator()(
 }
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<MP0, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
@@ -160,7 +161,7 @@ updates::tri<MP0, n>::operator()(
   double const F0 = u0 + h*(s + s0)*p0.norm2()/2;
   double const F1 = u1 + h*(s + s1)*p1.norm2()/2;
 
-  info<1> info;
+  update_info<1> info;
   if (disc < 0 || a == 0) {
     if (F0 < F1) {
       info.value = F0;
@@ -190,7 +191,7 @@ updates::tri<MP0, n>::operator()(
 #define F0_line__(i) (u##i + sh*int_sqrt__(p##i##_dot_p##i))
 
 template <int n, int p0, int p1>
-updates::info<1>
+update_info<1>
 updates::tri_bv<RHR, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
@@ -226,7 +227,7 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
   double const c = alpha_sq*p0_dot_p0 - dp_dot_p0_sq;
   double const disc = b*b - a*c;
 
-  info<1> info;
+  update_info<1> info;
   if (disc < 0 || a == 0) {
     double const tmp0 = F0_line__(0), tmp1 = F0_line__(1);
     if (tmp0 < tmp1) {
@@ -258,7 +259,7 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
 #undef s__
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<RHR, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
@@ -293,7 +294,7 @@ updates::tri<RHR, n>::operator()(
   hybrid_status status;
   std::tie(arglam, status) = hybrid(grad, 0., 1.);
 
-  info<1> info;
+  update_info<1> info;
   if (status == hybrid_status::DEGENERATE) {
     double F0 = tau0 + T0 + sh*p0.norm2();
     double F1 = tau1 + T1 + sh*p1.norm2();
@@ -310,7 +311,7 @@ updates::tri<RHR, n>::operator()(
 }
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<RHR, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h) const
@@ -342,7 +343,7 @@ updates::tri<RHR, n>::operator()(
   double const F0 = u0 + sh*p0.norm2();
   double const F1 = u1 + sh*p1.norm2();
 
-  info<1> info;
+  update_info<1> info;
   if (disc < 0 || a == 0) {
     if (F0 < F1) {
       info.value = F0;
@@ -385,7 +386,7 @@ updates::tri<RHR, n>::operator()(
  * F1 specialization
  */
 template <int n, int p0, int p1>
-updates::info<1>
+update_info<1>
 updates::tri_bv<MP1, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
@@ -412,8 +413,8 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
   double arglam;
   hybrid_status status;
   std::tie(arglam, status) = hybrid(grad, 0., 1.);
-  
-  info<1> info;
+
+  update_info<1> info;
   if (status == hybrid_status::DEGENERATE) {
     double F0 = u0 + (s + s0)*h*sqrt(p0_dot_p0)/2;
     double F1 = u1 + (s + s1)*h*sqrt(p1_dot_p1)/2;
@@ -431,7 +432,7 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
 }
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<MP1, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
@@ -466,7 +467,7 @@ updates::tri<MP1, n>::operator()(
   hybrid_status status;
   std::tie(arglam, status) = hybrid(grad, 0., 1.);
 
-  info<1> info;
+  update_info<1> info;
   if (status == hybrid_status::DEGENERATE) {
     double F0 = tau0 + T0 + (s + s0)*h*p0.norm2()/2;
     double F1 = tau1 + T1 + (s + s1)*h*p1.norm2()/2;
@@ -484,7 +485,7 @@ updates::tri<MP1, n>::operator()(
 }
 
 template <int n>
-updates::info<1>
+update_info<1>
 updates::tri<MP1, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
@@ -503,7 +504,7 @@ updates::tri<MP1, n>::operator()(
 
   double const ds = s1 - s0, du = u1 - u0;
 
-  info<1> info;
+  update_info<1> info;
 
   // Check gradients at endpoints to see if we can skip this update
   double dp_dot_plam = dp_dot_p0;
@@ -524,7 +525,7 @@ updates::tri<MP1, n>::operator()(
   // well-behaved. To try to determine when this happens, keep track
   // of the iteration count, and use a modified Newton's method if we
   // exceed a limit of 10 iterations.
-  // 
+  //
   // TODO: this is messy---should replace this with a Newton iteration
   // in a separate file
   info = tri<MP0, n>()(p0, p1, u0, u1, s, s0, s1, h);

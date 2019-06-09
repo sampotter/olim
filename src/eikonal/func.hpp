@@ -6,11 +6,11 @@
 // TODO: remove me
 #include <type_traits>
 
-#include "bitops.hpp"
-#include "common.hpp"
-#include "vec.hpp"
+#include "../type.h"
 
-#include "type.h"
+#include "../bitops.hpp"
+#include "../common.hpp"
+#include "../vec.hpp"
 
 constexpr int sym_mat_size(int d) {
   return ((d + 1)*d)/2;
@@ -655,6 +655,7 @@ void direct_solve(F_wkspc<F, 2> const & w, qr_wkspc<n, 2> const * qr,
 #define __numer bitops::exact_soln_numer<p0, p1, p2>(bitops::dim<3> {})
 #define __Qt_p0(j) bitops::Qt_dot_p0<p0, p1, p2, j>(bitops::dim<3> {})
 
+// TODO: the `n` template argument below can be removed
 template <cost_func F, int n, int p0, int p1, int p2>
 void direct_solve(F_wkspc<F, 2> const & w, vec2<double> & lam, double & u)
 {

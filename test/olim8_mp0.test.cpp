@@ -1,5 +1,6 @@
-#include "olim.hpp"
 #include "olim.test.common.hpp"
+
+#include "eikonal/olim.hpp"
 
 using olim_t = olim8_mp0<>;
 

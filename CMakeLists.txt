@@ -48,7 +48,7 @@ endif ()
 configure_file (src/config.hpp.in src/config.hpp)
 
 set (OLIM_SRC_FILES
-  src/cost_funcs.cpp
+  src/eikonal/func.cpp
   src/numopt.cpp
   src/olim_wrapper.cpp)
 

@@ -3,7 +3,7 @@
 #include <src/config.hpp>
 
 #include "common.hpp"
-#include "updates.tri.hpp"
+#include "eikonal/tri.hpp"
 
 using namespace updates;
 
@@ -20,27 +20,27 @@ using namespace updates;
 #define P111 7
 
 template <cost_func F>
-info<1> tri11(double u0, double u1, double s, double s0, double s1, double h) {
+update_info<1> tri11(double u0, double u1, double s, double s0, double s1, double h) {
   return tri_bv<F, 2, P01, P10>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
-info<1> tri12(double u0, double u1, double s, double s0, double s1, double h) {
+update_info<1> tri12(double u0, double u1, double s, double s0, double s1, double h) {
   return tri_bv<F, 2, P01, P11>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
-info<1> tri13(double u0, double u1, double s, double s0, double s1, double h) {
+update_info<1> tri13(double u0, double u1, double s, double s0, double s1, double h) {
   return tri_bv<F, 3, P001, P111>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
-info<1> tri22(double u0, double u1, double s, double s0, double s1, double h) {
+update_info<1> tri22(double u0, double u1, double s, double s0, double s1, double h) {
   return tri_bv<F, 3, P011, P101>()(u0, u1, s, s0, s1, h);
 }
 
 template <cost_func F>
-info<1> tri23(double u0, double u1, double s, double s0, double s1, double h) {
+update_info<1> tri23(double u0, double u1, double s, double s0, double s1, double h) {
   return tri_bv<F, 3, P011, P111>()(u0, u1, s, s0, s1, h);
 }
 
@@ -50,7 +50,7 @@ info<1> tri23(double u0, double u1, double s, double s0, double s1, double h) {
 
 TEST (updates_tri, rhr_tri11_basic_test) {
   double u = tri11<RHR>(0.0, 0.0, 1.0, 1.0, 1.0, 1.0).value;
-  ASSERT_DOUBLE_EQ(u, sqrt2/2);
+  ASSERT_DOUBLE_EQ(u, int_sqrt(2)/2);
   u = tri11<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value;
   ASSERT_DOUBLE_EQ(u, 1.0);
   u = tri11<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value;
@@ -98,7 +98,7 @@ TEST (updates_tri, rhr_tri12_works) {
   double t, u0, u1, s = 1, s0 = 1, s1 = 1, h = 0.25;
 
   t = tri12<RHR>(1.0, 0.0, 1.0, 1.0, 1.0, 1.0).value;
-  ASSERT_DOUBLE_EQ(t, sqrt2);
+  ASSERT_DOUBLE_EQ(t, int_sqrt(2));
 
   ASSERT_DOUBLE_EQ(tri12<RHR>(0.0, 1.0, 1.0, 1.0, 1.0, 1.0).value, 1.0);
 
@@ -229,7 +229,7 @@ TEST (updates_tri, rhr_basic_factoring_test) {
   auto update = tri<RHR, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
   ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
-  ASSERT_NEAR(update.value, sqrt2, eps<double>);
+  ASSERT_NEAR(update.value, int_sqrt(2), eps<double>);
 }
 
 TEST (updates_tri, mp0_basic_factoring_test) {
@@ -250,7 +250,7 @@ TEST (updates_tri, mp0_basic_factoring_test) {
   auto update = tri<MP0, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
   ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
-  ASSERT_NEAR(update.value, sqrt2, eps<double>);
+  ASSERT_NEAR(update.value, int_sqrt(2), eps<double>);
 }
 
 TEST (updates_tri, mp1_basic_factoring_test) {
@@ -271,7 +271,7 @@ TEST (updates_tri, mp1_basic_factoring_test) {
   auto update = tri<MP1, 2>()(p0, p1, u0, u1, s, s0, s1, h, p_fac, s_fac);
 
   ASSERT_NEAR(update.lambda[0], 0.5, eps<double>);
-  ASSERT_NEAR(update.value, sqrt2, eps<double>);
+  ASSERT_NEAR(update.value, int_sqrt(2), eps<double>);
 }
 
 TEST (updates_tri, factored_mp0_with_constant_slowness_works) {
@@ -334,7 +334,7 @@ TEST (updates_tri, rhr_non_bv_tri_update_works) {
     double u0 = tri12<RHR>(U0, U1, s, s0, s1, h).value;
     double u1 = tri<RHR, 2>()(p0, p1, U0, U1, s, s0, s1, h).value;
     ASSERT_DOUBLE_EQ(u0, u1);
-    ASSERT_DOUBLE_EQ(u0, sqrt2);
-    ASSERT_DOUBLE_EQ(u1, sqrt2);
+    ASSERT_DOUBLE_EQ(u0, int_sqrt(2));
+    ASSERT_DOUBLE_EQ(u1, int_sqrt(2));
   }
 }

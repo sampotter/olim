@@ -9,17 +9,18 @@
 // TODO: remove me
 #include <type_traits>
 
-#include "common.hpp"
-#include "cost_funcs.hpp"
-#include "numopt.hpp"
+#include "../type.h"
 
-namespace updates {
+#include "../common.hpp"
+#include "../numopt.hpp"
+
+namespace eikonal {
 
 // TODO: this should (probably) eventually become an olim3d_hu member
 // function, since that's the only class that uses it...
 // TODO: simplify interface using template template parameter...?
 template <cost_func F, int n>
-inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
+inline bool should_skip(cost_functor<F, n, 2> & func, update_info<2> const & info) {
   // TODO: instead, `assert(info.on_boundary())' here, since if
   // in_interior() is true, then this is false... so a bit of a waste!
   if (info.in_interior()) {
@@ -46,8 +47,8 @@ inline bool should_skip(cost_functor<F, n, 2> & func, info<2> const & info) {
 
 template <cost_func F, int n>
 void
-updates::tetra<F, n>::operator()(
-  cost_functor<F, n, 2> & func, info<2> & info) const
+eikonal::tetra<F, n>::operator()(
+  cost_functor<F, n, 2> & func, update_info<2> & info) const
 {
   if (F == MP1) {
     bool error;
@@ -65,8 +66,8 @@ updates::tetra<F, n>::operator()(
 
 template <cost_func F, int n>
 void
-updates::tetra<F, n>::operator()(
-  cost_functor_fac<F, n, 2> & func, info<2> & info) const
+eikonal::tetra<F, n>::operator()(
+  cost_functor_fac<F, n, 2> & func, update_info<2> & info) const
 {
   bool error;
   sqp_bary<decltype(func), n, 2, line_search::BACKTRACK>()(
@@ -76,8 +77,8 @@ updates::tetra<F, n>::operator()(
 
 template <cost_func F, int n, int p0, int p1, int p2>
 void
-updates::tetra_bv<F, n, p0, p1, p2>::operator()(
-  cost_functor_bv<F, n, p0, p1, p2> & func, info<2> & info) const
+eikonal::tetra_bv<F, n, p0, p1, p2>::operator()(
+  cost_functor_bv<F, n, p0, p1, p2> & func, update_info<2> & info) const
 {
   if (F == MP1) {
     bool error;
@@ -95,6 +96,6 @@ updates::tetra_bv<F, n, p0, p1, p2>::operator()(
 
 // TODO: we aren't actually using this overload yet...
 // template <cost_func F, int p0, int p1, int p2>
-// updates::info<2>
-// updates::tetra_bv<F, p0, p1, p2>::operator()(F_fac_wkspc<F, 2> & fw) const
+// update_info<2>
+// eikonal::tetra_bv<F, p0, p1, p2>::operator()(F_fac_wkspc<F, 2> & fw) const
 // { ... }

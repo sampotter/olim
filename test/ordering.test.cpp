@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "olim.hpp"
+#include "eikonal/olim.hpp"
 
 TEST (ordering, row_major_works) {
   using olim_t = olim4_mp0<ordering::ROW_MAJOR>;

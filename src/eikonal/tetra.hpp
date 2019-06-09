@@ -1,10 +1,11 @@
 #pragma once
 
-#include "cost_funcs.hpp"
-#include "updates.common.hpp"
-#include "vec.hpp"
+#include "func.hpp"
 
-namespace updates {
+#include "../update_info.hpp"
+#include "../vec.hpp"
+
+namespace eikonal {
 
 // TODO: maybe we can remove the struct and replace it with a function
 // and its specializations?
@@ -18,14 +19,14 @@ namespace updates {
 
 template <cost_func F, int n>
 struct tetra {
-  void operator()(cost_functor<F, n, 2> & func, info<2> & info) const;
-  void operator()(cost_functor_fac<F, n, 2> & func, info<2> & info) const;
+  void operator()(cost_functor<F, n, 2> & func, update_info<2> & info) const;
+  void operator()(cost_functor_fac<F, n, 2> & func, update_info<2> & info) const;
 };
 
 template <cost_func F, int n, int p0, int p1, int p2>
 struct tetra_bv
 {
-  void operator()(cost_functor_bv<F, n, p0, p1, p2> & func, info<2> & info) const;
+  void operator()(cost_functor_bv<F, n, p0, p1, p2> & func, update_info<2> & info) const;
 
   // TODO: we aren't actually using this overload yet...
   // template <int n, int p0, int p1, int p2>
@@ -34,4 +35,4 @@ struct tetra_bv
 
 }
 
-#include "updates.tetra.impl.hpp"
+#include "tetra.impl.hpp"

@@ -73,26 +73,6 @@ marcher<base, n, num_nb, ord>::~marcher()
 }
 
 template <class base, int n, int num_nb, ordering ord>
-void marcher<base, n, num_nb, ord>::adjust(int const * inds, double U) {
-  adjust(ivec {inds}, U);
-}
-
-template <class base, int n, int num_nb, ordering ord>
-void marcher<base, n, num_nb, ord>::adjust(ivec inds, double U) {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
-#endif
-  inds += ivec::one();
-  int lin = to_linear_index(inds);
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(U <= this->_U[lin]);
-  assert(this->_state[lin] == state::trial);
-#endif
-  this->_U[lin] = U;
-  this->_heap.update(lin);
-}
-
-template <class base, int n, int num_nb, ordering ord>
 void
 marcher<base, n, num_nb, ord>::add_src(int * inds, double U)
 {
@@ -104,7 +84,7 @@ void
 marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
+  assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
   int lin = to_linear_index(inds);
@@ -129,7 +109,7 @@ marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 {
   double h = get_h();
   fvec inds = coords/h;
-  assert(in_bounds(inds));
+  assert(this->in_bounds(inds));
   inds += fvec::one();
 
   // TODO: this isn't as general as it could be. We also want to
@@ -169,7 +149,7 @@ void
 marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
+  assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
   int lin = to_linear_index(inds);
@@ -190,7 +170,7 @@ void
 marcher<base, n, num_nb, ord>::add_free(ivec inds)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
+  assert(this->in_bounds(inds));
 #endif
   int lin = to_linear_index(inds + ivec::one());
   this->_state[lin] = state::free;
@@ -208,28 +188,10 @@ void
 marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(in_bounds(inds));
+  assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
   _lin2fac[to_linear_index(inds)] = fc;
-}
-
-template <class base, int n, int num_nb, ordering ord>
-bool
-marcher<base, n, num_nb, ord>::in_bounds(ivec inds) const
-{
-  return uvec {inds} < uvec {this->_dims - 2*ivec::one()};
-}
-
-template <class base, int n, int num_nb, ordering ord>
-double
-marcher<base, n, num_nb, ord>::get_U(ivec inds) const
-{
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->_U != nullptr);
-  assert(in_bounds(inds));
-#endif
-  return this->_U[to_linear_index(inds + ivec::one())];
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -241,17 +203,6 @@ marcher<base, n, num_nb, ord>::get_s(ivec inds) const
   assert(in_bounds(inds));
 #endif
   return _s[to_linear_index(inds + ivec::one())];
-}
-
-template <class base, int n, int num_nb, ordering ord>
-state
-marcher<base, n, num_nb, ord>::get_state(ivec inds) const
-{
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->_state != nullptr);
-  assert(in_bounds(inds));
-#endif
-  return this->_state[to_linear_index(inds + ivec::one())];
 }
 
 template <int n, int num_nb>

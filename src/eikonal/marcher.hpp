@@ -44,9 +44,6 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   marcher(ivec dims, double h, double const * s);
   virtual ~marcher();
 
-  void adjust(int const * inds, double U);
-  void adjust(ivec inds, double U);
-
   void add_src(int * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);
   void add_srcs(ivec const * inds, double const * U, int num);
@@ -61,20 +58,10 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   void set_fac_src(int * inds, fac_src<n> const * src);
   void set_fac_src(ivec inds, fac_src<n> const * src);
 
-  double get_U(ivec inds) const;
   double get_s(ivec inds) const;
-  state get_state(ivec inds) const;
-
-  inline double * get_U_ptr() const {
-    return this->_U;
-  }
 
   inline double * get_s_ptr() const {
     return _s;
-  }
-
-  inline char * get_state_ptr() const {
-    return reinterpret_cast<char *>(this->_state);
   }
 
   inline void set_s_ptr(double * s) {
@@ -94,8 +81,6 @@ OLIM_PROTECTED:
     auto const inds = to_vector_index(lin) - ivec::one();
     return ::to_linear_index<ord>(inds, this->_dims - 2*ivec::one());
   }
-
-  bool in_bounds(ivec inds) const;
 
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();

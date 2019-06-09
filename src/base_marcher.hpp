@@ -54,6 +54,7 @@ struct base_marcher
 {
   // TODO: duplicated...
   using ivec = vec<int, n>;
+  using uvec = vec<unsigned, n>;
 
   base_marcher(ivec dims):
     _dims {dims + 2*ivec::one()},
@@ -94,8 +95,24 @@ struct base_marcher
   int step();
   int step_impl();
   bool peek(double * U, int * lin) const;
+  void adjust(int const * inds, double U);
+  void adjust(ivec inds, double U);
+
+  double get_U(ivec inds) const;
+  state get_state(ivec inds) const;
+
+  inline double * get_U_ptr() const {
+    return this->_U;
+  }
+
+  inline char * get_state_ptr() const {
+    return reinterpret_cast<char *>(this->_state);
+  }
+
 
 OLIM_PROTECTED:
+
+  bool in_bounds(ivec inds) const;
 
   struct proxy
   {

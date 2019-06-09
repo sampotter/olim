@@ -3,7 +3,7 @@
 #include <array>
 #include <math.h>
 
-#include "vec.hpp"
+#include "../vec.hpp"
 
 struct no_slow_t {};
 constexpr no_slow_t no_slow {};

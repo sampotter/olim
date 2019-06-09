@@ -1,10 +1,9 @@
 #pragma once
 
 #include "line.hpp"
+#include "marcher.hpp"
 #include "tetra.hpp"
 #include "tri.hpp"
-
-#include "../marcher.hpp"
 
 // Group dependencies:
 //

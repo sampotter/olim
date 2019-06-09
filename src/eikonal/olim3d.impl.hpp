@@ -2,7 +2,7 @@
 
 #include <src/config.hpp>
 
-#include "../offsets.hpp"
+#include "offsets.hpp"
 
 namespace ind {
   // degree 1

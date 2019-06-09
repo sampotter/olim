@@ -10,7 +10,6 @@
 
 #include "common.hpp"
 #include "range.hpp"
-#include "slow.hpp"
 #include "vec.hpp"
 
 testing::AssertionResult

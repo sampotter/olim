@@ -1,11 +1,11 @@
 #pragma once
 
+// TODO: remove this
 #include <type_traits>
 
 #include "line.hpp"
+#include "marcher.hpp"
 #include "tri.hpp"
-
-#include "../marcher.hpp"
 
 template <cost_func F, bool do_adj, bool do_diag,
           ordering ord = ordering::COLUMN_MAJOR>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec.hpp"
+#include "../vec.hpp"
 
 #ifndef __clang__
 #    pragma GCC diagnostic ignored "-Wunused-variable"

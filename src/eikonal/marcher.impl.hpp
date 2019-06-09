@@ -3,10 +3,10 @@
 #include <assert.h>
 #include <math.h>
 
-#include "common.hpp"
+#include "../common.hpp"
+#include "../range.hpp"
+
 #include "offsets.hpp"
-#include "range.hpp"
-// #include "updates.line.hpp"
 
 // TODO: really need an external memory constructor that will let us
 // use external memory somewhere for _s and _U so we don't have

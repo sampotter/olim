@@ -5,11 +5,12 @@
 // TODO: remove these
 #include <unordered_map>
 
-#include "fac.hpp"
-#include "heap.hpp"
+#include "../fac.hpp"
+#include "../heap.hpp"
+#include "../state.hpp"
+#include "../vec.hpp"
+
 #include "slow.hpp"
-#include "state.hpp"
-#include "vec.hpp"
 
 constexpr int max_num_nb(int n) {
   // TODO: would be nice to rewrite this as 3^n - 1, but need a
@@ -97,7 +98,7 @@ OLIM_PROTECTED:
   }
 
   double get_h() const { return _h; }
-  
+
   void visit_neighbors(int lin);
   virtual void update_impl(int lin, int const * nb, int parent, double & U) = 0;
 
@@ -134,7 +135,7 @@ OLIM_PROTECTED:
   int _size;
 
   heap<int, proxy> _heap;
-  
+
   double * _U {nullptr};
   double * _s {nullptr};
   state * _state {nullptr};

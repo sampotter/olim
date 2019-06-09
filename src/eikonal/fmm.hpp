@@ -1,8 +1,7 @@
 #pragma once
 
 #include "line.hpp"
-
-#include "../marcher.hpp"
+#include "marcher.hpp"
 
 template <int N>
 struct fmm: public marcher<fmm<N>, N, 2*N>, public eikonal::line<RHR>

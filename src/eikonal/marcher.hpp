@@ -5,8 +5,8 @@
 // TODO: remove these
 #include <unordered_map>
 
+#include "../base_marcher.hpp"
 #include "../fac.hpp"
-#include "../heap.hpp"
 #include "../state.hpp"
 #include "../vec.hpp"
 
@@ -19,8 +19,13 @@ constexpr int max_num_nb(int n) {
   return lut[n - 2];
 }
 
-template <class base, int n, int num_nb, ordering ord = ordering::COLUMN_MAJOR>
-struct marcher
+template <
+  class base,
+  int n,
+  int num_nb,
+  ordering ord = ordering::COLUMN_MAJOR
+>
+struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 {
   using fac_src_t = fac_src<n>;
 
@@ -30,15 +35,14 @@ struct marcher
 
   static constexpr int ndim = n;
 
+  static constexpr ordering get_ord() {
+    return ord;
+  }
+
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);
   marcher(ivec dims, double h, double const * s);
   virtual ~marcher();
-
-  void solve();
-  int step();
-  int step_impl();
-  bool peek(double * U, int * lin) const;
 
   void adjust(int const * inds, double U);
   void adjust(ivec inds, double U);
@@ -62,7 +66,7 @@ struct marcher
   state get_state(ivec inds) const;
 
   inline double * get_U_ptr() const {
-    return _U;
+    return this->_U;
   }
 
   inline double * get_s_ptr() const {
@@ -70,7 +74,7 @@ struct marcher
   }
 
   inline char * get_state_ptr() const {
-    return reinterpret_cast<char *>(_state);
+    return reinterpret_cast<char *>(this->_state);
   }
 
   inline void set_s_ptr(double * s) {
@@ -79,16 +83,16 @@ struct marcher
 
 OLIM_PROTECTED:
   inline int to_linear_index(ivec inds) const {
-    return ::to_linear_index<ord>(inds, _dims);
+    return ::to_linear_index<ord>(inds, this->_dims);
   }
 
   inline ivec to_vector_index(int lin) const {
-    return ::to_vector_index<ord>(lin, _dims);
+    return ::to_vector_index<ord>(lin, this->_dims);
   }
 
   inline int to_external_linear_index(int lin) const {
     auto const inds = to_vector_index(lin) - ivec::one();
-    return ::to_linear_index<ord>(inds, _dims - 2*ivec::one());
+    return ::to_linear_index<ord>(inds, this->_dims - 2*ivec::one());
   }
 
   bool in_bounds(ivec inds) const;
@@ -102,44 +106,7 @@ OLIM_PROTECTED:
   void visit_neighbors(int lin);
   virtual void update_impl(int lin, int const * nb, int parent, double & U) = 0;
 
-  struct proxy
-  {
-    using value_t = double;
-
-    proxy(marcher * m): _m {m} {}
-
-    inline value_t get_value(int lin) const {
-      return _m->_U[lin];
-    }
-
-    inline int get_heap_pos(int lin) const {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-      assert(_m->_heap_pos[lin] != -1);
-#endif
-      return _m->_heap_pos[lin];
-    }
-
-    inline void set_heap_pos(int lin, int pos) {
-#if OLIM_DEBUG && !RELWITHDEBINFO
-      assert(pos >= 0);
-      assert(lin >= 0);
-      assert(lin < _m->_size);
-#endif
-      _m->_heap_pos[lin] = pos;
-    }
-
-    marcher * _m {nullptr};
-  };
-
-  ivec _dims;
-  int _size;
-
-  heap<int, proxy> _heap;
-
-  double * _U {nullptr};
   double * _s {nullptr};
-  state * _state {nullptr};
-  int * _heap_pos {nullptr};
   double _h {1};
 
   int _linear_offset[max_num_nb(n)];

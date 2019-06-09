@@ -14,81 +14,12 @@
 
 template <class base, int n, int num_nb, ordering ord>
 marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
-  _dims {dims + 2*ivec::one()},
-  _size {_dims.product()},
-  _heap {{this}, initial_heap_capacity(_size)},
-  _U {new double[_size]},
-  _s {new double[_size]},
-  _state {new state[_size]},
-  _heap_pos {new int[_size]},
+  base_marcher<marcher<base, n, num_nb, ord>, n> {dims},
+  _s {new double[this->_size]},
   _h {h}
 {
-  for (int i = 0; i < _size; ++i) {
-    _U[i] = inf<double>;
-  }
-
-  for (int i = 0; i < _size; ++i) {
-    _state[i] = state::far;
-  }
-
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  /**
-   * If we're building in "slow debug mode", then we additionally
-   * initialize the heap positions to -1 for use with debug asserts
-   * elsewhere in `marcher'.
-   */
-  for (int i = 0; i < _size; ++i) {
-    _heap_pos[i] = -1;
-  }
-#endif
-
-  /**
-   * Set the state of all nodes on the edge of the domain to
-   * `boundary' and set boundary slowness values to infinity.
-   *
-   * First, iterate over each dimension `d':
-   */
-  for (int d = 0; d < n; ++d) {
-    // Extract the dimensions not equal to `d' as a new dimension
-    // vector called `subdims'.
-    vec<int, n - 1> subdims;
-    int j = 0;
-    for (int i = 0; i < n; ++i) {
-      if (i != d) {
-        subdims[j] = _dims[i];
-        ++j;
-      }
-    }
-
-    // Iterate over each point spanned by `subdims'.
-    ivec inds;
-    int lin;
-    for (int i = 0; i < subdims.product(); ++i) {
-      // Prepare an index vector of full dimension with indices
-      // corresponding to `subdims'.
-      vec<int, n - 1> subinds = ::to_vector_index<ord>(i, subdims);
-      int k = 0;
-      for (int j = 0; j < n; ++j) {
-        if (j != d) {
-          inds[j] = subinds[k++];
-        }
-      }
-
-      // Set dimension `d' to its two extremal values and set the
-      // corresponding points' states to `boundary' and slowness
-      // values to infinity.
-
-      inds[d] = 0;
-      lin = to_linear_index(inds);
-      _state[lin] = state::boundary;
-      _s[lin] = inf<double>;
-
-      inds[d] = _dims[d] - 1;
-      lin = to_linear_index(inds);
-      _state[lin] = state::boundary;
-      _s[lin] = inf<double>;
-    }
-  }
+  // TODO: this may be unnecessary
+  fill_boundary<double, n, ord>(dims, _s, inf<double>);
 
   /**
    * Precompute linear offsets. These are used in `visit_neighbors'.
@@ -115,7 +46,7 @@ template <class base, int n, int num_nb, ordering ord>
 marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
   marcher {dims, h, no_slow_t {}}
 {
-  for (int i = 0; i < _size; ++i) {
+  for (int i = 0; i < this->_size; ++i) {
     _s[i] = 1;
   }
 }
@@ -138,52 +69,7 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, double const * s):
 template <class base, int n, int num_nb, ordering ord>
 marcher<base, n, num_nb, ord>::~marcher()
 {
-  delete[] _U;
   delete[] _s;
-  delete[] _state;
-  delete[] _heap_pos;
-}
-
-template <class base, int n, int num_nb, ordering ord>
-void marcher<base, n, num_nb, ord>::solve()
-{
-  while (!_heap.empty()) {
-    (void) step_impl();
-  }
-}
-
-template <class base, int n, int num_nb, ordering ord>
-int marcher<base, n, num_nb, ord>::step()
-{
-  return _heap.empty() ? -1 : to_external_linear_index(step_impl());
-}
-
-template <class base, int n, int num_nb, ordering ord>
-int marcher<base, n, num_nb, ord>::step_impl()
-{
-  int lin = _heap.front();
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(_state[lin] == state::trial);
-#endif
-  _heap.pop_front();
-  _state[lin] = state::valid;
-  visit_neighbors(lin);
-  return lin;
-}
-
-template <class base, int n, int num_nb, ordering ord>
-bool marcher<base, n, num_nb, ord>::peek(double * U, int * lin) const {
-  bool const is_empty = _heap.empty();
-  if (!is_empty) {
-    int lin_ = _heap.front();
-    if (U != nullptr) {
-      *U = _U[lin_];
-    }
-    if (lin != nullptr) {
-      *lin = to_external_linear_index(lin_);
-    }
-  }
-  return is_empty;
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -199,11 +85,11 @@ void marcher<base, n, num_nb, ord>::adjust(ivec inds, double U) {
   inds += ivec::one();
   int lin = to_linear_index(inds);
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(U <= _U[lin]);
-  assert(_state[lin] == state::trial);
+  assert(U <= this->_U[lin]);
+  assert(this->_state[lin] == state::trial);
 #endif
-  _U[lin] = U;
-  _heap.update(lin);
+  this->_U[lin] = U;
+  this->_heap.update(lin);
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -222,9 +108,9 @@ marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
 #endif
   inds += ivec::one();
   int lin = to_linear_index(inds);
-  _U[lin] = U;
-  _state[lin] = state::trial;
-  _heap.insert(lin);
+  this->_U[lin] = U;
+  this->_state[lin] = state::trial;
+  this->_heap.insert(lin);
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -265,9 +151,9 @@ marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
     fvec p = inds - fvec {inds__};
 
     int lin = to_linear_index(inds__);
-    _U[lin] = static_cast<base *>(this)->line(p.norm2(), U, _s[lin], s, h);
-    _state[lin] = state::trial;
-    _heap.insert(lin);
+    this->_U[lin] = static_cast<base *>(this)->line(p.norm2(), U, _s[lin], s, h);
+    this->_state[lin] = state::trial;
+    this->_heap.insert(lin);
   }
 }
 
@@ -287,9 +173,9 @@ marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 #endif
   inds += ivec::one();
   int lin = to_linear_index(inds);
-  _U[lin] = inf<double>;
-  _s[lin] = inf<double>; // TODO: may not want to do this
-  _state[lin] = state::boundary;
+  this->_U[lin] = inf<double>;
+  this->_s[lin] = inf<double>; // TODO: may not want to do this
+  this->_state[lin] = state::boundary;
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -307,7 +193,7 @@ marcher<base, n, num_nb, ord>::add_free(ivec inds)
   assert(in_bounds(inds));
 #endif
   int lin = to_linear_index(inds + ivec::one());
-  _state[lin] = state::free;
+  this->_state[lin] = state::free;
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -332,7 +218,7 @@ template <class base, int n, int num_nb, ordering ord>
 bool
 marcher<base, n, num_nb, ord>::in_bounds(ivec inds) const
 {
-  return uvec {inds} < uvec {_dims - 2*ivec::one()};
+  return uvec {inds} < uvec {this->_dims - 2*ivec::one()};
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -340,10 +226,10 @@ double
 marcher<base, n, num_nb, ord>::get_U(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(_U != nullptr);
+  assert(this->_U != nullptr);
   assert(in_bounds(inds));
 #endif
-  return _U[to_linear_index(inds + ivec::one())];
+  return this->_U[to_linear_index(inds + ivec::one())];
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -362,10 +248,10 @@ state
 marcher<base, n, num_nb, ord>::get_state(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(_state != nullptr);
+  assert(this->_state != nullptr);
   assert(in_bounds(inds));
 #endif
-  return _state[to_linear_index(inds + ivec::one())];
+  return this->_state[to_linear_index(inds + ivec::one())];
 }
 
 template <int n, int num_nb>
@@ -426,9 +312,9 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
     int lin = lin_center + _linear_offset[i];
-    if (_state[lin] == state::far) {
-      _state[lin] = state::trial;
-      _heap.insert(lin);
+    if (this->_state[lin] == state::far) {
+      this->_state[lin] = state::trial;
+      this->_heap.insert(lin);
     }
   }
 
@@ -436,7 +322,7 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // (i.e. the unit max norm ball).
   for (int i = 0; i < max_num_nb(n); ++i) {
     int lin = lin_center + _linear_offset[i];
-    valid_nb[i] = _state[lin] == state::valid ? lin : -1;
+    valid_nb[i] = this->_state[lin] == state::valid ? lin : -1;
   }
 
   // This function fills the `child_nb' array with the indices of the
@@ -461,13 +347,13 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
 #endif
     auto U = inf<double>;
     update_impl(lin_hat, child_nb, parent, U);
-    if (U < _U[lin_hat]) {
+    if (U < this->_U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
       assert(U >= 0);
 #endif
-      _U[lin_hat] = U;
+      this->_U[lin_hat] = U;
       if (state_ == state::trial) {
-        _heap.update(lin_hat);
+        this->_heap.update(lin_hat);
       }
     }
   };
@@ -483,7 +369,7 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
       int lin = lin_center + _linear_offset[i];
-      auto const state_ = _state[lin];
+      auto const state_ = this->_state[lin];
       if (state_ == state::trial || state_ == state::free) {
         int parent = get_parent<n, num_nb>(i);
         set_child_nb(parent, _child_offset[i]);

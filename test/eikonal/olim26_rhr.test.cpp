@@ -1,4 +1,4 @@
-#include "olim.test.common.hpp"
+#include "common.hpp"
 
 #include "eikonal/olim.hpp"
 #include "eikonal/olim3d.hpp"

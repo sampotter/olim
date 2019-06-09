@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.9)
 
 project (olim)
 
+enable_testing ()
+
 include (CheckIPOSupported)
 check_ipo_supported (RESULT IPO_RESULT OUTPUT IPO_OUTPUT)
 if (IPO_RESULT)
@@ -80,46 +82,6 @@ endif ()
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
   # First, take care of our C++ tests.
   find_package (Threads) # required by gtest
-  set (tests
-    bitops
-    cost_funcs
-    fmm
-	heap
-    hybrid
-    marcher
-    marcher_3d
-    numopt
-    olim4_mp0
-    olim4_mp1
-    olim4_rhr
-	olim6_mp0
-	olim6_mp1
-	olim6_rhr
-	olim8_mp0
-	olim8_mp1
-	olim8_rhr
-    olim18_mp0
-    olim18_mp1
-	olim18_rhr
-    olim26_mp0
-    olim26_mp1
-	olim26_rhr
-    olim3d_hu_mp0
-    olim3d_hu_mp1
-    olim3d_hu_rhr
-    ordering
-    range
-	updates.tetra
-	updates.tri
-    vec)
-  foreach (test ${tests})
-	add_executable (${test}.test test/${test}.test.cpp)
-    target_compile_features (${test}.test PRIVATE cxx_std_17)
-	target_link_libraries (${test}.test olim gtest ${CMAKE_THREAD_LIBS_INIT})
-	target_include_directories (
-      ${test}.test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    gtest_discover_tests (${test}.test)
-  endforeach ()
+  add_subdirectory (test)
+  add_subdirectory (test/eikonal)
 endif ()
-
-enable_testing ()

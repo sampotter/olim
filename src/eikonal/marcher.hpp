@@ -39,7 +39,7 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   using ivec = vec<int, n>;
   using uvec = vec<unsigned, n>;
 
-  static constexpr int ndim = n;
+  static constexpr int ndim = n; // TODO: -> get_n()
 
   static constexpr ordering get_ord() {
     return ord;

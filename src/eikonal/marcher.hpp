@@ -12,11 +12,17 @@
 
 #include "slow.hpp"
 
+namespace eikonal {
+
+namespace detail {
+
 constexpr int max_num_nb(int n) {
   // TODO: would be nice to rewrite this as 3^n - 1, but need a
   // constexpr int power function
   int lut[2] = {8, 26};
   return lut[n - 2];
+}
+
 }
 
 template <
@@ -93,11 +99,13 @@ OLIM_PROTECTED:
   double * _s {nullptr};
   double _h {1};
 
-  int _linear_offset[max_num_nb(n)];
+  int _linear_offset[detail::max_num_nb(n)];
   int _child_offset[num_nb][num_nb];
 
   // TODO: a quick hack just to get this working for now
   std::unordered_map<int, fac_src<n> const *> _lin2fac;
 };
+
+}
 
 #include "marcher.impl.hpp"

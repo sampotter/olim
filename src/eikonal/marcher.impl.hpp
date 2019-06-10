@@ -13,7 +13,8 @@
 // to double up on these...
 
 template <class base, int n, int num_nb, ordering ord>
-marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
+eikonal::marcher<base, n, num_nb, ord>::marcher(
+  ivec dims, double h, no_slow_t const &):
   base_marcher<marcher<base, n, num_nb, ord>, n> {dims},
   _s {new double[this->_size]},
   _h {h}
@@ -24,7 +25,7 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
   /**
    * Precompute linear offsets. These are used in `visit_neighbors'.
    */
-  for (int i = 0; i < max_num_nb(n); ++i) {
+  for (int i = 0; i < detail::max_num_nb(n); ++i) {
     _linear_offset[i] = to_linear_index(get_offset<n>(i));
   }
 
@@ -43,7 +44,7 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, no_slow_t const &):
 }
 
 template <class base, int n, int num_nb, ordering ord>
-marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
+eikonal::marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
   marcher {dims, h, no_slow_t {}}
 {
   for (int i = 0; i < this->_size; ++i) {
@@ -52,7 +53,8 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
 }
 
 template <class base, int n, int num_nb, ordering ord>
-marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, double const * s):
+eikonal::marcher<base, n, num_nb, ord>::marcher(
+  ivec dims, double h, double const * s):
   marcher {dims, h, no_slow_t {}}
 {
   // TODO: this isn't the most efficient way to do this. It would be
@@ -67,21 +69,21 @@ marcher<base, n, num_nb, ord>::marcher(ivec dims, double h, double const * s):
 }
 
 template <class base, int n, int num_nb, ordering ord>
-marcher<base, n, num_nb, ord>::~marcher()
+eikonal::marcher<base, n, num_nb, ord>::~marcher()
 {
   delete[] _s;
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_src(int * inds, double U)
+eikonal::marcher<base, n, num_nb, ord>::add_src(int * inds, double U)
 {
   add_src(ivec {inds}, U);
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
+eikonal::marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
@@ -95,7 +97,7 @@ marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_srcs(
+eikonal::marcher<base, n, num_nb, ord>::add_srcs(
   ivec const * inds, double const * U, int num)
 {
   for (int i = 0; i < num; ++i) {
@@ -105,7 +107,7 @@ marcher<base, n, num_nb, ord>::add_srcs(
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
+eikonal::marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 {
   double h = get_h();
   fvec inds = coords/h;
@@ -139,14 +141,14 @@ marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_bd(int const * inds)
+eikonal::marcher<base, n, num_nb, ord>::add_bd(int const * inds)
 {
   add_bd(ivec {inds});
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_bd(ivec inds)
+eikonal::marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
@@ -160,14 +162,14 @@ marcher<base, n, num_nb, ord>::add_bd(ivec inds)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_free(int const * inds)
+eikonal::marcher<base, n, num_nb, ord>::add_free(int const * inds)
 {
   add_free(ivec {inds});
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::add_free(ivec inds)
+eikonal::marcher<base, n, num_nb, ord>::add_free(ivec inds)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
@@ -178,14 +180,14 @@ marcher<base, n, num_nb, ord>::add_free(ivec inds)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::set_fac_src(int * inds, fac_src<n> const * fc)
+eikonal::marcher<base, n, num_nb, ord>::set_fac_src(int * inds, fac_src<n> const * fc)
 {
   set_fac_src(ivec {inds}, fc);
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
+eikonal::marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
@@ -196,7 +198,7 @@ marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
 
 template <class base, int n, int num_nb, ordering ord>
 double
-marcher<base, n, num_nb, ord>::get_s(ivec inds) const
+eikonal::marcher<base, n, num_nb, ord>::get_s(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(_s != nullptr);
@@ -247,9 +249,9 @@ int get_parent<3, 26>(int i) {
 
 template <class base, int n, int num_nb, ordering ord>
 void
-marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
+eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
 {
-  int valid_nb[max_num_nb(n)];
+  int valid_nb[detail::max_num_nb(n)];
   int child_nb[num_nb];
 
   // TODO: another optimization idea:
@@ -271,7 +273,7 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
 
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
-  for (int i = 0; i < max_num_nb(n); ++i) {
+  for (int i = 0; i < detail::max_num_nb(n); ++i) {
     int lin = lin_center + _linear_offset[i];
     valid_nb[i] = this->_state[lin] == state::valid ? lin : -1;
   }

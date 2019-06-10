@@ -8,13 +8,13 @@
 #include "tri.hpp"
 
 template <cost_func F, bool do_adj, bool do_diag, ordering ord>
-struct olim: public marcher<
-  olim<F, do_adj, do_diag, ord>, 2, do_diag ? 8 : 4, ord>
+struct olim:
+  public eikonal::marcher<olim<F, do_adj, do_diag, ord>, 2, do_diag ? 8 : 4, ord>
 {
   static constexpr cost_func F_ = F;
   static constexpr int num_nb = do_diag ? 8 : 4;
 
-  using marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
+  using eikonal::marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
   static_assert(do_adj || do_diag, "error");
 
 OLIM_PRIVATE:

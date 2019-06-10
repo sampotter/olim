@@ -1,3 +1,9 @@
+* Quasipotential Todo
+** TODO Implement cost functions
+   - [X] Rederive
+   - [ ] First pass in Python
+   - [ ] Copy eikonal cost funcs
+
 * <2019-01-09 Wed>
   1. [X] Check that plots are fixed
   2. [X] Fix plotting on tessier (just run in ipython for now)

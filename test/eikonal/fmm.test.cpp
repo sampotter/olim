@@ -2,8 +2,8 @@
 
 #include "eikonal/fmm.hpp"
 
-using olim = fmm<2>;
-using olim3d_t = fmm<3>;
+using olim = fmm<2, ordering::COLUMN_MAJOR>;
+using olim3d_t = fmm<3, ordering::COLUMN_MAJOR>;
 
 TEST (fmm2, trivial_case_works) {
   ASSERT_TRUE(trivial_case_works<olim>());

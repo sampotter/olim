@@ -5,8 +5,8 @@
 
 #include "../common.hpp"
 
-template <>
-void fmm<2>::update_impl(int lin, int const * nb, int parent, double & U) {
+template <int N, ordering ord>
+void fmm<N, ord>::update_impl(int lin, int const * nb, int parent, double & U) {
   (void) lin;
   (void) parent;
 

@@ -23,7 +23,7 @@ template <
   class base,
   int n,
   int num_nb,
-  ordering ord = ordering::COLUMN_MAJOR
+  ordering ord
 >
 struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 {

@@ -6,7 +6,7 @@
 #include "../common.hpp"
 
 template <int n, ordering ord>
-void fmm<n, ord>::update_impl(int lin, int const * nb, int parent, double & U) {
+void eikonal::fmm<n, ord>::update_impl(int lin, int const * nb, int parent, double & U) {
   (void) lin;
   (void) parent;
 

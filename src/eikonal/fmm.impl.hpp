@@ -5,12 +5,12 @@
 
 #include "../common.hpp"
 
-template <int N, ordering ord>
-void fmm<N, ord>::update_impl(int lin, int const * nb, int parent, double & U) {
+template <int n, ordering ord>
+void fmm<n, ord>::update_impl(int lin, int const * nb, int parent, double & U) {
   (void) lin;
   (void) parent;
 
-  if (N == 2) {
+  if (n == 2) {
 
     double sh = this->_s[lin]*this->get_h();
 

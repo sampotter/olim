@@ -5,7 +5,7 @@
 #include "common.hpp"
 #include "eikonal/tri.hpp"
 
-using namespace updates;
+using namespace eikonal;
 
 #define P01 1
 #define P10 2

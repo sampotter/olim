@@ -13,7 +13,7 @@
 // the implementations like we've done for line and tetra, but that
 // will have to wait until later.
 
-namespace updates {
+namespace eikonal {
 
 template <cost_func F, int n> struct tri {};
 

@@ -85,7 +85,7 @@ OLIM_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
-      auto info = updates::tri_bv<F, 3, p0, p1>()(
+      auto info = eikonal::tri_bv<F, 3, p0, p1>()(
         this->_U[nb[l0]],
         this->_U[nb[l1]],
         this->_s[lin_hat],
@@ -106,7 +106,7 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
       auto fc = this->_lin2fac[lin_hat];
       vec3<double> p_fac = fc->coords - this->to_vector_index(lin_hat);
-      auto info = updates::tri<F, 3>()(
+      auto info = eikonal::tri<F, 3>()(
         get_p<3>(l0),
         get_p<3>(l1),
         this->_U[nb[l0]],

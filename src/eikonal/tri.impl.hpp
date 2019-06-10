@@ -19,7 +19,7 @@
 
 template <int n, int p0, int p1>
 update_info<1>
-updates::tri_bv<MP0, n, p0, p1>::operator()(
+eikonal::tri_bv<MP0, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   assert(s >= 0);
@@ -84,7 +84,7 @@ updates::tri_bv<MP0, n, p0, p1>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<MP0, n>::operator()(
+eikonal::tri<MP0, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
   vec<double, n> const & p_fac, double s_fac) const
@@ -133,7 +133,7 @@ updates::tri<MP0, n>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<MP0, n>::operator()(
+eikonal::tri<MP0, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
 {
@@ -192,7 +192,7 @@ updates::tri<MP0, n>::operator()(
 
 template <int n, int p0, int p1>
 update_info<1>
-updates::tri_bv<RHR, n, p0, p1>::operator()(
+eikonal::tri_bv<RHR, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   using std::min;
@@ -260,7 +260,7 @@ updates::tri_bv<RHR, n, p0, p1>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<RHR, n>::operator()(
+eikonal::tri<RHR, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
   vec<double, n> const & p_fac, double s_fac) const
@@ -312,7 +312,7 @@ updates::tri<RHR, n>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<RHR, n>::operator()(
+eikonal::tri<RHR, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h) const
 {
@@ -387,7 +387,7 @@ updates::tri<RHR, n>::operator()(
  */
 template <int n, int p0, int p1>
 update_info<1>
-updates::tri_bv<MP1, n, p0, p1>::operator()(
+eikonal::tri_bv<MP1, n, p0, p1>::operator()(
   double u0, double u1, double s, double s0, double s1, double h) const
 {
   assert(s >= 0);
@@ -433,7 +433,7 @@ updates::tri_bv<MP1, n, p0, p1>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<MP1, n>::operator()(
+eikonal::tri<MP1, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1,
   double u0, double u1, double s, double s0, double s1, double h,
   vec<double, n> const & p_fac, double s_fac) const
@@ -486,7 +486,7 @@ updates::tri<MP1, n>::operator()(
 
 template <int n>
 update_info<1>
-updates::tri<MP1, n>::operator()(
+eikonal::tri<MP1, n>::operator()(
   vec<double, n> const & p0, vec<double, n> const & p1, double u0, double u1,
   double s, double s0, double s1, double h) const
 {

@@ -41,7 +41,7 @@ OLIM_PRIVATE:
   template <int p0, int p1>
   inline void tri(int lin_hat, int const * nb, int i, int j, double & u) {
     if (nb[i] != -1 && nb[j] != -1) {
-      u = std::min(u, updates::tri_bv<F, 2, p0, p1>()(
+      u = std::min(u, eikonal::tri_bv<F, 2, p0, p1>()(
         this->_U[nb[i]],
         this->_U[nb[j]],
         this->_s[lin_hat],
@@ -57,7 +57,7 @@ OLIM_PRIVATE:
                       double & u) {
     if (nb[i] != -1 && nb[j] != -1) {
       vec2<double> p0 = get_p<2>(i), p1 = get_p<2>(j);
-      u = std::min(u, updates::tri<F, 2>()(
+      u = std::min(u, eikonal::tri<F, 2>()(
         p0,
         p1,
         this->_U[nb[i]],

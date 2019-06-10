@@ -352,10 +352,10 @@ void olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
 
     // Do the triangle update.
     auto const tmp = this->is_factored(lin_hat) ?
-      updates::tri<F, 3>()(
+      eikonal::tri<F, 3>()(
         p0, p1, this->_U[nb[l0]], this->_U[nb[l]],
         this->_s[lin_hat], this->_s[nb[l0]], this->_s[nb[l]], this->get_h(), p_fac, s_fac) :
-      updates::tri<F, 3>()(
+      eikonal::tri<F, 3>()(
         p0, p1, this->_U[nb[l0]], this->_U[nb[l]],
         this->_s[lin_hat], this->_s[nb[l0]], this->_s[nb[l]], this->get_h());
     U_ = tmp.value;

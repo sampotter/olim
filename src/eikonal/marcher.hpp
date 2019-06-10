@@ -42,7 +42,7 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);
   marcher(ivec dims, double h, double const * s);
-  virtual ~marcher();
+  ~marcher();
 
   void add_src(int * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);
@@ -89,7 +89,6 @@ OLIM_PROTECTED:
   double get_h() const { return _h; }
 
   void visit_neighbors(int lin);
-  virtual void update_impl(int lin, int const * nb, int parent, double & U) = 0;
 
   double * _s {nullptr};
   double _h {1};

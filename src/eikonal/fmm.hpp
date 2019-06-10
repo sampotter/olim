@@ -12,7 +12,7 @@ struct fmm: public marcher<fmm<N, ord>, N, 2*N, ord>, public eikonal::line<RHR>
   using marcher<fmm<N, ord>, N, 2*N, ord>::marcher;
 
 OLIM_PRIVATE:
-  virtual void update_impl(int lin, int const * nb, int parent, double & U);
+  void update_impl(int lin, int const * nb, int parent, double & U);
 };
 
 #include "fmm.impl.hpp"

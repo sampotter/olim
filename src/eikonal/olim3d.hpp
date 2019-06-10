@@ -48,7 +48,7 @@ struct olim3d_bv: public marcher<
   int const * inds;
   bool tri_skip_list[42*8]; // TODO: compress
 
-  virtual void update_impl(int lin_hat, int const * nb, int parent, double & U);
+  void update_impl(int lin_hat, int const * nb, int parent, double & U);
 
   // TODO: see comment in olim.hpp
   inline double line(double l0, double u0, double s, double s0, double h) const {

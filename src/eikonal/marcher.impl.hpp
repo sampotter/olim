@@ -297,7 +297,7 @@ marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
     assert(state_ == state::trial || state_ == state::free);
 #endif
     auto U = inf<double>;
-    update_impl(lin_hat, child_nb, parent, U);
+    static_cast<base *>(this)->update_impl(lin_hat, child_nb, parent, U);
     if (U < this->_U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
       assert(U >= 0);

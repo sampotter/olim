@@ -18,7 +18,7 @@ struct olim: public marcher<
   static_assert(do_adj || do_diag, "error");
 
 OLIM_PRIVATE:
-  virtual void update_impl(int lin_hat, int const * nb, int parent, double & U);
+  void update_impl(int lin_hat, int const * nb, int parent, double & U);
 
   // TODO: this is used when we add non-grid-aligned points... there
   // is probably a nicer, more flexible way of doing this, but it

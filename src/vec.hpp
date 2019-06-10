@@ -266,12 +266,12 @@ T disti(vec<T, n> const & u, vec<T, n> const & v) {
 
 // TODO: implement both column-major and row-major ordering correctly
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline int to_linear_index(vec<int, 1> inds, vec<int, 1>) {
   return inds[0];
 }
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline int to_linear_index(vec2<int> inds, vec2<int> dims);
 
 template <>
@@ -288,7 +288,7 @@ to_linear_index<ordering::COLUMN_MAJOR>(vec2<int> inds, vec2<int> dims)
   return inds[0] + dims[0]*inds[1];
 }
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline int
 to_linear_index(vec3<int> inds, vec3<int> dims);
 
@@ -306,14 +306,14 @@ to_linear_index<ordering::COLUMN_MAJOR>(vec3<int> inds, vec3<int> dims)
   return inds[0] + dims[0]*(inds[1] + dims[1]*inds[2]);
 }
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline vec<int, 1>
 to_vector_index(int lin, vec<int, 1> dims)
 {
   return lin % dims[0];
 }
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline vec2<int> to_vector_index(int lin, vec2<int> dims);
 
 template <>
@@ -330,7 +330,7 @@ to_vector_index<ordering::COLUMN_MAJOR>(int lin, vec2<int> dims)
   return {lin % dims[0], lin/dims[0]};
 }
 
-template <ordering order = ordering::COLUMN_MAJOR>
+template <ordering order>
 inline vec3<int> to_vector_index(int lin, vec3<int> dims);
 
 template <>

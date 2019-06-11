@@ -131,6 +131,8 @@ struct base_marcher
 
 OLIM_PROTECTED:
 
+  void stage_neighbors(int lin);
+
   inline int to_linear_index(ivec inds) const {
     return ::to_linear_index<base::get_ord()>(inds, this->_dims);
   }

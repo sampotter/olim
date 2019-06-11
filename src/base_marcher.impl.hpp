@@ -25,6 +25,7 @@ int base_marcher<base, n>::step_impl()
 #endif
   _heap.pop_front();
   _state[lin] = state::valid;
+  stage_neighbors(lin);
   static_cast<base *>(this)->visit_neighbors(lin);
   return lin;
 }
@@ -81,6 +82,19 @@ state base_marcher<base, n>::get_state(ivec inds) const {
   assert(in_bounds(inds));
 #endif
   return this->_state[to_linear_index(inds + ivec::one())];
+}
+
+template <class base, int n>
+void base_marcher<base, n>::stage_neighbors(int lin_center) {
+  // Traverse the neighborhood of the node at `lin_center`, set all
+  // far nodes to trial, and insert them into the heap.
+  for (int i = 0; i < base::get_nnb(); ++i) {
+    int lin = lin_center + this->_linear_offset[i];
+    if (this->_state[lin] == state::far) {
+      this->_state[lin] = state::trial;
+      this->_heap.insert(lin);
+    }
+  }
 }
 
 template <class base, int n>

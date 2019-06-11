@@ -254,16 +254,6 @@ eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // - many of the things we do with this stuff can be done fully
   //   in parallel
 
-  // Traverse the update neighborhood of n and set all far nodes to
-  // trial and insert them into the heap.
-  for (int i = 0; i < num_nb; ++i) {
-    int lin = lin_center + this->_linear_offset[i];
-    if (this->_state[lin] == state::far) {
-      this->_state[lin] = state::trial;
-      this->_heap.insert(lin);
-    }
-  }
-
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
   for (int i = 0; i < detail::max_num_nb(n); ++i) {

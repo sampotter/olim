@@ -30,9 +30,8 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 
   static constexpr int ndim = n; // TODO: -> get_n()
 
-  static constexpr ordering get_ord() {
-    return ord;
-  }
+  static constexpr int get_nnb() { return num_nb; }
+  static constexpr ordering get_ord() { return ord; }
 
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);

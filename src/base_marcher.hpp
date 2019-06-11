@@ -52,7 +52,6 @@ void fill_boundary(vec<int, n> dims, T * ptr, T value)
 template <class base, int n>
 struct base_marcher
 {
-  // TODO: duplicated...
   using ivec = vec<int, n>;
   using uvec = vec<unsigned, n>;
 

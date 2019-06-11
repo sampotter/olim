@@ -3,6 +3,8 @@
 #include "eikonal/fmm.hpp"
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 using olim_t = olim4_mp0<>;
 
 TEST (olim4_mp0, trivial_case_works) {

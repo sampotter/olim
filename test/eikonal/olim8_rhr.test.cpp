@@ -2,6 +2,8 @@
 
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 using olim_t = olim8_rhr<>;
 
 TEST (olim8_rhr, trivial_case_works) {

@@ -14,17 +14,6 @@
 
 namespace eikonal {
 
-namespace detail {
-
-constexpr int max_num_nb(int n) {
-  // TODO: would be nice to rewrite this as 3^n - 1, but need a
-  // constexpr int power function
-  int lut[2] = {8, 26};
-  return lut[n - 2];
-}
-
-}
-
 template <
   class base,
   int n,
@@ -75,19 +64,6 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   }
 
 OLIM_PROTECTED:
-  inline int to_linear_index(ivec inds) const {
-    return ::to_linear_index<ord>(inds, this->_dims);
-  }
-
-  inline ivec to_vector_index(int lin) const {
-    return ::to_vector_index<ord>(lin, this->_dims);
-  }
-
-  inline int to_external_linear_index(int lin) const {
-    auto const inds = to_vector_index(lin) - ivec::one();
-    return ::to_linear_index<ord>(inds, this->_dims - 2*ivec::one());
-  }
-
   inline bool is_factored(int lin) const {
     return _lin2fac.find(lin) != _lin2fac.end();
   }
@@ -99,7 +75,6 @@ OLIM_PROTECTED:
   double * _s {nullptr};
   double _h {1};
 
-  int _linear_offset[detail::max_num_nb(n)];
   int _child_offset[num_nb][num_nb];
 
   // TODO: a quick hack just to get this working for now

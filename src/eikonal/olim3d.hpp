@@ -14,6 +14,8 @@
 // it may not actually be necessary to use all of these in all
 // cases... This is still being investigated somewhat.
 
+namespace eikonal {
+
 template <bool I, bool II, bool III, bool IV_a, bool IV_b, bool V,
           bool VI_a, bool VI_b>
 struct groups_t {
@@ -38,11 +40,11 @@ struct groups_t {
 
 template <cost_func F, class groups, ordering ord>
 struct olim3d_bv:
-  public eikonal::marcher<olim3d_bv<F, groups, ord>, 3, groups::num_nb, ord>
+  public marcher<olim3d_bv<F, groups, ord>, 3, groups::num_nb, ord>
 {
   static constexpr cost_func F_ = F;
 
-  using eikonal::marcher<olim3d_bv<F, groups, ord>, 3, groups::num_nb, ord>::marcher;
+  using marcher<olim3d_bv<F, groups, ord>, 3, groups::num_nb, ord>::marcher;
 
   int octant;
   int const * inds;
@@ -70,7 +72,7 @@ OLIM_PRIVATE:
   template <int d>
   inline void line(int lin_hat, int const * nb, int i, double & U) {
     if (nb[i] != -1) {
-      U = fmin(U, eikonal::line_bv<F, d>()(
+      U = fmin(U, line_bv<F, d>()(
         this->_U[nb[i]],
         this->_s[lin_hat],
         this->_s[nb[i]],
@@ -85,7 +87,7 @@ OLIM_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
-      auto info = eikonal::tri_bv<F, 3, p0, p1>()(
+      auto info = tri_bv<F, 3, p0, p1>()(
         this->_U[nb[l0]],
         this->_U[nb[l1]],
         this->_s[lin_hat],
@@ -140,7 +142,7 @@ OLIM_PRIVATE:
         this->_s[nb[l2]],
         this->get_h());
       cost_functor_bv<F, 3, p0, p1, p2> func {w};
-      eikonal::tetra_bv<F, 3, p0, p1, p2>()(func, info);
+      tetra_bv<F, 3, p0, p1, p2>()(func, info);
       bool inbounds = info.inbounds();
       if (F == MP0 && inbounds) {
         func.set_lambda(info.lambda);
@@ -265,7 +267,7 @@ enum LP_NORM {L1, L2, MAX};
 
 template <cost_func F, int lp_norm, int d1, int d2, ordering ord>
 struct olim3d_hu:
-  public eikonal::marcher<olim3d_hu<F, lp_norm, d1, d2, ord>, 3, 26, ord>
+  public marcher<olim3d_hu<F, lp_norm, d1, d2, ord>, 3, 26, ord>
 {
   static_assert(lp_norm == L1 || lp_norm == L2 || lp_norm == MAX,
                 "Bad choice of lp norm: must be L1, L2, or MAX");
@@ -277,7 +279,7 @@ struct olim3d_hu:
   using ivec = vec<int, 3>;
   using fvec = vec<double, 3>;
 
-  using marcher_t = eikonal::marcher<olim3d_hu<F, lp_norm, d1, d2, ord>, 3, 26, ord>;
+  using marcher_t = marcher<olim3d_hu<F, lp_norm, d1, d2, ord>, 3, 26, ord>;
 
   // TODO: define an init_crtp that can be called from marcher and get
   // rid of all these explicit calls to marcher's constructors
@@ -367,5 +369,7 @@ using olim3d_mp0 = olim3d_hu<MP0, L1, 1, 2, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
 using olim3d_mp1 = olim3d_hu<MP1, L1, 1, 2, ord>;
+
+}
 
 #include "olim3d.impl.hpp"

@@ -2,6 +2,8 @@
 
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 TEST (marcher, fractional_add_boundaries_is_correct_with_constant_slowness) {
   double S[4] = {1, 1, 1, 1};
   olim4_rhr<> o {{2, 2}, 1, S};

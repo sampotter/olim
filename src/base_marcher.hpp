@@ -1,8 +1,18 @@
 #pragma once
 
 #include "heap.hpp"
+#include "offsets.hpp"
 #include "state.hpp"
 #include "vec.hpp"
+
+namespace detail {
+
+constexpr int max_num_nb(int n) {
+  // TODO: would be nice to rewrite this as 3^n - 1, but need a
+  // constexpr int power function
+  int lut[2] = {8, 26};
+  return lut[n - 2];
+}
 
 template <class T, int n, ordering ord>
 void fill_boundary(vec<int, n> dims, T * ptr, T value)
@@ -49,6 +59,8 @@ void fill_boundary(vec<int, n> dims, T * ptr, T value)
   }
 }
 
+}
+
 template <class base, int n>
 struct base_marcher
 {
@@ -70,7 +82,8 @@ struct base_marcher
     for (int i = 0; i < _size; ++i) {
       _state[i] = state::far;
     }
-    fill_boundary<state, n, base::get_ord()>(_dims, _state, state::boundary);
+    detail::fill_boundary<state, n, base::get_ord()>(
+      _dims, _state, state::boundary);
 
 #if OLIM_DEBUG && !RELWITHDEBINFO
     /**
@@ -82,6 +95,13 @@ struct base_marcher
       _heap_pos[i] = -1;
     }
 #endif
+
+    /**
+     * Precompute linear offsets. These are used in `visit_neighbors'.
+     */
+    for (int i = 0; i < detail::max_num_nb(n); ++i) {
+      _linear_offset[i] = to_linear_index(detail::get_offset<n>(i));
+    }
   }
 
   ~base_marcher() {
@@ -110,6 +130,19 @@ struct base_marcher
 
 
 OLIM_PROTECTED:
+
+  inline int to_linear_index(ivec inds) const {
+    return ::to_linear_index<base::get_ord()>(inds, this->_dims);
+  }
+
+  inline ivec to_vector_index(int lin) const {
+    return ::to_vector_index<base::get_ord()>(lin, this->_dims);
+  }
+
+  inline int to_external_linear_index(int lin) const {
+    auto const inds = to_vector_index(lin) - ivec::one();
+    return ::to_linear_index<base::get_ord()>(inds, this->_dims - 2*ivec::one());
+  }
 
   bool in_bounds(ivec inds) const;
 
@@ -150,6 +183,8 @@ OLIM_PROTECTED:
   double * _U {nullptr};
   state * _state {nullptr};
   int * _heap_pos {nullptr};
+
+  int _linear_offset[detail::max_num_nb(n)];
 };
 
 #include "base_marcher.impl.hpp"

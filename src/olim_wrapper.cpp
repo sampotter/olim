@@ -59,24 +59,24 @@ struct null_olim {
 
 constexpr ordering ord = ordering::ROW_MAJOR;
 
-using olim4_mp0_t = olim4_mp0<ord>;
-using olim4_mp1_t = olim4_mp1<ord>;
-using olim4_rhr_t = olim4_rhr<ord>;
-using olim8_mp0_t = olim8_mp0<ord>;
-using olim8_mp1_t = olim8_mp1<ord>;
-using olim8_rhr_t = olim8_rhr<ord>;
-using olim6_mp0_t = olim6_mp0<ord>;
-using olim6_mp1_t = olim6_mp1<ord>;
-using olim6_rhr_t = olim6_rhr<ord>;
-using olim18_mp0_t = olim18_mp0<ord>;
-using olim18_mp1_t = olim18_mp1<ord>;
-using olim18_rhr_t = olim18_rhr<ord>;
-using olim26_mp0_t = olim26_mp0<ord>;
-using olim26_mp1_t = olim26_mp1<ord>;
-using olim26_rhr_t = olim26_rhr<ord>;
-using olim3d_mp0_t = olim3d_mp0<ord>;
-using olim3d_mp1_t = olim3d_mp1<ord>;
-using olim3d_rhr_t = olim3d_rhr<ord>;
+using olim4_mp0_t = eikonal::olim4_mp0<ord>;
+using olim4_mp1_t = eikonal::olim4_mp1<ord>;
+using olim4_rhr_t = eikonal::olim4_rhr<ord>;
+using olim8_mp0_t = eikonal::olim8_mp0<ord>;
+using olim8_mp1_t = eikonal::olim8_mp1<ord>;
+using olim8_rhr_t = eikonal::olim8_rhr<ord>;
+using olim6_mp0_t = eikonal::olim6_mp0<ord>;
+using olim6_mp1_t = eikonal::olim6_mp1<ord>;
+using olim6_rhr_t = eikonal::olim6_rhr<ord>;
+using olim18_mp0_t = eikonal::olim18_mp0<ord>;
+using olim18_mp1_t = eikonal::olim18_mp1<ord>;
+using olim18_rhr_t = eikonal::olim18_rhr<ord>;
+using olim26_mp0_t = eikonal::olim26_mp0<ord>;
+using olim26_mp1_t = eikonal::olim26_mp1<ord>;
+using olim26_rhr_t = eikonal::olim26_rhr<ord>;
+using olim3d_mp0_t = eikonal::olim3d_mp0<ord>;
+using olim3d_mp1_t = eikonal::olim3d_mp1<ord>;
+using olim3d_rhr_t = eikonal::olim3d_rhr<ord>;
 
 template <ordering ord>
 union olim_variant {

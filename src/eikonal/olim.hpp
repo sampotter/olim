@@ -7,14 +7,16 @@
 #include "marcher.hpp"
 #include "tri.hpp"
 
+namespace eikonal {
+
 template <cost_func F, bool do_adj, bool do_diag, ordering ord>
 struct olim:
-  public eikonal::marcher<olim<F, do_adj, do_diag, ord>, 2, do_diag ? 8 : 4, ord>
+  public marcher<olim<F, do_adj, do_diag, ord>, 2, do_diag ? 8 : 4, ord>
 {
   static constexpr cost_func F_ = F;
   static constexpr int num_nb = do_diag ? 8 : 4;
 
-  using eikonal::marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
+  using marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
   static_assert(do_adj || do_diag, "error");
 
 OLIM_PRIVATE:
@@ -30,7 +32,7 @@ OLIM_PRIVATE:
   template <int d>
   inline void line(int lin_hat, int const * nb, int i, double & u) {
     if (nb[i] != -1) {
-      u = std::min(u, eikonal::line_bv<F, d>()(
+      u = std::min(u, line_bv<F, d>()(
         this->_U[nb[i]],
         this->_s[lin_hat],
         this->_s[nb[i]],
@@ -41,7 +43,7 @@ OLIM_PRIVATE:
   template <int p0, int p1>
   inline void tri(int lin_hat, int const * nb, int i, int j, double & u) {
     if (nb[i] != -1 && nb[j] != -1) {
-      u = std::min(u, eikonal::tri_bv<F, 2, p0, p1>()(
+      u = std::min(u, tri_bv<F, 2, p0, p1>()(
         this->_U[nb[i]],
         this->_U[nb[j]],
         this->_s[lin_hat],
@@ -90,5 +92,7 @@ using olim8_mp1 = olim<MP1, false, true, ord>;
 
 template <ordering ord = ordering::COLUMN_MAJOR>
 using olim8_rhr = olim<RHR, false, true, ord>;
+
+}
 
 #include "olim.impl.hpp"

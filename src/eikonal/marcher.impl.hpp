@@ -20,22 +20,15 @@ eikonal::marcher<base, n, num_nb, ord>::marcher(
   _h {h}
 {
   // TODO: this may be unnecessary
-  fill_boundary<double, n, ord>(dims, _s, inf<double>);
-
-  /**
-   * Precompute linear offsets. These are used in `visit_neighbors'.
-   */
-  for (int i = 0; i < detail::max_num_nb(n); ++i) {
-    _linear_offset[i] = to_linear_index(get_offset<n>(i));
-  }
+  detail::fill_boundary<double, n, ord>(dims, _s, inf<double>);
 
   /**
    * Precompute arrays of offsets to child nodes.
    */
   for (int i = 0; i < num_nb; ++i) {
-    ivec offset = get_offset<n>(i);
+    ivec offset = detail::get_offset<n>(i);
     for (int j = 0; j < num_nb; ++j) {
-      ivec offset_ = offset + get_offset<n>(j);
+      ivec offset_ = offset + detail::get_offset<n>(j);
       _child_offset[i][j] = offset_.normi() > 1 ?
         -1 :
         get_linear_offset<n>(offset_);
@@ -63,7 +56,7 @@ eikonal::marcher<base, n, num_nb, ord>::marcher(
   // more complicated but would reduce the amount of index math
   // substantially.
   for (auto inds: range<n, ord> {dims}) {
-    auto lin = to_linear_index(inds + ivec::one());
+    auto lin = this->to_linear_index(inds + ivec::one());
     _s[lin] = s[::to_linear_index<ord>(inds, dims)];
   }
 }
@@ -89,7 +82,7 @@ eikonal::marcher<base, n, num_nb, ord>::add_src(ivec inds, double U)
   assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
-  int lin = to_linear_index(inds);
+  int lin = this->to_linear_index(inds);
   this->_U[lin] = U;
   this->_state[lin] = state::trial;
   this->_heap.insert(lin);
@@ -132,7 +125,7 @@ eikonal::marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 
     fvec p = inds - fvec {inds__};
 
-    int lin = to_linear_index(inds__);
+    int lin = this->to_linear_index(inds__);
     this->_U[lin] = static_cast<base *>(this)->line(p.norm2(), U, _s[lin], s, h);
     this->_state[lin] = state::trial;
     this->_heap.insert(lin);
@@ -154,7 +147,7 @@ eikonal::marcher<base, n, num_nb, ord>::add_bd(ivec inds)
   assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
-  int lin = to_linear_index(inds);
+  int lin = this->to_linear_index(inds);
   this->_U[lin] = inf<double>;
   this->_s[lin] = inf<double>; // TODO: may not want to do this
   this->_state[lin] = state::boundary;
@@ -174,7 +167,7 @@ eikonal::marcher<base, n, num_nb, ord>::add_free(ivec inds)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
 #endif
-  int lin = to_linear_index(inds + ivec::one());
+  int lin = this->to_linear_index(inds + ivec::one());
   this->_state[lin] = state::free;
 }
 
@@ -193,7 +186,7 @@ eikonal::marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const 
   assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
-  _lin2fac[to_linear_index(inds)] = fc;
+  _lin2fac[this->to_linear_index(inds)] = fc;
 }
 
 template <class base, int n, int num_nb, ordering ord>
@@ -264,7 +257,7 @@ eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // Traverse the update neighborhood of n and set all far nodes to
   // trial and insert them into the heap.
   for (int i = 0; i < num_nb; ++i) {
-    int lin = lin_center + _linear_offset[i];
+    int lin = lin_center + this->_linear_offset[i];
     if (this->_state[lin] == state::far) {
       this->_state[lin] = state::trial;
       this->_heap.insert(lin);
@@ -274,7 +267,7 @@ eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // Find the valid neighbors in the "full" neighborhood of n
   // (i.e. the unit max norm ball).
   for (int i = 0; i < detail::max_num_nb(n); ++i) {
-    int lin = lin_center + _linear_offset[i];
+    int lin = lin_center + this->_linear_offset[i];
     valid_nb[i] = this->_state[lin] == state::valid ? lin : -1;
   }
 
@@ -321,7 +314,7 @@ eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
   // heap and do not eventually become `valid`.
   for (int i = 0; i < num_nb; ++i) {
     if (valid_nb[i] == -1) {
-      int lin = lin_center + _linear_offset[i];
+      int lin = lin_center + this->_linear_offset[i];
       auto const state_ = this->_state[lin];
       if (state_ == state::trial || state_ == state::free) {
         int parent = get_parent<n, num_nb>(i);

@@ -7,7 +7,7 @@
 
 template <cost_func F, bool do_adj, bool do_diag, ordering ord>
 void
-olim<F, do_adj, do_diag, ord>::update_impl(
+eikonal::olim<F, do_adj, do_diag, ord>::update_impl(
   int lin_hat, int const * nb, int parent, double & U)
 {
   (void) parent;

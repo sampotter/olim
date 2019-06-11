@@ -2,6 +2,8 @@
 
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 using olim_t = olim4_mp1<>;
 
 TEST (olim4_mp1, trivial_case_works) {

@@ -2,6 +2,8 @@
 
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 TEST (ordering, row_major_works) {
   using olim_t = olim4_mp0<ordering::ROW_MAJOR>;
   typename olim_t::ivec dims {2, 3};

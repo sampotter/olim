@@ -3,6 +3,8 @@
 #include "eikonal/olim.hpp"
 #include "eikonal/olim3d.hpp"
 
+using namespace eikonal;
+
 using olim_t = olim8_mp0<>;
 using olim3d_t = olim26_mp0<>;
 

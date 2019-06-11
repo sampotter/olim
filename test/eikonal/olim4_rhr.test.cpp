@@ -4,6 +4,8 @@
 #include "eikonal/fmm.hpp"
 #include "eikonal/olim.hpp"
 
+using namespace eikonal;
+
 using olim_t = olim4_rhr<>;
 
 TEST (olim4_rhr, trivial_case_works) {

@@ -4,6 +4,7 @@ set (tests
   hybrid
   marcher
   marcher_3d
+  mat
   numopt
   ordering
   range

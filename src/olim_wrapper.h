@@ -1,5 +1,5 @@
-#ifndef OLIM_WRAPPER_h
-#define OLIM_WRAPPER_h
+#ifndef OLIM_WRAPPER_H
+#define OLIM_WRAPPER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -7,10 +7,6 @@ extern "C" {
 
 #include "type.h"
 
-typedef enum status {
-  SUCCESS
-} status_e;
-  
 typedef struct fac_src_wrapper_params {
   int ndims;
   double *coords;
@@ -29,7 +25,7 @@ typedef struct olim_wrapper_params {
   int ndims;
   int *dims;
 } olim_wrapper_params_s;
-  
+
 typedef struct olim_wrapper olim_wrapper_s;
 
 status_e olim_wrapper_init(olim_wrapper_s **w_ptr, olim_wrapper_params_s *p);
@@ -50,4 +46,4 @@ status_e olim_wrapper_get_state_ptr(olim_wrapper_s *w, char **state_ptr);
 }
 #endif
 
-#endif // OLIM_WRAPPER_h
+#endif // OLIM_WRAPPER_H

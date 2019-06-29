@@ -2,6 +2,9 @@
 
 #include <assert.h>
 
+// TODO: we only have to compute Lagrange multipliers at interior
+// points... we can try to optimize this accordingly
+
 template <>
 void lagmults<2>(vec2<double> const & lam, vec2<double> const & df,
                  double const * d2f, vec2<double> & mu, int * k_ptr)
@@ -17,6 +20,8 @@ void lagmults<2>(vec2<double> const & lam, vec2<double> const & df,
   if (fabs(lam[0]) < eps<double>) I[k++] = 0;
   if (fabs(lam[1]) < eps<double>) I[k++] = 1;
   if (fabs(1 - lam[0] - lam[1]) < eps<double>) I[k++] = 2;
+
+  // TODO: we could try just adding an assert here that k < 2
 
   if (k == 2 && I[0] != 2 && I[1] != 2) {
     // If I = {0, 1}, then mu = df. Simple enough.

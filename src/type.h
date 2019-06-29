@@ -22,3 +22,7 @@ enum cost_func {
   MP1,
   RHR
 };
+
+typedef enum status {
+  SUCCESS
+} status_e;

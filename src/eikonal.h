@@ -1,5 +1,5 @@
-#ifndef OLIM_WRAPPER_H
-#define OLIM_WRAPPER_H
+#ifndef EIKONAL_H
+#define EIKONAL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,32 +18,32 @@ typedef struct fac_src_wrapper fac_src_wrapper_s;
 status_e fac_src_wrapper_init(fac_src_wrapper_s **w_ptr, fac_src_wrapper_params_s *p);
 status_e fac_src_wrapper_deinit(fac_src_wrapper_s **w_ptr);
 
-typedef struct olim_wrapper_params {
+typedef struct eikonal_params {
   enum neighborhood nb;
   enum cost_func F;
   double h;
   int ndims;
   int *dims;
-} olim_wrapper_params_s;
+} eikonal_params_s;
 
-typedef struct olim_wrapper olim_wrapper_s;
+typedef struct eikonal_wkspc eikonal_wkspc_s;
 
-status_e olim_wrapper_init(olim_wrapper_s **w_ptr, olim_wrapper_params_s *p);
-status_e olim_wrapper_deinit(olim_wrapper_s **w_ptr);
-status_e olim_wrapper_solve(olim_wrapper_s *w);
-status_e olim_wrapper_step(olim_wrapper_s *w, int *lin);
-status_e olim_wrapper_peek(olim_wrapper_s *w, double *value, int *lin, bool *empty);
-status_e olim_wrapper_adjust(olim_wrapper_s *w, int *inds, double U);
-status_e olim_wrapper_add_src(olim_wrapper_s *w, int *inds, double U);
-status_e olim_wrapper_add_bd(olim_wrapper_s *w, int *inds);
-status_e olim_wrapper_add_free(olim_wrapper_s *w, int *inds);
-status_e olim_wrapper_set_fac_src(olim_wrapper_s *w, int *inds, fac_src_wrapper_s *fs);
-status_e olim_wrapper_get_U_ptr(olim_wrapper_s *w, double **U_ptr);
-status_e olim_wrapper_get_s_ptr(olim_wrapper_s *w, double **s_ptr);
-status_e olim_wrapper_get_state_ptr(olim_wrapper_s *w, char **state_ptr);
+status_e eikonal_init(eikonal_wkspc_s **w_ptr, eikonal_params_s *p);
+status_e eikonal_deinit(eikonal_wkspc_s **w_ptr);
+status_e eikonal_wkspc_solve(eikonal_wkspc_s *w);
+status_e eikonal_wkspc_step(eikonal_wkspc_s *w, int *lin);
+status_e eikonal_peek(eikonal_wkspc_s *w, double *value, int *lin, bool *empty);
+status_e eikonal_adjust(eikonal_wkspc_s *w, int *inds, double U);
+status_e eikonal_add_src(eikonal_wkspc_s *w, int *inds, double U);
+status_e eikonal_add_bd(eikonal_wkspc_s *w, int *inds);
+status_e eikonal_add_free(eikonal_wkspc_s *w, int *inds);
+status_e eikonal_wkspc_set_fac_src(eikonal_wkspc_s *w, int *inds, fac_src_wrapper_s *fs);
+status_e eikonal_get_U_ptr(eikonal_wkspc_s *w, double **U_ptr);
+status_e eikonal_get_s_ptr(eikonal_wkspc_s *w, double **s_ptr);
+status_e eikonal_get_state_ptr(eikonal_wkspc_s *w, char **state_ptr);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // OLIM_WRAPPER_H
+#endif // EIKONAL_H

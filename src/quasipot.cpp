@@ -11,7 +11,7 @@ struct quasipot
   quasipot_v * impl;
 };
 
-status_e quasipot_init(quasipot_s **handle, quasipot_params_s *p)
+status_e quasipot_init(quasipot_wkspc_s **handle, quasipot_params_s *p)
 {
   *handle = new quasipot;
 
@@ -32,7 +32,7 @@ status_e quasipot_init(quasipot_s **handle, quasipot_params_s *p)
   return SUCCESS;
 }
 
-status_e quasipot_deinit(quasipot_s **handle)
+status_e quasipot_deinit(quasipot_wkspc_s **handle)
 {
   if (*handle == nullptr) {
     return SUCCESS;
@@ -44,7 +44,7 @@ status_e quasipot_deinit(quasipot_s **handle)
   return SUCCESS;
 }
 
-status_e quasipot_solve(quasipot_s *q)
+status_e quasipot_wkspc_solve(quasipot_wkspc_s *q)
 {
   std::visit(
     [] (auto & _) {
@@ -53,7 +53,7 @@ status_e quasipot_solve(quasipot_s *q)
     *q->impl);
 }
 
-status_e quasipot_step(quasipot_s *q, int *lin)
+status_e quasipot_wkspc_step(quasipot_wkspc_s *q, int *lin)
 {
   std::visit(
     [] (auto & _) {
@@ -62,7 +62,7 @@ status_e quasipot_step(quasipot_s *q, int *lin)
     *q->impl);
 }
 
-status_e quasipot_peek(quasipot_s *q, double *value, int *lin, bool *empty)
+status_e quasipot_peek(quasipot_wkspc_s *q, double *value, int *lin, bool *empty)
 {
   std::visit(
     [] (auto & _) {

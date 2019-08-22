@@ -19,6 +19,12 @@ OLIM_PRIVATE:
   void update_impl(int lin, int const * nb, int parent, double & U);
 };
 
+template <ordering ord = ordering::COLUMN_MAJOR>
+using fmm2 = fmm<2, ord>;
+
+template <ordering ord = ordering::COLUMN_MAJOR>
+using fmm3 = fmm<3, ord>;
+
 }
 
 #include "fmm.impl.hpp"

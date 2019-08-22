@@ -1,4 +1,4 @@
-#include "olim_wrapper.h"
+#include "eikonal.h"
 
 #include "fac.hpp"
 #include "eikonal/fmm.hpp"
@@ -59,6 +59,8 @@ struct null_olim {
 
 constexpr ordering ord = ordering::ROW_MAJOR;
 
+using fmm2_t = eikonal::fmm2<ord>;
+using fmm3_t = eikonal::fmm3<ord>;
 using olim4_mp0_t = eikonal::olim4_mp0<ord>;
 using olim4_mp1_t = eikonal::olim4_mp1<ord>;
 using olim4_rhr_t = eikonal::olim4_rhr<ord>;
@@ -104,7 +106,7 @@ union olim_variant {
   eikonal::fmm<3, ord> _fmm3;
 };
 
-struct olim_wrapper
+struct eikonal_wkspc
 {
   neighborhood nb;
   cost_func F;
@@ -115,120 +117,120 @@ struct olim_wrapper
 };
 
 template <>
-olim4_mp0_t & olim_wrapper::olim<olim4_mp0_t>() {
+olim4_mp0_t & eikonal_wkspc::olim<olim4_mp0_t>() {
   return _olim._olim4_mp0;
 }
 
 template <>
-olim4_mp1_t & olim_wrapper::olim<olim4_mp1_t>() {
+olim4_mp1_t & eikonal_wkspc::olim<olim4_mp1_t>() {
   return _olim._olim4_mp1;
 }
 
 template <>
-olim4_rhr_t & olim_wrapper::olim<olim4_rhr_t>() {
+olim4_rhr_t & eikonal_wkspc::olim<olim4_rhr_t>() {
   return _olim._olim4_rhr;
 }
 
 template <>
-olim8_mp0_t & olim_wrapper::olim<olim8_mp0_t>() {
+olim8_mp0_t & eikonal_wkspc::olim<olim8_mp0_t>() {
   return _olim._olim8_mp0;
 }
 
 template <>
-olim8_mp1_t & olim_wrapper::olim<olim8_mp1_t>() {
+olim8_mp1_t & eikonal_wkspc::olim<olim8_mp1_t>() {
   return _olim._olim8_mp1;
 }
 
 template <>
-olim8_rhr_t & olim_wrapper::olim<olim8_rhr_t>() {
+olim8_rhr_t & eikonal_wkspc::olim<olim8_rhr_t>() {
   return _olim._olim8_rhr;
 }
 
 template <>
-olim6_mp0_t & olim_wrapper::olim<olim6_mp0_t>() {
+olim6_mp0_t & eikonal_wkspc::olim<olim6_mp0_t>() {
   return _olim._olim6_mp0;
 }
 
 template <>
-olim6_mp1_t & olim_wrapper::olim<olim6_mp1_t>() {
+olim6_mp1_t & eikonal_wkspc::olim<olim6_mp1_t>() {
   return _olim._olim6_mp1;
 }
 
 template <>
-olim6_rhr_t & olim_wrapper::olim<olim6_rhr_t>() {
+olim6_rhr_t & eikonal_wkspc::olim<olim6_rhr_t>() {
   return _olim._olim6_rhr;
 }
 
 template <>
-olim18_mp0_t & olim_wrapper::olim<olim18_mp0_t>() {
+olim18_mp0_t & eikonal_wkspc::olim<olim18_mp0_t>() {
   return _olim._olim18_mp0;
 }
 
 template <>
-olim18_mp1_t & olim_wrapper::olim<olim18_mp1_t>() {
+olim18_mp1_t & eikonal_wkspc::olim<olim18_mp1_t>() {
   return _olim._olim18_mp1;
 }
 
 template <>
-olim18_rhr_t & olim_wrapper::olim<olim18_rhr_t>() {
+olim18_rhr_t & eikonal_wkspc::olim<olim18_rhr_t>() {
   return _olim._olim18_rhr;
 }
 
 template <>
-olim26_mp0_t & olim_wrapper::olim<olim26_mp0_t>() {
+olim26_mp0_t & eikonal_wkspc::olim<olim26_mp0_t>() {
   return _olim._olim26_mp0;
 }
 
 template <>
-olim26_mp1_t & olim_wrapper::olim<olim26_mp1_t>() {
+olim26_mp1_t & eikonal_wkspc::olim<olim26_mp1_t>() {
   return _olim._olim26_mp1;
 }
 
 template <>
-olim26_rhr_t & olim_wrapper::olim<olim26_rhr_t>() {
+olim26_rhr_t & eikonal_wkspc::olim<olim26_rhr_t>() {
   return _olim._olim26_rhr;
 }
 
 template <>
-olim3d_mp0_t & olim_wrapper::olim<olim3d_mp0_t>() {
+olim3d_mp0_t & eikonal_wkspc::olim<olim3d_mp0_t>() {
   return _olim._olim3d_mp0;
 }
 
 template <>
-olim3d_mp1_t & olim_wrapper::olim<olim3d_mp1_t>() {
+olim3d_mp1_t & eikonal_wkspc::olim<olim3d_mp1_t>() {
   return _olim._olim3d_mp1;
 }
 
 template <>
-olim3d_rhr_t & olim_wrapper::olim<olim3d_rhr_t>() {
+olim3d_rhr_t & eikonal_wkspc::olim<olim3d_rhr_t>() {
   return _olim._olim3d_rhr;
 }
 
 template <>
-eikonal::fmm<2, ord> & olim_wrapper::olim<eikonal::fmm<2, ord>>() {
+fmm2_t & eikonal_wkspc::olim<fmm2_t>() {
   return _olim._fmm2;
 }
 
 template <>
-eikonal::fmm<3, ord> & olim_wrapper::olim<eikonal::fmm<3, ord>>() {
+fmm3_t & eikonal_wkspc::olim<fmm3_t>() {
   return _olim._fmm3;
 }
 
 template <class olim_t>
-void construct_olim(olim_wrapper * w, olim_wrapper_params_s * p)
+void construct_olim(eikonal_wkspc * w, eikonal_params_s * p)
 {
   new (&w->olim<olim_t>()) olim_t {{p->dims}, p->h, no_slow_t {}};
 }
 
 template <class olim_t>
-void destruct_olim(olim_wrapper * w)
+void destruct_olim(eikonal_wkspc * w)
 {
   w->olim<olim_t>().~olim_t();
 }
 
-status_e olim_wrapper_init(olim_wrapper ** w_ptr, olim_wrapper_params_s * p)
+status_e eikonal_init(eikonal_wkspc ** w_ptr, eikonal_params_s * p)
 {
-  olim_wrapper * w = (*w_ptr = new olim_wrapper {p->nb, p->F, {}});
+  eikonal_wkspc * w = (*w_ptr = new eikonal_wkspc {p->nb, p->F, {}});
 
   if (p->nb == OLIM4) {
     if (p->F == MP0) {
@@ -295,9 +297,9 @@ status_e olim_wrapper_init(olim_wrapper ** w_ptr, olim_wrapper_params_s * p)
   return SUCCESS;
 }
 
-status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
+status_e eikonal_deinit(eikonal_wkspc ** w_ptr)
 {
-  olim_wrapper * w = *w_ptr;
+  eikonal_wkspc * w = *w_ptr;
 
   if (w == nullptr) {
 	return SUCCESS;
@@ -370,7 +372,7 @@ status_e olim_wrapper_deinit(olim_wrapper ** w_ptr)
   return SUCCESS;
 }
 
-status_e olim_wrapper_solve(olim_wrapper * w)
+status_e eikonal_wkspc_solve(eikonal_wkspc * w)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -437,7 +439,7 @@ status_e olim_wrapper_solve(olim_wrapper * w)
   return SUCCESS;
 }
 
-status_e olim_wrapper_step(olim_wrapper * w, int *lin)
+status_e eikonal_wkspc_step(eikonal_wkspc * w, int *lin)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -504,7 +506,7 @@ status_e olim_wrapper_step(olim_wrapper * w, int *lin)
   return SUCCESS;
 }
 
-status_e olim_wrapper_adjust(olim_wrapper * w, int * inds, double U)
+status_e eikonal_adjust(eikonal_wkspc * w, int * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -571,7 +573,7 @@ status_e olim_wrapper_adjust(olim_wrapper * w, int * inds, double U)
   return SUCCESS;
 }
 
-status_e olim_wrapper_add_src(olim_wrapper * w, int * inds, double U)
+status_e eikonal_add_src(eikonal_wkspc * w, int * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -639,7 +641,7 @@ status_e olim_wrapper_add_src(olim_wrapper * w, int * inds, double U)
 }
 
 status_e
-olim_wrapper_set_fac_src(olim_wrapper * w, int * inds, fac_src_wrapper * fs)
+eikonal_wkspc_set_fac_src(eikonal_wkspc * w, int * inds, fac_src_wrapper * fs)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -698,7 +700,7 @@ olim_wrapper_set_fac_src(olim_wrapper * w, int * inds, fac_src_wrapper * fs)
   return SUCCESS;
 }
 
-status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
+status_e eikonal_add_bd(eikonal_wkspc * w, int * inds)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -765,7 +767,7 @@ status_e olim_wrapper_add_bd(olim_wrapper * w, int * inds)
   return SUCCESS;
 }
 
-status_e olim_wrapper_add_free(olim_wrapper * w, int * inds)
+status_e eikonal_add_free(eikonal_wkspc * w, int * inds)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -832,7 +834,7 @@ status_e olim_wrapper_add_free(olim_wrapper * w, int * inds)
   return SUCCESS;
 }
 
-status_e olim_wrapper_peek(olim_wrapper * w, double * value, int * lin,
+status_e eikonal_peek(eikonal_wkspc * w, double * value, int * lin,
                            bool * empty)
 {
   if (w->nb == OLIM4) {
@@ -900,7 +902,7 @@ status_e olim_wrapper_peek(olim_wrapper * w, double * value, int * lin,
   return SUCCESS;
 }
 
-status_e olim_wrapper_get_U_ptr(olim_wrapper * w, double ** U_ptr)
+status_e eikonal_get_U_ptr(eikonal_wkspc * w, double ** U_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -967,7 +969,7 @@ status_e olim_wrapper_get_U_ptr(olim_wrapper * w, double ** U_ptr)
   return SUCCESS;
 }
 
-status_e olim_wrapper_get_s_ptr(olim_wrapper * w, double ** s_ptr)
+status_e eikonal_get_s_ptr(eikonal_wkspc * w, double ** s_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {
@@ -1034,7 +1036,7 @@ status_e olim_wrapper_get_s_ptr(olim_wrapper * w, double ** s_ptr)
   return SUCCESS;
 }
 
-status_e olim_wrapper_get_state_ptr(olim_wrapper * w, char ** state_ptr)
+status_e eikonal_get_state_ptr(eikonal_wkspc * w, char ** state_ptr)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {

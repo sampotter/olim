@@ -13,7 +13,7 @@ struct marcher: base_marcher<marcher<base, n, ord>, n>
 
   static constexpr int ndim = n; // TODO: -> get_n()
 
-  static constexpr int get_nnb() { return detail::max_num_nb(); }
+  static constexpr int get_num_nb() { return detail::max_num_nb(n); }
   static constexpr ordering get_ord() { return ord; }
 
   marcher(ivec dims, double h, vfield b, int K);

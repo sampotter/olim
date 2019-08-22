@@ -88,7 +88,7 @@ template <class base, int n>
 void base_marcher<base, n>::stage_neighbors(int lin_center) {
   // Traverse the neighborhood of the node at `lin_center`, set all
   // far nodes to trial, and insert them into the heap.
-  for (int i = 0; i < base::get_nnb(); ++i) {
+  for (int i = 0; i < base::get_num_nb(); ++i) {
     int lin = lin_center + this->_linear_offset[i];
     if (this->_state[lin] == state::far) {
       this->_state[lin] = state::trial;

@@ -4,14 +4,14 @@
 
 template <class base, int n, ordering ord>
 quasipot::marcher<base, n, ord>::marcher(ivec dims, double h, vfield b, int K):
+  base_marcher<marcher<base, n, ord>, n> {dims},
   _h {h},
   _b {b},
   _K {K},
-  _update_box_diam {2*K + 1},
-  _update_box_dims {_update_box_diam*ivec::one()},
-  _center {(K + 1)*ivec::one()},
-  _valid_front {(_update_box_diam + 2)*ivec::one()},
-  _valid_front_linear_indices {new int[std::pow(_update_box_diam, n)]}
+  _update_box_dims {(2*K + 1)*ivec::one()},
+  _center {K*ivec::one()},
+  _valid_front {(2*K + 3)*ivec::one()},
+  _valid_front_linear_indices {new int[pow(2*K + 1, n)]}
 {
   assert(_K > 0);
 }

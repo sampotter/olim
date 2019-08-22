@@ -50,6 +50,7 @@ OLIM_PRIVATE:
   // keep track of some number of recently used grids, and initialize
   // a new grid using any of the grids that intersect the current grid
 
+  ivec _update_box_dims;
   ivec _center;
   ivec _newly_valid;
 

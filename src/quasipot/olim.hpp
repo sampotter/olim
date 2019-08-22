@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../vec.hpp"
+#include "marcher.hpp"
+
 namespace quasipot {
 
 template <ordering ord>

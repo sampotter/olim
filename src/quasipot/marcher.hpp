@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../base_marcher.hpp"
 #include "../grid.hpp"
 
 namespace quasipot {

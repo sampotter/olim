@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../mat.hpp"
+
 template <class base, int n, ordering ord>
 quasipot::marcher<base, n, ord>::marcher(ivec dims, double h, vfield b, int K):
   _h {h},

@@ -50,9 +50,10 @@ endif ()
 configure_file (src/config.hpp.in src/config.hpp)
 
 set (OLIM_SRC_FILES
+  src/eikonal.cpp
   src/eikonal/func.cpp
   src/numopt.cpp
-  src/olim_wrapper.cpp)
+  src/quasipot.cpp)
 
 add_library (olim STATIC ${OLIM_SRC_FILES})
 target_compile_features (olim PRIVATE cxx_std_17)

@@ -46,6 +46,10 @@ struct grid
     return g;
   }
 
+  inline ivec get_dims() const {
+    return _dims;
+  }
+
 OLIM_PRIVATE:
   ivec _dims;
   T * _data;

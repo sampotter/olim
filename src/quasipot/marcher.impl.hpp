@@ -55,8 +55,8 @@ quasipot::marcher<base, n, ord>::is_valid_front(ivec inds) const
 {
   for (auto offset: range<n, ord> {3*ivec::one()}) {
     ivec nb_inds = inds + offset - ivec::one();
-    state s = get_state(nb_inds);
-    if (in_bounds(nb_inds) && (s == state::trial || s == state::far)) {
+    state s = this->get_state(nb_inds);
+    if (this->in_bounds(nb_inds) && (s == state::trial || s == state::far)) {
       return true;
     }
   }
@@ -70,8 +70,8 @@ quasipot::marcher<base, n, ord>::set_valid_front(int lin)
   auto inds = this->to_vector_index(lin);
 
   _valid_front.fill(false);
-  for (auto offset: range<n, ord> {_valid_front.dims}) {
-    _valid_front[offset] = is_valid_front(inds - _center + offset);
+  for (auto offset: range<n, ord> {_valid_front.get_dims()}) {
+    _valid_front(offset) = is_valid_front(inds - _center + offset);
   }
 }
 
@@ -90,7 +90,7 @@ quasipot::marcher<base, n, ord>::set_valid_front_linear_indices(int lin)
   for (auto offset: range<n, ord> {_update_box_dims}) {
     if (valid_front_subgrid(offset)) {
       _valid_front_linear_indices[size++] =
-        to_linear_index(inds - _center + box_offset + offset);
+        this->to_linear_index(inds - _center + box_offset + offset);
     }
   }
 }

@@ -12,7 +12,7 @@ struct olim: public marcher<olim<ord>, 2, ord>
 
 OLIM_PRIVATE:
 
-  void update_impl(int lin, state s, double & U);
+  void update_impl(int lin, double & U);
 };
 
 }

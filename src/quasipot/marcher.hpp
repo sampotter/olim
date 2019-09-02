@@ -76,4 +76,6 @@ OLIM_PRIVATE:
   int _valid_front_size; // current number of indices
 };
 
+}
+
 #include "marcher.impl.hpp"

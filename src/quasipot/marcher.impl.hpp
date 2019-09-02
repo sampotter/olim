@@ -24,31 +24,6 @@ quasipot::marcher<base, n, ord>::~marcher()
 
 template <class base, int n, ordering ord>
 void
-quasipot::marcher<base, n, ord>::add_src(int * inds)
-{
-  add_src(ivec {inds});
-}
-
-template <class base, int n, ordering ord>
-void
-quasipot::marcher<base, n, ord>::add_src(ivec inds, mat<double, n, n> const & Q)
-{
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->in_bounds(inds));
-#endif
-  for (auto offset: range<n, ord> {3*ivec::ones()}) {
-    ivec nb_inds = inds + offset - ivec::one();
-    if (in_bounds(nb_inds)) {
-      fvec x = get_x(nb_inds, inds);
-      fvec Q_dot_x = Q*x;
-      double U = x*Q_dot_x;
-      static_cast<base *>(this)->adjust(nb_inds, U);
-    }
-  }
-}
-
-template <class base, int n, ordering ord>
-void
 quasipot::marcher<base, n, ord>::visit_neighbors(int lin_center)
 {
   set_valid_front();

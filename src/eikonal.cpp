@@ -573,7 +573,7 @@ status_e eikonal_adjust(eikonal_wkspc * w, int * inds, double U)
   return SUCCESS;
 }
 
-status_e eikonal_add_src(eikonal_wkspc * w, int * inds, double U)
+status_e eikonal_add_src(eikonal_wkspc * w, int const * inds, double U)
 {
   if (w->nb == OLIM4) {
     if (w->F == MP0) {

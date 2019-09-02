@@ -22,6 +22,8 @@ template <
 >
 struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 {
+  using base_marcher_t = base_marcher<marcher<base, n, num_nb, ord>, n>;
+
   using fac_src_t = fac_src<n>;
 
   using fvec = vec<double, n>;
@@ -38,9 +40,7 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   marcher(ivec dims, double h, double const * s);
   ~marcher();
 
-  void add_src(int * inds, double U = 0.0);
-  void add_src(ivec inds, double U = 0.0);
-  void add_srcs(ivec const * inds, double const * U, int num);
+  using base_marcher_t::add_src;
   void add_src(fvec coords, double s, double U = 0.0);
 
   void add_bd(int const * inds);

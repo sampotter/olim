@@ -31,6 +31,30 @@ int base_marcher<base, n>::step_impl()
 }
 
 template <class base, int n>
+void base_marcher<base, n>::add_src(int const * inds, double U) {
+  add_src(ivec {inds}, U);
+}
+
+template <class base, int n>
+void base_marcher<base, n>::add_src(ivec inds, double U) {
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(in_bounds(inds));
+#endif
+  int lin = to_linear_index(inds);
+  _U[lin] = U;
+  _state[lin] = state::trial;
+  _heap.insert(lin);
+}
+
+template <class base, int n>
+void
+base_marcher<base, n>::add_srcs(ivec const * inds, double const * U, int num) {
+  for (int i = 0; i < num; ++i) {
+    add_src(inds[i], U[i]);
+  }
+}
+
+template <class base, int n>
 bool base_marcher<base, n>::peek(double * U, int * lin) const {
   bool const is_empty = _heap.empty();
   if (!is_empty) {

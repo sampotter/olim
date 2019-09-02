@@ -20,9 +20,6 @@ struct marcher: base_marcher<marcher<base, n, ord>, n>
   marcher(ivec dims, double h, vfield b, int K);
   ~marcher();
 
-  void add_src(int * inds);
-  void add_src(ivec inds);
-
 OLIM_PROTECTED:
 
   inline double get_h() const { return _h; }

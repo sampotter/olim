@@ -113,6 +113,9 @@ struct base_marcher
   void solve();
   int step();
   int step_impl();
+  void add_src(int const * inds, double U = 0.0);
+  void add_src(ivec inds, double U = 0.0);
+  void add_srcs(ivec const * inds, double const * U, int num);
   bool peek(double * U, int * lin) const;
   void adjust(int const * inds, double U);
   void adjust(ivec inds, double U);

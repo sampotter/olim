@@ -106,8 +106,7 @@ OLIM_PRIVATE:
     }
     int l0 = inds[a], l1 = inds[b];
     if ((l0 == parent || l1 == parent) && nb[l0] != -1 && nb[l1] != -1) {
-      auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p_fac = fc->coords - this->to_vector_index(lin_hat);
+      auto src = this->_fac_srcs[lin_hat];
       auto info = eikonal::tri<F, 3>()(
         get_p<3>(l0),
         get_p<3>(l1),
@@ -117,8 +116,8 @@ OLIM_PRIVATE:
         this->_s[nb[l0]],
         this->_s[nb[l1]],
         this->get_h(),
-        p_fac,
-        fc->s);
+        vec3<double> {src->x} - this->to_vector_index(lin_hat),
+        src->s);
       u = std::min(u, info.value);
       skip_tri<a, b>() = 1;
     }
@@ -191,8 +190,8 @@ OLIM_PRIVATE:
     int l0 = inds[a], l1 = inds[b], l2 = inds[c];
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         nb[l0] != -1 && nb[l1] != -1 && nb[l2] != -1) {
-      auto fc = this->_lin2fac[lin_hat];
-      vec3<double> p_fac = fc->coords - this->to_vector_index(lin_hat);
+      auto src = this->_fac_srcs[lin_hat];
+      auto p_fac = vec3<double> {src->x} - this->to_vector_index(lin_hat);
       geom_fac_wkspc<2> g;
       g.init<3>(get_p<3>(l0), get_p<3>(l1), get_p<3>(l2), p_fac);
       F_fac_wkspc<F, 2> w;
@@ -207,7 +206,7 @@ OLIM_PRIVATE:
         this->_s[nb[l1]],
         this->_s[nb[l2]],
         this->get_h(),
-        fc->s);
+        src->s);
       cost_functor_fac<F, 3, 2> func {w, g};
       update_info<2> info;
       eikonal::tetra<F, 3>()(func, info);

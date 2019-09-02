@@ -18,9 +18,9 @@ eikonal::olim<F, do_adj, do_diag, ord>::update_impl(
     // TODO: this is a rough draft quality implementation of additive
     // local factoring... this can definitely be optimized
 
-    auto fc = this->_lin2fac[lin_hat];
-    double sf = fc->s;
-    vec2<double> pf = fc->coords - inds;
+    auto src = this->_fac_srcs[lin_hat];
+    double sf = src->s;
+    auto pf = vec2<double> {src->x} - inds;
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(lin_hat, nb, a, U);

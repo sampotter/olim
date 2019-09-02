@@ -331,9 +331,9 @@ void eikonal::olim3d_hu<F, lp_norm, d1, d2, ord>::update_impl(
     this->get_h());
 
   if (this->is_factored(lin_hat)) {
-    auto fc = this->_lin2fac[lin_hat];
-    s_fac = fc->s;
-    p_fac = fc->coords - this->to_vector_index(lin_hat);
+    auto src = this->_fac_srcs[lin_hat];
+    s_fac = src->s;
+    p_fac = vec3<double> {src->x} - this->to_vector_index(lin_hat);
   }
 
   // Create a cache for the minimizing lambdas to use for skipping

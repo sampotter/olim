@@ -142,20 +142,20 @@ eikonal::marcher<base, n, num_nb, ord>::add_free(ivec inds)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::set_fac_src(int * inds, fac_src<n> const * fc)
+eikonal::marcher<base, n, num_nb, ord>::factor(int * inds, fac_src const * src)
 {
-  set_fac_src(ivec {inds}, fc);
+  factor(ivec {inds}, src);
 }
 
 template <class base, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::set_fac_src(ivec inds, fac_src<n> const * fc)
+eikonal::marcher<base, n, num_nb, ord>::factor(ivec inds, fac_src const * src)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
 #endif
   inds += ivec::one();
-  _lin2fac[this->to_linear_index(inds)] = fc;
+  _fac_srcs[this->to_linear_index(inds)] = src;
 }
 
 template <class base, int n, int num_nb, ordering ord>

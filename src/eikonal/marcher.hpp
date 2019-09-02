@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "../base_marcher.hpp"
-#include "../fac.hpp"
+#include "../fac.h"
 #include "../state.hpp"
 #include "../vec.hpp"
 
@@ -23,8 +23,6 @@ template <
 struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 {
   using base_marcher_t = base_marcher<marcher<base, n, num_nb, ord>, n>;
-
-  using fac_src_t = fac_src<n>;
 
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
@@ -49,8 +47,8 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   void add_free(int const * inds);
   void add_free(ivec inds);
 
-  void set_fac_src(int * inds, fac_src<n> const * src);
-  void set_fac_src(ivec inds, fac_src<n> const * src);
+  void factor(int * inds, fac_src const * src);
+  void factor(ivec inds, fac_src const * src);
 
   double get_s(ivec inds) const;
 
@@ -64,7 +62,7 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
 
 OLIM_PROTECTED:
   inline bool is_factored(int lin) const {
-    return _lin2fac.find(lin) != _lin2fac.end();
+    return _fac_srcs.find(lin) != _fac_srcs.end();
   }
 
   double get_h() const { return _h; }
@@ -77,7 +75,7 @@ OLIM_PROTECTED:
   int _child_offset[num_nb][num_nb];
 
   // TODO: a quick hack just to get this working for now
-  std::unordered_map<int, fac_src<n> const *> _lin2fac;
+  std::unordered_map<int, fac_src const *> _fac_srcs;
 };
 
 }

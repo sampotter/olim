@@ -27,7 +27,6 @@ status_e quasipot_peek(quasipot_wkspc_s *q, double *value, int *lin, bool *empty
 status_e quasipot_adjust(quasipot_wkspc_s *q, int *inds, double U);
 status_e quasipot_add_src(quasipot_wkspc_s *q, int *inds, double U);
 status_e quasipot_add_bd(quasipot_wkspc_s *q, int *inds);
-status_e quasipot_add_free(quasipot_wkspc_s *q, int *inds);
 status_e quasipot_get_U_ptr(quasipot_wkspc_s *q, double **U_ptr);
 status_e quasipot_get_b_ptr(quasipot_wkspc_s *q, double **b_ptr);
 status_e quasipot_get_state_ptr(quasipot_wkspc_s *q, char **state_ptr);

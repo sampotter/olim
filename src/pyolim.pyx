@@ -79,7 +79,6 @@ cdef extern from "olim_wrapper.h":
     status olim_wrapper_adjust(olim_wrapper*, int*, double)
     status olim_wrapper_add_src(olim_wrapper*, int*, double)
     status olim_wrapper_add_bd(olim_wrapper*, int*)
-    status olim_wrapper_add_free(olim_wrapper*, int*)
     status olim_wrapper_set_fac_src(olim_wrapper*, int*, void*)
     status olim_wrapper_get_U_ptr(olim_wrapper*, double**)
     status olim_wrapper_get_s_ptr(olim_wrapper*, double**)
@@ -282,10 +281,6 @@ cdef class Olim:
     cpdef add_bd(self, inds):
         cdef int[::1] mv = self.get_inds_mv(inds)
         olim_wrapper_add_bd(self._w, &mv[0])
-
-    cpdef add_free(self, inds):
-        cdef int[::1] mv = self.get_inds_mv(inds)
-        olim_wrapper_add_free(self._w, &mv[0])
 
     cpdef set_fac_src(self, inds, FacSrc fs):
         cdef int[::1] mv = self.get_inds_mv(inds)

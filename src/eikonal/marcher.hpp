@@ -44,9 +44,6 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   void add_bd(int const * inds);
   void add_bd(ivec inds);
 
-  void add_free(int const * inds);
-  void add_free(ivec inds);
-
   void factor(int * inds, fac_src const * src);
   void factor(ivec inds, fac_src const * src);
 

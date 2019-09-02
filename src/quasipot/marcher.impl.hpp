@@ -42,7 +42,7 @@ quasipot::marcher<base, n, ord>::visit_neighbors(int lin_center)
   for (int i = 0; i < get_num_nb(); ++i) {
     int lin = lin_center + this->_linear_offset[i];
     auto s = this->_state[lin];
-    if (s == state::trial || s == state::free) {
+    if (s == state::trial) {
       set_valid_front_linear_indices(lin);
       update(lin, s);
     }

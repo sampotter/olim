@@ -106,16 +106,6 @@ status_e quasipot_add_bd(quasipot_wkspc_s *w, int *inds)
   return SUCCESS;
 }
 
-status_e quasipot_add_free(quasipot_wkspc_s *w, int *inds)
-{
-  std::visit(
-    [&] (auto & _) { _.add_free(inds); },
-    w->_olim
-  );
-
-  return SUCCESS;
-}
-
 status_e quasipot_get_U_ptr(quasipot_wkspc_s *w, double **U_ptr)
 {
   std::visit(

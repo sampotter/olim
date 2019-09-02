@@ -188,16 +188,6 @@ status_e eikonal_add_bd(eikonal_wkspc * w, int * inds)
   return SUCCESS;
 }
 
-status_e eikonal_add_free(eikonal_wkspc * w, int * inds)
-{
-  std::visit(
-    [&] (auto && o) { o.add_free(inds); },
-    w->_olim
-  );
-
-  return SUCCESS;
-}
-
 status_e eikonal_peek(eikonal_wkspc * w, double * value, int * lin, bool * empty)
 {
   std::visit(

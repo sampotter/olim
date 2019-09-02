@@ -26,7 +26,6 @@ status_e eikonal_peek(eikonal_wkspc_s *w, double *value, int *lin, bool *empty);
 status_e eikonal_adjust(eikonal_wkspc_s *w, int *inds, double U);
 status_e eikonal_add_src(eikonal_wkspc_s *w, int *inds, double U);
 status_e eikonal_add_bd(eikonal_wkspc_s *w, int *inds);
-status_e eikonal_add_free(eikonal_wkspc_s *w, int *inds);
 status_e eikonal_factor(eikonal_wkspc_s *w, int *inds, fac_src_s *fs);
 status_e eikonal_get_U_ptr(eikonal_wkspc_s *w, double **U_ptr);
 status_e eikonal_get_s_ptr(eikonal_wkspc_s *w, double **s_ptr);

@@ -26,7 +26,7 @@ template <class base, int n, ordering ord>
 void
 quasipot::marcher<base, n, ord>::visit_neighbors(int lin_center)
 {
-  set_valid_front();
+  set_valid_front(lin_center);
 
   auto const update = [&] (int lin, state s) {
     auto U = inf<double>;
@@ -65,8 +65,10 @@ quasipot::marcher<base, n, ord>::is_valid_front(ivec inds) const
 
 template <class base, int n, ordering ord>
 void
-quasipot::marcher<base, n, ord>::set_valid_front(ivec inds)
+quasipot::marcher<base, n, ord>::set_valid_front(int lin)
 {
+  auto inds = this->to_vector_index(lin);
+
   _valid_front.fill(false);
   for (auto offset: range<n, ord> {_valid_front.dims}) {
     _valid_front[offset] = is_valid_front(inds - _center + offset);
@@ -77,7 +79,7 @@ template <class base, int n, ordering ord>
 void
 quasipot::marcher<base, n, ord>::set_valid_front_linear_indices(int lin)
 {
-  ivec inds = to_vector_index(lin);
+  ivec inds = this->to_vector_index(lin);
 
   ivec box_offset = inds - _newly_valid;
   ivec lo = ivec::one() + box_offset;
@@ -88,7 +90,7 @@ quasipot::marcher<base, n, ord>::set_valid_front_linear_indices(int lin)
   for (auto offset: range<n, ord> {_update_box_dims}) {
     if (valid_front_subgrid(offset)) {
       _valid_front_linear_indices[size++] =
-        to_linear_index(inds - center + box_offset + offset);
+        to_linear_index(inds - _center + box_offset + offset);
     }
   }
 }

@@ -19,8 +19,8 @@ typedef struct quasipot_wkspc quasipot_wkspc_s;
 
 status_e quasipot_init(quasipot_wkspc_s **handle, quasipot_params_s *p);
 status_e quasipot_deinit(quasipot_wkspc_s **handle);
-status_e quasipot_wkspc_solve(quasipot_wkspc_s *q);
-status_e quasipot_wkspc_step(quasipot_wkspc_s *q, int *lin);
+status_e quasipot_solve(quasipot_wkspc_s *q);
+status_e quasipot_step(quasipot_wkspc_s *q, int *lin);
 status_e quasipot_peek(quasipot_wkspc_s *q, double *value, int *lin, bool *empty);
 status_e quasipot_adjust(quasipot_wkspc_s *q, int *inds, double U);
 status_e quasipot_add_src(quasipot_wkspc_s *q, int *inds, double U);

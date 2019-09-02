@@ -32,8 +32,8 @@ OLIM_PROTECTED:
 OLIM_PRIVATE:
 
   bool is_valid_front(ivec inds) const;
-  void set_valid_front(ivec inds);
-  void set_valid_front_linear_indices(ivec inds);
+  void set_valid_front(int lin);
+  void set_valid_front_linear_indices(int lin);
 
   inline fvec get_x(ivec inds1, ivec inds0) const {
     return _h*static_cast<fvec>(inds1 - inds0);

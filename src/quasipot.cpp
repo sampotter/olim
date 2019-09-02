@@ -4,69 +4,134 @@
 
 #include "quasipot/olim.hpp"
 
-using quasipot_v = std::variant<quasipot::olim, quasipot::olim3d>;
+namespace quasipot {
 
-struct quasipot
+template <ordering ord>
+using olim_v = std::variant<
+  olim<ord>
+>;
+
+}
+
+struct quasipot_wkspc
 {
-  quasipot_v * impl;
+  static constexpr ordering ord = ordering::ROW_MAJOR;
+
+  quasipot_wkspc(quasipot::olim_v<ord> olim): _olim {olim} {}
+
+  quasipot::olim_v<ord> _olim;
 };
 
-status_e quasipot_init(quasipot_wkspc_s **handle, quasipot_params_s *p)
+status_e quasipot_init(quasipot_wkspc_s **w_ptr, quasipot_params_s *p)
 {
-  *handle = new quasipot;
+  constexpr ordering ord = quasipot_wkspc::ord;
 
-  (*handle)->impl = p->ndims == 2 ?
-    new quasipot_v(
-      std::in_place_type_t<quasipot::olim>,
-      {p->dims[0], p->dims[1]},
-      p->h,
-      (quasipot::olim::vfield) p->b,
-      p->K):
-    new quasipot_v(
-      std::in_place_type_t<quasipot::olim3d>,
-      {p->dims[0], p->dims[1], p->dims[2]},
-      p->h,
-      (quasipot::olim::vfield) p->b,
-      p->K);
+  *w_ptr = new quasipot_wkspc {
+    quasipot::olim<ord> {{p->dims}, p->h, p->b, p->K}
+  };
 
   return SUCCESS;
 }
 
-status_e quasipot_deinit(quasipot_wkspc_s **handle)
+status_e quasipot_deinit(quasipot_wkspc_s **w_ptr)
 {
-  if (*handle == nullptr) {
+  if (*w_ptr == nullptr) {
     return SUCCESS;
   }
 
-  delete ((*handle)->impl);
-  delete *handle;
+  delete *w_ptr;
+  *w_ptr = nullptr;
 
   return SUCCESS;
 }
 
-status_e quasipot_wkspc_solve(quasipot_wkspc_s *q)
+status_e quasipot_solve(quasipot_wkspc_s *w)
 {
   std::visit(
-    [] (auto & _) {
-      _.solve();
-    },
-    *q->impl);
+    [] (auto & _) { _.solve(); },
+    w->_olim
+  );
+
+  return SUCCESS;
 }
 
-status_e quasipot_wkspc_step(quasipot_wkspc_s *q, int *lin)
+status_e quasipot_step(quasipot_wkspc_s *w, int *lin)
 {
   std::visit(
-    [] (auto & _) {
-      *lin = _.step();
-    },
-    *q->impl);
+    [&] (auto & _) { *lin = _.step(); },
+    w->_olim
+  );
+
+  return SUCCESS;
 }
 
-status_e quasipot_peek(quasipot_wkspc_s *q, double *value, int *lin, bool *empty)
+status_e quasipot_peek(quasipot_wkspc_s *w, double *value, int *lin,
+                       bool *empty)
 {
   std::visit(
-    [] (auto & _) {
-      *empty = _.peek(value, lin);
-    },
-    *q->impl);
+    [&] (auto & _) { *empty = _.peek(value, lin); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_adjust(quasipot_wkspc_s *w, int *inds, double U)
+{
+  std::visit(
+    [&] (auto & _) { _.adjust(inds, U); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_add_src(quasipot_wkspc_s *w, int *inds, double U)
+{
+  std::visit(
+    [&] (auto & _) { _.add_src(inds, U); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_add_bd(quasipot_wkspc_s *w, int *inds)
+{
+  std::visit(
+    [&] (auto & _) { _.add_bd(inds); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_add_free(quasipot_wkspc_s *w, int *inds)
+{
+  std::visit(
+    [&] (auto & _) { _.add_free(inds); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_get_U_ptr(quasipot_wkspc_s *w, double **U_ptr)
+{
+  std::visit(
+    [&] (auto & _) { *U_ptr = _.get_U_ptr(); },
+    w->_olim
+  );
+
+  return SUCCESS;
+}
+
+status_e quasipot_get_state_ptr(quasipot_wkspc_s *w, char **state_ptr)
+{
+  std::visit(
+    [&] (auto & _) { *state_ptr = _.get_state_ptr(); },
+    w->_olim
+  );
+
+  return SUCCESS;
 }

@@ -7,11 +7,13 @@ extern "C" {
 
 #include "type.h"
 
+typedef void (*vfield)(double*, double*);
+
 typedef struct quasipot_params {
   int ndims;
   int *dims;
   double h;
-  void *b;
+  vfield b;
   int K;
 } quasipot_params_s;
 

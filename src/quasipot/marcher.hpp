@@ -10,7 +10,6 @@ struct marcher: base_marcher<marcher<base, n, ord>, n>
 {
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
-  using vfield = fvec(*)(fvec);
 
   static constexpr int ndim = n; // TODO: -> get_n()
 

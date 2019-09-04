@@ -52,6 +52,7 @@ configure_file (src/config.hpp.in src/config.hpp)
 set (OLIM_SRC_FILES
   src/eikonal.cpp
   src/eikonal/func.cpp
+  src/fac.cpp
   src/numopt.cpp
   src/quasipot.cpp)
 

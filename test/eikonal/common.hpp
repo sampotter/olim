@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "common.hpp"
+#include "fac.h"
 #include "range.hpp"
 #include "vec.hpp"
 
@@ -531,11 +532,15 @@ solution_is_exact_in_factored_square(
 {
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2;
-  typename olim::fac_src_t src {{(double) i0, (double) j0}, 1.0};
+
+  double x[2] = {(double) i0, (double) j0};
+  fac_src * src;
+  fac_src_init(&src, 2, x, 1.0);
+
   olim o {{n, n}, h};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      o.set_fac_src({i, j}, &src);
+      o.factor({i, j}, src);
     }
   }
   o.add_src({i0, j0});
@@ -553,6 +558,9 @@ solution_is_exact_in_factored_square(
       }
     }
   }
+
+  fac_src_deinit(&src);
+
   return testing::AssertionSuccess();
 }
 
@@ -564,12 +572,15 @@ solution_is_exact_in_factored_square(
   double h = 2./(n - 1);
   int i0 = n/2, j0 = n/2, k0 = n/2;
 
-  typename olim::fac_src_t src {{(double) i0, (double) j0, (double) k0}, 1.0};
+  double x[3] = {(double) i0, (double) j0, (double) k0};
+  fac_src * src;
+  fac_src_init(&src, 3, x, 1.0);
+
   olim o {{n, n, n}, h};
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       for (int k = 0; k < n; ++k) {
-        o.set_fac_src({i, j, k}, &src);
+        o.factor({i, j, k}, src);
       }
     }
   }
@@ -591,6 +602,9 @@ solution_is_exact_in_factored_square(
       }
     }
   }
+
+  fac_src_deinit(&src);
+
   return testing::AssertionSuccess();
 }
 

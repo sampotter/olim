@@ -535,7 +535,8 @@ solution_is_exact_in_factored_square(
 
   double x[2] = {(double) i0, (double) j0};
   fac_src * src;
-  fac_src_init(&src, 2, x, 1.0);
+  int padding = 1;
+  fac_src_init(&src, 2, x, 1.0, &padding);
 
   olim o {{n, n}, h};
   for (int i = 0; i < n; ++i) {
@@ -574,7 +575,8 @@ solution_is_exact_in_factored_square(
 
   double x[3] = {(double) i0, (double) j0, (double) k0};
   fac_src * src;
-  fac_src_init(&src, 3, x, 1.0);
+  int padding = 1;
+  fac_src_init(&src, 3, x, 1.0, &padding);
 
   olim o {{n, n, n}, h};
   for (int i = 0; i < n; ++i) {

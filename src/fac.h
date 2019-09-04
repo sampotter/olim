@@ -22,7 +22,9 @@ extern "C" {
 
   typedef struct fac_src fac_src_s;
 
-  status_e fac_src_init(fac_src_s **f_ptr, int n, double const *inds, double s);
+  status_e fac_src_init(fac_src_s **f_ptr, int n, double const *inds, double s,
+                        int const *padding);
+
   status_e fac_src_deinit(fac_src **f_ptr);
 
 #ifdef __cplusplus

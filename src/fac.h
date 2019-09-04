@@ -10,13 +10,19 @@ extern "C" {
   struct fac_src
   {
     int n;
-    double * x;
+
+    /**
+     * Location of factored source in "index space"---may not be
+     * grid-aligned, hence doubles.
+     */
+    double * inds;
+
     double s;
   };
 
   typedef struct fac_src fac_src_s;
 
-  status_e fac_src_init(fac_src_s **f_ptr, int n, double const *x, double s);
+  status_e fac_src_init(fac_src_s **f_ptr, int n, double const *inds, double s);
   status_e fac_src_deinit(fac_src **f_ptr);
 
 #ifdef __cplusplus

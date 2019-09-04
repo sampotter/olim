@@ -20,7 +20,7 @@ eikonal::olim<F, do_adj, do_diag, ord>::update_impl(
 
     auto src = this->_fac_srcs[lin_hat];
     double sf = src->s;
-    auto pf = vec2<double> {src->x} - inds;
+    auto pf = vec2<double> {src->inds} - inds;
 
     for (int a = 0, b = 1; a < 4; b = (++a + 1) % 4) {
       line<1>(lin_hat, nb, a, U);

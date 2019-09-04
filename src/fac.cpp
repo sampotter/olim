@@ -1,14 +1,14 @@
 #include "fac.h"
 
-status_e fac_src_init(fac_src_s **f_ptr, int n, double const *x, double s)
+status_e fac_src_init(fac_src_s **f_ptr, int n, double const *inds, double s)
 {
   fac_src * f = (*f_ptr = new fac_src);
 
   f->n = n;
 
-  f->x = new double[n];
+  f->inds = new double[n];
   for (int i = 0; i < n; ++i) {
-    f->x[i] = x[i];
+    f->inds[i] = inds[i];
   }
 
   f->s = s;
@@ -20,7 +20,7 @@ status_e fac_src_deinit(fac_src **f_ptr)
 {
   fac_src * f = *f_ptr;
 
-  delete f->x;
+  delete f->inds;
 
   delete *f_ptr;
 

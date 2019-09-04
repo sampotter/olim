@@ -116,7 +116,7 @@ OLIM_PRIVATE:
         this->_s[nb[l0]],
         this->_s[nb[l1]],
         this->get_h(),
-        vec3<double> {src->x} - this->to_vector_index(lin_hat),
+        vec3<double> {src->inds} - this->to_vector_index(lin_hat),
         src->s);
       u = std::min(u, info.value);
       skip_tri<a, b>() = 1;
@@ -191,7 +191,7 @@ OLIM_PRIVATE:
     if ((l0 == parent || l1 == parent || l2 == parent) &&
         nb[l0] != -1 && nb[l1] != -1 && nb[l2] != -1) {
       auto src = this->_fac_srcs[lin_hat];
-      auto p_fac = vec3<double> {src->x} - this->to_vector_index(lin_hat);
+      auto p_fac = vec3<double> {src->inds} - this->to_vector_index(lin_hat);
       geom_fac_wkspc<2> g;
       g.init<3>(get_p<3>(l0), get_p<3>(l1), get_p<3>(l2), p_fac);
       F_fac_wkspc<F, 2> w;

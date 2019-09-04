@@ -40,6 +40,7 @@ void base_marcher<base, n>::add_src(ivec inds, double U) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
+  inds += ivec::one();
   int lin = to_linear_index(inds);
   _U[lin] = U;
   _state[lin] = state::trial;
@@ -68,6 +69,7 @@ base_marcher<base, n>::add_bd(ivec inds)
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(in_bounds(inds));
 #endif
+  inds += ivec::one();
   int lin = to_linear_index(inds);
   _U[lin] = inf<double>;
   _state[lin] = state::boundary;

@@ -2,9 +2,9 @@
 
 #include "../mat.hpp"
 
-template <class base, int n, ordering ord>
-quasipot::marcher<base, n, ord>::marcher(ivec dims, double h, vfield b, int K):
-  base_marcher<marcher<base, n, ord>, n> {dims},
+template <class derived, int n, ordering ord>
+quasipot::marcher<derived, n, ord>::marcher(ivec dims, double h, vfield b, int K):
+  base_marcher<marcher<derived, n, ord>, n> {dims},
   _h {h},
   _b {b},
   _K {K},
@@ -16,21 +16,21 @@ quasipot::marcher<base, n, ord>::marcher(ivec dims, double h, vfield b, int K):
   assert(_K > 0);
 }
 
-template <class base, int n, ordering ord>
-quasipot::marcher<base, n, ord>::~marcher()
+template <class derived, int n, ordering ord>
+quasipot::marcher<derived, n, ord>::~marcher()
 {
   delete[] _valid_front_linear_indices;
 }
 
-template <class base, int n, ordering ord>
+template <class derived, int n, ordering ord>
 void
-quasipot::marcher<base, n, ord>::visit_neighbors(int lin_center)
+quasipot::marcher<derived, n, ord>::visit_neighbors(int lin_center)
 {
   set_valid_front(lin_center);
 
   auto const update = [&] (int lin, state s) {
     auto U = inf<double>;
-    static_cast<base *>(this)->update_impl(lin, U);
+    static_cast<derived *>(this)->update_impl(lin, U);
     if (U < this->_U[lin]) {
       this->_U[lin] = U;
       if (s == state::trial) {
@@ -49,9 +49,9 @@ quasipot::marcher<base, n, ord>::visit_neighbors(int lin_center)
   }
 }
 
-template <class base, int n, ordering ord>
+template <class derived, int n, ordering ord>
 bool
-quasipot::marcher<base, n, ord>::is_valid_front(ivec inds) const
+quasipot::marcher<derived, n, ord>::is_valid_front(ivec inds) const
 {
   for (auto offset: range<n, ord> {3*ivec::one()}) {
     ivec nb_inds = inds + offset - ivec::one();
@@ -63,9 +63,9 @@ quasipot::marcher<base, n, ord>::is_valid_front(ivec inds) const
   return false;
 }
 
-template <class base, int n, ordering ord>
+template <class derived, int n, ordering ord>
 void
-quasipot::marcher<base, n, ord>::set_valid_front(int lin)
+quasipot::marcher<derived, n, ord>::set_valid_front(int lin)
 {
   auto inds = this->to_vector_index(lin);
 
@@ -75,9 +75,9 @@ quasipot::marcher<base, n, ord>::set_valid_front(int lin)
   }
 }
 
-template <class base, int n, ordering ord>
+template <class derived, int n, ordering ord>
 void
-quasipot::marcher<base, n, ord>::set_valid_front_linear_indices(int lin)
+quasipot::marcher<derived, n, ord>::set_valid_front_linear_indices(int lin)
 {
   ivec inds = this->to_vector_index(lin);
 

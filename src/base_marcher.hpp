@@ -61,7 +61,7 @@ void fill_boundary(vec<int, n> dims, T * ptr, T value)
 
 }
 
-template <class base, int n>
+template <class derived, int n>
 struct base_marcher
 {
   using ivec = vec<int, n>;
@@ -82,7 +82,7 @@ struct base_marcher
     for (int i = 0; i < _size; ++i) {
       _state[i] = state::far;
     }
-    detail::fill_boundary<state, n, base::get_ord()>(
+    detail::fill_boundary<state, n, derived::get_ord()>(
       _dims, _state, state::boundary);
 
 #if OLIM_DEBUG && !RELWITHDEBINFO
@@ -139,16 +139,16 @@ OLIM_PROTECTED:
   void stage_neighbors(int lin);
 
   inline int to_linear_index(ivec inds) const {
-    return ::to_linear_index<base::get_ord()>(inds, this->_dims);
+    return ::to_linear_index<derived::get_ord()>(inds, this->_dims);
   }
 
   inline ivec to_vector_index(int lin) const {
-    return ::to_vector_index<base::get_ord()>(lin, this->_dims);
+    return ::to_vector_index<derived::get_ord()>(lin, this->_dims);
   }
 
   inline int to_external_linear_index(int lin) const {
     auto const inds = to_vector_index(lin) - ivec::one();
-    return ::to_linear_index<base::get_ord()>(inds, this->_dims - 2*ivec::one());
+    return ::to_linear_index<derived::get_ord()>(inds, this->_dims - 2*ivec::one());
   }
 
   bool in_bounds(ivec inds) const;

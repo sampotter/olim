@@ -5,8 +5,8 @@
 
 namespace quasipot {
 
-template<class base, int n, ordering ord>
-struct marcher: base_marcher<marcher<base, n, ord>, n>
+template<class derived, int n, ordering ord>
+struct marcher: base_marcher<marcher<derived, n, ord>, n>
 {
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;

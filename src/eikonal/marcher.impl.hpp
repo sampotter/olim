@@ -12,10 +12,10 @@
 // use external memory somewhere for _s and _U so we don't have
 // to double up on these...
 
-template <class base, int n, int num_nb, ordering ord>
-eikonal::marcher<base, n, num_nb, ord>::marcher(
+template <class derived, int n, int num_nb, ordering ord>
+eikonal::marcher<derived, n, num_nb, ord>::marcher(
   ivec dims, double h, no_slow_t const &):
-  base_marcher<marcher<base, n, num_nb, ord>, n> {dims},
+  base_marcher<marcher<derived, n, num_nb, ord>, n> {dims},
   _s {new double[this->_size]},
   _h {h}
 {
@@ -36,8 +36,8 @@ eikonal::marcher<base, n, num_nb, ord>::marcher(
   }
 }
 
-template <class base, int n, int num_nb, ordering ord>
-eikonal::marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
+template <class derived, int n, int num_nb, ordering ord>
+eikonal::marcher<derived, n, num_nb, ord>::marcher(ivec dims, double h):
   marcher {dims, h, no_slow_t {}}
 {
   for (int i = 0; i < this->_size; ++i) {
@@ -45,8 +45,8 @@ eikonal::marcher<base, n, num_nb, ord>::marcher(ivec dims, double h):
   }
 }
 
-template <class base, int n, int num_nb, ordering ord>
-eikonal::marcher<base, n, num_nb, ord>::marcher(
+template <class derived, int n, int num_nb, ordering ord>
+eikonal::marcher<derived, n, num_nb, ord>::marcher(
   ivec dims, double h, double const * s):
   marcher {dims, h, no_slow_t {}}
 {
@@ -61,15 +61,15 @@ eikonal::marcher<base, n, num_nb, ord>::marcher(
   }
 }
 
-template <class base, int n, int num_nb, ordering ord>
-eikonal::marcher<base, n, num_nb, ord>::~marcher()
+template <class derived, int n, int num_nb, ordering ord>
+eikonal::marcher<derived, n, num_nb, ord>::~marcher()
 {
   delete[] _s;
 }
 
-template <class base, int n, int num_nb, ordering ord>
+template <class derived, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
+eikonal::marcher<derived, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 {
   double h = get_h();
   fvec inds = coords/h;
@@ -95,22 +95,22 @@ eikonal::marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
     fvec p = inds - fvec {inds__};
 
     int lin = this->to_linear_index(inds__);
-    this->_U[lin] = static_cast<base *>(this)->line(p.norm2(), U, _s[lin], s, h);
+    this->_U[lin] = static_cast<derived *>(this)->line(p.norm2(), U, _s[lin], s, h);
     this->_state[lin] = state::trial;
     this->_heap.insert(lin);
   }
 }
 
-template <class base, int n, int num_nb, ordering ord>
+template <class derived, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::factor(int * inds, fac_src const * src)
+eikonal::marcher<derived, n, num_nb, ord>::factor(int * inds, fac_src const * src)
 {
   factor(ivec {inds}, src);
 }
 
-template <class base, int n, int num_nb, ordering ord>
+template <class derived, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::factor(ivec inds, fac_src const * src)
+eikonal::marcher<derived, n, num_nb, ord>::factor(ivec inds, fac_src const * src)
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(this->in_bounds(inds));
@@ -119,9 +119,9 @@ eikonal::marcher<base, n, num_nb, ord>::factor(ivec inds, fac_src const * src)
   _fac_srcs[this->to_linear_index(inds)] = src;
 }
 
-template <class base, int n, int num_nb, ordering ord>
+template <class derived, int n, int num_nb, ordering ord>
 double
-eikonal::marcher<base, n, num_nb, ord>::get_s(ivec inds) const
+eikonal::marcher<derived, n, num_nb, ord>::get_s(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
   assert(_s != nullptr);
@@ -170,9 +170,9 @@ int get_parent<3, 26>(int i) {
   return lut[i];
 }
 
-template <class base, int n, int num_nb, ordering ord>
+template <class derived, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
+eikonal::marcher<derived, n, num_nb, ord>::visit_neighbors(int lin_center)
 {
   int valid_nb[detail::max_num_nb(n)];
   int child_nb[num_nb];
@@ -211,7 +211,7 @@ eikonal::marcher<base, n, num_nb, ord>::visit_neighbors(int lin_center)
     assert(state_ == state::trial);
 #endif
     auto U = inf<double>;
-    static_cast<base *>(this)->update_impl(lin_hat, child_nb, parent, U);
+    static_cast<derived *>(this)->update_impl(lin_hat, child_nb, parent, U);
     if (U < this->_U[lin_hat]) {
 #if OLIM_DEBUG && !RELWITHDEBINFO
       assert(U >= 0);

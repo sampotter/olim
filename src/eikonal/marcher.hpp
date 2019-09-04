@@ -15,14 +15,14 @@
 namespace eikonal {
 
 template <
-  class base,
+  class derived,
   int n,
   int num_nb,
   ordering ord
 >
-struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
+struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
 {
-  using base_marcher_t = base_marcher<marcher<base, n, num_nb, ord>, n>;
+  using base_marcher_t = base_marcher<marcher<derived, n, num_nb, ord>, n>;
 
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;

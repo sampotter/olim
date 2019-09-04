@@ -16,6 +16,11 @@ struct olim:
   static constexpr cost_func F_ = F;
   static constexpr int num_nb = do_diag ? 8 : 4;
 
+  using marcher_t = marcher<
+    olim<F, do_adj, do_diag, ord>, 2, do_diag ? 8 : 4, ord>;
+
+  friend marcher_t;
+
   using marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
   static_assert(do_adj || do_diag, "error");
 

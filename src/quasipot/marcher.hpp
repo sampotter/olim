@@ -11,6 +11,10 @@ struct marcher: base_marcher<marcher<derived, n, ord>, n>
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
 
+  using base_marcher_t = base_marcher<marcher<derived, n, ord>, n>;
+
+  friend base_marcher_t;
+
   static constexpr int ndim = n; // TODO: -> get_n()
 
   static constexpr int get_num_nb() { return detail::max_num_nb(n); }

@@ -10,6 +10,10 @@ struct fmm:
   public marcher<fmm<n, ord>, n, 2*n, ord>,
   public line<RHR>
 {
+  using marcher_t = marcher<fmm<n, ord>, n, 2*n, ord>;
+
+  friend marcher_t;
+
   static constexpr cost_func F_ = RHR;
   static constexpr int num_nb = 2*n;
 

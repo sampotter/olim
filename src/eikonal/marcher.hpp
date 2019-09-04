@@ -24,6 +24,8 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
 {
   using base_marcher_t = base_marcher<marcher<derived, n, num_nb, ord>, n>;
 
+  friend base_marcher_t;
+
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
   using uvec = vec<unsigned, n>;

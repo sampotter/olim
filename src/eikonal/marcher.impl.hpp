@@ -103,27 +103,6 @@ eikonal::marcher<base, n, num_nb, ord>::add_src(fvec coords, double s, double U)
 
 template <class base, int n, int num_nb, ordering ord>
 void
-eikonal::marcher<base, n, num_nb, ord>::add_bd(int const * inds)
-{
-  add_bd(ivec {inds});
-}
-
-template <class base, int n, int num_nb, ordering ord>
-void
-eikonal::marcher<base, n, num_nb, ord>::add_bd(ivec inds)
-{
-#if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->in_bounds(inds));
-#endif
-  inds += ivec::one();
-  int lin = this->to_linear_index(inds);
-  this->_U[lin] = inf<double>;
-  this->_s[lin] = inf<double>; // TODO: may not want to do this
-  this->_state[lin] = state::boundary;
-}
-
-template <class base, int n, int num_nb, ordering ord>
-void
 eikonal::marcher<base, n, num_nb, ord>::factor(int * inds, fac_src const * src)
 {
   factor(ivec {inds}, src);

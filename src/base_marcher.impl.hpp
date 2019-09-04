@@ -55,6 +55,25 @@ base_marcher<base, n>::add_srcs(ivec const * inds, double const * U, int num) {
 }
 
 template <class base, int n>
+void
+base_marcher<base, n>::add_bd(int const * inds)
+{
+  add_bd(ivec {inds});
+}
+
+template <class base, int n>
+void
+base_marcher<base, n>::add_bd(ivec inds)
+{
+#if OLIM_DEBUG && !RELWITHDEBINFO
+  assert(in_bounds(inds));
+#endif
+  int lin = to_linear_index(inds);
+  _U[lin] = inf<double>;
+  _state[lin] = state::boundary;
+}
+
+template <class base, int n>
 bool base_marcher<base, n>::peek(double * U, int * lin) const {
   bool const is_empty = _heap.empty();
   if (!is_empty) {

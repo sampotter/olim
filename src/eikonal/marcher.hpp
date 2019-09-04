@@ -41,9 +41,6 @@ struct marcher: public base_marcher<marcher<base, n, num_nb, ord>, n>
   using base_marcher_t::add_src;
   void add_src(fvec coords, double s, double U = 0.0);
 
-  void add_bd(int const * inds);
-  void add_bd(ivec inds);
-
   void factor(int * inds, fac_src const * src);
   void factor(ivec inds, fac_src const * src);
 

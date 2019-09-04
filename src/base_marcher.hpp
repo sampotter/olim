@@ -116,6 +116,8 @@ struct base_marcher
   void add_src(int const * inds, double U = 0.0);
   void add_src(ivec inds, double U = 0.0);
   void add_srcs(ivec const * inds, double const * U, int num);
+  void add_bd(int const * inds);
+  void add_bd(ivec inds);
   bool peek(double * U, int * lin) const;
   void adjust(int const * inds, double U);
   void adjust(ivec inds, double U);

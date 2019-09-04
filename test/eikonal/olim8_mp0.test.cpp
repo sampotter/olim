@@ -18,6 +18,6 @@ TEST (olim8_mp0, quadrants_are_correct) {
   ASSERT_TRUE(quadrants_are_correct<olim_t>(sqrt(2)));
 }
 
-TEST (olim8_mp0, solution_is_exact_in_factored_region) {
+TEST (olim8_mp0, solution_is_exact_in_factored_square) {
   ASSERT_TRUE(solution_is_exact_in_factored_square<olim_t>(3));
 }

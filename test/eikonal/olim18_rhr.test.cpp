@@ -25,6 +25,6 @@ TEST (olim18_rhr, plane_boundaries_are_correct) {
   ASSERT_TRUE(plane_boundaries_are_correct<olim3d_t>());
 }
 
-TEST (olim18_rhr, solution_is_exact_in_factored_region) {
+TEST (olim18_rhr, solution_is_exact_in_factored_square) {
   ASSERT_TRUE(solution_is_exact_in_factored_square<olim3d_t>(5));
 }

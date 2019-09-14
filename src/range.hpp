@@ -45,7 +45,6 @@ struct range
     return tmp;
   }
   
-OLIM_PRIVATE:
   int _lin {0};
   vec<int, n> _dims;
   int _end_lin;

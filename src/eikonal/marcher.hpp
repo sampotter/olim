@@ -24,8 +24,6 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
 {
   using base_marcher_t = base_marcher<marcher<derived, n, num_nb, ord>, n>;
 
-  friend base_marcher_t;
-
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
   using uvec = vec<unsigned, n>;
@@ -56,7 +54,6 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
     _s = s;
   }
 
-OLIM_PROTECTED:
   inline bool is_factored(int lin) const {
     return _fac_srcs.find(lin) != _fac_srcs.end();
   }

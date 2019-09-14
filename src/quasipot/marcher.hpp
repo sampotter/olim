@@ -11,10 +11,6 @@ struct marcher: base_marcher<marcher<derived, n, ord>, n>
   using fvec = vec<double, n>;
   using ivec = vec<int, n>;
 
-  using base_marcher_t = base_marcher<marcher<derived, n, ord>, n>;
-
-  friend base_marcher_t;
-
   static constexpr int ndim = n; // TODO: -> get_n()
 
   static constexpr int get_num_nb() { return detail::max_num_nb(n); }
@@ -23,16 +19,12 @@ struct marcher: base_marcher<marcher<derived, n, ord>, n>
   marcher(ivec dims, double h, vfield b, int K);
   ~marcher();
 
-OLIM_PROTECTED:
-
   inline double get_h() const { return _h; }
   void visit_neighbors(int lin);
 
   double _h;
   vfield _b;
   int _K;
-
-OLIM_PRIVATE:
 
   bool is_valid_front(ivec inds) const;
   void set_valid_front(int lin);

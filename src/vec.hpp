@@ -220,7 +220,6 @@ struct vec
     return t;
   }
 
-OLIM_PRIVATE:
   T _data[n];
 };
 

@@ -134,8 +134,6 @@ struct base_marcher
   }
 
 
-OLIM_PROTECTED:
-
   void stage_neighbors(int lin);
 
   inline int to_linear_index(ivec inds) const {

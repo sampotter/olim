@@ -50,7 +50,6 @@ struct grid
     return _dims;
   }
 
-OLIM_PRIVATE:
   ivec _dims;
   T * _data;
 };

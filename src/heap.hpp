@@ -33,7 +33,7 @@ struct heap
   void insert(elt const & e);
   void update(elt const & e);
   void print() const;
-OLIM_PRIVATE:
+
   void grow();
   void swim(int pos);
   void sink(int pos);

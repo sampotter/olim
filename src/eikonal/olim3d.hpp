@@ -57,8 +57,6 @@ struct olim3d_bv:
     return eikonal::line<F>()(l0, u0, s, s0, h);
   }
 
-OLIM_PRIVATE:
-
   inline void reset_tri_skip_list() {
     memset(tri_skip_list, 0, sizeof(tri_skip_list));
   }

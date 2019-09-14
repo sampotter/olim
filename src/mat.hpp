@@ -92,6 +92,5 @@ struct mat
   //   return {&_data[m*j]};
   // }
 
-OLIM_PRIVATE:
   T _data[m*n];
 };

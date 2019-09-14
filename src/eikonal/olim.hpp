@@ -24,7 +24,6 @@ struct olim:
   using marcher<olim<F, do_adj, do_diag, ord>, 2, num_nb, ord>::marcher;
   static_assert(do_adj || do_diag, "error");
 
-OLIM_PRIVATE:
   void update_impl(int lin_hat, int const * nb, int parent, double & U);
 
   // TODO: this is used when we add non-grid-aligned points... there

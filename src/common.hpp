@@ -30,11 +30,3 @@ constexpr T eps = std::numeric_limits<T>::epsilon();
 
 template <class T>
 constexpr T inf = std::numeric_limits<T>::infinity();
-
-#ifdef OLIM_DEBUG
-#  define OLIM_PROTECTED public
-#  define OLIM_PRIVATE public
-#else
-#  define OLIM_PROTECTED protected
-#  define OLIM_PRIVATE private
-#endif

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "heap.hpp"
 #include "offsets.hpp"
 #include "state.hpp"
@@ -71,19 +73,12 @@ struct base_marcher
     _dims {dims + 2*ivec::one()},
     _size {_dims.product()},
     _heap {{this}, initial_heap_capacity(_size)},
-    _U {new double[_size]},
-    _state {new state[_size]},
-    _heap_pos {new int[_size]}
+    _U(_size, inf<double>),
+    _state(_size, state::far),
+    _heap_pos(_size)
   {
-    for (int i = 0; i < _size; ++i) {
-      _U[i] = inf<double>;
-    }
-
-    for (int i = 0; i < _size; ++i) {
-      _state[i] = state::far;
-    }
     detail::fill_boundary<state, n, derived::get_ord()>(
-      _dims, _state, state::boundary);
+      _dims, &_state[0], state::boundary);
 
 #if OLIM_DEBUG && !RELWITHDEBINFO
     /**
@@ -104,12 +99,6 @@ struct base_marcher
     }
   }
 
-  ~base_marcher() {
-    delete[] _U;
-    delete[] _state;
-    delete[] _heap_pos;
-  }
-
   void solve();
   int step();
   int step_impl();
@@ -125,14 +114,21 @@ struct base_marcher
   double get_U(ivec inds) const;
   state get_state(ivec inds) const;
 
-  inline double * get_U_ptr() const {
-    return this->_U;
+  inline double * get_U_ptr() {
+    return &this->_U[0];
   }
 
-  inline char * get_state_ptr() const {
-    return reinterpret_cast<char *>(this->_state);
+  inline double const * get_U_ptr() const {
+    return &this->_U[0];
   }
 
+  inline char * get_state_ptr() {
+    return reinterpret_cast<char *>(&this->_state[0]);
+  }
+
+  inline char const * get_state_ptr() const {
+    return reinterpret_cast<char const *>(&this->_state[0]);
+  }
 
 OLIM_PROTECTED:
 
@@ -187,9 +183,9 @@ OLIM_PROTECTED:
 
   heap<int, proxy> _heap;
 
-  double * _U {nullptr};
-  state * _state {nullptr};
-  int * _heap_pos {nullptr};
+  std::vector<double> _U;
+  std::vector<state> _state;
+  std::vector<int> _heap_pos;
 
   int _linear_offset[detail::max_num_nb(n)];
 };

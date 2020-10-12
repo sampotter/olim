@@ -303,19 +303,13 @@ struct olim3d_hu:
     init();
   }
 
-  ~olim3d_hu() {
-    delete[] valid_d1;
-    delete[] valid_d2;
-    delete[] coplanar;
-    delete[] geom_wkspcs;
-    delete[] qr_wkspcs;
-  }
-
   void init();
 
-  bool * valid_d1, * valid_d2, * coplanar;
-  geom_wkspc<2> * geom_wkspcs;
-  qr_wkspc<3, 2> * qr_wkspcs;
+  std::vector<char> valid_d1;
+  std::vector<char> valid_d2;
+  std::vector<char> coplanar;
+  std::vector<geom_wkspc<2>> geom_wkspcs;
+  std::vector<qr_wkspc<3, 2>> qr_wkspcs;
   vec3<double> p0, p1, p2, p_fac;
 
   inline double get_p_norm(int l) const {
@@ -340,15 +334,15 @@ struct olim3d_hu:
     return qr_wkspcs[to_nb_linear_index(inds)];
   }
 
-  inline bool & is_valid_d1(vec2<int> inds) {
+  inline char & is_valid_d1(vec2<int> inds) {
     return valid_d1[to_nb_linear_index(inds)];
   }
 
-  inline bool & is_valid_d2(vec2<int> inds) {
+  inline char & is_valid_d2(vec2<int> inds) {
     return valid_d2[to_nb_linear_index(inds)];
   }
 
-  inline bool & is_coplanar(vec3<int> inds) {
+  inline char & is_coplanar(vec3<int> inds) {
     return coplanar[to_nb_linear_index(inds)];
   }
 

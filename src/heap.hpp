@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 #include "common.hpp"
 
@@ -20,15 +21,15 @@ template <class elt, class proxy>
 struct heap
 {
   using value_t = typename proxy::value_t;
-  
+
   heap(proxy && p, size_t capacity);
-  ~heap();
 
   elt & front();
   elt const & front() const;
   bool empty() const;
   elt * data() const;
   size_t size() const;
+  size_t capacity() const;
   void pop_front();
   void insert(elt const & e);
   void update(elt const & e);
@@ -44,7 +45,7 @@ OLIM_PRIVATE:
   inline value_t value(int pos) const {
     return _proxy.get_value(_data[pos]);
   }
-	
+
   inline int left(int pos) const {
     return 2*pos + 1;
   }
@@ -58,22 +59,15 @@ OLIM_PRIVATE:
   }
 
   proxy _proxy;
-  elt * _data {nullptr};
+  std::vector<elt> _data;
   size_t _size {0};
-  size_t _capacity {0};
 };
 
 template <class elt, class proxy>
 heap<elt, proxy>::heap(proxy && p, size_t capacity):
   _proxy {std::move(p)},
-  _data {new elt[capacity]},
-  _capacity {capacity}
+  _data(capacity)
 {}
-
-template <class elt, class proxy>
-heap<elt, proxy>::~heap() {
-  delete[] _data;
-}
 
 template <class elt, class proxy>
 elt & heap<elt, proxy>::front() {
@@ -103,6 +97,11 @@ size_t heap<elt, proxy>::size() const {
 }
 
 template <class elt, class proxy>
+size_t heap<elt, proxy>::capacity() const {
+  return _data.size();
+}
+
+template <class elt, class proxy>
 void heap<elt, proxy>::pop_front() {
   swap(0, _size - 1);
   --_size;
@@ -114,10 +113,10 @@ void heap<elt, proxy>::pop_front() {
 
 template <class elt, class proxy>
 void heap<elt, proxy>::insert(elt const & e) {
-  if (_size == _capacity) grow();
+  if (_size == capacity()) grow();
   // n->set_heap_pos(_size);
   _proxy.set_heap_pos(e, _size);
-  assert(_size < _capacity);
+  assert(_size < capacity());
   _data[_size++] = e;
   update(e);
 #if CHECK_HEAP_PROP_IN_DEBUG && OLIM_DEBUG && !RELWITHDEBINFO
@@ -186,11 +185,7 @@ void heap<elt, proxy>::print() const {
 
 template <class elt, class proxy>
 void heap<elt, proxy>::grow() {
-  _capacity *= 2;
-  elt * tmp = new elt[_capacity];
-  memcpy(tmp, _data, _size*sizeof(elt));
-  delete[] _data;
-  _data = tmp;
+  _data.resize(2*capacity());
 #if CHECK_HEAP_PROP_IN_DEBUG && OLIM_DEBUG && !RELWITHDEBINFO
   assert(has_heap_prop());
 #endif

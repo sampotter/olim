@@ -38,7 +38,6 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);
   marcher(ivec dims, double h, double const * s);
-  virtual ~marcher();
 
   using base_marcher_t::add_src;
   void add_src(fvec coords, double s, double U = 0.0);
@@ -48,8 +47,12 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
 
   double get_s(ivec inds) const;
 
-  inline double * get_s_ptr() const {
-    return _s;
+  inline double * get_s_ptr() {
+    return &_s[0];
+  }
+
+  inline double const * get_s_ptr() const {
+    return &_s[0];
   }
 
   inline void set_s_ptr(double * s) {
@@ -65,7 +68,7 @@ OLIM_PROTECTED:
 
   void visit_neighbors(int lin);
 
-  double * _s {nullptr};
+  std::vector<double> _s;
   double _h {1};
 
   int _child_offset[num_nb][num_nb];

@@ -16,11 +16,11 @@ template <class derived, int n, int num_nb, ordering ord>
 eikonal::marcher<derived, n, num_nb, ord>::marcher(
   ivec dims, double h, no_slow_t const &):
   base_marcher<marcher<derived, n, num_nb, ord>, n> {dims},
-  _s {new double[this->_size]},
+  _s(this->_size),
   _h {h}
 {
   // TODO: this may be unnecessary
-  detail::fill_boundary<double, n, ord>(dims, _s, inf<double>);
+  detail::fill_boundary<double, n, ord>(dims, &_s[0], inf<double>);
 
   /**
    * Precompute arrays of offsets to child nodes.
@@ -59,12 +59,6 @@ eikonal::marcher<derived, n, num_nb, ord>::marcher(
     auto lin = this->to_linear_index(inds + ivec::one());
     _s[lin] = s[::to_linear_index<ord>(inds, dims)];
   }
-}
-
-template <class derived, int n, int num_nb, ordering ord>
-eikonal::marcher<derived, n, num_nb, ord>::~marcher()
-{
-  delete[] _s;
 }
 
 template <class derived, int n, int num_nb, ordering ord>

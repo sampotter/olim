@@ -267,11 +267,11 @@ template <cost_func F, int lp_norm, int d1, int d2, ordering ord>
 void eikonal::olim3d_hu<F, lp_norm, d1, d2, ord>::init()
 {
   // TODO: only allocate once
-  valid_d1 = new bool[26*26];
-  valid_d2 = new bool[26*26];
-  coplanar = new bool[26*26*26];
-  geom_wkspcs = new geom_wkspc<2>[26*26*26];
-  qr_wkspcs = new qr_wkspc<3, 2>[26*26*26];
+  valid_d1.resize(26*26);
+  valid_d2.resize(26*26);
+  coplanar.resize(26*26*26);
+  geom_wkspcs.resize(26*26*26);
+  qr_wkspcs.resize(26*26*26);
 
   static constexpr double tol = eps<double>;
 

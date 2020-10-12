@@ -130,14 +130,14 @@ status_e eikonal_deinit(eikonal_wkspc ** w_ptr)
   return SUCCESS;
 }
 
-status_e eikonal_wkspc_solve(eikonal_wkspc * w)
+status_e eikonal_solve(eikonal_wkspc * w)
 {
   std::visit([] (auto && o) { o.solve(); }, w->_olim);
 
   return SUCCESS;
 }
 
-status_e eikonal_wkspc_step(eikonal_wkspc * w, int *lin)
+status_e eikonal_step(eikonal_wkspc * w, int *lin)
 {
   std::visit(
     [&] (auto && o) { *lin = o.step(); },
@@ -157,7 +157,7 @@ status_e eikonal_adjust(eikonal_wkspc * w, int * inds, double U)
   return SUCCESS;
 }
 
-status_e eikonal_add_src(eikonal_wkspc * w, int const * inds, double U)
+status_e eikonal_add_src(eikonal_wkspc * w, int * inds, double U)
 {
   std::visit(
     [&] (auto && o) { o.base_marcher::add_src(inds, U); },
@@ -168,7 +168,7 @@ status_e eikonal_add_src(eikonal_wkspc * w, int const * inds, double U)
 }
 
 status_e
-eikonal_wkspc_factor(eikonal_wkspc * w, int * inds, fac_src_s * fs)
+eikonal_factor(eikonal_wkspc * w, int * inds, fac_src_s * fs)
 {
   std::visit(
     [&] (auto && o) { o.factor(inds, fs); },

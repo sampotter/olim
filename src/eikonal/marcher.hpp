@@ -38,7 +38,7 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
   marcher(ivec dims, double h, no_slow_t const &);
   marcher(ivec dims, double h);
   marcher(ivec dims, double h, double const * s);
-  ~marcher();
+  virtual ~marcher();
 
   using base_marcher_t::add_src;
   void add_src(fvec coords, double s, double U = 0.0);

@@ -2,6 +2,12 @@ cmake_minimum_required (VERSION 3.9)
 
 project (olim)
 
+set (CMAKE_MODULE_PATH
+  "${CMAKE_SOURCE_DIR}/external/sanitizers-cmake/cmake"
+  ${CMAKE_MODULE_PATH})
+
+find_package (Sanitizers)
+
 enable_testing ()
 
 include (CheckIPOSupported)
@@ -58,6 +64,7 @@ set (OLIM_SRC_FILES
 
 add_library (olim STATIC ${OLIM_SRC_FILES})
 target_compile_features (olim PRIVATE cxx_std_17)
+add_sanitizers (olim)
 
 if (NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   if (IPO_RESULT)

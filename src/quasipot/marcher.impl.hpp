@@ -11,7 +11,7 @@ quasipot::marcher<derived, n, ord>::marcher(ivec dims, double h, vfield b, int K
   _update_box_dims {(2*K + 1)*ivec::one()},
   _center {K*ivec::one()},
   _valid_front {(2*K + 3)*ivec::one()},
-  _valid_front_linear_indices {new int[pow(2*K + 1, n)]}
+  _valid_front_linear_indices {new int[static_cast<size_t>(pow(2*K + 1, n))]}
 {
   assert(_K > 0);
 }

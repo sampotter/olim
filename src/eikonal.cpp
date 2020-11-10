@@ -160,7 +160,12 @@ status_e eikonal_adjust(eikonal_wkspc * w, int * inds, double U)
 status_e eikonal_add_src(eikonal_wkspc * w, int * inds, double U)
 {
   std::visit(
-    [&] (auto && o) { o.base_marcher::add_src(inds, U); },
+    /**
+     * XXX: the next line doesn't compile with gcc... need to check if
+     * the following uncommented line *does* compile with clang
+     */
+    // [&] (auto && o) { o.base_marcher::add_src(inds, U); },
+    [&] (auto && o) { o.add_src(inds, U); },
     w->_olim
   );
 

@@ -15,11 +15,13 @@ struct vec
 {
   vec() {}
 
-  vec(vec<T, n> const & x) {
-    for (int i = 0; i < n; ++i) {
-      _data[i] = x._data[i];
-    }
-  }
+  // vec(vec<T, n> const & x) {
+  //   for (int i = 0; i < n; ++i) {
+  //     _data[i] = x._data[i];
+  //   }
+  // }
+
+
 
   vec(T const * t_ptr) {
     for (int i = 0; i < n; ++i) {

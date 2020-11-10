@@ -113,7 +113,6 @@ void base_marcher<derived, n>::adjust(ivec inds, double U) {
 template <class derived, int n>
 double base_marcher<derived, n>::get_U(ivec inds) const {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->_U != nullptr);
   assert(in_bounds(inds));
 #endif
   return this->_U[
@@ -123,7 +122,6 @@ double base_marcher<derived, n>::get_U(ivec inds) const {
 template <class derived, int n>
 state base_marcher<derived, n>::get_state(ivec inds) const {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(this->_state != nullptr);
   assert(in_bounds(inds));
 #endif
   return this->_state[to_linear_index(inds + ivec::one())];

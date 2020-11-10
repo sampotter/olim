@@ -118,7 +118,6 @@ double
 eikonal::marcher<derived, n, num_nb, ord>::get_s(ivec inds) const
 {
 #if OLIM_DEBUG && !RELWITHDEBINFO
-  assert(_s != nullptr);
   assert(in_bounds(inds));
 #endif
   return _s[to_linear_index(inds + ivec::one())];

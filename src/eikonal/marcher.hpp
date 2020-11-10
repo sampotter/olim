@@ -55,10 +55,6 @@ struct marcher: public base_marcher<marcher<derived, n, num_nb, ord>, n>
     return &_s[0];
   }
 
-  inline void set_s_ptr(double * s) {
-    _s = s;
-  }
-
 OLIM_PROTECTED:
   inline bool is_factored(int lin) const {
     return _fac_srcs.find(lin) != _fac_srcs.end();
